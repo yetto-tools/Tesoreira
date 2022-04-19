@@ -28,9 +28,9 @@ namespace CapaDatos
             IConfigurationBuilder builder = new ConfigurationBuilder();
 
             // Ambiente de Prodduccion
-            //builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
+            builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
             // Ambiente de Desarrollo
-            builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.Development.json"));
+            //builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.Development.json"));
             var root = builder.Build();
 
             cadenaTesoreria = root.GetConnectionString("SqlConnectionTesoreria");

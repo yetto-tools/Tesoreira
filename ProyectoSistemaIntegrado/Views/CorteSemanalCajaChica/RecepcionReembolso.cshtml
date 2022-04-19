@@ -1,0 +1,108 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    Context.Session.SetString("tituloPrincipal", "Recepción de Reembolsos de Caja Chica");
+}
+
+<button type="button" id="ShowPopupConfirmacionReembolso" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropConfirmacionReembolso" style="display:none">
+</button>
+
+<div style="height: 10px; width:100%;"></div>
+
+<div id="divTabla">
+</div>
+
+
+<!-- Modal Reembolso, Abono a Caja Chica -->
+<div class="modal fade" id="staticBackdropConfirmacionReembolso" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelConfirmacionReembolso" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupConfirmacionReembolso"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupConfirmacionReembolso">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="frmConfirmacionRecepcion">
+                    <input type="hidden" name="CodigoReporte" class="form-control obligatorio" id="uiCodigoReporte" readonly />
+                    <input type="hidden" name="AnioOperacion" class="form-control obligatorio" id="uiAnioOperacion" readonly />
+                    <input type="hidden" name="SemanaOperacion" class="form-control obligatorio" id="uiSemanaOperacion" readonly />
+                    <input type="hidden" name="CodigoTransaccion" class="form-control obligatorio" id="uiCodigoTransaccion" readonly />
+                    <input type="hidden" name="CodigoCajaChica" class="form-control obligatorio" id="uiCodigoCajaChica" readonly />
+                    <input type="hidden" name="CodigoOperacion" class="form-control obligatorio" id="uiCodigoOperacion" readonly />
+                    <div class="mb-3 row">
+                        <label class="col-sm-2">Caja Chica:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="NombreCajaChica" class="form-control obligatorio" id="uiNombreCajaChica" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2">Operación:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="Operacion" class="form-control obligatorio" id="uiNombreOperacion" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2">Motivo:</label>
+                        <div class="col-sm-10">
+                            <textarea name="Observaciones" class="form-control" id="uiObservaciones" readonly></textarea>
+                        </div>
+                    </div>
+                    <div id="div-reembolso-abono-caja-chica" class="display:none;">
+                        <div class="mb-3 row">
+                            <label class="col-sm-2">Banco:</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" id="uiCodigoBanco" name="CodigoBanco">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label"> </label>
+                            <div class="col-md-3">
+                                <label class="col-form-label">Número Cheque</label>
+                                <input type="text" name="NumeroCheque" class="form-control text-center" id="uiNumeroCheque" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="col-form-label">Fecha Cheque</label>
+                                <input type="text" name="FechaChequeStr" class="form-control text-center" autocomplete="off" id="uiFechaCheque" placeholder="Inicio de cheque" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Monto:</label>
+                        <div class="col-sm-3">
+                            <input type="text" name="Monto" class="form-control obligatorio decimal-2" id="uiMonto" style="text-align:right" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Observaciones:</label>
+                        <div class="col-sm-10">
+                            <textarea name="ObservacionesRecepcion" class="form-control" id="uiObservacionesRecepcion"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="AceptarRecepcionDeTransaccion()">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/jqueryui.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/cortesemanalcajachica.js"></script>
+    <script>
+        $(function () {
+            $("#uiFechaCheque").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeYear: true
+            });
+        });
+    </script>
+}

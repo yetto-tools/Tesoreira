@@ -1,0 +1,35 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    ViewData["Title"] = "Index";
+    Context.Session.SetString("tituloPrincipal", "Consulta de traslados para liquidación");
+}
+
+<div style="height: 15px; width:100%;"></div>
+<fieldset>
+    <form method="post" id="frmBusquedaTraslados">
+        <div style="margin: 0 auto; text-align: center;">
+            <table>
+                <tr>
+                    <td>AÑO</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><input type="text" name="AnioOperacion" class="form-control obligatorio solonumeros text-center" id="uiFiltroAnio" placeholder="Año" /></td>
+                    <td><input type="button" class="form-control btn btn-primary" value="BUSCAR" onclick="BuscarTrasladosLiquidacion()" /></td>
+                </tr>
+            </table>
+        </div>
+    </form>
+</fieldset>
+<div style="height: 15px; width:100%;"></div>
+<div id="divTabla">
+
+</div>
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/liquidacion.js"></script>
+}

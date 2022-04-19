@@ -1,0 +1,77 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@{
+    ViewData["Title"] = "Create";
+    Context.Session.SetString("tituloPrincipal", "Desgloce de planilla de Pago");
+}
+
+<div style="margin: 0 auto; text-align: center;">
+    <form method="post" id="frmDesglocePlanilla" name="frmDesglocePlanilla">
+        <table>
+            <tr>
+                <td>AÑO</td>
+                <td>SEMANA</td>
+                <td>REPORTES</td>
+                <td>DIA</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <select class="form-control obligatorio" id="uiFiltroAnioPlanilla" name="AnioOperacion" onchange="FillFiltroSemanas(this)"></select>
+                </td>
+                <td>
+                    <select class="form-control obligatorio" id="uiFiltroSemana" name="SemanaOperacion" onchange="FillComboDiasOperacion()"></select>
+                </td>
+                <td>
+                    <select class="form-control obligatorio" id="uiFiltroReporteCaja" name="CodigoReporte"></select>
+                </td>
+                <td>
+                    <select class="form-control obligatorio" id="uiFiltroDiaOperacion" name="FechaStr"></select>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>OPERACION</td>
+                <td>AREA</td>
+                <td>MONTO</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <select class="form-control obligatorio" id="uiFiltroOperacion" name="CodigoOperacion">
+                        <option value='8'>PLANILLA DE PAGO</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control obligatorio" id="uiFiltroArea" name="CodigoArea">
+                        <option value='-1'>-- Seleccione -- </option>
+                        <option value='1'>Ventas</option>
+                        <option value='2'>Producción</option>
+                        <option value='3'>Administración</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" name="Monto" class="form-control obligatorio text-right decimal-2" id="uiMontoDevengado" />
+                </td>
+                <td>
+                    <button type="button" class="btn btn-primary" onclick="GuardarDesglocePlanilla()">AGREGAR</button>
+                </td>
+                <td></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div id="divTabla">
+</div>
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/planilla.js"></script>
+}
+

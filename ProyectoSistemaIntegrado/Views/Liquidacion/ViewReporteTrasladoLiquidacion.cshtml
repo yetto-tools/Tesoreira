@@ -1,0 +1,214 @@
+﻿@using CapaNegocio.Tesoreria;
+@using CapaEntidad.Tesoreria;
+@using CapaEntidad.Contabilidad;
+@using System.Globalization;
+@model ReportViewModel
+
+
+@{
+    Layout = null;
+
+    LiquidacionBL obj = new LiquidacionBL();
+
+    ReporteTrasladoLiquidacionCLS reporte = obj.GetReporteTrasladoLiquidacion(Model.CodigoTraslado, Model.AnioOperacion, Model.SemanaOperacion);
+
+    // Inicio Operacion
+    string[] word = reporte.listaEncabezado[0].FechaInicioSemana.Split('/');
+    int anio = Convert.ToInt32(word[2]);
+    int mes = Convert.ToInt32(word[1]);
+    int dia = Convert.ToInt32(word[0]);
+    DateTime fechaInicio = new DateTime(anio, mes, dia);
+    string fechaInicioStr = fechaInicio.Day.ToString() + "/" + fechaInicio.Month.ToString() + "/" + fechaInicio.Year.ToString();
+    int diaSemana = Util.Conversion.DayOfWeek(fechaInicio);
+    string diaInicioStr = Util.Conversion.nombreDia(diaSemana);
+
+
+    // Fin Operacion
+    word = reporte.listaEncabezado[0].FechaFinSemana.Split('/');
+    anio = Convert.ToInt32(word[2]);
+    mes = Convert.ToInt32(word[1]);
+    dia = Convert.ToInt32(word[0]);
+    DateTime fechaFin = new DateTime(anio, mes, dia);
+    string fechaFinStr = fechaFin.Day.ToString() + "/" + fechaFin.Month.ToString() + "/" + fechaFin.Year.ToString();
+    diaSemana = Util.Conversion.DayOfWeek(fechaFin);
+    string diaFinStr = Util.Conversion.nombreDia(diaSemana);
+
+
+}
+
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h1 style="text-align: center;">TRASLADO DE VENTAS EN RUTA PARA LIQUIDACIÓN</h1>
+    <h1 style="text-align: center;">@reporte.encabezado.FechaGeneracionStr</h1>
+    <table style="border: 1px solid black; border-collapse: collapse; margin: 0 auto;">
+        <tr style="border: 1px solid black;">
+            <td colspan="2" style="border: 1px solid black; padding: 4px;"><div style="text-align: center;">Rango de fechas</div></td>
+        </tr>
+        <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 4px; font-size: 16px;"><div style="text-align: center;">@fechaInicioStr</div></td>
+            <td style="border: 1px solid black; padding: 4px; font-size: 16px;"><div style="text-align: center;">@fechaFinStr</div></td>
+        </tr>
+        <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 4px; font-size: 16px;"><div style="text-align: center;">@diaInicioStr</div></td>
+            <td style="border: 1px solid black; padding: 4px; font-size: 16px;"><div style="text-align: center;">@diaFinStr</div></td>
+        </tr>
+    </table>
+
+    <h2 style="text-align: left;"></h2>
+    <table style="border: 1px solid black; border-collapse: collapse; margin: 0 auto;">
+        <thead>
+            <tr style="border-bottom: 1px solid black;">
+                <th style="font-size: 16px; margin: auto; border: 1px solid black; width: 250px;"></th>
+                <th style="font-size: 16px; margin: auto; border: 1px solid black; width: 50px;"></th>
+                @foreach (var dr in reporte.listaEncabezadoFechas)
+                {
+                    <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">@dr.FechaStr</div></td>
+                }
+                <th style="font-size: 16px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;"></div></th>
+            </tr>
+            <tr style="border-bottom: 1px solid black;">
+                <th style="font-size: 16px; margin: auto; border: 1px solid black; width: 250px;">Descripción</th>
+                <th style="font-size: 16px; margin: auto; border: 1px solid black; width: 50px;"><div style="text-align: center;">Ruta</div></th>
+                <th style="font-size: 16px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">Lunes</div></th>
+                <th style="font-size: 16px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">Martes</div></th>
+                <th style="font-size: 16px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">Miercoles</div></th>
+                <th style="font-size: 16px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">Jueves</div></th>
+                <th style="font-size: 16px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">Viernes</div></th>
+                <th style="font-size: 16px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">Sábado</div></th>
+                <th style="font-size: 16px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">Domingo</div></th>
+                <th style="font-size: 16px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">Total General</div></th>
+            </tr>
+        </thead>
+            @{decimal montoLunes = 0;}
+            @{decimal montoMartes = 0;}
+            @{decimal montoMiercoles = 0;}
+            @{decimal montoJueves = 0;}
+            @{decimal montoViernes = 0;}
+            @{decimal montoSabado = 0;}
+            @{decimal montoDomingo = 0;}
+            @{decimal montoTotal = 0;}
+            @{decimal montoTotalLunes = 0;}
+            @{decimal montoTotalMartes = 0;}
+            @{decimal montoTotalMiercoles = 0;}
+            @{decimal montoTotalJueves = 0;}
+            @{decimal montoTotalViernes = 0;}
+            @{decimal montoTotalSabado = 0;}
+            @{decimal montoTotalDomingo = 0;}
+            @{decimal sumaTotal = 0;}
+            @{int codigoCanalVenta = -1;}
+            @foreach (var dr in reporte.detalle)
+            {
+                montoLunes = dr.MontoLunes;
+                montoMartes = dr.MontoMartes;
+                montoMiercoles = dr.MontoMiercoles;
+                montoJueves = dr.MontoJueves;
+                montoViernes = dr.MontoViernes;
+                montoSabado = dr.MontoSabado;
+                montoDomingo = dr.MontoDomingo;
+                montoTotal = dr.MontoTotal;
+                montoTotalLunes = montoTotalLunes + montoLunes;
+                montoTotalMartes = montoTotalMartes + montoMartes;
+                montoTotalMiercoles = montoTotalMiercoles + montoMiercoles;
+                montoTotalJueves = montoTotalJueves + montoJueves;
+                montoTotalViernes = montoTotalViernes + montoViernes;
+                montoTotalSabado = montoTotalSabado + montoSabado;
+                montoTotalDomingo = montoTotalDomingo + montoDomingo;
+                sumaTotal = sumaTotal + montoTotal;
+                if (dr.CodigoCanalVenta != codigoCanalVenta)
+                {
+                    <tr style="border-bottom: 1px solid black;">
+                        <td style="padding: 2px;"><div style="font-size: 18px; font-weight: bold;">@dr.CanalVenta.ToUpper()</div></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+
+                    codigoCanalVenta = @dr.CodigoCanalVenta;
+                }
+                <tr>
+                    <td style="padding-left: 24px; font-size: 14px;">@dr.NombreVendedor</td>
+                    <td style="padding: 2px; font-size: 14px;">@dr.Ruta</td>
+                    <td style="padding: 2px; font-size: 16px;">
+                        <div style="text-align: right;">
+                            @if (montoLunes != 0)
+                            {@montoLunes.ToString("N2");
+                        }
+                        </div>
+                    </td>
+                    <td style="padding: 4px; font-size: 16px;">
+                        <div style="text-align: right;">
+                            @if (montoMartes != 0)
+                            {@montoMartes.ToString("N2");
+                        }
+                        </div>
+                    </td>
+                    <td style="padding: 4px; font-size: 16px;">
+                        <div style="text-align: right;">
+                            @if (montoMiercoles != 0)
+                            {@montoMiercoles.ToString("N2");
+                        }
+                        </div>
+                    </td>
+                    <td style="padding: 4px; font-size: 16px;">
+                        <div style="text-align: right;">
+                            @if (montoJueves != 0)
+                            {@montoJueves.ToString("N2");
+                        }
+                        </div>
+                    </td>
+                    <td style="padding: 4px; font-size: 16px;">
+                        <div style="text-align: right;">
+                            @if (montoViernes != 0)
+                            {@montoViernes.ToString("N2");
+                        }
+                        </div>
+                    </td>
+                    <td style="padding: 4px; font-size: 16px;">
+                        <div style="text-align: right;">
+                            @if (montoSabado != 0)
+                            {@montoSabado.ToString("N2");
+                        }
+                        </div>
+                    </td>
+                    <td style="padding: 4px; font-size: 16px;">
+                        <div style="text-align: right;">
+                            @if (montoDomingo != 0)
+                            {@montoDomingo.ToString("N2");
+                        }
+                        </div>
+                    </td>
+                    <td style="padding: 4px; font-size: 16px;">
+                        <div style="text-align: right; font-weight: bold;">
+                            @if (montoTotal != 0)
+                            {@montoTotal.ToString("N2");
+                        }
+                        </div>
+                    </td>
+                </tr>
+            }
+
+            <tr style="border: 1pt solid black;">
+                <td style="padding: 4px; font-size: 17px;"><div style="text-align: right; font-weight: bold; font-family: Arial, Helvetica, Verdana;"></div></td>
+                <td style="padding: 4px; font-size: 17px;"><div style="text-align: right; font-weight: bold; font-family: Arial, Helvetica, Verdana;"></div></td>
+                <td style="padding: 4px; font-size: 17px;"><div style="text-align: right; font-weight: bold; font-family: Arial, Helvetica, Verdana;">@montoTotalLunes.ToString("N2")</div></td>
+                <td style="padding: 4px; font-size: 17px;"><div style="text-align: right; font-weight: bold; font-family: Arial, Helvetica, Verdana;">@montoTotalMartes.ToString("N2")</div></td>
+                <td style="padding: 4px; font-size: 17px;"><div style="text-align: right; font-weight: bold; font-family: Arial, Helvetica, Verdana;">@montoTotalMiercoles.ToString("N2")</div></td>
+                <td style="padding: 4px; font-size: 17px;"><div style="text-align: right; font-weight: bold; font-family: Arial, Helvetica, Verdana;">@montoTotalJueves.ToString("N2")</div></td>
+                <td style="padding: 4px; font-size: 17px;"><div style="text-align: right; font-weight: bold; font-family: Arial, Helvetica, Verdana;">@montoTotalViernes.ToString("N2")</div></td>
+                <td style="padding: 4px; font-size: 17px;"><div style="text-align: right; font-weight: bold; font-family: Arial, Helvetica, Verdana;">@montoTotalSabado.ToString("N2")</div></td>
+                <td style="padding: 4px; font-size: 17px;"><div style="text-align: right; font-weight: bold; font-family: Arial, Helvetica, Verdana;">@montoTotalDomingo.ToString("N2")</div></td>
+                <td style="padding: 4px; font-size: 17px;"><div style="text-align: right; font-weight: bold; font-family: Arial, Helvetica, Verdana;">@sumaTotal.ToString("N2")</div></td>
+            </tr>
+    </table>
+</body>
+</html>

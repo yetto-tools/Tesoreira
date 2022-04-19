@@ -1,0 +1,66 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    ViewData["Title"] = "Index";
+    Context.Session.SetString("tituloPrincipal", "Corrección de Transacciones");
+}
+
+
+<fieldset>
+    <form method="post" id="frmBusquedaTransacciones">
+        <table style="margin-left: auto; margin-right: auto;">
+            <tr>
+                <td>AÑO</td>
+                <td>SEMANA</td>
+                <td>FECHA CORTE</td>
+            </tr>
+            <tr>
+                <td>
+                    <select class="form-control obligatorio" id="uiFiltroAnio" name="AnioOperacion" onclick="fillSemanasTransacciones(this.value)">
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control obligatorio" id="uiFiltroSemana" name="SemanaOperacion" onclick="FillReportesDeCaja()">
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control obligatorio" id="uiFiltroReporteCaja" name="CodigoReporte">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>OPERACIÓN</td>
+                <td>TIPO ENTIDAD</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <select class="form-control" id="uiFiltroOperaciones" name="CodigoOperacion">
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control" id="uiFiltroCategorias" name="CodigoCategoriaEntidad">
+                    </select>
+                </td>
+                <td>
+                    <input type="button" class="form-control btn btn-primary" value="BUSCAR" onclick="buscarTransaccionesCorreccion()" />
+                </td>
+            </tr>
+        </table>
+    </form>
+
+    <div style="height: 25px; width:100%;">
+    </div>
+</fieldset>
+<div id="divTabla">
+
+</div>
+
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/transaccion.js"></script>
+}

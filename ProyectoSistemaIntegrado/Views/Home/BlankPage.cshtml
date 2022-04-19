@@ -1,0 +1,12 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using CapaEntidad.Administracion;
+@{
+    ViewData["Title"] = "Create";
+    string cadena = Context.Session.GetString("usuario");
+    UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(cadena);
+    string idUsuario = objUsuario.IdUsuario;
+    byte setSemanaAnterior = objUsuario.SetSemanaAnterior;
+    Context.Session.SetString("tituloPrincipal", "");
+}
+

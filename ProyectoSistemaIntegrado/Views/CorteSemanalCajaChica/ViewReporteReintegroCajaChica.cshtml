@@ -1,0 +1,504 @@
+﻿@using CapaNegocio.Tesoreria;
+@using CapaEntidad.Tesoreria;
+@using CapaEntidad.Contabilidad;
+@using System.Globalization;
+@model ReportContabilidadViewModel
+
+
+@{
+    Layout = null;
+    ReporteCajaChicaBL obj = new ReporteCajaChicaBL();
+    ReporteOperacionesCajaListCLS reporte = obj.GetReporteReintegroCajaChica(Model.CodigoReporte, Model.AnioOperacion, Model.SemanaOperacion, Model.CodigoCajaChica);
+
+    // Inicio Operacion
+    string[] word = reporte.listaEncabezado[0].FechaInicioSemana.Split('/');
+    int anio = Convert.ToInt32(word[2]);
+    int mes = Convert.ToInt32(word[1]);
+    int dia = Convert.ToInt32(word[0]);
+    DateTime fechaInicio = new DateTime(anio, mes, dia);
+    string fechaInicioStr = fechaInicio.Day.ToString() + "/" + fechaInicio.Month.ToString() + "/" + fechaInicio.Year.ToString();
+    int diaSemana = Util.Conversion.DayOfWeek(fechaInicio);
+    string diaInicioStr = Util.Conversion.nombreDia(diaSemana);
+
+
+    // Fin Operacion
+    word = reporte.listaEncabezado[0].FechaFinSemana.Split('/');
+    anio = Convert.ToInt32(word[2]);
+    mes = Convert.ToInt32(word[1]);
+    dia = Convert.ToInt32(word[0]);
+    DateTime fechaFin = new DateTime(anio, mes, dia);
+    string fechaFinStr = fechaFin.Day.ToString() + "/" + fechaFin.Month.ToString() + "/" + fechaFin.Year.ToString();
+    diaSemana = Util.Conversion.DayOfWeek(fechaFin);
+    string diaFinStr = Util.Conversion.nombreDia(diaSemana);
+
+}
+
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h1 style="text-align: center;">OPERACIONES DE CAJA CHICA</h1>
+    <h2 style="text-align: center;">@reporte.listaTransaccciones[0].NombreEntidad</h2>
+    <h3 style="text-align: center;">Fecha Corte: @reporte.FechaGeneracionStr</h3>
+    <h1 style="text-align: center;">Límite: @reporte.MontoAsignado.ToString("N2")</h1>
+    <table style="border: 1px solid black; border-collapse: collapse; margin: 0 auto;">
+        <tr style="border: 1px solid black;">
+            <td colspan="2" style="border: 1px solid black; padding: 4px;"><div style="text-align: center;">Rango de Operaciones</div></td>
+        </tr>
+        <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 4px; font-size: 16px;"><div style="text-align: center;">@fechaInicioStr</div></td>
+            <td style="border: 1px solid black; padding: 4px; font-size: 16px;"><div style="text-align: center;">@fechaFinStr</div></td>
+        </tr>
+        <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 4px; font-size: 16px;"><div style="text-align: center;">@diaInicioStr</div></td>
+            <td style="border: 1px solid black; padding: 4px; font-size: 16px;"><div style="text-align: center;">@diaFinStr</div></td>
+        </tr>
+    </table>
+
+    <h2 style="text-align: left;"></h2>
+    <table style="border: 1px solid black; border-collapse: collapse; margin: 0 auto;">
+        <tr style="border-bottom: 1px solid black;">
+            <td style="font-size: 16px; margin: auto; border: 1px solid black; width: 150px;"></td>
+            <td style="font-size: 16px; margin: auto; border: 1px solid black; width: 250px;"></td>
+            @foreach (var dr in reporte.listaEncabezadoFechas)
+            {
+                <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">@dr.FechaStr</div></td>
+            }
+            <td style="font-size: 16px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;"></div></td>
+        </tr>
+        <tr style="border-bottom: 1px solid black;">
+            <td style="font-size: 16px; margin: auto; border: 1px solid black; width: 150px;">Entidad</td>
+            <td style="font-size: 16px; margin: auto; border: 1px solid black; width: 250px;"><div style="text-align: center;">Descripción</div></td>
+            <td style="font-size: 16px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">Lunes</div></td>
+            <td style="font-size: 16px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">Martes</div></td>
+            <td style="font-size: 16px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">Miercoles</div></td>
+            <td style="font-size: 16px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">Jueves</div></td>
+            <td style="font-size: 16px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">Viernes</div></td>
+            <td style="font-size: 16px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">Sábado</div></td>
+            <td style="font-size: 16px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">Domingo</div></td>
+            <td style="font-size: 16px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">Total General</div></td>
+        </tr>
+
+        @{decimal montoTotalTipoOperacionLunes = 0;}
+        @{decimal montoTotalTipoOperacionMartes = 0;}
+        @{decimal montoTotalTipoOperacionMiercoles = 0;}
+        @{decimal montoTotalTipoOperacionJueves = 0;}
+        @{decimal montoTotalTipoOperacionViernes = 0;}
+        @{decimal montoTotalTipoOperacionSabado = 0;}
+        @{decimal montoTotalTipoOperacionDomingo = 0;}
+        @{decimal montoTotalTipoOperacionSemana = 0;}
+        @{decimal montoSaldoFinal = 0;}
+
+
+        @{int codigoCategoriaOperacion = 0;}
+        @{int codigoOperacion = 0;}
+        @{int codigoCategoriaEntidad = 0;}
+        @{string codigoEntidadAnterior = "";}
+        @{int codigoOperacionAnterior = 0;}
+        @{int contador = 0;}
+        @{string idTipoOperacion = "";}
+        @foreach (var dr in reporte.listaTransaccciones)
+        {
+            if (@dr.IdTipoOperacion != idTipoOperacion)
+            {
+                @foreach (var drRow in reporte.listaMontosTiposDeOperacion)
+                {
+                    if (drRow.IdTipoOperacion == @dr.IdTipoOperacion)
+                    {
+                        montoTotalTipoOperacionLunes = drRow.MontoTotalLunes;
+                        montoTotalTipoOperacionMartes = drRow.MontoTotalMartes;
+                        montoTotalTipoOperacionMiercoles = drRow.MontoTotalMiercoles;
+                        montoTotalTipoOperacionJueves = drRow.MontoTotalJueves;
+                        montoTotalTipoOperacionViernes = drRow.MontoTotalViernes;
+                        montoTotalTipoOperacionSabado = drRow.MontoTotalSabado;
+                        montoTotalTipoOperacionDomingo = drRow.MontoTotalDomingo;
+                        montoTotalTipoOperacionSemana = drRow.MontoTotalSemana;
+                        break;
+                    }
+                }
+                <tr style="background: #c3c3c3">
+                    <td style="padding: 4px; font-size: 16px; font-weight: bold;" colspan="2">[ @dr.IdTipoOperacion ] - @dr.TipoOperacion</td>
+                    @if (dr.IdTipoOperacion == Constantes.Operacion.IdTipoOperacion.A || dr.IdTipoOperacion == Constantes.Operacion.IdTipoOperacion.D)
+                    {
+                        <td style="padding: 4px; font-size: 16px;">
+                            <div style="text-align: right; font-weight: bold;">
+                                @if (montoTotalTipoOperacionLunes != 0)
+                                {@montoTotalTipoOperacionLunes.ToString("N2");
+                            }
+                            </div>
+                        </td>
+                        <td style="padding: 4px; font-size: 16px;">
+                            <div style="text-align: right; font-weight: bold;">
+                                @if (montoTotalTipoOperacionMartes != 0)
+                                {@montoTotalTipoOperacionMartes.ToString("N2");
+                            }
+                            </div>
+                        </td>
+                        <td style="padding: 4px; font-size: 16px;">
+                            <div style="text-align: right; font-weight: bold;">
+                                @if (montoTotalTipoOperacionMiercoles != 0)
+                                {@montoTotalTipoOperacionMiercoles.ToString("N2");
+                            }
+                            </div>
+                        </td>
+                        <td style="padding: 4px; font-size: 16px;">
+                            <div style="text-align: right; font-weight: bold;">
+                                @if (montoTotalTipoOperacionJueves != 0)
+                                {@montoTotalTipoOperacionJueves.ToString("N2");
+                            }
+                            </div>
+                        </td>
+                        <td style="padding: 4px; font-size: 16px;">
+                            <div style="text-align: right; font-weight: bold;">
+                                @if (montoTotalTipoOperacionViernes != 0)
+                                {@montoTotalTipoOperacionViernes.ToString("N2");
+                            }
+                            </div>
+                        </td>
+                        <td style="padding: 4px; font-size: 16px;">
+                            <div style="text-align: right; font-weight: bold;">
+                                @if (montoTotalTipoOperacionSabado != 0)
+                                {@montoTotalTipoOperacionSabado.ToString("N2");
+                            }
+                            </div>
+                        </td>
+                        <td style="padding: 4px; font-size: 16px;">
+                            <div style="text-align: right; font-weight: bold;">
+                                @if (montoTotalTipoOperacionDomingo != 0)
+                                {@montoTotalTipoOperacionDomingo.ToString("N2");
+                            }
+                            </div>
+                        </td>
+                        <td style="padding: 4px; font-size: 16px;">
+                            <div style="text-align: right; font-weight: bold;">
+                                @if (montoTotalTipoOperacionSemana != 0)
+                                {@montoTotalTipoOperacionSemana.ToString("N2");
+                            }
+                            </div>
+                        </td>
+                    }
+                    else
+                    {
+                        <td style="padding: 4px; font-size: 16px;">
+                            <div style="text-align: right; font-weight: bold;">
+                                @if (montoTotalTipoOperacionLunes != 0)
+                                {@montoTotalTipoOperacionLunes.ToString("N2");
+                            }
+                            </div>
+                        </td>
+                        <td style="padding: 4px; font-size: 16px;">
+                            <div style="text-align: right; font-weight: bold;">
+                                @if (montoTotalTipoOperacionMartes != 0)
+                                {@montoTotalTipoOperacionMartes.ToString("N2");
+                            }
+                            </div>
+                        </td>
+                        <td style="padding: 4px; font-size: 16px;">
+                            <div style="text-align: right; font-weight: bold;">
+                                @if (montoTotalTipoOperacionMiercoles != 0)
+                                {@montoTotalTipoOperacionMiercoles.ToString("N2");
+                            }
+                            </div>
+                        </td>
+                        <td style="padding: 4px; font-size: 16px;">
+                            <div style="text-align: right; font-weight: bold;">
+                                @if (montoTotalTipoOperacionJueves != 0)
+                                {@montoTotalTipoOperacionJueves.ToString("N2");
+                            }
+                            </div>
+                        </td>
+                        <td style="padding: 4px; font-size: 16px;">
+                            <div style="text-align: right; font-weight: bold;">
+                                @if (montoTotalTipoOperacionViernes != 0)
+                                {@montoTotalTipoOperacionViernes.ToString("N2");
+                            }
+                            </div>
+                        </td>
+                        <td style="padding: 4px; font-size: 16px;">
+                            <div style="text-align: right; font-weight: bold;">
+                                @if (montoTotalTipoOperacionSabado != 0)
+                                {@montoTotalTipoOperacionSabado.ToString("N2");
+                            }
+                            </div>
+                        </td>
+                        <td style="padding: 4px; font-size: 16px;">
+                            <div style="text-align: right; font-weight: bold;">
+                                @if (montoTotalTipoOperacionDomingo != 0)
+                                {@montoTotalTipoOperacionDomingo.ToString("N2");
+                            }
+                            </div>
+                        </td>
+                        <td style="padding: 4px; font-size: 16px;">
+                            <div style="text-align: right; font-weight: bold;">
+                                @if (montoTotalTipoOperacionSemana != 0)
+                                {@montoTotalTipoOperacionSemana.ToString("N2");
+                            }
+                            </div>
+                        </td>
+                    }
+                </tr>
+                idTipoOperacion = @dr.IdTipoOperacion;
+            }
+            if (@dr.CodigoCategoriaOperacion != codigoCategoriaOperacion)
+            {
+                <tr>
+                    <td style="padding-left: 20px; font-size: 16px; font-weight: bold;" colspan="2">@dr.CategoriaOperacion</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                codigoCategoriaOperacion = @dr.CodigoCategoriaOperacion;
+            }
+            if (@dr.CodigoOperacion != codigoOperacion)
+            {
+                <tr>
+                    <td style="padding-left: 40px; font-size: 16px;" colspan="2">@dr.Operacion</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                codigoOperacion = @dr.CodigoOperacion;
+            }
+
+            if (@dr.CodigoCategoriaEntidad != codigoCategoriaEntidad || codigoOperacionAnterior != dr.CodigoOperacion)
+            {
+                <tr>
+                    <td style="padding-left: 60px; font-size: 16px; font-weight: bold;" colspan="2">@dr.CategoriaEntidad</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            }
+            <tr>
+                @if (codigoEntidadAnterior == @dr.CodigoEntidad && contador != 0 && @dr.CodigoCategoriaEntidad == codigoCategoriaEntidad && codigoOperacionAnterior == dr.CodigoOperacion)
+                {
+                    <td style="padding-left: 80px; font-size: 16px;"></td>
+                }
+                else
+                {
+                    <td style="padding-left: 80px; font-size: 16px;">@dr.NombreEntidad</td>
+                }
+                @if (@dr.CodigoCategoriaEntidad != codigoCategoriaEntidad)
+                {
+                    codigoCategoriaEntidad = @dr.CodigoCategoriaEntidad;
+                }
+                <td style="padding-left: 30px; font-size: 16px;">@dr.Descripcion</td>
+                @{montoSaldoFinal = montoSaldoFinal + dr.MontoLunes + dr.MontoMartes + dr.MontoMiercoles + dr.MontoJueves + dr.MontoViernes + dr.MontoSabado + dr.MontoDomingo;}
+                @if (@dr.IdTipoOperacion == Constantes.Operacion.IdTipoOperacion.A)
+                {
+                    <td style="padding: 4px; font-size: 16px;">
+                        <div style="text-align: right;">
+                            @if (dr.MontoLunes != 0)
+                            {@dr.MontoLunes.ToString("N2")}
+                        </div>
+                    </td>
+                    <td style="padding: 4px; font-size: 16px;">
+                        <div style="text-align: right;">
+                            @if (dr.MontoMartes != 0)
+                            {@dr.MontoMartes.ToString("N2")}
+                        </div>
+                    </td>
+                    <td style="padding: 4px; font-size: 16px;">
+                        <div style="text-align: right;">
+                            @if (dr.MontoMiercoles != 0)
+                            {@dr.MontoMiercoles.ToString("N2")}
+                        </div>
+                    </td>
+                    <td style="padding: 4px; font-size: 16px;">
+                        <div style="text-align: right;">
+                            @if (dr.MontoJueves != 0)
+                            {@dr.MontoJueves.ToString("N2")}
+                        </div>
+                    </td>
+                    <td style="padding: 4px; font-size: 16px;">
+                        <div style="text-align: right;">
+                            @if (dr.MontoViernes != 0)
+                            {@dr.MontoViernes.ToString("N2")}
+                        </div>
+                    </td>
+                    <td style="padding: 4px; font-size: 16px;">
+                        <div style="text-align: right;">
+                            @if (dr.MontoSabado != 0)
+                            {@dr.MontoSabado.ToString("N2")}
+                        </div>
+                    </td>
+                    <td style="padding: 4px; font-size: 16px;">
+                        <div style="text-align: right;">
+                            @if (dr.MontoDomingo != 0)
+                            {@dr.MontoDomingo.ToString("N2")}
+                        </div>
+                    </td>
+                }
+                else
+                {
+                    if (dr.MontoLunes < 0)
+                    {
+                        <td style="padding: 4px; font-size: 16px; color: red;">
+                            <div style="text-align: right;">
+                                @if (dr.MontoLunes != 0)
+                                {@dr.MontoLunes.ToString("N2")}
+                            </div>
+                        </td>
+                    }
+                    else
+                    {
+                        <td style="padding: 4px; font-size: 16px;">
+                            <div style="text-align: right;">
+                                @if (dr.MontoLunes != 0)
+                                {@dr.MontoLunes.ToString("N2")}
+                            </div>
+                        </td>
+                    }
+
+                    if (dr.MontoMartes < 0)
+                    {
+                        <td style="padding: 4px; font-size: 16px; color: red;">
+                            <div style="text-align: right;">
+                                @if (dr.MontoMartes != 0)
+                                {@dr.MontoMartes.ToString("N2")}
+                            </div>
+                        </td>
+                    }
+                    else
+                    {
+                        <td style="padding: 4px; font-size: 16px;">
+                            <div style="text-align: right;">
+                                @if (dr.MontoMartes != 0)
+                                {@dr.MontoMartes.ToString("N2")}
+                            </div>
+                        </td>
+                    }
+
+                    if (dr.MontoMiercoles < 0)
+                    {
+                        <td style="padding: 4px; font-size: 16px; color: red;">
+                            <div style="text-align: right;">
+                                @if (dr.MontoMiercoles != 0)
+                                {@dr.MontoMiercoles.ToString("N2")}
+                            </div>
+                        </td>
+                    }
+                    else
+                    {
+                        <td style="padding: 4px; font-size: 16px;">
+                            <div style="text-align: right;">
+                                @if (dr.MontoMiercoles != 0)
+                                {@dr.MontoMiercoles.ToString("N2")}
+                            </div>
+                        </td>
+                    }
+
+                    if (dr.MontoJueves < 0)
+                    {
+                        <td style="padding: 4px; font-size: 16px; color: red;">
+                            <div style="text-align: right;">
+                                @if (dr.MontoJueves != 0)
+                                {@dr.MontoJueves.ToString("N2")}
+                            </div>
+                        </td>
+                    }
+                    else
+                    {
+                        <td style="padding: 4px; font-size: 16px;">
+                            <div style="text-align: right;">
+                                @if (dr.MontoJueves != 0)
+                                {@dr.MontoJueves.ToString("N2")}
+                            </div>
+                        </td>
+                    }
+
+                    if (dr.MontoViernes < 0)
+                    {
+                        <td style="padding: 4px; font-size: 16px; color: red;">
+                            <div style="text-align: right;">
+                                @if (dr.MontoViernes != 0)
+                                {@dr.MontoViernes.ToString("N2")}
+                            </div>
+                        </td>
+                    }
+                    else
+                    {
+                        <td style="padding: 4px; font-size: 16px;">
+                            <div style="text-align: right;">
+                                @if (dr.MontoViernes != 0)
+                                {@dr.MontoViernes.ToString("N2")}
+                            </div>
+                        </td>
+                    }
+
+                    if (dr.MontoSabado < 0)
+                    {
+                        <td style="padding: 4px; font-size: 16px; color: red;">
+                            <div style="text-align: right;">
+                                @if (dr.MontoSabado != 0)
+                                {@dr.MontoSabado.ToString("N2")}
+                            </div>
+                        </td>
+                    }
+                    else
+                    {
+                        <td style="padding: 4px; font-size: 16px;">
+                            <div style="text-align: right;">
+                                @if (dr.MontoSabado != 0)
+                                {@dr.MontoSabado.ToString("N2")}
+                            </div>
+                        </td>
+                    }
+
+                    if (dr.MontoDomingo < 0)
+                    {
+                        <td style="padding: 4px; font-size: 16px; color: red;">
+                            <div style="text-align: right;">
+                                @if (dr.MontoDomingo != 0)
+                                {@dr.MontoDomingo.ToString("N2")}
+                            </div>
+                        </td>
+                    }
+                    else
+                    {
+                        <td style="padding: 4px; font-size: 16px;">
+                            <div style="text-align: right;">
+                                @if (dr.MontoDomingo != 0)
+                                {@dr.MontoDomingo.ToString("N2")}
+                            </div>
+                        </td>
+                    }
+                }
+                <td style="padding: 4px; font-size: 16px;">
+                </td>
+            </tr>
+            contador = contador + 1;
+            codigoEntidadAnterior = dr.CodigoEntidad;
+            codigoOperacionAnterior = dr.CodigoOperacion;
+        }
+
+    <tr style="border: 1pt solid black;">
+        <td colspan="5"></td>
+        <td style="padding: 4px; font-size: 18px;" colspan="4"><div style="text-align: left; font-weight: bold; font-family: Arial, Helvetica, Verdana;">EFECTIVO DISPONIBLE</div></td>
+        <td style="padding: 4px; font-size: 18px;"><div style="text-align: right; font-weight: bold; font-family: Arial, Helvetica, Verdana;">@montoSaldoFinal.ToString("N2")</div></td>
+    </tr>
+    <tr style="border: 1pt solid black;">
+        <td colspan="5"></td>
+        <td style="padding: 4px; font-size: 18px;" colspan="4"><div style="text-align: left; font-weight: bold; font-family: Arial, Helvetica, Verdana;">REEMBOLSO AUTORIZADO</div></td>
+        <td style="padding: 4px; font-size: 18px;"><div style="text-align: right; font-weight: bold; font-family: Arial, Helvetica, Verdana;">@reporte.MontoReembolso.ToString("N2")</div></td>
+    </tr>
+    </table>
+</body>
+</html>

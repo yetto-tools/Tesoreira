@@ -1,0 +1,76 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@{
+    ViewData["Title"] = "Create";
+    Context.Session.SetString("tituloPrincipal", "Pagos BTB (Devolución en Tesorería)");
+}
+
+<form method="post" id="frmBusqueda" name="frmBusqueda">
+
+    <table style="margin-left: auto; margin-right: auto;">
+        <tr>
+            <td>AÑO</td>
+            <td>TIPO PLANILLA</td>
+            <td>MES</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+                <select class="form-control obligatorio" id="uiFiltroAnioPlanilla" name="Anio"></select>
+            </td>
+            <td>
+                <select class="form-control obligatorio" id="uiFiltroTipoPlanilla" name="CodigoTipoPlanilla">
+                    <option value='-1'>-- Seleccione -- </option>
+                    <option value='1'>PAGO SALARIO</option>
+                    <option value='2'>AGUINALDO</option>
+                    <option value='3'>BONO 14</option>
+                    <option value='4'>PRESTACIONES</option>
+                </select>
+            </td>
+            <td>
+                <select class="form-control obligatorio" id="uiFiltroMes" name="Mes">
+                    <option value='-1'>-- Seleccione -- </option>
+                    <option value='1'>ENERO</option>
+                    <option value='2'>FEBRERO</option>
+                    <option value='3'>MARZO</option>
+                    <option value='4'>ABRIL</option>
+                    <option value='5'>MAYO</option>
+                    <option value='6'>JUNIO</option>
+                    <option value='7'>JULIO</option>
+                    <option value='8'>AGOSTO</option>
+                    <option value='9'>SEPTIEMBRE</option>
+                    <option value='10'>OCTUBRE</option>
+                    <option value='11'>NOVIEMBRE</option>
+                    <option value='12'>DICIEMBRE</option>
+                </select>
+            </td>
+            <td>
+                <button type="button" class="btn btn-primary" onclick="CalcularMontosPagosBTB()" id="uiCalcularMontosPagados">CALCULAR</button>
+            </td>
+        </tr>
+    </table>
+</form>
+
+
+<div style="height: 10px; width:100%;">
+</div>
+
+<div style="margin: 0 auto; text-align: center;">
+    <input type="button" class="btn btn-success btn-lg" value="Cargar Devoluciones" onclick="CargarDevolucionBTB()" />
+</div>
+
+<div style="height: 10px; width:100%;">
+</div>
+
+<div id="divTabla">
+</div>
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/btb.js"></script>
+}
+

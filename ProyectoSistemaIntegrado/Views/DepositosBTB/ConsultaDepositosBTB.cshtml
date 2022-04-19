@@ -1,0 +1,56 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@{
+    ViewData["Title"] = "Create";
+    Context.Session.SetString("tituloPrincipal", "Consulta de Depósitos BTB");
+}
+
+<form method="post" id="frmBusqueda" name="frmBusqueda">
+    <table style="margin: 0 auto; text-align: center;">
+        <tr>
+            <td>AÑO PLANILLA</td>
+            <td>AÑO OPERACIÓN</td>
+            <td>SEMANA</td>
+            <td>CORTE</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+                <select class="form-control" id="uiFiltroAnioPlanilla" name="AnioPlanilla">
+                </select>
+            </td>
+            <td>
+                <select class="form-control obligatorio" id="uiFiltroAnioOperacion" name="AnioOperacion" onchange="fillSemanasReporte()">
+                </select>
+            </td>
+            <td>
+                <select class="form-control" id="uiFiltroSemanaOperacion" name="SemanaOperacion" onclick="FillReportesDeCaja()">
+                </select>
+            </td>
+            <td>
+                <select class="form-control obligatorio" id="uiFiltroReporteCaja" name="CodigoReporte">
+                </select>
+            </td>
+            <td>
+                <input type="button" class="form-control btn btn-primary" value="Buscar" onclick="BuscarBoletasDepositosBTB()" />
+            </td>
+        </tr>
+    </table>
+</form>
+
+<div style="height: 15px; width:100%;">
+</div>
+
+<div id="divTabla">
+
+</div>
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/jqueryui.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/btb.js"></script>
+}

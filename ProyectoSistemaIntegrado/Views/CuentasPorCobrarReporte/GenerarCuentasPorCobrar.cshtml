@@ -1,0 +1,22 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@{
+    ViewData["Title"] = "Create";
+    Context.Session.SetString("tituloPrincipal", "Generación de Reporte Semanal (CxC)");
+}
+
+<fieldset>
+</fieldset>
+
+<div id="divTabla">
+</div>
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/jqueryui.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/cxc.js"></script>
+}

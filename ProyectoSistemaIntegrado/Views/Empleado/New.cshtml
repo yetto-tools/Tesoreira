@@ -1,0 +1,419 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using CapaEntidad.Administracion;
+@{
+    ViewData["Title"] = "Create";
+    string cadena = Context.Session.GetString("usuario");
+    UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(cadena);
+    string idUsuario = objUsuario.IdUsuario;
+    Context.Session.SetString("tituloPrincipal", "Nuevo Empleado");
+}
+
+<!-- Button trigger modal -->
+<button type="button" id="ShowPopupNewPersona" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropNewPersona" style="display:none" value="Agregar">
+</button>
+
+<fieldset>
+    <form method="post" id="frmGuardaEmpleado">
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Tipo Identificacion:</label>
+            <div class="col-sm-4">
+                <select class="form-control obligatorio" id="cboTipoIdentificacion" name="CodigoTipoIdentificacion">
+                    <option value='DPI'>DPI</option>
+                    <option value='PAS'>PASAPORTE</option>
+                </select>
+            </div>
+        </div>
+
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Empresa:</label>
+            <div class="col-sm-5">
+                <select class="form-control obligatorio" name="CodigoEmpresa" id="cboEmpresa">
+                </select>
+            </div>
+        </div>
+
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Código Empleado:</label>
+            <div class="col-sm-4">
+                <input type="text" name="CodigoEmpleado" class="form-control obligatorio" id="uiCodigoEmpleado" />
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-4">
+                <div class="input-group rounded">
+                    <input type="search" class="form-control rounded" placeholder="Código único de identificación (CUI)" aria-label="Código único de identificación"
+                           aria-describedby="search-addon" id="filtroCui" name="CodigoUnicoIdentificacion" />
+                    <span class="input-group-text border-0" id="search-addon" onclick="BuscarCUI(this)">
+                        <i class="fas fa-search"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">CUI:</label>
+            <div class="col-sm-4">
+                <input type="text" name="cui" class="form-control obligatorio" id="uiCui" readonly />
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label"> </label>
+            <div class="col-md-3">
+                <label class="col-form-label">Primer Nombre</label>
+                <input type="text" name="PrimerNombre" class="form-control obligatorio" id="uiPrimerNombre" placeholder="Primer Nombre" readonly />
+            </div>
+            <div class="col-md-3">
+                <label class="col-form-label">Segundo Nombre</label>
+                <input type="text" name="SegundoNombre" class="form-control" id="uiSegundoNombre" placeholder="Segundo Nombre" readonly />
+            </div>
+            <div class="col-md-3">
+                <label class="col-form-label">Tercer Nombre</label>
+                <input type="text" name="TercerNombre" class="form-control" id="uiTercerNombre"
+                       placeholder="Tercer Nombre" readonly />
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label"> </label>
+            <div class="col-md-3">
+                <label class="col-form-label">Primer Apellido</label>
+                <input type="text" name="PrimerApellido" class="form-control obligatorio" id="uiPrimerApellido"
+                       placeholder="Primer Apellido" readonly />
+            </div>
+            <div class="col-md-3">
+                <label class="col-form-label">Segundo Apellido</label>
+                <input type="text" name="SegundoApellido" class="form-control" id="uiSegundoApellido"
+                       placeholder="Segundo Apellido" readonly />
+            </div>
+            <div class="col-md-3">
+                <label class="col-form-label">Apellido Casada</label>
+                <input type="text" name="ApellidoCasada" class="form-control" id="uiApellidoCasada"
+                       placeholder="Apellido Casada" readonly />
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Fecha Nacimiento:</label>
+            <div class="col-sm-3">
+                <input type="text" name="FechaNacimiento" class="form-control obligatorio text-center" id="uiFechaNacimiento" readonly />
+            </div>
+            <label>Genero:</label>
+            <div class="col-sm-3">
+                <select class="form-control obligatorio" id="uiGenero" name="CodigoGenero" disabled>
+                    <option value='-1'>-- Seleccione -- </option>
+                    <option value='M'>MASCULINO</option>
+                    <option value='F'>FEMENINO</option>
+                </select>
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Correo Electrónico:</label>
+            <div class="col-sm-10">
+                <input type="text" name="CorreoElectronico" class="form-control" id="uiCorreoElectronico" />
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Numero Afiliación:</label>
+            <div class="col-sm-10">
+                <input type="text" name="NumeroAfiliacion" class="form-control" id="uiNumeroAfiliacion" />
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Area:</label>
+            <div class="col-sm-4">
+                <select class="form-control obligatorio" name="CodigoArea" id="cboArea">
+                </select>
+            </div>
+            <label>Sección:</label>
+            <div class="col-sm-4">
+                <select class="form-control obligatorio" name="CodigoSeccion" id="cboSeccion">
+                </select>
+            </div>
+
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Puesto:</label>
+            <div class="col-sm-10">
+                <select class="form-control obligatorio" name="CodigoPuesto" id="cboPuesto">
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Ubicacion:</label>
+            <div class="col-sm-10">
+                <select class="form-control" id="cboUbicacion" name="CodigoUbicacion">
+                    <option value='0'>SIN UBICACION</option>
+                    <option value='1'>Zona 2</option>
+                    <option value='2'>Zona 18</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Tipo Cuenta:</label>
+            <div class="col-sm-10">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" id="uiAhorro" type="radio" name="CodigoTipoCuenta" value="1">
+                    <label class="form-check-label" for="uiAhorro">AHORRO</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class='form-check-input' id="uiCheque" type="radio" name="CodigoTipoCuenta" value="2">
+                    <label class="form-check-label" for="uiCheque">CHEQUE</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class='form-check-input' id="uiEfectivo" type="radio" name="CodigoTipoCuenta" value="3">
+                    <label class="form-check-label" for="uiEfectivo">EFECTIVO</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class='form-check-input' id="uiMonetario" type="radio" name="CodigoTipoCuenta" value="4">
+                    <label class="form-check-label" for="uiMonetario">MONETARIO</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Número Cuenta:</label>
+            <div class="col-sm-10">
+                <input type="text" name="NumeroCuenta" class="form-control" id="uiNumeroCuenta" />
+            </div>
+        </div>
+
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Monto Devengado:</label>
+            <div class="col-sm-10">
+                <input type="text" name="MontoDevengado obligatorio decimal-2" class="form-control" id="uiMontoDevengado" />
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Jornada:</label>
+            <div class="col-sm-10">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" id="uiDiurna" type="radio" name="CodigoJornada" value="1">
+                    <label class="form-check-label" for="uiDiurna">DIURNA</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class='form-check-input' id="uiNocturna" type="radio" name="CodigoJornada" value="2">
+                    <label class="form-check-label" for="uiNocturna">NOCTURNA</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class='form-check-input' id="uiMixta" type="radio" name="CodigoJornada" value="3">
+                    <label class="form-check-label" for="uiMixta">MIXTA</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Frecuencia de Pago:</label>
+            <div class="col-sm-10">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" id="uiPeriodicidadMensual" type="radio" name="CodigoFrecuenciaPago" value="1">
+                    <label class="form-check-label" for="uiPeriodicidadMensual">MENSUAL</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class='form-check-input' id="uiPeriodicidadQuincenal" type="radio" name="CodigoFrecuenciaPago" value="2">
+                    <label class="form-check-label" for="uiPeriodicidadQuincenal">QUINCENAL</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class='form-check-input' id="uiPeriodicidadSemanal" type="radio" name="CodigoFrecuenciaPago" value="3">
+                    <label class="form-check-label" for="uiPeriodicidadSemanal">SEMANAL</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Otros:</label>
+            <div class="col-sm-10">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" id="uiIGSS" type="checkbox" name="Igss" value="0">
+                    <label class="form-check-label" for="uiIGSS">IGSS</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class='form-check-input' id="uiBonoDeLey" type="checkbox" name="BonoDeLey" value="0">
+                    <label class="form-check-label" for="uiBonoDeLey">BONO DE LEY</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class='form-check-input' id="uiRetencionISR" type="checkbox" name="RetencionIsr" value="0">
+                    <label class="form-check-label" for="uiRetencionISR">RETENCION ISR</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class='form-check-input' id="uiEmpleadoExterno" type="checkbox" name="EmpleadoExterno" value="0">
+                    <label class="form-check-label" for="uiEmpleadoExterno">TRABAJADOR EXTERNO</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Fecha Ingreso:</label>
+            <div class="col-sm-3">
+                <input type="text" name="FechaIngresoStr" class="form-control obligatorio text-center" id="uiFechaIngreso" />
+            </div>
+        </div>
+
+    </form>
+
+</fieldset>
+<button type="button" class="btn btn-outline-success" onclick="Redireccionar('Empleado', 'Index')">
+    <i class="bi bi-arrow-left-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z" />
+        </svg>
+    </i>
+    Regresar
+</button>
+<button class="btn btn-primary" onclick="GuardarEmpleado()">Guardar</button>
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdropNewPersona" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelNewPersona" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Registro de Nueva Persona</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupNewPersona">&times;</button>
+            </div>
+            <div class="modal-body">
+
+                <!-- Formulario para el registro de nueva persona -->
+                <form method="post" id="frmGuardaPersona">
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">CUI:</label>
+                        <div class="col-sm-3">
+                            <input type="text" name="cui" class="form-control text-center" id="uiNewCui" readonly />
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label"> </label>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Primer Nombre</label>
+                            <input type="text" name="PrimerNombre" class="form-control obligatorio"
+                                   placeholder="Primer Nombre" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Segundo Nombre</label>
+                            <input type="text" name="SegundoNombre" class="form-control"
+                                   placeholder="Segundo Nombre" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Tercer Nombre</label>
+                            <input type="text" name="TercerNombre" class="form-control"
+                                   placeholder="Tercer Nombre" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label"> </label>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Primer Apellido</label>
+                            <input type="text" name="PrimerApellido" class="form-control obligatorio"
+                                   placeholder="Primer Apellido" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Segundo Apellido</label>
+                            <input type="text" name="SegundoApellido" class="form-control"
+                                   placeholder="Segundo Apellido" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Apellido Casada</label>
+                            <input type="text" name="ApellidoCasada" class="form-control"
+                                   placeholder="Apellido Casada" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Fecha Nacimiento:</label>
+                        <div class="col-sm-2">
+                            <input type="text" name="FechaNacimientoStr" autocomplete="off" class="form-control text-center" id="uiNewFechaNacimiento" />
+                        </div>
+                        <label>Genero:</label>
+                        <div class="col-sm-3">
+                            <select class="form-control obligatorio" id="uiNewGenero" name="CodigoGenero">
+                                <option value='M'>MASCULINO</option>
+                                <option value='F'>FEMENINO</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Departamento Residencia:</label>
+                        <div class="col-sm-10">
+                            <select class="form-control obligatorio" name="CodigoDepartamentoResidencia" id="uiNewDepartamentoResidencia" onchange="fillMunicipiosByDepartamento(this)">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Municipio Residencia:</label>
+                        <div class="col-sm-10">
+                            <select class="form-control obligatorio" name="CodigoMunicipioResidencia" id="uiNewMunicipioResidencia">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Zona:</label>
+                        <div class="col-sm-1">
+                            <input type="text" name="Zona" class="form-control solonumeros" id="uiNewZona" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Direccion:</label>
+                        <div class="col-sm-10">
+                            <textarea name="DireccionResidencia" class="form-control obligatorio" id="uiNewDireccionResidencia"></textarea>
+                        </div>
+                    </div>
+
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="LimpiarFormularioPersona()">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="GuardarPersona()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/jqueryui.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/empleado.js"></script>
+    
+    <script>
+        $(function () {
+            $("#uiNewFechaNacimiento").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeYear: true,
+                yearRange: "c-100:c+0"
+            });
+        });
+
+        $(function () {
+            $("#uiFechaIngreso").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeYear: true
+            });
+        });
+
+
+        $(document).ready(function () {
+            $("input[name='radio']").change(function () {
+                alert($(this).val());
+            });
+        });
+    </script>
+}

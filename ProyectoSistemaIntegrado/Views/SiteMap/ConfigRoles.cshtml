@@ -1,0 +1,83 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using CapaEntidad.Administracion;
+@using CapaNegocio.Administracion;
+@{
+    ViewData["Title"] = "Index";
+    string cadena = Context.Session.GetString("usuario");
+    UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(cadena);
+    string idUsuario = objUsuario.IdUsuario;
+    Context.Session.SetString("tituloPrincipal", "Configuración de Rol");
+
+    SiteMapBL objSiteMap = new SiteMapBL();
+    List<SiteMapCLS> listaItems = objSiteMap.GetMenus(idUsuario, 1);
+}
+
+<link rel="stylesheet" href="~/lib/jstree/themes/default/style.min.css" />
+
+
+<form method="post" id="frmConfigRol">
+    <div class="mb-5 row">
+        <label class="col-sm-2 col-form-label">Código:</label>
+        <div class="col-sm-4">
+            <input type="text" name="CodigoRol" class="form-control obligatorio" id="uiCodigoRol" placeholder="Código rol" />
+        </div>
+    </div>
+    <div class="mb-5 row">
+        <label class="col-sm-2 col-form-label">Nombre:</label>
+        <div class="col-sm-10">
+            <input type="text" name="Nombre" class="form-control obligatorio" id="uiNombreRol" placeholder="Nombre" />
+        </div>
+    </div>
+    <div class="mb-5 row">
+        <label class="col-sm-2 col-form-label">Descripción:</label>
+        <div class="col-sm-10">
+            <textarea name="Descripcion" class="form-control" id="uiDescripcionRol"></textarea>
+        </div>
+    </div>
+</form>
+
+<div style="height: 10px; width:100%;"></div>
+
+<div id="divTabla">
+</div>
+
+<div>
+    <button type="button" class="btn btn-primary" onclick="clickMostrarCodigos()">CArgar</button>
+    <menu-map items="@listaItems">  </menu-map>
+</div>
+
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/jqueryui.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/lib/jstree/jstree.min.js"></script>
+    <script src="~/js/sitemap.js"></script>
+    <script>
+        $(function () {
+            $('#jstree').jstree({
+                "plugins": ["checkbox"],
+                "open_all" : true
+            });
+
+            $('#data').jstree('open_all');
+
+            //$('#data').on("changed.jstree", function (e, data) {
+            //    if (data.selected.length) {
+            //        $(data.selected).each(function (idx) {
+            //            let node = data.instance.get_node(data.selected[idx]);
+            //            alert('The selected node is: value:' + node.attr("value") + ' text: ' + node.text);
+            //        });
+            //        alert(data.obj.attr("value"));
+            //    }
+            //});
+
+
+        });
+    </script>
+
+}

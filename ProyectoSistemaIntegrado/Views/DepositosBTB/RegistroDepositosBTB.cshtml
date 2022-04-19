@@ -1,0 +1,155 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@{
+    ViewData["Title"] = "Create";
+    Context.Session.SetString("tituloPrincipal", "Registro de Depósitos BTB");
+}
+
+<button type="button" id="ShowPopupSemanaBoletasDeposito" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropSemanaBoletasDeposito" style="display:none">
+</button>
+
+<form method="post" id="frmBusqueda" name="frmBusqueda">
+
+    <table style="margin-left: auto; margin-right: auto;">
+        <tr>
+            <td>AÑO</td>
+            <td>TIPO PLANILLA</td>
+            <td>MES</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+                <select class="form-control obligatorio" id="uiFiltroAnioPlanilla" name="Anio"></select>
+            </td>
+            <td>
+                <select class="form-control obligatorio" id="uiFiltroTipoPlanilla" name="CodigoTipoPlanilla">
+                    <option value='-1'>-- Seleccione -- </option>
+                    <option value='1'>PAGO SALARIO</option>
+                    <option value='2'>AGUINALDO</option>
+                    <option value='3'>BONO 14</option>
+                    <option value='4'>PRESTACIONES</option>
+                </select>
+            </td>
+            <td>
+                <select class="form-control obligatorio" id="uiFiltroMes" name="Mes">
+                    <option value='-1'>-- Seleccione -- </option>
+                    <option value='1'>ENERO</option>
+                    <option value='2'>FEBRERO</option>
+                    <option value='3'>MARZO</option>
+                    <option value='4'>ABRIL</option>
+                    <option value='5'>MAYO</option>
+                    <option value='6'>JUNIO</option>
+                    <option value='7'>JULIO</option>
+                    <option value='8'>AGOSTO</option>
+                    <option value='9'>SEPTIEMBRE</option>
+                    <option value='10'>OCTUBRE</option>
+                    <option value='11'>NOVIEMBRE</option>
+                    <option value='12'>DICIEMBRE</option>
+                </select>
+            </td>
+            <td>
+                <button type="button" class="btn btn-primary" onclick="CalcularMontosDepositosBTB()" id="uiCalcularMontosPagados">CALCULAR</button>
+            </td>
+        </tr>
+    </table>
+</form>
+
+
+<div style="height: 10px; width:100%;">
+</div>
+
+<div style="margin: 0 auto; text-align: center;">
+    <input type="button" class="btn btn-success btn-lg" value="Cargar Boletas Depositadas" onclick="CargarBoletasDepositadas()" />
+</div>
+
+<div style="height: 10px; width:100%;">
+</div>
+
+<div id="divTabla">
+</div>
+
+
+<!-- Modal Semana Boletas de Deposito -->
+<div class="modal fade" id="staticBackdropSemanaBoletasDeposito" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelSemanaBoletasDeposito" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupSemanaBoletasDeposito"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupSemanaBoletasDeposito">&times;</button>
+            </div>
+            <div class="modal-body">
+
+                <form method="post" id="frmDepositosBTB">
+                    <input type="hidden" name="CodigoTipoPlanilla" class="form-control obligatorio" id="uiCodigoTipoPlanilla" readonly />
+                    <input type="hidden" name="MesPlanilla" class="form-control obligatorio" id="uiMesPlanilla" readonly />
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Tipo Planilla:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="TipoPlanilla" class="form-control obligatorio" id="uiTipoPlanilla" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label"> </label>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Año Planilla</label>
+                            <input type="text" name="AnioPlanilla" class="form-control obligatorio" id="uiAnioPlanilla" readonly />
+                        </div>
+                        <div class="col-md-5">
+                            <label class="col-form-label">Mes Planilla</label>
+                            <input type="text" name="NombreMesPlanilla" class="form-control obligatorio" id="uiNombreMesPlanilla" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label"> </label>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Año Operación</label>
+                            <select class="form-control obligatorio" id="uiFiltroAnioOperacion" name="AnioOperacion" onchange="fillSemanasReporte()">
+                            </select>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="col-form-label">Semana Operación</label>
+                            <select class="form-control obligatorio" id="uiFiltroSemanaOperacion" name="SemanaOperacion" onclick="FillReportesDeCaja()">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label"> </label>
+                        <div class="col-md-5">
+                            <label class="col-form-label">Corte</label>
+                            <select class="form-control obligatorio" id="uiFiltroReporteCaja" name="CodigoReporte"></select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label"> </label>
+                        <div class="col-sm-3">
+                            <label class="col-form-label">Banco</label>
+                            <select class="form-control obligatorio" id="uiCodigoBancoDeposito" name="CodigoBancoDeposito" onchange="fillCuentasBancarias(this)">
+                                <option value="-1">-- Seleccione --</option>
+                                <option value="2">Banco Industrial, S.A</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-5">
+                            <label class="col-form-label">Numero Cuenta</label>
+                            <select class="form-control obligatorio" id="uiNumeroCuenta" name="NumeroCuenta">
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="GuardarBoletasDepositoBTB()">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/btb.js"></script>
+}
+

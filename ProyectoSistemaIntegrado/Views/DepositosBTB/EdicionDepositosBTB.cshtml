@@ -1,0 +1,110 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@{
+    ViewData["Title"] = "Create";
+    Context.Session.SetString("tituloPrincipal", "Consulta de Depósitos BTB");
+}
+
+<button type="button" id="ShowPopupEditDepositoBTB" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropEditDepositoBTB" style="display:none">
+</button>
+
+<form method="post" id="frmBusqueda" name="frmBusqueda">
+    <table style="margin: 0 auto; text-align: center;">
+        <tr>
+            <td>AÑO PLANILLA</td>
+            <td>AÑO OPERACIÓN</td>
+            <td>SEMANA</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+                <select class="form-control" id="uiFiltroAnioPlanilla" name="AnioPlanilla">
+                </select>
+            </td>
+            <td>
+                <select class="form-control obligatorio" id="uiFiltroAnioOperacion" name="AnioOperacion" onchange="fillSemanasReporte()">
+                </select>
+            </td>
+            <td>
+                <select class="form-control" id="uiFiltroSemanaOperacion" name="SemanaOperacion" onclick="FillReportesDeCaja()">
+                </select>
+            </td>
+            <td>
+                <select class="form-control obligatorio" id="uiFiltroReporteCaja" name="CodigoReporte">
+                </select>
+            </td>
+            <td>
+                <input type="button" class="form-control btn btn-primary" value="Buscar" onclick="BuscarBoletasDepositosBTBEdicion()" />
+            </td>
+        </tr>
+    </table>
+</form>
+
+<div style="height: 15px; width:100%;">
+</div>
+
+<div id="divTabla">
+
+</div>
+
+
+<!-- Modal Edit Depósitos BTB -->
+<div class="modal fade" id="staticBackdropEditDepositoBTB" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelEditDepositosBTB" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupEditDepositosBTB"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupEditDepositosBTB">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="frmEditDepositosBTB">
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Código:</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control obligatorio text-center" id="uiEditCodigoDepositosBTB" name="CodigoDepositoBTB" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Código Empleado:</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control obligatorio text-center" id="uiEditCodigoEmpleado" name="CodigoEmpleado" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Nombre Empleado:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control obligatorio" id="uiEditNombreEmpleado" name="NombreEmpleado" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Número Boleta:</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control obligatorio solonumeros text-center" id="uiEditNumeroBoleta" name="NumeroBoleta" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Monto:</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control obligatorio decimal-2 text-right" id="uiEditMonto" name="Monto" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="ActualizarDepositoBTB()">Actualizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/jqueryui.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/btb.js"></script>
+}

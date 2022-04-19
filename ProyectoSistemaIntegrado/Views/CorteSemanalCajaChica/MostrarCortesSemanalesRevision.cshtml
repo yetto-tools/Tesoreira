@@ -1,0 +1,88 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    Context.Session.SetString("tituloPrincipal", "Cortes de Caja Chica (Revisión)");
+}
+
+<button type="button" id="ShowPopupReintegro" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropReintegro" style="display:none">
+</button>
+
+<div style="height: 50px; width:100%;"></div>
+
+<div id="divTabla">
+</div>
+
+
+<!-- Modal  Reintegro -->
+<div class="modal fade" id="staticBackdropReintegro" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelReintegro" aria-hidden="true">
+    <div class="modal-dialog  modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupReintegro"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupReintegro">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="frmReintegro">
+                    <input type="hidden" name="CodigoCajaChica" class="form-control obligatorio text-center" id="uiCodigoCajaChica" readonly />
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Código Reporte:</label>
+                        <div class="col-sm-3">
+                            <input type="text" name="CodigoReporte" class="form-control obligatorio text-center" id="uiCodigoReporte" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Caja Chica:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="NombreCajaChica" class="form-control obligatorio" id="uiNombreCajaChica" readonly />
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label"> </label>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Año Operación</label>
+                            <input type="text" name="AnioOperacion" class="form-control obligatorio text-center" id="uiAnioOperacion" readonly />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Semana Operación</label>
+                            <input type="text" name="SemanaOperacion" class="form-control obligatorio text-center" id="uiSemanaOperacion" readonly />
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label"> </label>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Reintegro</label>
+                            <input type="text" name="MontoReintegro" id="uiMontoReintegro" class="form-control obligatorio text-right" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Reintegro Calculado</label>
+                            <input type="text" name="MontoReintegroCalculado" id="uiMontoReintegroCalculado" class="form-control obligatorio text-right" readonly />
+                        </div>
+                    </div>
+
+                    
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Observaciones:</label>
+                        <div class="col-sm-10">
+                            <textarea name="Observaciones" class="form-control obligatorio" id="uiObservaciones"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="RegistrarReintegro()">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/cortesemanalcajachica.js"></script>
+}

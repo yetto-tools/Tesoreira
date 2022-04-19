@@ -1,0 +1,324 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using CapaEntidad.Administracion;
+@{
+    ViewData["Title"] = "Index";
+    string cadena = Context.Session.GetString("usuario");
+    UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(cadena);
+    string idUsuario = objUsuario.IdUsuario;
+    Context.Session.SetString("tituloPrincipal", "Listado de Personas");
+}
+
+<div style="margin-left: auto; margin-right: auto;">
+    <button id="ShowPopupNewPersona" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropNewPersona" style="display:block" value="Agregar" onclick="addNewPersona()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-file-plus" viewBox="0 0 16 16">
+            <path d="M8.5 6a.5.5 0 0 0-1 0v1.5H6a.5.5 0 0 0 0 1h1.5V10a.5.5 0 0 0 1 0V8.5H10a.5.5 0 0 0 0-1H8.5V6z" />
+            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z" />
+        </svg>
+        Agregar Persona
+    </button>
+</div>
+
+<button type="button" id="ShowPopupEditPersona" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropEditPersona" style="display:none">
+</button>
+
+<div style="height: 15px; width:100%;"></div>
+
+<div id="divTabla">
+</div>
+
+<!-- Modal Agregar Persona -->
+<div class="modal fade" id="staticBackdropNewPersona" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelNewPersona" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Registro de Nueva Persona</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupNewPersona">&times;</button>
+            </div>
+            <div class="modal-body">
+
+                <!-- Formulario para el registro de nueva persona -->
+                <form method="post" id="frmGuardaPersona">
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">CUI:</label>
+                        <div class="col-sm-3">
+                            <input type="text" name="cui" class="form-control text-center" id="uiNewCui" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label"> </label>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Primer Nombre</label>
+                            <input type="text" name="PrimerNombre" class="form-control obligatorio" id="uiNewPrimerNombre"
+                                   placeholder="Primer Nombre" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Segundo Nombre</label>
+                            <input type="text" name="SegundoNombre" class="form-control" id="uiNewSegundoNombre"
+                                   placeholder="Segundo Nombre" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Tercer Nombre</label>
+                            <input type="text" name="TercerNombre" class="form-control" id="uiNewTercerNombre"
+                                   placeholder="Tercer Nombre" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label"> </label>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Primer Apellido</label>
+                            <input type="text" name="PrimerApellido" class="form-control obligatorio" id="uiNewPrimerApellido"
+                                   placeholder="Primer Apellido" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Segundo Apellido</label>
+                            <input type="text" name="SegundoApellido" class="form-control" id="uiNewSegundoApellido"
+                                   placeholder="Segundo Apellido" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Apellido Casada</label>
+                            <input type="text" name="ApellidoCasada" class="form-control" id="uiNewApellidoCasada"
+                                   placeholder="Apellido Casada" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Fecha Nacimiento:</label>
+                        <div class="col-sm-2">
+                            <input type="text" name="FechaNacimientoStr" autocomplete="off" class="form-control text-center" id="uiNewFechaNacimiento" />
+                        </div>
+                        <label>Genero:</label>
+                        <div class="col-sm-3">
+                            <select class="form-control obligatorio" id="uiNewGenero" name="CodigoGenero">
+                                <option value='M'>MASCULINO</option>
+                                <option value='F'>FEMENINO</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Departamento Residencia:</label>
+                        <div class="col-sm-10">
+                            <select class="form-control obligatorio" name="CodigoDepartamentoResidencia" id="uiNewDepartamentoResidencia" onchange="fillNewMunicipiosByDepartamento(this.value)">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Municipio Residencia:</label>
+                        <div class="col-sm-10">
+                            <select class="form-control obligatorio" name="CodigoMunicipioResidencia" id="uiNewMunicipioResidencia">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Zona:</label>
+                        <div class="col-sm-1">
+                            <input type="text" name="Zona" class="form-control solonumeros" id="uiNewZona" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Direccion:</label>
+                        <div class="col-sm-10">
+                            <textarea name="DireccionResidencia" class="form-control obligatorio" id="uiNewDireccionResidencia"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Correo Electrónico:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="CorreoElectronico" class="form-control" id="uiNewCorreoElectronico" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label"></label>
+                        <div class="col-sm-10">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" id="uiNewNoIncluidoEnPlanilla" type="checkbox" name="NoIncluidoEnPlanilla" value="0" onclick="FillNewAreas()">
+                                <label class="form-check-label" for="uiNewNoIncluidoEnPlanilla">No incluido en planilla</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display:block;">
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label">Area:</label>
+                            <div class="col-sm-4">
+                                <select class="form-control" name="CodigoArea" id="uiNewArea">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="GuardarPersona()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Editar Persona -->
+<div class="modal fade" id="staticBackdropEditPersona" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelEditPersona" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Edición de Persona</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupEditPersona">&times;</button>
+            </div>
+            <div class="modal-body">
+
+                <!-- Formulario para el registro de nueva persona -->
+                <form method="post" id="frmActualizarPersona">
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">CUI:</label>
+                        <div class="col-sm-3">
+                            <input type="text" name="cui" class="form-control text-center" id="uiEditCui" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label"> </label>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Primer Nombre</label>
+                            <input type="text" name="PrimerNombre" class="form-control obligatorio" id="uiEditPrimerNombre"
+                                   placeholder="Primer Nombre" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Segundo Nombre</label>
+                            <input type="text" name="SegundoNombre" class="form-control" id="uiEditSegundoNombre"
+                                   placeholder="Segundo Nombre" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Tercer Nombre</label>
+                            <input type="text" name="TercerNombre" class="form-control" id="uiEditTercerNombre"
+                                   placeholder="Tercer Nombre" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label"> </label>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Primer Apellido</label>
+                            <input type="text" name="PrimerApellido" class="form-control obligatorio" id="uiEditPrimerApellido"
+                                   placeholder="Primer Apellido" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Segundo Apellido</label>
+                            <input type="text" name="SegundoApellido" class="form-control" id="uiEditSegundoApellido"
+                                   placeholder="Segundo Apellido" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Apellido Casada</label>
+                            <input type="text" name="ApellidoCasada" class="form-control" id="uiEditApellidoCasada"
+                                   placeholder="Apellido Casada" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Fecha Nacimiento:</label>
+                        <div class="col-sm-2">
+                            <input type="text" name="FechaNacimientoStr" autocomplete="off" class="form-control text-center" id="uiEditFechaNacimiento" />
+                        </div>
+                        <label>Genero:</label>
+                        <div class="col-sm-3">
+                            <select class="form-control obligatorio" id="uiEditGenero" name="CodigoGenero">
+                                <option value='M'>MASCULINO</option>
+                                <option value='F'>FEMENINO</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Departamento Residencia:</label>
+                        <div class="col-sm-10">
+                            <select class="form-control obligatorio" name="CodigoDepartamentoResidencia" id="uiEditDepartamentoResidencia" onchange="fillEditMunicipiosByDepartamento(this.value)">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Municipio Residencia:</label>
+                        <div class="col-sm-10">
+                            <select class="form-control obligatorio" name="CodigoMunicipioResidencia" id="uiEditMunicipioResidencia">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Zona:</label>
+                        <div class="col-sm-1">
+                            <input type="text" name="Zona" class="form-control solonumeros" id="uiEditZona" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Direccion:</label>
+                        <div class="col-sm-10">
+                            <textarea name="DireccionResidencia" class="form-control obligatorio" id="uiEditDireccionResidencia"></textarea>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Correo Electrónico:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="CorreoElectronico" class="form-control" id="uiEditCorreoElectronico" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label"></label>
+                        <div class="col-sm-10">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" id="uiEditNoIncluidoEnPlanilla" type="checkbox" name="NoIncluidoEnPlanilla" value="0" onclick="FillEditAreas()">
+                                <label class="form-check-label" for="uiEditNoIncluidoEnPlanilla">No incluido en planilla</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display:block;">
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label">Area:</label>
+                            <div class="col-sm-4">
+                                <select class="form-control" name="CodigoArea" id="uiEditArea">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="ActualizarPersona()">Actualizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/jqueryui.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/persona.js"></script>
+    <script>
+        $(function () {
+            $("#uiNewFechaNacimiento").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeYear: true,
+                yearRange: "c-100:c+0"
+            });
+        });
+    </script>
+}

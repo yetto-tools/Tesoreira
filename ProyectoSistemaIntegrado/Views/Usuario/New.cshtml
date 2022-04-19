@@ -1,0 +1,88 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@{
+    ViewData["Title"] = "Create";
+    Context.Session.SetString("tituloPrincipal", "Nuevo Usuario");
+}
+
+<div style="height: 25px; width:100%;">Regresar</div>
+<button type="button" class="btn btn-outline-success" onclick="Redireccionar('Usuario', 'Index')">
+    <i class="bi bi-arrow-left-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z" />
+        </svg>
+    </i>
+</button>
+
+<fieldset>
+    <form method="post" id="frmGuardarUsuario" name="frmUsuario">
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label"> </label>
+            <div class="col-sm-6">
+                <label class="col-form-label"> </label>
+                <div class="input-group rounded">
+                    <input type="search" class="form-control rounded" placeholder="Código único de identificación" aria-label="Search"
+                           aria-describedby="search-addon" id="uiCuiBusqueda" />
+                    <span class="input-group-text border-0" id="search-addon" onClick="buscarPersona(this)">
+                        <i class="fas fa-search"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="col">
+                <label for="formGroupExampleInput">CUI</label>
+                <input type="text" class="form-control obligatorio" placeholder="CUI" readonly id="uiCui" name="Cui">
+            </div>
+            <div class="col">
+                <label for="formGroupExampleInput">Primer Nombre</label>
+                <input type="text" class="form-control obligatorio" placeholder="Primer Nombre" readonly id="uiPrimerNombre" name="PrimerNombre">
+            </div>
+            <div class="col">
+                <label for="formGroupExampleInput">Primer Apellido</label>
+                <input type="text" class="form-control obligatorio" placeholder="Primer Apellido" readonly id="uiPrimerApellido" name="PrimerApellido">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="col">
+                <label for="uiIdUsuario">Usuario</label>
+                <input type="email" class="form-control obligatorio" id="uiIdUsuario" aria-describedby="emailHelp" placeholder="Usuario" name="IdUsuario">
+            </div>
+            <div class="col">
+                <label for="uiPassword">Contraseña</label>
+                <input type="password" class="form-control obligatorio" id="uiPassword" placeholder="Contraseña" name="Contrasenia">
+                <small id="passwordHelpInline" class="text-muted">
+                    Must be 8-20 characters long.
+                </small>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-sm-10">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="uiEsSuperAdmin" name="SuperAdmin" onclick="changeValueCheckSuperAdmin(this)" value="0">
+                    <label class="form-check-label" for="uiEsSuperAdmin">
+                        Super Administrador
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div id="divTabla">
+
+        </div>
+    </form>
+
+</fieldset>
+
+<button class="btn btn-primary" onclick="guardarUsuario()">Guardar</button>
+
+@section Scripts {
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/usuario.js"></script>
+}

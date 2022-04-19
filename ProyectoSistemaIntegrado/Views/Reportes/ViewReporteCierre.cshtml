@@ -1,0 +1,203 @@
+﻿@using CapaNegocio.Contabilidad;
+@using CapaEntidad.Contabilidad;
+@using System.Globalization;
+@model ReportContabilidadViewModel
+
+
+@{
+    Layout = null;
+    ReportesTesoreriaBL obj = new ReportesTesoreriaBL();
+    ReporteOperacionesCajaListCLS reporte = obj.GetReporteCierre(Model.AnioOperacion, Model.SemanaOperacion, Model.CodigoReporte, Model.Arqueo);
+
+    // Inicio Operacion
+    string[] word = reporte.listaEncabezado[0].FechaInicioSemana.Split('/');
+    int anio = Convert.ToInt32(word[2]);
+    int mes = Convert.ToInt32(word[1]);
+    int dia = Convert.ToInt32(word[0]);
+    DateTime fechaInicio = new DateTime(anio, mes, dia);
+    string fechaInicioStr = fechaInicio.Day.ToString() + "/" + fechaInicio.Month.ToString() + "/" + fechaInicio.Year.ToString();
+    int diaSemana = Util.Conversion.DayOfWeek(fechaInicio);
+    string diaInicioStr = Util.Conversion.nombreDia(diaSemana);
+
+
+    // Fin Operacion
+    word = reporte.listaEncabezado[0].FechaFinSemana.Split('/');
+    anio = Convert.ToInt32(word[2]);
+    mes = Convert.ToInt32(word[1]);
+    dia = Convert.ToInt32(word[0]);
+    DateTime fechaFin = new DateTime(anio, mes, dia);
+    string fechaFinStr = fechaFin.Day.ToString() + "/" + fechaFin.Month.ToString() + "/" + fechaFin.Year.ToString();
+    diaSemana = Util.Conversion.DayOfWeek(fechaFin);
+    string diaFinStr = Util.Conversion.nombreDia(diaSemana);
+}
+
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h3 style="height: 25px;"> </h3>
+    <h2 style="text-align: center;">CIERRE</h2>
+    <table style="border: 1px solid black; border-collapse: collapse; margin: 0 auto;">
+        <tr style="border: 1px solid black;">
+            <td colspan="2" style="border: 1px solid black; padding: 4px;"><div style="text-align: center;">Rango de fechas</div></td>
+        </tr>
+        <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 4px;"><div style="text-align: center;">@fechaInicioStr</div></td>
+            <td style="border: 1px solid black; padding: 4px;"><div style="text-align: center;">@fechaFinStr</div></td>
+        </tr>
+        <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 4px;"><div style="text-align: center;">@diaInicioStr</div></td>
+            <td style="border: 1px solid black; padding: 4px;"><div style="text-align: center;">@diaFinStr</div></td>
+        </tr>
+    </table>
+    <h3 style="height: 5px;"> </h3>
+    @{decimal montoCompromisoFiscal = reporte.objCierre.MontoSaldoAnterior + reporte.objCierre.MontoFacturado - reporte.objCierre.MontoCompras - reporte.objCierre.MontoDepositos; }
+    @{decimal montoNeto = reporte.objCierre.MontoReserva + reporte.objCierre.MontoLibre; }
+    @{decimal montoDepositoSemanasiguiente = 0;}
+    @{decimal montoCompromisoNeto = montoCompromisoFiscal + montoDepositoSemanasiguiente;
+        decimal compromisoFiscal = montoCompromisoFiscal;
+        if (montoCompromisoFiscal < 0)
+        {
+            compromisoFiscal = 0;
+        }
+    }
+    @{decimal montoRetiroDeSociosRecomendado = Math.Round((montoNeto - compromisoFiscal - 25000) / 1000, 0) * 1000; }
+    <table style="border-collapse: collapse; margin: 0 auto;">
+        <tr>
+            <td colspan="3" style="font-size: 24px; font-weight: bold;">
+                <div style="text-align: left;">SALDO FINAL</div>
+            </td>
+        </tr>
+        <tr>
+            <td style="font-size: 20px; width: 200px;">
+            </td>
+            <td style="font-size: 20px; width: 200px;">
+                <div style="text-align: left;">RESERVA</div>
+            </td>
+            <td style="font-size: 20px; width: 100px; border: 1px solid black;">
+                <div style="text-align: right; padding-right: 2px;">@reporte.objCierre.MontoReserva.ToString("N2")</div>
+            </td>
+        </tr>
+        <tr>
+            <td style="font-size: 20px;">
+            </td>
+            <td style="font-size: 20px;">
+                <div style="text-align: left;">LIBRE</div>
+            </td>
+            <td style="font-size: 20px; border: 1px solid black;">
+                <div style="text-align: right; padding-right: 2px;">@reporte.objCierre.MontoLibre.ToString("N2")</div>
+            </td>
+        </tr>
+        <tr>
+            <td style="font-size: 20px;">
+            </td>
+            <td style="font-size: 20px;">
+                <div style="text-align: left;">NETO</div>
+            </td>
+            <td style="font-size: 20px; border: 1px solid black;">
+                @if (montoNeto >= 0)
+                {
+                    <div style="text-align: right; padding-right: 2px;">@montoNeto.ToString("N")</div>
+                }
+                else
+                {
+                    <div style="text-align: right; color: red; padding-right: 2px;">@montoNeto.ToString("N")</div>
+                }
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3" style="height: 20px;">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4" style="font-size: 24px; font-weight: bold;">
+                <div style="text-align: left;">COMPROMISO FISCAL</div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-size: 20px;"><div style="text-align: left;">SALDO ANTERIOR</div></td>
+            <td style="font-size: 20px; border: 1px solid black;"><div style="text-align: right; padding-right: 2px;">@reporte.objCierre.MontoSaldoAnterior.ToString("N2")</div></td>
+            <td>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-size: 20px;"><div style="text-align: left;">FACTURADO</div></td>
+            <td style="font-size: 20px; border: 1px solid black;"><div style="text-align: right; padding-right: 2px;">@reporte.objCierre.MontoFacturado.ToString("N2")</div></td>
+            <td>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-size: 20px;"><div style="text-align: left;">COMPRAS, SALARIOS Y BTB</div></td>
+            <td style="font-size: 20px; border: 1px solid black;"><div style="text-align: right; padding-right: 2px;">@reporte.objCierre.MontoCompras.ToString("N2")</div></td>
+            <td>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-size: 20px;"><div style="text-align: left;">DEPOSITOS</div></td>
+            <td style="font-size: 20px; border: 1px solid black;"><div style="text-align: right; padding-right: 2px;">@reporte.objCierre.MontoDepositos.ToString("N2")</div></td>
+            <td>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-size: 20px;"><div style="text-align: left;">COMPROMISO FISCAL</div></td>
+            <td style="font-size: 20px; border: 1px solid black;">
+                @if (montoCompromisoFiscal >= 0)
+                {
+                    <div style="text-align: right; padding-right: 2px;">@montoCompromisoFiscal.ToString("N2")</div>
+                }
+                else
+                {
+                    <div style="text-align: right; color: red; padding-right: 2px;">@montoCompromisoFiscal.ToString("N2")</div>
+                }
+            </td>
+            <td>
+                <div style="text-align: right; font-size: 20px;">PENDIENTE</div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4" style="height: 20px;">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4" style="height: 20px;">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-size: 20px;"><div style="text-align: left;">COMPROMISO NETO</div></td>
+            <td style="font-size: 20px; border: 1px solid black;"><div style="text-align: right; padding-right: 2px;">@montoCompromisoNeto.ToString("N2")</div></td>
+            <td>
+                <div style="text-align: right; font-size: 12px;">PENDIENTE</div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-size: 20px;"><div style="text-align: left; padding-right: 2px;">RETIRO DE SOCIOS RECOMENDADO</div></td>
+            <td style="font-size: 20px; border: 1px solid black;">
+                @if (montoRetiroDeSociosRecomendado >= 0)
+                {
+                    <div style="text-align: right; padding-right: 2px;">@montoRetiroDeSociosRecomendado.ToString("N2")</div>
+                }
+                else
+                {
+                    <div style="text-align: right; color: red; padding-right: 2px;">@montoRetiroDeSociosRecomendado.ToString("N2")</div>
+                }
+            </td>
+            <td>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4" style="height: 20px;">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4" style="font-size: 20px;"><div style="text-align: left; font-weight: bold;">COMENTARIOS</div></td>
+        </tr>
+        <tr>
+            <td colspan="4" style="font-size: 20px; border: 1px solid black; height:100px;"></td>
+        </tr>
+
+    </table>
+
+</body>
+</html>

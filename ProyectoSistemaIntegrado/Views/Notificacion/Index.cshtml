@@ -1,0 +1,79 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    ViewData["Title"] = "Index";
+    Context.Session.SetString("tituloPrincipal", "Configuración de Notificación");
+}
+
+<div style="height: 15px; width:100%;"></div>
+
+<div style="margin: 0 auto; text-align: center;">
+    <button type="button" class="btn btn-success" id="ShowPopupPersonas" data-bs-toggle="modal" data-bs-target="#staticBackdropPersonas" onclick="BusquedaPersona()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-file-plus" viewBox="0 0 16 16">
+            <path d="M8.5 6a.5.5 0 0 0-1 0v1.5H6a.5.5 0 0 0 0 1h1.5V10a.5.5 0 0 0 1 0V8.5H10a.5.5 0 0 0 0-1H8.5V6z" />
+            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z" />
+        </svg>
+        Agregar
+    </button>
+</div>
+
+<div id="divTabla">
+
+</div>
+
+
+<!-- Modal Personas -->
+<div class="modal fade" id="staticBackdropPersonas" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelPersonas" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupPersonas"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupPersonas">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="frmNewConfiguracion">
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">CUI:</label>
+                        <div class="col-sm-5">
+                            <input type="text" readonly name="Cui" class="form-control obligatorio text-center" id="uiCui" placeholder="Código único de identificación" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Nombre:</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly name="NombreCompleto" class="form-control obligatorio" id="uiNombreCompleto" placeholder="Nombre Completo" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Correo Electrónico:</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly name="CorreoElectronico" class="form-control obligatorio" id="uiCorreoElectronico" placeholder="Correo Electrónico" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Tipo Notificación:</label>
+                        <div class="col-sm-10">
+                            <select class="form-control obligatorio" id="uiTipoNotificacion" name="CodigoTipoNotificacion">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="divTablaPersonas">
+
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="GuardarConfiguracionNotificacion()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/notificacion.js"></script>
+}

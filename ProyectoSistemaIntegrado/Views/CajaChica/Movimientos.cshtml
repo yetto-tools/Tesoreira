@@ -1,0 +1,55 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    Context.Session.SetString("tituloPrincipal", "Movimientos de Caja Chica");
+}
+
+<fieldset>
+    <form method="post" id="frmBusqueda">
+        <div style="margin: 0 auto; text-align: center;">
+            <table>
+                <tr>
+                    <td>Caja Chica</td>
+                    <td>Año</td>
+                    <td>Operación</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        <select class="form-control" id="uiFiltroCajaChica" name="CodigoCajaChica">
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-control" id="uiFiltroAnio" name="AnioOperacion">
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-control" id="uiFiltroOperacion" name="CodigoOperacion">
+                            <option value="-1">-- Seleccione --</option>
+                            <option value="6">Reembolso</option>
+                            <option value="69">Reducción</option>
+                            <option value="70">Abono</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="button" class="form-control btn btn-primary" value="BUSCAR" onclick="buscarMovimientosEnCajaChica()" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </form>
+</fieldset>
+
+<div style="height: 15px; width:100%;"></div>
+
+<div id="divTabla">
+
+</div>
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/jqueryui.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/cajachica.js"></script>
+}

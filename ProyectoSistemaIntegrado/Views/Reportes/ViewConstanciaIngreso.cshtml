@@ -1,0 +1,59 @@
+﻿@using CapaNegocio.Tesoreria;
+@using CapaEntidad.Tesoreria;
+@model TransaccionViewModel
+
+@{
+    Layout = null;
+    TransaccionBL obj = new TransaccionBL();
+    TransaccionCLS objTransaccion = obj.GetDataTransaccion(Model.CodigoTransaccion);
+}
+
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+        <div style="width: 287px; max-width: 287px; text-align: center; align-content: center; margin-left: 25px;">
+        <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">CAJA CENTRAL<br>
+        <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">@objTransaccion.CodigoSeguridad<br>
+        <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif';">
+            VALE DE INGRESOS<br>
+            <table style="border-top: 1px solid black; border-collapse: collapse;">
+                <tr style="border-collapse: collapse;">
+                    <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Recibo:</td>
+                    <td style="font-size: 18px; font-family: 'Arial, sans-serif';">@objTransaccion.NumeroReciboStr</td>
+                </tr>
+                <tr style="border-collapse: collapse;">
+                    <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Fecha:</td>
+                    <td style="font-size: 18px; font-family: 'Arial, sans-serif';">@objTransaccion.FechaReciboStr</td>
+                </tr>
+                <tr style="border-collapse: collapse;">
+                    <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Nombre:</td>
+                    <td style="font-size: 18px; font-family: 'Arial, sans-serif';">@objTransaccion.NombreEntidad</td>
+                </tr>
+                @if (objTransaccion.CodigoOperacion == Constantes.Operacion.Ingreso.VENTAS_EN_RUTA)
+                {
+                <tr style="border-collapse: collapse;">
+                    <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Ruta:</td>
+                    <td style="font-size: 18px; font-family: 'Arial, sans-serif';">@objTransaccion.Ruta</td>
+                </tr>
+                }
+                <tr style="border-collapse: collapse;">
+                    <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Concepto:</td>
+                    <td style="font-size: 18px; font-family: 'Arial, sans-serif';">@objTransaccion.Operacion</td>
+                </tr>
+                <tr style="border-collapse: collapse;">
+                    <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Recurso:</td>
+                    <td style="font-size: 18px; font-family: 'Arial, sans-serif';">@objTransaccion.Recursos.TrimEnd(',')</td>
+                </tr>
+                <tr style="border-collapse: collapse;">
+                    <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Monto:</td>
+                    <td style="font-size: 18px; font-family: 'Arial, sans-serif';">@objTransaccion.Monto.ToString("N2")</td>
+                </tr>
+            </table>
+        <p style="text-align: center; align-content: center; font-size: 16px; font-family: 'Arial, sans-serif';">@objTransaccion.FechaImpresionStr<br>
+        <p style="text-align: center; align-content: center; font-size: 16px; font-family: 'Arial, sans-serif';">@objTransaccion.UsuarioIng<br>
+    </div>
+</body>
+</html>

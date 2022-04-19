@@ -1,0 +1,18 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    Context.Session.SetString("tituloPrincipal", "Cortes de Caja Chica (Generación)");
+}
+
+<div style="height: 30px; width: 100%;"></div>
+
+<div id="divTabla">
+</div>
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/jqueryui.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/cortesemanalcajachica.js"></script>
+}

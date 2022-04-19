@@ -1,0 +1,293 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    ViewData["Title"] = "Index";
+    Context.Session.SetString("tituloPrincipal", "Revisión de ingresos y egresos de tesorería");
+}
+
+<button type="button" id="ShowPopupSolicitudAprobacion" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropSolicitudAprobacion" style="display:none">
+</button>
+
+<button type="button" id="ShowPopupSolicitudCorreccion" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropSolicitudCorreccion" style="display:none">
+</button>
+
+<button type="button" id="ShowPopupAnulacion" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropAnulacion" style="display:none">
+</button>
+
+<a href="@Url.Content("~")" id="uiExportarExcel" style="display:none;">Exportar Excel</a>
+
+<fieldset>
+    <form method="post" id="frmBusquedaTransacciones">
+        <table style="margin-left: auto; margin-right: auto;">
+            <tr>
+                <td>AÑO</td>
+                <td>SEMANA</td>
+                <td>FECHA CORTE</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <select class="form-control obligatorio" id="uiFiltroAnio" name="AnioOperacion" onclick="fillSemanasTransacciones(this.value)">
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control obligatorio" id="uiFiltroSemana" name="SemanaOperacion" onclick="FillReportesDeCajaRevision()">
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control obligatorio" id="uiFiltroReporteCaja" name="CodigoReporte">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>OPERACIÓN</td>
+                <td>TIPO ENTIDAD</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <select class="form-control" id="uiFiltroOperaciones" name="CodigoOperacion">
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control" id="uiFiltroCategorias" name="CodigoCategoriaEntidad">
+                    </select>
+                </td>
+                <td>
+                    <input type="button" class="form-control btn btn-primary" value="BUSCAR" onclick="buscarTransaccionesRevision()" />
+                </td>
+                <td>
+                    <button type="button" onclick="GenerarExcelTransaccionesRevision()" class="btn btn-success">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-excel" viewBox="0 0 16 16">
+                            <path d="M5.18 4.616a.5.5 0 0 1 .704.064L8 7.219l2.116-2.54a.5.5 0 1 1 .768.641L8.651 8l2.233 2.68a.5.5 0 0 1-.768.64L8 8.781l-2.116 2.54a.5.5 0 0 1-.768-.641L7.349 8 5.116 5.32a.5.5 0 0 1 .064-.704z" />
+                            <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z" />
+                        </svg>
+                        EXCEL
+                    </button>
+                </td>
+            </tr>
+        </table>
+    </form>
+
+    <div style="height: 25px; width:100%;">
+    </div>
+
+    <div id="divTabla">
+
+    </div>
+</fieldset>
+
+<!-- Modal Solicitud de Aprobación de Corrección -->
+<div class="modal fade" id="staticBackdropSolicitudAprobacion" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelSolicitudAprobacion" aria-hidden="true">
+    <div class="modal-dialog  modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupSolicitudAprobacion"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupSolicitudAprobacion">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="frmNewSolicitudAprobacion">
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Código Transacción:</label>
+                        <div class="col-sm-3">
+                            <input type="text" name="CodigoTransaccion" class="form-control obligatorio text-center" id="uiCodigoTransaccion" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Operación:</label>
+                        <div class="col-sm-6">
+                            <input type="text" name="CodigoOperacion" class="form-control obligatorio" id="uiOperacion" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Entidad:</label>
+                        <div class="col-sm-6">
+                            <input type="text" name="NombreEntidad" class="form-control obligatorio" id="uiNombreEntidad" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Categoría Entidad:</label>
+                        <div class="col-sm-6">
+                            <input type="text" name="CategoriaEntidad" class="form-control obligatorio" id="uiCategoriaEntidad" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Monto:</label>
+                        <div class="col-sm-3">
+                            <input type="text" name="Monto" class="form-control obligatorio text-right" id="uiMonto" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Tipo de Corrección:</label>
+                        <div class="col-sm-3">
+                            <select class="form-control obligatorio" id="uiCodigoTipoCorreccion" name="CodigoTipoCorreccion">
+                                <option value="-1">-- Seleccione --</option>
+                                <option value="1">MODIFICACIÓN</option>
+                                <option value="2">ANULACIÓN</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Motivo:</label>
+                        <div class="col-sm-10">
+                            <textarea name="Observaciones" class="form-control obligatorio" id="uiObservaciones"></textarea>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="RegistrarSolicitudCorreccion()">Solicitar Aprobación</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Solicitud de Correcciones -->
+<div class="modal fade" id="staticBackdropSolicitudCorreccion" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelSolicitudCorreccion" aria-hidden="true">
+    <div class="modal-dialog  modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupSolicitudCorreccion"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupSolicitudCorreccion">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="frmNewSolicitudCorreccion">
+                    <label class="col-sm-10 col-form-label" id="uiObservacionesEliminacion"></label>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Código Transacción (Con Error):</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio text-center" id="uiSolicitudCodigoTransaccion" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Tipo de Corrección:</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio text-center" id="uiSolicitudTipoCorreccion" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Observaciones Solicitud:</label>
+                        <div class="col-sm-10">
+                            <textarea name="Observaciones" class="form-control obligatorio" id="uiSolicitudObservacionesSolicitud" readonly></textarea>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Usuario Solicitud:</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio text-center" id="uiSolicitudUsuarioSolicitud" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Fecha Solicitud:</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio text-center" id="uiSolicitudFechaSolicitud" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Resultado:</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio text-center" id="uiSolicitudResultado" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Usuario Aprobación:</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio text-center" id="uiSolicitudUsuarioAprobacion" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Fecha Aprobación:</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio text-center" id="uiSolicitudFechaAprobacion" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Observaciones Aprobación:</label>
+                        <div class="col-sm-10">
+                            <textarea name="Observaciones" class="form-control obligatorio" id="uiSolicitudObservacionesAprobacion" readonly></textarea>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Código Transacción (Corregido):</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio text-center" id="uiSolicitudCodigoTransaccionCorregido" readonly />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Anulación -->
+<div class="modal fade" id="staticBackdropAnulacion" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelAnulacion" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupAnulacion"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupAnulacion">&times;</button>
+            </div>
+            <div class="modal-body">
+
+                <form method="post" id="frmAnulacionTransaccion">
+                    <input type="hidden" name="CodigoOperacion" class="form-control obligatorio" id="uiCodigoOperacionAnulacion" />
+                    <input type="hidden" name="CodigoCuentaPorCobrar" class="form-control obligatorio" id="uiCodigoCuentaPorCobrarAnulacion" />
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Transacción:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="CodigoTransaccion" class="form-control obligatorio" id="uiCodigoTransaccionAnulacion" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Operación:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="Operacion" class="form-control obligatorio" id="uiOperacionAnulacion" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Entidad:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="NombreEntidad" class="form-control obligatorio" id="uiNombreEntidadAnulacion" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Monto:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="Monto" class="form-control obligatorio" id="uiMontoAnulacion" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Motivo:</label>
+                        <div class="col-sm-10">
+                            <textarea name="Observaciones" class="form-control obligatorio" id="uiObservacionesAnulacion"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="AnularTransaccionPorCorreccion()">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/transaccion.js"></script>
+}

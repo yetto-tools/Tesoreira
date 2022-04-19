@@ -1,0 +1,48 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@{
+    ViewData["Title"] = "Create";
+    Context.Session.SetString("tituloPrincipal", "Configuración de Descuentos y Devoluciones");
+}
+
+<div class="row">
+    <form method="post" id="frmBusquedaCxC" name="frmBusquedaCxC">
+        <table>
+            <tr>
+                <td>TIPO OPERACION</td>
+                <td>FRECUENCIA DE PAGO</td>
+            </tr>
+            <tr>
+                <td>
+                    <select class="form-control" id="uiFiltroTipoOperacion" name="CodigoTipoOperacion" onchange="FillEmpleadosCuentasPorCobrarConfiguracion()">
+                        <option value='-1'>-- Seleccione -- </option>
+                        <option value='1'>PAGO BTB</option>
+                        <option value='2'>DESCUENTO</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control" id="uiFiltroFrecuenciaPago" name="CodigoFrecuenciaPago" onchange="FillEmpleadosCuentasPorCobrarConfiguracion()">
+                        <option value='-1'>-- Seleccione -- </option>
+                        <option value='1'>MENSUAL</option>
+                        <option value='2'>QUINCENAL</option>
+                        <option value='3'>SEMANAL</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div style="height: 10px; width:100%;">
+</div>
+<div id="divTabla">
+</div>
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/planilla.js"></script>
+}
+

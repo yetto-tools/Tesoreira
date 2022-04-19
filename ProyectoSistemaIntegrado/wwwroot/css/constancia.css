@@ -1,0 +1,8 @@
+﻿#table-reporte, #table-reporte.th, #table-reporte.td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+    #table-reporte, #table-reporte.th, #table-reporte.td {
+        padding: 15px;
+    }

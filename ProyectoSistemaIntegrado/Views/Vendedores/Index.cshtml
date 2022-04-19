@@ -1,0 +1,142 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    ViewData["Title"] = "Index";
+    Context.Session.SetString("tituloPrincipal", "Listado de Vendedores");
+}
+
+<div style="height: 25px; width:100%;"></div>
+<a href="@Url.Content("~")" id="uiExportarExcel">Exportar Excel</a>
+<div style="height: 25px; width:100%;"></div>
+
+<div style="margin: 0 auto; text-align: center;">
+    <table>
+        <tr>
+            <td>
+                <button type="button" id="ShowPopupNewVendedor" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropNewVendedor" onclick="setDataNuevoVendedor()">
+                    Agregar Vendedor
+                </button>
+            </td>
+            <td>
+                <button type="button" id="ShowPopupAsignarRutaVendedor" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropAsignarRutaVendedor" onclick="setDataRutaNuevoVendedor()">
+                    Agregar Ruta a Vendedor
+                </button>
+            </td>
+        </tr>
+    </table>
+
+</div>
+
+<table style="margin-left: auto; margin-right: auto;">
+    <tr>
+        <td>CANAL DE VENTA</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>
+            <select class="form-control" id="uiCodigoCanalVenta" name="CodigoCanalVenta" onchange="ListarVendedoresFiltro()">
+            </select>
+        </td>
+        <td>
+        </td>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="uiIncluirBloqueados" onclick="ListarVendedoresFiltro()">
+                <label class="form-check-label" for="uiIncluirBloqueados">
+                    Incluir Bloqueados
+                </label>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div style="height: 25px; width:100%;">
+</div>
+
+<div id="divTabla">
+
+</div>
+
+<!-- Modal New Ruta Vendedor -->
+<div class="modal fade" id="staticBackdropAsignarRutaVendedor" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelAsignarRutaVendedor" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupRutaVendedor"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupRutaVendedor">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="frmAsignacionRutaVendedor">
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Código:</label>
+                        <div class="col-sm-3">
+                            <select class="form-control obligatorio" id="uiAsignacionCodigoVendedor" name="CodigoVendedor">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Ruta:</label>
+                        <div class="col-sm-3">
+                            <select class="form-control obligatorio" id="uiAsignacionRuta" name="Ruta" onclick="setCanalVenta(this)">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Canal de Venta:</label>
+                        <div class="col-sm-10">
+                            <select class="form-control obligatorio" id="uiAsignacionCodigoCanalVenta" name="CodigoCanalVenta">
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="GuardarVendedorRuta()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal New Vendedor -->
+<div class="modal fade" id="staticBackdropNewVendedor" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelNewVendedor" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupNewVendedor"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupNewVendedor">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="frmNewVendedor">
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Código:</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio solonumeros text-center" id="uiNewCodigoVendedor" name="CodigoVendedor" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Nombre:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control obligatorio" id="uiNewNombreVendedor" name="NombreVendedor" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="GuardarVendedor()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/ventas.js"></script>
+}

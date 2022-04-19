@@ -1,0 +1,226 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using CapaEntidad.Administracion;
+@{
+    ViewData["Title"] = "Create";
+    string cadena = Context.Session.GetString("usuario");
+    UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(cadena);
+    string idUsuario = objUsuario.IdUsuario;
+    byte setSemanaAnterior = objUsuario.SetSemanaAnterior;
+    Context.Session.SetString("tituloPrincipal", "Registro de Facturas de Gastos");
+}
+<button type="button" id="ShowPopupContribuyente" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropContribuyente" style="display:none">
+</button>
+<button type="button" id="ShowPopupEntidad" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropEntidad" style="display:none">
+</button>
+
+<button type="button" class="btn btn-outline-success" onclick="Redireccionar('CajaChica', 'Index')">
+    <i class="bi bi-arrow-left-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z" />
+        </svg>
+    </i>
+    Regresar
+</button>
+
+<div style="height: 15px; width:100%;"></div>
+
+<fieldset>
+    <form method="post" id="frmTransaccionCajaChica" name="frmTransaccionCajaChica">
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Caja Chica:</label>
+            <div class="col-sm-5">
+                <select class="form-control obligatorio" id="uiCajaChica" name="CodigoCajaChica" onclick="MostrarSaldoActual(this)">
+                </select>
+            </div>
+        </div>
+        <div style="display:none" id="div-alerta-saldo">
+            <div class="alert alert-danger" role="alert">
+                Saldo en caja chica insuficiente
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Saldo Actual:</label>
+            <div class="col-sm-5">
+                <input type="text" readonly name="SaldoActual" id="uiSaldoActual" class="form-control text-right" />
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Semana:</label>
+            <div class="col-md-4">
+                <div class="col-sm-10">
+                    <input type="text" readonly name="SemanaOperacion" id="uiNumeroSemanaActual" class="form-control obligatorio" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="col-sm-10">
+                    <input class="form-check-input" type="checkbox" value="" id="uiCheckSemanaAnterior" onClick="fillComboSemana(this)">
+                    <label class="form-check-label" for="uiCheckSemanaAnterior">Semana Anterior</label>
+                </div>
+            </div>
+        </div>
+
+        @*Año de la Configuracion Semanal*@
+        <label class="col-sm-2 col-form-label" style="display:none;">Anio Operacion:</label>
+        <input type="hidden" readonly name="AnioOperacion" id="uiAnioOperacion" class="form-control obligatorio" />
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Dia de Operacion:</label>
+            <div class="col-sm-10">
+                <div id="divTablaRadioButtonList">
+
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Operación:</label>
+            <div class="col-sm-5">
+                <select class="form-control obligatorio" id="cboOperacion" name="CodigoOperacion">
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Tipo Documento:</label>
+            <div class="col-sm-10">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" id="uiFactura" type="radio" value="1" name="CodigoTipoDocumento" checked>
+                    <label class="form-check-label" for="uiFactura">FACTURA</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class='form-check-input' id="uiRecibo" type="radio" value="2" name="CodigoTipoDocumento">
+                    <label class="form-check-label" for="uiRecibo">RECIBO</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label"> </label>
+            <div class="col-sm-4">
+                <label class="col-form-label"> </label>
+                <div class="input-group rounded">
+                    <input type="search" class="form-control rounded" placeholder="Número de identificación tributaria" aria-label="Search"
+                           aria-describedby="search-addon" id="uiNitBusqueda" />
+                    <span class="input-group-text border-0" id="search-addon" onClick="buscarDatosContribuyente(this)">
+                        <i class="fas fa-search"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Nit:</label>
+            <div class="col-sm-10">
+                <input type="text" readonly name="NitProveedor" id="uiNitProveedor" class="form-control obligatorio" placeholder="Nit del proveedor" />
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Nombre Proveedor:</label>
+            <div class="col-sm-10">
+                <input type="text" readonly name="NombreProveedor" id="uiNombreProveedor" class="form-control obligatorio" placeholder="Nombre del proveedor" />
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label"> </label>
+            <div class="col-md-3">
+                <label class="col-form-label">Fecha</label>
+                <input type="text" name="FechaDocumentoStr" id="uiFechaDocumento" autocomplete="off" class="form-control obligatorio text-center"
+                       placeholder="Fecha" />
+            </div>
+            <div class="col-md-3">
+                <label class="col-form-label">Serie</label>
+                <input type="text" name="SerieFactura" id="uiSerieFactura" autocomplete="off" class="form-control text-center"
+                       placeholder="Serie" />
+            </div>
+            <div class="col-md-3">
+                <label class="col-form-label">Número</label>
+                <input type="text" name="NumeroDocumento" id="uiNumeroDocumento" autocomplete="off" class="form-control solonumeros text-center"
+                       placeholder="Número documento" />
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Monto:</label>
+            <div class="col-sm-3">
+                <input type="text" name="monto" id="uiMonto" class="form-control obligatorio text-right"
+                       placeholder="Monto" />
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Descripción:</label>
+            <div class="col-sm-10">
+                <textarea name="Descripcion" class="form-control obligatorio" id="uiDescripcion" placeholder="Descripción"></textarea>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Observaciones:</label>
+            <div class="col-sm-10">
+                <textarea name="Observaciones" class="form-control" id="uiObservaciones" placeholder="Observaciones"></textarea>
+            </div>
+        </div>
+
+
+    </form>
+
+    <div id="divTabla">
+
+    </div>
+</fieldset>
+
+<button class="btn btn-primary" onclick="GuardarDatos()">Guardar</button>
+
+<!-- Modal Contribuyente -->
+<div class="modal fade" id="staticBackdropContribuyente" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelContribuyente" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupContribuyente"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupContribuyente">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="frmGuardaContribuyente">
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">NIT:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="Nit" class="form-control obligatorio" id="uiNewNit" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Nombre:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="Nombre" class="form-control obligatorio" id="uiNewNombreContribuyente" />
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="GuardarContribuyente()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/jqueryui.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/cajachica.js"></script>
+    <script>
+        $(function () {
+            $("#uiFechaDocumento").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeYear: true
+            });
+        });
+    </script>
+}

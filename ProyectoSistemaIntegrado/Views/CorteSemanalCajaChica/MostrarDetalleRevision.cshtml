@@ -1,0 +1,272 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    Context.Session.SetString("tituloPrincipal", "Revisión Detalle de Caja Chica");
+}
+
+<button type="button" id="ShowPopupExclusion" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropExclusion" style="display:none">
+</button>
+
+<button type="button" id="ShowPopupSolicitudAprobacion" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropSolicitudAprobacion" style="display:none">
+</button>
+
+<button type="button" id="ShowPopupSolicitudCorreccion" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropSolicitudCorreccion" style="display:none">
+</button>
+
+<div style="height: 25px; width:100%;"></div>
+<button type="button" class="btn btn-outline-success" onclick="Redireccionar('CorteSemanalCajaChica', 'MostrarCortesSemanalesRevision')">
+    <i class="bi bi-arrow-left-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z" />
+        </svg>
+    </i>
+    Regresar
+</button>
+
+<div style="height: 25px; width:100%;"></div>
+
+<div id="divTabla">
+
+</div>
+
+<!-- Modal Exclusión de Facturas -->
+<div class="modal fade" id="staticBackdropExclusion" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelExclusion" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupExclusion"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupExclusion">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="frmExclusion">
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Código:</label>
+                        <div class="col-sm-3">
+                            <input type="text" readonly name="CodigoTransaccion" class="form-control obligatorio text-center" id="uiCodigoTransaccion" />
+                        </div>
+                    </div>
+                    <input type="hidden" readonly name="CodigoReporte" class="form-control obligatorio" id="uiCodigoReporte" />
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Nit:</label>
+                        <div class="col-sm-3">
+                            <input type="text" readonly name="NitProveedor" class="form-control obligatorio text-center" id="uiNitProveedor" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Nombre:</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly name="NombreProveedor" class="form-control obligatorio" id="uiNombreProveedor" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Monto:</label>
+                        <div class="col-sm-4">
+                            <input type="text" readonly name="Monto" class="form-control obligatorio text-right" id="uiMonto" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Descripción:</label>
+                        <div class="col-sm-10">
+                            <textarea type="text" readonly name="Descripcion" class="form-control obligatorio" id="uiDescripcion" rows="2">
+                            </textarea>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Motivo:</label>
+                        <div class="col-sm-5">
+                            <select class="form-control obligatorio" name="CodigoMotivoExclusion" id="uiMotivoExclusion">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Observaciones:</label>
+                        <div class="col-sm-10">
+                            <textarea name="Observaciones" class="form-control obligatorio" id="uiObservaciones" rows="2">
+                            </textarea>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="ExcluirFactura()">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Solicitud de Aprobación de Corrección -->
+<div class="modal fade" id="staticBackdropSolicitudAprobacion" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelSolicitudAprobacion" aria-hidden="true">
+    <div class="modal-dialog  modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupSolicitudAprobacion"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupSolicitudAprobacion">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="frmNewSolicitudAprobacion">
+
+                    <input type="hidden" name="CodigoReporte" class="form-control obligatorio text-center" id="uiCodigoReporteRevision" readonly />
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Código Transacción:</label>
+                        <div class="col-sm-3">
+                            <input type="text" name="CodigoTransaccion" class="form-control obligatorio text-center" id="uiCodigoTransaccionRevision" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Nit:</label>
+                        <div class="col-sm-3">
+                            <input type="text" readonly name="NitProveedor" id="uiNitProveedorRevision" class="form-control obligatorio text-center" placeholder="Nit del proveedor" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Nombre Proveedor:</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly name="NombreProveedor" id="uiNombreProveedorRevision" class="form-control obligatorio" placeholder="Nombre del proveedor" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label"> </label>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Fecha</label>
+                            <input type="text" name="FechaDocumentoStr" id="uiFechaDocumentoRevision" autocomplete="off" class="form-control obligatorio text-center"
+                                   placeholder="Fecha" readonly />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Serie</label>
+                            <input type="text" name="SerieFactura" id="uiSerieFacturaRevision" autocomplete="off" class="form-control text-center"
+                                   placeholder="Serie" readonly />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="col-form-label">Número</label>
+                            <input type="text" name="NumeroDocumento" id="uiNumeroDocumentoRevision" autocomplete="off" class="form-control solonumeros text-center"
+                                   placeholder="Número documento" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Monto:</label>
+                        <div class="col-sm-3">
+                            <input type="text" name="monto" id="uiMontoRevision" class="form-control obligatorio text-right"
+                                   placeholder="Monto" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Descripción:</label>
+                        <div class="col-sm-10">
+                            <textarea name="Descripcion" class="form-control obligatorio" id="uiDescripcionRevision" placeholder="Descripción" readonly></textarea>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Tipo de Corrección:</label>
+                        <div class="col-sm-3">
+                            <select class="form-control obligatorio" id="uiCodigoTipoCorreccion" name="CodigoTipoCorreccion">
+                                <option value="-1">-- Seleccione --</option>
+                                <option value="1">MODIFICACIÓN</option>
+                                <option value="2">ANULACIÓN</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Motivo:</label>
+                        <div class="col-sm-10">
+                            <textarea name="Observaciones" class="form-control obligatorio" id="uiObservacionesRevision"></textarea>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="RegistrarSolicitudCorreccion()">Solicitar Aprobación</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Aprobación de Corrección -->
+<div class="modal fade" id="staticBackdropSolicitudCorreccion" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelSolicitudCorreccion" aria-hidden="true">
+    <div class="modal-dialog  modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupSolicitudCorreccion"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupSolicitudCorreccion">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="frmNewSolicitudCorreccion">
+                    <label class="col-sm-10 col-form-label" id="uiObservacionesEliminacion"></label>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Código Transacción (Con Error):</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio text-center" id="uiSolicitudCodigoTransaccion" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Observaciones Solicitud:</label>
+                        <div class="col-sm-10">
+                            <textarea name="Observaciones" class="form-control obligatorio" id="uiSolicitudObservacionesSolicitud" readonly></textarea>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Usuario Solicitud:</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio text-center" id="uiSolicitudUsuarioSolicitud" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Fecha Solicitud:</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio text-center" id="uiSolicitudFechaSolicitud" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Resultado:</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio text-center" id="uiSolicitudResultado" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Usuario Aprobación:</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio text-center" id="uiSolicitudUsuarioAprobacion" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Fecha Aprobación:</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio text-center" id="uiSolicitudFechaAprobacion" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Observaciones Aprobación:</label>
+                        <div class="col-sm-10">
+                            <textarea name="Observaciones" class="form-control obligatorio" id="uiSolicitudObservacionesAprobacion" readonly></textarea>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Código Transacción (Corregido):</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio text-center" id="uiSolicitudCodigoTransaccionCorregido" readonly />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/cortesemanalcajachica.js"></script>
+}

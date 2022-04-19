@@ -1,0 +1,81 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@{
+    ViewData["Title"] = "Create";
+    Context.Session.SetString("tituloPrincipal", "Registro de Facturas al Contado");
+}
+
+<div class="row">
+    <form method="post" id="frmFacturasAlContado" name="frmFacturasAlContado">
+        <table>
+            <tr>
+                <td>AÑO</td>
+                <td>SEMANA</td>
+                <td>DIA</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <select class="form-control obligatorio" id="uiFiltroAnio" name="AnioOperacion" onchange="FillFiltroSemanas(this.value)"></select>
+                </td>
+                <td>
+                    <select class="form-control obligatorio" id="uiFiltroSemanaOperacion" name="SemanaOperacion" onchange="FillComboDiasOperacion()"></select>
+                </td>
+                <td>
+                    <select class="form-control obligatorio" id="uiFiltroDiaOperacion" name="FechaStr"></select>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>EMPRESA</td>
+                <td>OPERACION</td>
+                <td>MONTO</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <select class="form-control obligatorio" id="uiFiltroEmpresa" name="CodigoEmpresa">
+                        <option value='-1'>-- Seleccione -- </option>
+                        <option value='1'>Panificadora Americana Individual</option>
+                        <option value='4'>Panificadora Americana S.A</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control obligatorio" id="uiFiltroOperacion" name="CodigoOperacion">
+                        <option value='43'>Reporte de Facturado de Contado</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" name="Monto" class="form-control obligatorio text-right decimal-2" id="uiMonto" />
+                </td>
+                <td>
+                    <button type="button" class="btn btn-primary" onclick="GuardarFacturasAlContado()">AGREGAR</button>
+                </td>
+                <td></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div style="height: 10px; width:100%;">
+</div>
+
+<div style="margin: 0 auto; text-align: center;">
+    <input type="button" class="btn btn-success btn-lg" value="Cargar Compromiso Fiscal" onclick="CargarCompromisoFiscal()" />
+</div>
+
+<div style="height: 10px; width:100%;">
+</div>
+
+<div id="divTabla">
+</div>
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/compromisofiscal.js"></script>
+}
+

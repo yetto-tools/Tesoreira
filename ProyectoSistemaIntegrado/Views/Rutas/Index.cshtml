@@ -1,0 +1,199 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    ViewData["Title"] = "Index";
+    Context.Session.SetString("tituloPrincipal", "Listado de Rutas");
+}
+
+<button type="button" id="ShowPopupEditRuta" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropEditRuta" style="display:none;">
+</button>
+
+<div class="mb-3 row">
+    <div class="col-sm-10">
+        <button type="button" id="ShowPopupNewRuta" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropNewRuta" onclick="AgregarRuta()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-file-plus" viewBox="0 0 16 16">
+                <path d="M8.5 6a.5.5 0 0 0-1 0v1.5H6a.5.5 0 0 0 0 1h1.5V10a.5.5 0 0 0 1 0V8.5H10a.5.5 0 0 0 0-1H8.5V6z" />
+                <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z" />
+            </svg>
+            Agregar
+        </button>
+    </div>
+</div>
+
+
+
+@*<div style="margin: 0 auto; text-align: center;">
+
+    </div>*@
+
+<div style="height: 25px; width:100%;">
+</div>
+
+<div id="divTabla">
+
+</div>
+
+<!-- Modal Agregar Ruta -->
+<div class="modal fade" id="staticBackdropNewRuta" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelNewRuta" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupNewRuta"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupNewRuta">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="frmNewRuta">
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Ruta:</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio solonumeros text-center" name="Ruta" id="uiNewRuta" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Canal de Venta:</label>
+                        <div class="col-sm-10">
+                            <select class="form-control obligatorio" name="CodigoCanalVenta" id="uiNewCodigoCanalVenta">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Tipo de Ruta:</label>
+                        <div class="col-sm-5">
+                            <select class="form-control obligatorio" name="CodigoTipoRuta" id="uiNewCodigoTipoRuta">
+                                <option value='1'>RUTA INTERNA</option>
+                                <option value='2'>RUTA EXTERNA</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Nombre:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="Nombre" id="uiNewNombre" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Nombre Corto:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="NombreCorto" id="uiNewNombreCorto" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Descripcion:</label>
+                        <div class="col-sm-10">
+                            <textarea name="Descripcion" class="form-control" id="uiNewDescripcion"></textarea>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label"></label>
+                        <div class="col-sm-10">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" id="uiNewMigracionCompleta" type="checkbox" name="MigracionCompleta" value="0">
+                                <label class="form-check-label" for="uiNewMigracionCompleta">Migración Completa de la Ruta a Panificadora Americana S.A</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Estado:</label>
+                        <div class="col-sm-5">
+                            <select class="form-control" name="CodigoEstado" id="uiNewCodigoEstado">
+                                <option value='1'>ACTIVO</option>
+                                <option value='0'>BLOQUEADO</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="GuardarRuta()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Edit Ruta -->
+<div class="modal fade" id="staticBackdropEditRuta" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelEditRuta" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="uiTitlePopupEditRuta"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupEditRuta">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" id="frmEditRuta">
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label">Ruta:</label>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control obligatorio text-center" name="Ruta" id="uiEditRuta" readonly />
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label">Canal de Venta:</label>
+                            <div class="col-sm-10">
+                                <select class="form-control obligatorio" name="CodigoCanalVenta" id="uiEditCodigoCanalVenta">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label">Tipo de Ruta:</label>
+                            <div class="col-sm-5">
+                                <select class="form-control obligatorio" name="CodigoTipoRuta" id="uiEditCodigoTipoRuta">
+                                    <option value='1'>RUTA INTERNA</option>
+                                    <option value='2'>RUTA EXTERNA</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label">Nombre:</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="Nombre" id="uiEditNombre" />
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label">Nombre Corto:</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="NombreCorto" id="uiEditNombreCorto" />
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label">Descripcion:</label>
+                            <div class="col-sm-10">
+                                <textarea name="Descripcion" class="form-control" id="uiEditDescripcion"></textarea>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label"></label>
+                            <div class="col-sm-10">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" id="uiEditMigracionCompleta" type="checkbox" name="MigracionCompleta" value="0">
+                                    <label class="form-check-label" for="uiEditMigracionCompleta">Migración Completa de la Ruta a Panificadora Americana S.A</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label">Estado:</label>
+                            <div class="col-sm-5">
+                                <select class="form-control" name="CodigoEstado" id="uiEditCodigoEstado">
+                                    <option value='1'>ACTIVO</option>
+                                    <option value='0'>BLOQUEADO</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="ActualizarRuta()">Actualizar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/ventas.js"></script>
+}

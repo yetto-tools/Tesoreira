@@ -1,0 +1,588 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using CapaEntidad.Administracion;
+@{
+    ViewData["Title"] = "Create";
+    string cadena = Context.Session.GetString("usuario");
+    UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(cadena);
+    string idUsuario = objUsuario.IdUsuario;
+    byte setSemanaAnterior = objUsuario.SetSemanaAnterior;
+    Context.Session.SetString("tituloPrincipal", "Registro de Ingresos y Egresos");
+}
+
+
+
+<button type="button" class="btn btn-outline-success" onclick="Redireccionar('Transaccion', 'Index')">
+    <i class="bi bi-arrow-left-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z" />
+        </svg>
+    </i>
+    Regresar
+</button>
+<div style="height: 15px; width:100%;"></div>
+
+<button type="button" id="ShowPopupRuteros" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropVendedores" style="display:none">
+</button>
+
+<button type="button" id="ShowPopupEntidad" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropEntidad" style="display:none">
+</button>
+
+<fieldset>
+    <form method="post" id="frmGuardaTransaccion" name="frmTransaccion">
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Semana:</label>
+            <div class="col-md-4">
+                <div class="col-sm-10">
+                    <input type="text" readonly name="SemanaOperacion" id="uiNumeroSemanaActual" class="form-control obligatorio" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="col-sm-10">
+                    <input class="form-check-input" type="checkbox" value="" id="uiCheckSemanaAnterior" onClick="fillComboSemana(this)">
+                    <label class="form-check-label" for="uiCheckSemanaAnterior">Semana Anterior</label>
+                </div>
+            </div>
+        </div>
+
+        @*Año de la Configuracion Semanal*@
+        <label class="col-sm-2 col-form-label" style="display:none;">Anio Operacion:</label>
+        <input type="hidden" readonly name="AnioOperacion" id="uiAnioOperacion" class="form-control obligatorio" />
+        @*Vendedor en el caso de que sea la operacion bonos extras*@
+        <label class="col-sm-2 col-form-label" style="display:none;">Codigo Vendedor:</label>
+        <input type="hidden" readonly name="CodigoVendedor" id="uiCodigoVendedor" class="form-control" />
+        @*Codigo Categoria del Vendedor en el caso de que sea la operacion bonos extras*@
+        <label class="col-sm-2 col-form-label" style="display:none;">Codigo Categoria del Vendedor:</label>
+        <input type="hidden" readonly name="CodigoCategoriaVendedor" id="uiCodigoCategoriaVendedor" class="form-control" />
+        @*Nombre del Vendedor en el caso de que sea la operacion bonos extras*@
+        <label class="col-sm-2 col-form-label" style="display:none;">Nombre Vendedor:</label>
+        <input type="hidden" readonly name="NombreVendedor" id="uiNombreVendedor" class="form-control" />
+        @*Codigo de operación de caja*@
+        <label class="col-sm-2 col-form-label" style="display:none;">Codigo Operacion Caja:</label>
+        <input type="hidden" readonly name="CodigoOperacionCaja" id="uiCodigoOperacionCaja" class="form-control obligatorio" />
+        @*Codigo de area (centro de costo) de la entidad*@
+        <label class="col-sm-2 col-form-label" style="display:none;">Codigo Area de la Entidad:</label>
+        <input type="hidden" readonly name="CodigoArea" id="uiCodigoArea" class="form-control obligatorio" />
+        @*Codigo entidad*@
+        <label class="col-sm-2 col-form-label" style="display:none;">Codigo Entidad:</label>
+        <input type="hidden" name="CodigoEntidad" class="form-control obligatorio" id="uiCodigoEntidad" />
+        @*Codigo categoria entidad*@
+        <label class="col-sm-2 col-form-label" style="display:none;">Codigo Categoria Entidad:</label>
+        <input type="hidden" name="CodigoCategoriaEntidad" class="form-control obligatorio" id="uiCodigoCategoriaEntidad" />
+        @*categoria entidad*@
+        <label class="col-sm-2 col-form-label" style="display:none;">Categoria Entidad:</label>
+        <input type="hidden" name="CategoriaEntidad" class="form-control" id="uiCategoriaEntidad" />
+        @*Codigo del canal de venta*@
+        <label class="col-sm-2 col-form-label" style="display:none;">Código Canal de Venta:</label>
+        <input type="hidden" name="CodigoCanalVenta" class="form-control" id="uiCodigoCanalVenta" />
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Dia de Operacion:</label>
+            <div class="col-sm-10">
+                <div id="divTablaRadioButtonList">
+
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-10">
+                <div class="form-check form-check-inline">
+                    <input class='form-check-input' id="uiCheckIngreso" type="radio" value="1" name="CodigoTipoOperacion" onClick="fillComboOpciones()" checked>
+                    <label class="form-check-label" for="uiCheckIngreso">INGRESOS</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" id="uiCheckEgresos" type="radio" value="-1" name="CodigoTipoOperacion" onClick="fillComboOpciones()">
+                    <label class="form-check-label" for="uiCheckEgresos">EGRESOS</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Operación:</label>
+            <div class="col-sm-10">
+                <select class="form-control obligatorio" id="cboOperacion" name="CodigoOperacion" onchange="showControls(this.value)">
+                </select>
+            </div>
+        </div>
+
+        <div id="div-tipo-cuenta-por-cobrar" style="display:none">
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label">Tipo de Préstamo:</label>
+                <div class="col-sm-10">
+                    <select class="form-control" id="uiTipoCuentaPorCobrar" name="CodigoTipoCuentaPorCobrar">
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label">Fecha Préstamo:</label>
+                <div class="col-sm-2">
+                    <input type="text" name="FechaPrestamo" class="form-control" autocomplete="off" id="uiFechaPrestamo"
+                           placeholder="Fecha préstamo" />
+                </div>
+                <label class="col-sm-2 col-form-label">Fecha Inicio Pago:</label>
+                <div class="col-sm-2">
+                    <input type="text" name="FechaInicioPago" class="form-control" autocomplete="off" id="uiFechaInicioPago"
+                           placeholder="Inicio de pago" />
+                </div>
+            </div>
+        </div>
+
+        <div id="div-tipo-bonos-extra" style="display:none">
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-10">
+
+                    <div class="form-check form-check-inline">
+                        <input class='form-check-input' id="uiOptionPorComisiones" type="radio" value="1" name="CodigoBonoExtra" onClick="showContainerBonosExtrasPorComisiones()">
+                        <label class="form-check-label" for="uiOptionPorComisiones">COMISIONES</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" id="uiOptionBonoQuintalaje" type="radio" value="2" name="CodigoBonoExtra" onClick="showContainerBonosExtrasOtros()">
+                        <label class="form-check-label" for="uiOptionBonoQuintalaje">QUINTALAJE</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" id="uiOptionBonosFeriadosODomingos" type="radio" value="3" name="CodigoBonoExtra" onClick="showContainerBonosExtrasOtros()">
+                        <label class="form-check-label" for="uiOptionBonosFeriadosODomingos">FERIADOS/DOMINGOS</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" id="uiOptionBonosOtros" type="radio" value="4" name="CodigoBonoExtra" onClick="showContainerBonosExtrasOtros()">
+                        <label class="form-check-label" for="uiOptionBonosOtros">OTROS</label>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div id="div-tipo-especiales1" style="display:none">
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-10">
+                    <div class="form-check form-check-inline">
+                        <input class='form-check-input' id="uiOptionEspecialCliente" type="radio" value="1" name="TipoEspeciales1" />
+                        <label class="form-check-label" for="uiOptionEspecialCliente">POR CLIENTES</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" id="uiOptioneEspecialOtrosIngresos" type="radio" value="2" name="TipoEspeciales1" />
+                        <label class="form-check-label" for="uiOptioneEspecialOtrosIngresos">INGRESOS VARIOS</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="div-bonos-extra" style="display:none">
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label"> </label>
+                <div class="col-sm-3">
+                    <label class="col-form-label">Ruta</label>
+                    <div class="input-group rounded">
+                        <input type="search" class="form-control rounded" placeholder="Ruta" aria-label="Search"
+                               aria-describedby="search-addon" id="uiNumeroRuta" readonly name="Ruta" />
+                        <span class="input-group-text border-0" id="search-addon" onClick="mostrarVendedores()">
+                            <i class="fas fa-search"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <label class="col-form-label">Semana Comisión</label>
+                    <select class="form-control" id="uiSemanaComision" name="SemanaComision">
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <label class="col-form-label">Año</label>
+                    <select class="form-control" id="uiAnioComision" name="AnioComision" onchange="fillPeriodosDeComision(this)">
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <input class="form-check-input" value="0" id="uiEsVendedor" type="checkbox" name="EsVendedor" onclick="setDataEntidadPorNombreVendedor(this)">
+                    <label class="form-check-label" for="uiEsVendedor">Vendedor</label>
+                </div>
+            </div>
+        </div>
+        <div id="div-tipo-gasto-indirecto" style="display:none">
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label"> </label>
+                <div class="col-sm-3">
+                    <input class="form-check-input" value="0" id="uiEsSueldosIndirectos" type="checkbox" name="CodigoTipoGastoIndirecto" onclick="setTipoGastoIndirecto(this)">
+                    <label class="form-check-label" for="uiEsSueldosIndirectos">Sueldo Indirecto</label>
+                </div>
+            </div>
+        </div>
+        <div id="div-sueldo-indirecto-entidad-don-pepe" style="display:none">
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label"> </label>
+                <div class="col-sm-3">
+                    <label class="col-form-label">Año</label>
+                    <select class="form-control" id="uiAnioSueldoIndirecto" name="AnioSueldoIndirecto" onchange="fillMesesSueldosIndirectosDonPepe(this.value)">
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <label class="col-form-label">Mes</label>
+                    <select class="form-control" id="uiMesSueldoIndirecto" name="MesSueldoIndirecto">
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div id="div-tipo-planilla-pago" style="display:none">
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label"> </label>
+                <div class="col-sm-3">
+                    <input class="form-check-input" value="0" id="uiEsAjustePlanilla" type="checkbox" name="CodigoTipoPlanilla" onclick="showPlanillaPago(this)">
+                    <label class="form-check-label" for="uiEsAjustePlanilla">Ajuste de Planilla</label>
+                </div>
+            </div>
+        </div>
+        <div id="div-planilla-pago" style="display:none">
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label"> </label>
+                <div class="col-md-3">
+                    <label class="col-form-label">Anio</label>
+                    <select class="form-control" id="uiAnioPlanilla" name="AnioPlanilla" onchange="fillComboPlanilla(this)">
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="col-form-label">Tipo de Planilla</label>
+                    <select class="form-control" id="uiCodigoFrecuenciaPago" name="CodigoFrecuenciaPago" onchange="fillShowDataAdicionalPlanilla(this.value)">
+                        <option value="-1">-- Seleccione --</option>
+                        <option value="1">Mensual</option>
+                        <option value="2">Quincenal</option>
+                        <option value="3">Semanal</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check form-check-inline">
+                        <table>
+                            <tr>
+                                <td>
+                                    <input class='form-check-input' id="uiOptionTipoTransaccionNF" type="radio" value="NF" name="CodigoTipoTransaccion" onchange="MostrarEntidadesGenericas(this.value)" checked />
+                                    <label class="form-check-label" for="uiOptionTipoTransaccionNF">NF</label>
+                                </td>
+                                <td style="width: 20px;">
+                                </td>
+                                <td>
+                                    <input class="form-check-input" id="uiOptionTipoTransaccionF" type="radio" value="F" name="CodigoTipoTransaccion" onchange="MostrarEntidadesGenericas(this.value)" />
+                                    <label class="form-check-label" for="uiOptionTipoTransaccionF">Fiscal</label>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label"> </label>
+                <div class="col-md-3" id="uiContainerMesPlanilla" style="display:none;">
+                    <label class="col-form-label">Mes</label>
+                    <select class="form-control" id="uiMesPlanilla" name="MesPlanilla" onchange="fillComboQuincenas()">
+                    </select>
+                </div>
+                <div class="col-md-3" id="uiContainerSemanaPlanilla" style="display:none;">
+                    <label class="col-form-label">Semana</label>
+                    <select class="form-control" id="uiSemanaPlanilla" name="SemanaPlanilla">
+                    </select>
+                </div>
+                <div class="col-md-3" id="uiContainerQuincenaPlanilla" style="display:none;">
+                    <label class="col-form-label">Quincena</label>
+                    <select class="form-control" id="uiCodigoQuincenaPlanilla" name="CodigoQuincenaPlanilla">
+                    </select>
+                </div>
+                <div class="col-md-3" id="uiContainerTipoPago" style="display:none;">
+                    <label class="col-form-label">Tipo de Pago</label>
+                    <select class="form-control" id="uiCodigoTipoPago" name="CodigoTipoPago">
+                        <option value="-1">-- Seleccione --</option>
+                        <option value="1">Planilla General</option>
+                        <option value="2">Planilla de Panaderos (Destajo)</option>
+                        <option value="3">Seguridad</option>
+                        <option value="4">Otros</option>
+                    </select>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Tipo Documento:</label>
+            <div class="col-sm-10">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" id="uiVale" type="radio" value="1" name="CodigoTipoDocumento" onClick="setDataAdicionaTipoDocumento(this.value)" checked>
+                    <label class="form-check-label" for="uiVale">VALE</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class='form-check-input' id="uiFactura" type="radio" value="2" name="CodigoTipoDocumento" onClick="setDataAdicionaTipoDocumento(this.value)">
+                    <label class="form-check-label" for="uiFactura">FACTURA</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class='form-check-input' id="uiBoletaDeposito" type="radio" value="3" name="CodigoTipoDocumento" onClick="setDataAdicionaTipoDocumento(this.value)">
+                    <label class="form-check-label" for="uiBoletaDeposito">BOLETA DE DEPOSITO</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class='form-check-input' id="uiNingunTipoDocumento" type="radio" value="0" name="CodigoTipoDocumento" onClick="setDataAdicionaTipoDocumento(this.value)">
+                    <label class="form-check-label" for="uiNingunTipoDocumento">NINGUNO</label>
+                </div>
+            </div>
+        </div>
+
+        <div id="div-documento-vale">
+            <!-- Default checkbox -->
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label"> </label>
+                <div class="col-sm-6">
+                    <input class="form-check-input" type="checkbox" id="uiNitEmpresaConcedeIva" onClick="fillComboEmpresasConcecionIVA(this)" />
+                    <label class="form-check-label" for="uiNitEmpresaConcedeIva">Conceder IVA</label>
+                    <select class="form-control" id="cboNitConsumidor" name="NitEmpresaConcedeIva">
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div id="div-documento-factura" style="display:none;">
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label"> </label>
+                <div class="col-md-4">
+                    <label class="col-sm-4 col-form-label">Empresa:</label>
+                    <div class="col-sm-10">
+                        <select class="form-control" id="cboEmpresas" name="CodigoEmpresa">
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="col-sm-10">
+                        <label class="col-form-label">Numero Factura</label>
+                        <input type="text" name="NumeroDocumento" class="form-control obligatorio-factura" id="uiNumeroDocumento"
+                               placeholder="Numero Factura" />
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Forma de Pago:</label>
+            <div class="col-sm-10">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" value="0" id="uiEfectivo" type="checkbox" name="Efectivo" checked>
+                    <label class="form-check-label" for="uiEfectivo">EFECTIVO</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class='form-check-input' value="0" id="uiDeposito" type="checkbox" name="Deposito">
+                    <label class="form-check-label" for="uiDeposito">DEPOSITO</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class='form-check-input' value="0" id="uiCheque" type="checkbox" name="Cheque">
+                    <label class="form-check-label" for="uiCheque">CHEQUE</label>
+                </div>
+            </div>
+        </div>
+
+        <div style="display:block;" id="div-forma-pago-deposito">
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label"> </label>
+                <div class="col-sm-3">
+                    <label class="col-form-label">Banco</label>
+                    <select class="form-control" id="uiBanco" name="CodigoBancoDeposito" onchange="fillCuentasBancarias(this)">
+                        <option value="-1">-- Seleccione --</option>
+                        <option value="2">Banco Industrial, S.A</option>
+                    </select>
+                </div>
+                <div class="col-sm-6">
+                    <label class="col-form-label">Numero Cuenta</label>
+                    <select class="form-control" id="uiNumeroCuenta" name="NumeroCuenta">
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label"> </label>
+                <div class="col-sm-3">
+                    <div class="form-check form-check-inline">
+                        <input class='form-check-input' id="uiOptionTipoDocumentoNumeroBoleta" type="radio" value="1" name="CodigoTipoDocumentoDeposito" onchange="setValueNumeroDocumentoDeposito(this)" />
+                        <label class="form-check-label" for="uiOptionTipoDocumentoNumeroBoleta">Número de Boleta</label>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <input class="form-check-input" id="uiOptionTipoDocumentoNumeroVoucher" type="radio" value="2" name="CodigoTipoDocumentoDeposito" onchange="setValueNumeroDocumentoDeposito(this)" />
+                    <label class="form-check-label" for="uiOptionTipoDocumentoNumeroVoucher">Número de Voucher</label>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label"> </label>
+                <div class="col-sm-3">
+                    <label class="col-form-label" id="uiTitleTipoDocumentoDeposito">Número de Documento</label>
+                    <input type="text" name="NumeroBoleta" class="form-control obligatorio-forma-pago-banco text-center" id="uiNumeroBoleta" placeholder="Número de Documento" />
+                </div>
+                <div class="col-sm-3">
+                    <label class="col-form-label">Monto Efectivo:</label>
+                    <input type="text" name="MontoEfectivo" class="form-control decimal-2 text-right" id="uiMontoEfectivo" placeholder="Monto en efectivo" />
+                </div>
+                <div class="col-sm-3">
+                    <label class="col-form-label">Monto en Cheques:</label>
+                    <input type="text" name="MontoCheques" class="form-control decimal-2 text-right" id="uiMontoCheques" placeholder="Monto en cheques" />
+                </div>
+            </div>
+        </div>
+
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Monto:</label>
+            <div class="col-sm-3">
+                <input type="text" name="monto" class="form-control obligatorio decimal-2 text-right" id="uiMontoTransaccion" onclick="sumarMontos()"
+                       placeholder="Monto" />
+            </div>
+        </div>
+
+        @if (setSemanaAnterior == 1)
+        {
+            <div style="display:block;" id="div-captura-recibo">
+                <div class="mb-3 row">
+                    <label class="col-sm-2 col-form-label">Número Recibo:</label>
+                    <div class="col-sm-3">
+                        <input type="text" name="NumeroRecibo" class="form-control solonumeros obligatorio text-center" id="uiNumeroRecibo"
+                               placeholder="Número de Recibo" />
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Entidad:</label>
+            <div class="col-sm-10">
+                <input type="text" readonly name="NombreEntidad" class="form-control obligatorio" id="uiNombreEntidad"
+                       placeholder="Nombre Entidad" />
+            </div>
+        </div>
+
+        <div style="display:none;" id="div-captura-proveedor">
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label">Proveedor:</label>
+                <div class="col-sm-10">
+                    <input type="text" name="NombreProveedor" class="form-control obligatorio" id="uiNombreProveedor"
+                           placeholder="Nombre Proveedor" />
+                </div>
+            </div>
+        </div>
+
+        <div id="div-ventas-en-ruta" style="display:none;">
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-3">
+                    <label class="col-form-label">Ruta</label>
+                    <select class="form-control" id="uiRutaVendedor" name="RutaVendedor">
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Observaciones:</label>
+            <div class="col-sm-10">
+                <div class="col-sm-10">
+                    <textarea name="Observaciones" class="form-control" id="uiObservaciones"></textarea>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="input-group mb-3" id="divBusquedaForm">
+        <input type="hidden" class="form-control" id="uiNombreBusqueda" placeholder="nombre de entidad" onkeyup="intelligenceSearch()" />
+    </div>
+
+    <div id="divTabla" style="display:block">
+
+    </div>
+
+
+
+</fieldset>
+
+<button class="btn btn-success" onclick="addEntidad()">Agregar Entidad</button>
+<button class="btn btn-primary" onclick="GuardarDatos()">Guardar</button>
+
+<!-- Modal Vendedores -->
+<div class="modal fade" id="staticBackdropVendedores" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelVendedores" aria-hidden="true">
+    <div class="modal-dialog  modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupVendedores"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupVendedores">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="divTablaRuteros">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                @*<button type="button" class="btn btn-primary">Aceptar</button>*@
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Entidades -->
+<div class="modal fade" id="staticBackdropEntidad" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelEntidad" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupEntidad"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupEntidad">&times;</button>
+            </div>
+            <div class="modal-body">
+
+                <form method="post" id="frmNewEntidad">
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Categoría:</label>
+                        <div class="col-sm-4">
+                            <select class="form-control obligatorio" id="uiNewEntidadCategoria" name="CodigoCategoriaEntidad">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Nombre:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="NombreEntidad" class="form-control obligatorio" id="uiNewEntidadNombre" />
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="GuardarEntidad('@idUsuario')">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="html-content-holder" style="display:block">
+
+</div>
+
+@section Scripts {
+    <script src="~/js/html2canvas.js"></script>
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/jqueryui.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/constancia.js"></script>
+    <script src="~/js/transaccion-new.js"></script>
+
+    <script>
+        $(function () {
+            $("#uiFechaPrestamo").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeYear: true
+            });
+        });
+
+        $(function () {
+            $("#uiFechaInicioPago").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeYear: true
+            });
+        });
+    </script>
+}

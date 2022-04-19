@@ -1,0 +1,50 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@{
+    ViewData["Title"] = "Create";
+    Context.Session.SetString("tituloPrincipal", "Consulta de Compromisos Fiscales");
+}
+
+<form method="post" id="frmBusqueda" name="frmBusqueda">
+    <div style="margin: 0 auto; text-align: center;">
+        <table>
+            <tr>
+                <td>EMPRESA</td>
+                <td>AÑO</td>
+                <td>SEMANA</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <select class="form-control" id="uiFiltroEmpresa" name="CodigoEmpresa">
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control obligatorio" id="uiFiltroAnio" name="AnioOperacion" onchange="FillFiltroSemanas()">
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control" id="uiFiltroSemanaOperacion" name="SemanaOperacion" onclick="FillReportesDeCaja()">
+                    </select>
+                </td>
+                <td>
+                    <input type="button" class="form-control btn btn-primary" value="Buscar" onclick="BuscarCompromisosFiscalesEdicion()" />
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+
+<div id="divTabla">
+
+
+</div>
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/jqueryui.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/compromisofiscal.js"></script>
+}

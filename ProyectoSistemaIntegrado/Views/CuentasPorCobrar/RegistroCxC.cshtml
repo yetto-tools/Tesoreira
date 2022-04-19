@@ -1,0 +1,81 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@{
+    ViewData["Title"] = "Create";
+    Context.Session.SetString("tituloPrincipal", "Registro de Cuentas por Cobrar");
+}
+
+<div style="margin: 0 auto; text-align: center;">
+    <input type="button" class="btn btn-success" value="Agregar" onclick="location.href='@Url.Action("New", "CuentasPorCobrar")'" />
+    <button type="button" class="btn btn-primary" onclick="CargarCuentasPorCobrarTemporal()">Aceptar Cuentas por Cobrar</button>
+</div>
+
+<button type="button" id="ShowPopupEditCxCTemporal" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropEditCxCTemporal" style="display:none">
+</button>
+
+<div id="divTabla">
+
+
+</div>
+
+
+<!-- Modal Editar Cuenta Por Cobrar Temporal -->
+<div class="modal fade" id="staticBackdropEditCxCTemporal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelEditCxCTemporal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupEditCxCTemporal"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupEditCxCTemporal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="frmEditCxCTemporal">
+
+                    <input type="hidden" class="form-control obligatorio" name="CodigoCuentaPorCobrar" id="uiCodigoCuentaPorCobrar" readonly />
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Código Entidad:</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio" name="CodigoEntidad" id="uiCodigoEntidad" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Nombre Entidad:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control obligatorio" name="NombreEntidad" id="uiNombreEntidad" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Categoría:</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control obligatorio" name="Categoria" id="uiCategoria" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Operación:</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control obligatorio" name="Operacion" id="uiOperacion" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Monto:</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio decimal-2 text-right" name="Monto" id="uiMonto" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="ActualizarCuentaPorCobrarTemporal()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/jqueryui.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/cxc.js"></script>
+}

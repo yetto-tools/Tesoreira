@@ -1,0 +1,22 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<h1>Listado de Categoria de Entidades</h1>
+<div class="input-group mb-3">
+    <input type="text" class="form-control" id="uiNombreBusqueda" 
+    placeholder="Ingrese nombre de la categoria" />
+    <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="BuscarCategoriaEntidad()">Buscar</button>
+    <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="LimpiarCategoriaEntidad()">Limpiar</button>
+</div>
+
+
+<div id="divTabla">
+
+
+</div>
+
+<script src="~/js/generic.js" asp-append-version="true"></script>
+<script src="~/js/categoriaentidad.js" asp-append-version="true"></script>

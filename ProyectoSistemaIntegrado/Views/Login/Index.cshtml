@@ -1,0 +1,59 @@
+﻿
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/style.css" />
+    <title>Panificadora Login</title>
+</head>
+<body class="d-flex text-center">
+    <input type="hidden" id="hdfOculto" value="@Url.Content("~")" />
+    <div id="divLoading" style="display:none;background-image:url(@Url.Content("~")/images/loading.gif);position:absolute;top:0;left:0;
+	width:100%;height:100%;background-repeat:no-repeat;background-position:center">
+    </div>
+
+    <form class="form-login" method="post">
+        @*<svg width="72" height="72" viewBox="0 0 16 16" class="mb-4" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M12 1H4a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3V4a3 3 0 0 0-3-3zM4 0a4 4 0 0 0-4 4v8a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4V4a4 4 0 0 0-4-4H4z" />
+            <path fill-rule="evenodd" d="M8.537 12H5.062V3.545h3.399c1.587 0 2.543.809 2.543 2.11 0 .884-.65 1.675-1.483 1.816v.1c1.143.117 1.904.931 1.904 2.033 0 1.488-1.084 2.396-2.888 2.396zM6.375 4.658v2.467h1.558c1.16 0 1.764-.428 1.764-1.23 0-.78-.569-1.237-1.541-1.237H6.375zm1.898 6.229H6.375V8.162h1.822c1.236 0 1.887.463 1.887 1.348 0 .896-.627 1.377-1.811 1.377z" />
+        </svg>*@
+
+        <h1 class="h3 mb-3 font-weight-normal">Panificadora Login</h1>
+        <!-- 'sr-only' will hide the text : 'Email Address'. So, 'Email Address' will be invisible -->
+        <label for="uiUsuario" class="sr-only">Usuario</label>
+        <!-- 'autofocus' will highlight the input column initially -->
+        <input type="text"
+               id="uiUsuario"
+               class="form-control mb-2"
+               placeholder="Usuario"
+               name="Usuario"
+               required
+               autofocus>
+        <!-- 'sr-only' will hide the text : 'Password'. So, 'Password' will be invisible -->
+        <label for="uiPassword" class="sr-only">Constraseña</label>
+        <input type="password"
+               id="uiPassword"
+               class="form-control mb-2"
+               placeholder="Contraseña"
+               name="Contrasenia"
+               required>
+        <div class="checkbox mb-3">
+            <label>
+                <input type="checkbox" value="remember-me"> Remember me
+            </label>
+        </div>
+        <!-- 'btn-block' will make the button wider -->
+        <input class="btn btn-lg btn-primary btn-block" type="button" onclick="Ingresar()" value="Login">
+    </form>
+
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/login.js"></script>
+
+</body>
+</html>

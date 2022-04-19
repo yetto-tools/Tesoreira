@@ -1,0 +1,180 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using CapaEntidad.Administracion;
+@{
+    ViewData["Title"] = "Index";
+    string cadena = Context.Session.GetString("usuario");
+    UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(cadena);
+    string idUsuario = objUsuario.IdUsuario;
+    Context.Session.SetString("tituloPrincipal", "Gestión de Reportes");
+}
+
+
+<div class="mb-3 row">
+    <div class="col-sm-10">
+        <button type="button" id="ShowPopupNewReport" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropNewReporte" onclick="AgregarNuevoReporte()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-file-plus" viewBox="0 0 16 16">
+                <path d="M8.5 6a.5.5 0 0 0-1 0v1.5H6a.5.5 0 0 0 0 1h1.5V10a.5.5 0 0 0 1 0V8.5H10a.5.5 0 0 0 0-1H8.5V6z" />
+                <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z" />
+            </svg>
+            Agregar
+        </button>
+    </div>
+</div>
+
+<button type="button" id="ShowPopupEditReporte" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropEditReporte" style="display:none">
+</button>
+
+<div id="divTabla">
+
+
+</div>
+
+
+<!-- Modal New Reporte -->
+<div class="modal fade" id="staticBackdropNewReporte" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelNewReport" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupNewReporte"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupNewReporte">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="frmNewReporte">
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Nombre:</label>
+                        <div class="col-sm-5">
+                            <input type="text" name="Nombre" class="form-control obligatorio" id="uiNewNombre" placeholder="Nombre Reporte" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Descripción:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="Descripcion" class="form-control obligatorio" id="uiNewDescripcion" placeholder="Descripcion" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Nombre Controlador:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="NombreControlador" class="form-control obligatorio" id="uiNewNombreControlador" placeholder="Nombre del controlador" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Nombre Accción:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="NombreAccion" class="form-control obligatorio" id="uiNewNombreAccion" placeholder="Nombre de la accción" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Tipo de Reporte:</label>
+                        <div class="col-sm-10">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" id="uiNewPdf" type="checkbox" name="Pdf" value="0">
+                                <label class="form-check-label" for="uiNewPdf">PDF</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class='form-check-input' id="uiNewExcel" type="checkbox" name="Excel" value="0">
+                                <label class="form-check-label" for="uiNewExcel">EXCEL</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class='form-check-input' id="uiNewWeb" type="checkbox" name="Web" value="0">
+                                <label class="form-check-label" for="uiNewWeb">WEB</label>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="GuardarReporte()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Edit Reporte -->
+<div class="modal fade" id="staticBackdropEditReporte" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelEditReporte" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupEditReporte"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupEditReporte">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="frmEditReporte">
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Codigo:</label>
+                        <div class="col-sm-5">
+                            <input type="text" name="CodigoTipoReporte" class="form-control obligatorio text-center" id="uiEditCodigoTipoReporte" readonly />
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Nombre:</label>
+                        <div class="col-sm-5">
+                            <input type="text" name="Nombre" class="form-control obligatorio" id="uiEditNombre" placeholder="Nombre Reporte" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Descripción:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="Descripcion" class="form-control obligatorio" id="uiEditDescripcion" placeholder="Descripcion" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Nombre Controlador:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="NombreControlador" class="form-control obligatorio" id="uiEditNombreControlador" placeholder="Nombre del controlador" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Nombre Accción:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="NombreAccion" class="form-control obligatorio" id="uiEditNombreAccion" placeholder="Nombre de la accción" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Tipo de Reporte:</label>
+                        <div class="col-sm-10">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" id="uiEditPdf" type="checkbox" name="Pdf" value="0">
+                                <label class="form-check-label" for="uiEditPdf">PDF</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class='form-check-input' id="uiEditExcel" type="checkbox" name="Excel" value="0">
+                                <label class="form-check-label" for="uiEditExcel">EXCEL</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class='form-check-input' id="uiEditWeb" type="checkbox" name="Web" value="0">
+                                <label class="form-check-label" for="uiEditWeb">WEB</label>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="ActualizarReporte()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/reportes.js"></script>
+}

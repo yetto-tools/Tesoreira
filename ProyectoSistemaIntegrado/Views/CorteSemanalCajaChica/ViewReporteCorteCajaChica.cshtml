@@ -1,0 +1,98 @@
+﻿@using CapaNegocio.Tesoreria;
+@using CapaEntidad.Tesoreria;
+@using CapaEntidad.Contabilidad;
+@using System.Globalization;
+@model ReportContabilidadViewModel
+
+
+@{
+    Layout = null;
+    ReporteCajaChicaBL obj = new ReporteCajaChicaBL();
+    ReporteCorteCajaChicaCLS reporte = obj.GetTransaccionesReporteChica(Model.CodigoReporte, Model.AnioOperacion, Model.SemanaOperacion);
+
+    // Inicio Operacion
+    string[] word = reporte.periodoOperacion[0].FechaInicioSemana.Split('/');
+    int anio = Convert.ToInt32(word[2]);
+    int mes = Convert.ToInt32(word[1]);
+    int dia = Convert.ToInt32(word[0]);
+    DateTime fechaInicio = new DateTime(anio, mes, dia);
+    string fechaInicioStr = fechaInicio.Day.ToString() + "/" + fechaInicio.Month.ToString() + "/" + fechaInicio.Year.ToString();
+    int diaSemana = Util.Conversion.DayOfWeek(fechaInicio);
+    string diaInicioStr = Util.Conversion.nombreDia(diaSemana);
+
+
+    // Fin Operacion
+    word = reporte.periodoOperacion[0].FechaFinSemana.Split('/');
+    anio = Convert.ToInt32(word[2]);
+    mes = Convert.ToInt32(word[1]);
+    dia = Convert.ToInt32(word[0]);
+    DateTime fechaFin = new DateTime(anio, mes, dia);
+    string fechaFinStr = fechaFin.Day.ToString() + "/" + fechaFin.Month.ToString() + "/" + fechaFin.Year.ToString();
+    diaSemana = Util.Conversion.DayOfWeek(fechaFin);
+    string diaFinStr = Util.Conversion.nombreDia(diaSemana);
+
+}
+
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h1 style="text-align: center;">OPERACIONES DE CAJA CHICA</h1>
+    <h2 style="text-align: center;">@reporte.encabezado.NombreCajaChica</h2>
+    <h3 style="text-align: center;">Fecha Corte: @reporte.encabezado.FechaCorteStr</h3>
+    <table style="border: 1px solid black; border-collapse: collapse; margin: 0 auto;">
+        <tr style="border: 1px solid black;">
+            <td colspan="2" style="border: 1px solid black; padding: 4px;"><div style="text-align: center;">Rango de Operaciones</div></td>
+        </tr>
+        <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 4px; font-size: 16px;"><div style="text-align: center;">@fechaInicioStr</div></td>
+            <td style="border: 1px solid black; padding: 4px; font-size: 16px;"><div style="text-align: center;">@fechaFinStr</div></td>
+        </tr>
+        <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 4px; font-size: 16px;"><div style="text-align: center;">@diaInicioStr</div></td>
+            <td style="border: 1px solid black; padding: 4px; font-size: 16px;"><div style="text-align: center;">@diaFinStr</div></td>
+        </tr>
+    </table>
+
+    <h2 style="text-align: left;"></h2>
+    <table style="border-collapse: collapse; margin: 0 auto;">
+        <tr style="border-bottom: 1px solid black;">
+            <td style="font-size: 16px; margin: auto; border: 1px solid black;"><div style="text-align: center;">Código</div></td>
+            <td style="font-size: 16px; margin: auto; border: 1px solid black;"><div style="text-align: center;">Operación</div></td>
+            <td style="font-size: 16px; margin: auto; border: 1px solid black;"><div style="text-align: center;">Nit</div></td>
+            <td style="font-size: 16px; margin: auto; border: 1px solid black;"><div style="text-align: center;">Proveedor</div></td>
+            <td style="font-size: 16px; margin: auto; border: 1px solid black;"><div style="text-align: center;">Serie</div></td>
+            <td style="font-size: 16px; margin: auto; border: 1px solid black;"><div style="text-align: center;">No. Documento</div></td>
+            <td style="font-size: 16px; margin: auto; border: 1px solid black;"><div style="text-align: center;">Fecha</div></td>
+            <td style="font-size: 16px; margin: auto; border: 1px solid black;"><div style="text-align: center;">Descripción</div></td>
+            <td style="font-size: 16px; margin: auto; border: 1px solid black;"><div style="text-align: center;">Monto</div></td>
+
+        </tr>
+
+        @{decimal montoTotal = 0;}
+        @foreach (var dr in reporte.listaTransacciones)
+        {
+            montoTotal = montoTotal + dr.Monto;
+    <tr>
+        <td style="padding: 4px; font-size: 16px; border: 1px solid black;">@dr.CodigoTransaccion</td>
+        <td style="padding: 4px; font-size: 16px; border: 1px solid black;">@dr.Operacion</td>
+        <td style="padding: 4px; font-size: 16px; border: 1px solid black;">@dr.NitProveedor</td>
+        <td style="padding: 4px; font-size: 16px; border: 1px solid black;">@dr.NombreProveedor</td>
+        <td style="padding: 4px; font-size: 16px; border: 1px solid black;">@dr.SerieFactura</td>
+        <td style="padding: 4px; font-size: 16px; border: 1px solid black;">@dr.NumeroDocumento</td>
+        <td style="padding: 4px; font-size: 16px; border: 1px solid black;">@dr.FechaDocumentoStr</td>
+        <td style="padding: 4px; font-size: 16px; border: 1px solid black;">@dr.Descripcion</td>
+        <td style="padding: 4px; font-size: 16px; border: 1px solid black;"><div style="text-align: right;">@dr.Monto.ToString("N2")</div></td>
+    </tr>
+        }
+    <tr>
+        <td colspan="7"></td>
+        <td style="padding: 4px; font-size: 16px; border: 1px solid black;"><div style="text-align: right; font-weight: bold;">TOTAL</div></td>
+        <td style="padding: 4px; font-size: 16px; border: 1px solid black;"><div style="text-align: center; font-weight: bold;">@montoTotal.ToString("N2")</div></td>
+    </tr>
+
+    </table>
+</body>
+</html>

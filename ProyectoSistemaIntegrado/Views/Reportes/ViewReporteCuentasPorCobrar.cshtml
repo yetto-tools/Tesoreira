@@ -1,0 +1,82 @@
+﻿@using CapaNegocio.Contabilidad;
+@using CapaEntidad.Contabilidad;
+@using System.Globalization;
+@model ReportContabilidadViewModel
+
+
+@{
+    Layout = null;
+
+    CuentaPorCobrarReporteBL obj = new CuentaPorCobrarReporteBL();
+    ReporteOperacionesCajaListCLS reporte = obj.GetDetalleCorteCuentasPorCobrar(Model.AnioOperacion, Model.SemanaOperacion, Model.CodigoReporte, Model.Arqueo);
+}
+
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h3 style="text-align: center;">REPORTES DE CUENTAS POR COBRAR EN CAJA</h3>
+    <h2 style="text-align: center;">REPORTE INTEGRADO POR ENTIDAD, TODAS LAS EMPRESAS</h2>
+    <table style="border: 1px solid black; border-collapse: collapse; margin: 0 auto;">
+        <tr style="border: 1px solid black;">
+            <td colspan="2" style="border: 1px solid black; padding: 4px;"><div style="text-align: center;">Rango de fechas</div></td>
+        </tr>
+        <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 4px;"><div style="text-align: center;">@reporte.listaEncabezadoFechas[0].FechaStr</div></td>
+            <td style="border: 1px solid black; padding: 4px;"><div style="text-align: center;">@reporte.listaEncabezadoFechas[6].FechaStr</div></td>
+        </tr>
+        <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 4px;"><div style="text-align: center;">Lunes</div></td>
+            <td style="border: 1px solid black; padding: 4px;"><div style="text-align: center;">Domingo</div></td>
+        </tr>
+    </table>
+    <h3 style="height: 10px;"> </h3>
+    @{decimal montoTotalSaldoInicial = 0; }
+    @{decimal montoTotalSolicitado = 0; }
+    @{decimal montoTotalDevoluciones = 0; }
+    @{decimal montoTotalSaldoFinal = 0; }
+    <table style="border-collapse: collapse; margin: 0 auto;">
+        <tr>
+            <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Código Entidad</div></th>
+            <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Entidad</div></th>
+            <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Categoría</div></th>
+            <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Operación</div></th>
+            <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Saldo Inicial</div></th>
+            <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Monto Solicitado</div></th>
+            <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Monto Devuelto</div></th>
+            <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Saldo Final</div></th>
+        </tr>
+        @foreach (var dr in reporte.listaDetalleCuentasPorCobrar)
+        {
+            montoTotalSaldoInicial = montoTotalSaldoInicial + dr.SaldoInicial;
+            montoTotalSolicitado = montoTotalSolicitado + dr.MontoSolicitado;
+            montoTotalDevoluciones = montoTotalDevoluciones + dr.MontoDevolucion;
+            montoTotalSaldoFinal = montoTotalSaldoFinal + dr.SaldoFinal;
+            <tr>
+                <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: right;">@dr.CodigoEntidad</div></td>
+                <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: left;">@dr.NombreEntidad</div></td>
+                <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: left;">@dr.Categoria</div></td>
+                <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: left;">@dr.Operacion</div></td>
+                <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: right;">@dr.SaldoInicial.ToString("N2")</div></td>
+                <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: right;">@dr.MontoSolicitado.ToString("N2")</div></td>
+                <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: right;">@dr.MontoDevolucion.ToString("N2")</div></td>
+                <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: right;">@dr.SaldoFinal.ToString("N2")</div></td>
+            </tr>
+        }
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td style="font-size: 16px; border: 1px solid black; padding-left: 2px; padding-right: 2px; font-weight: bold;"><div style="text-align: right;">TOTAL</div></td>
+            <td style="font-size: 16px; border: 1px solid black; padding-left: 2px; padding-right: 2px; font-weight: bold;"><div style="text-align: right;">@montoTotalSaldoInicial.ToString("N2")</div></td>
+            <td style="font-size: 16px; border: 1px solid black; padding-left: 2px; padding-right: 2px; font-weight: bold;"><div style="text-align: right;">@montoTotalSolicitado.ToString("N2")</div></td>
+            <td style="font-size: 16px; border: 1px solid black; padding-left: 2px; padding-right: 2px; font-weight: bold;"><div style="text-align: right;">@montoTotalDevoluciones.ToString("N2")</div></td>
+            <td style="font-size: 16px; border: 1px solid black; padding-left: 2px; padding-right: 2px; font-weight: bold;"><div style="text-align: right;">@montoTotalSaldoFinal.ToString("N2")</div></td>
+        </tr>
+
+    </table>
+
+</body>
+</html>

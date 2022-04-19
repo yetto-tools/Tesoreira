@@ -1,0 +1,95 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using CapaEntidad.Administracion;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ProyectoTesoreria5</title>
+    <link rel="stylesheet" href="~/lib/font-awesome/css/fontawesome.css" />
+    <link rel="stylesheet" href="~/lib/Font-Awesome/css/regular.css">
+    <link rel="stylesheet" href="~/lib/Font-Awesome/css/solid.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/constancia.css" />
+    <link rel="stylesheet" href="~/css/menu.css" />
+    <link rel="stylesheet" href="~/css/jqueryui.css" />
+    <link rel="stylesheet" href="~/css/datatable.css" />
+</head>
+<body>
+    <header>
+        @{
+            string cadena = Context.Session.GetString("usuario");
+            UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(cadena);
+            string cadenaMenus = Context.Session.GetString("menus");
+            List<SiteMapCLS> listItems = JsonConvert.DeserializeObject<List<SiteMapCLS>>(cadenaMenus);
+            string cadenaSemana = Context.Session.GetString("numeroSemanaActual");
+            ProgramacionSemanalCLS objSemanaActual = JsonConvert.DeserializeObject<ProgramacionSemanalCLS>(cadenaSemana);
+            string tituloPrincipal = Context.Session.GetString("tituloPrincipal");
+        }
+        <div class="m-4">
+            @*<div class="container">*@
+            @*<nav class="navbar navbar-expand-lg navbar-dark bg-primary">*@
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <div class="container-fluid">
+
+                    @*<div class="collapse navbar-collapse" id="main_nav">*@
+                    <div class="collapse navbar-collapse" id="navbarCollapse1">
+                        <ul class="navbar-nav">
+                            @*<li class="nav-item active"><a class="nav-link" href="#">Home </a> </li>*@
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle show" href="#" data-bs-toggle="dropdown">Sistema</a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="/Usuario/CambioPassword">Cambio de contraseña</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <site-map items="@listItems">  </site-map>
+                            @*<li class="nav-item"><a class="nav-link" href="#"> About </a></li>*@
+                            <li class="nav-item active"><a class="nav-link" href="/Reportes/Index">Reportes</a></li>
+                            <li class="nav-item active"><a class="nav-link" href="/Login/CerrarSesion">Cerrar Sesión</a></li>
+                        </ul>
+                    </div> <!-- navbar-collapse.// -->
+                </div> <!-- container-fluid.// -->
+            </nav>
+            <!--</div>--><!-- container //  -->
+        </div>
+    </header>
+
+    <div id="container">
+        <div><p>Usuario: @objUsuario.NombreUsuario</p></div>
+        <div class="titulo-principal"><h3>@tituloPrincipal</h3></div>
+        <div><p>Semana: @objSemanaActual.NumeroSemana</p></div>
+        <input type="hidden" id="hdfOculto" value="@Url.Content("~")" />
+        <input type="hidden" id="uiFechaSistema" value="@objSemanaActual.FechaSistema" />
+        <input type="hidden" id="uiNumeroSemanaActualSistema" value="@objSemanaActual.NumeroSemana" />
+        <input type="hidden" id="uiAnioSemanaActualSistema" value="@objSemanaActual.Anio" />
+        <input type="hidden" id="uiSetSemanaAnterior" value="@objUsuario.SetSemanaAnterior" />
+    </div>
+
+    <div class="container h-100 min-vh-100">
+        <div class="row h-100 justify-content-center align-items-center">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2021 - Sistema Integrado Panificadora Americana - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <div id="divLoading" style="display:none;background-image:url(@Url.Content("~")/images/loading.gif);position:absolute;top:0;left:0;
+	width:100%;height:100%;background-repeat:no-repeat;background-position:center">
+    </div>
+
+    <script src="~/js/constantes.js"></script>
+    <script src="~/js/jquery.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/menu.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

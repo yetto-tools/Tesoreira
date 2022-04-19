@@ -1,0 +1,134 @@
+﻿
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@{
+    ViewData["Title"] = "Create";
+    Context.Session.SetString("tituloPrincipal", "Configuración de Sueldos Indirectos");
+}
+
+<button type="button" id="ShowPopupEditConfiguracion" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropEditConfiguracion" style="display:none;"></button>
+
+<fieldset>
+    <form method="post" id="frmBusquedaConfiguracion" name="frmBusquedaConfiguracion">
+        <div style="margin: 0 auto; text-align: center;">
+            <table>
+                <tr>
+                    <td>AÑO</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><input type="text" name="AnioOperacion" class="form-control obligatorio solonumeros text-center" id="uiFiltroAnio" placeholder="Año" /></td>
+                    <td><input type="button" class="form-control btn btn-primary" value="Buscar" onclick="BuscarConfiguraciones()" /></td>
+                    <td><button type="button" id="ShowPopupNuevaConfiguracion" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdropNuevaConfiguracion" onclick="NuevaConfiguracion()">Agregar</button></td>
+                </tr>
+            </table>
+        </div>
+    </form>
+</fieldset>
+
+<div style="height: 50px; width:100%;"></div>
+<div id="divTabla">
+</div>
+
+<!-- Modal Nueva Configuración -->
+<div class="modal fade" id="staticBackdropNuevaConfiguracion" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelNuevaConfiguracion" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupNuevaConfiguracion"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupNuevaConfiguracion">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="frmNewConfiguracion">
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Año:</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control obligatorio text-center" id="uiNewAnio" name="Anio" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Mes:</label>
+                        <div class="col-sm-5">
+                            <select class="form-control obligatorio" id="uiNewMes" name="Mes">
+                                <option value="-1">-- Seleccione --</option>
+                                <option value="1">Enero</option>
+                                <option value="2">Febrero</option>
+                                <option value="3">Marzo</option>
+                                <option value="4">Abril</option>
+                                <option value="4">Mayo</option>
+                                <option value="4">Junio</option>
+                                <option value="4">Julio</option>
+                                <option value="4">Agosto</option>
+                                <option value="4">Septiembre</option>
+                                <option value="4">Octubre</option>
+                                <option value="4">Noviembre</option>
+                                <option value="4">Diciembre</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Monto:</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control obligatorio text-right" id="uiNewMonto" name="Monto" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="GuardarConfiguracion()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Edit Configuración -->
+<div class="modal fade" id="staticBackdropEditConfiguracion" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelEditConfiguracion" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupEditConfiguracion"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupEditConfiguracion">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="frmEditConfiguracion">
+                    <input type="hidden" class="form-control obligatorio text-center" id="uiEditMes" name="Mes" readonly />
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Año:</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control obligatorio text-center" id="uiEditAnio" name="Anio" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Año:</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control obligatorio text-center" id="uiEditNombreMes" name="NombreMes" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Monto:</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control obligatorio decimal-2 text-right" id="uiEditMonto" name="Monto" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="ActualizarConfiguracion()">Actualizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/config-sueldos-indirectos.js"></script>
+}

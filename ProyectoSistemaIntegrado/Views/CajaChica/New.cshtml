@@ -101,7 +101,7 @@
             <div class="col-sm-4">
                 <label class="col-form-label"> </label>
                 <div class="input-group rounded">
-                    <input type="search" class="form-control rounded" placeholder="Número de identificación tributaria" aria-label="Search"
+                    <input type="search" class="form-control rounded validate-nit" placeholder="Número de identificación tributaria" aria-label="Search"
                            aria-describedby="search-addon" id="uiNitBusqueda" />
                     <span class="input-group-text border-0" id="search-addon" onClick="buscarDatosContribuyente(this)">
                         <i class="fas fa-search"></i>
@@ -113,7 +113,7 @@
         <div class="mb-3 row">
             <label class="col-sm-2 col-form-label">Nit:</label>
             <div class="col-sm-10">
-                <input type="text" readonly name="NitProveedor" id="uiNitProveedor" class="form-control obligatorio" placeholder="Nit del proveedor" />
+                <input type="text" readonly name="NitProveedor" id="uiNitProveedor" class="form-control obligatorio validate-nit" placeholder="Nit del proveedor" />
             </div>
         </div>
 
@@ -188,7 +188,7 @@
                     <div class="mb-3 row">
                         <label class="col-sm-2 col-form-label">NIT:</label>
                         <div class="col-sm-10">
-                            <input type="text" name="Nit" class="form-control obligatorio" id="uiNewNit" readonly />
+                            <input type="text" name="Nit" class="form-control obligatorio validate-nit" id="uiNewNit" readonly />
                         </div>
                     </div>
                     <div class="mb-3 row">

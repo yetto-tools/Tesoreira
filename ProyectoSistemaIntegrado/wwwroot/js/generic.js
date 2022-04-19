@@ -1129,7 +1129,6 @@ function ValidarDatos(idFormulario) {
                 error = "el campo " + control.name + " el cambo debe ser de 2 decimales";
             }
         }
-      
 
         // seleccionar un registro de un conjunto de registros de una tabla
         /*resultado = clases.filter(p => p == "table-row-selected")

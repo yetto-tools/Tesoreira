@@ -373,7 +373,12 @@ function ActualizarDatosCorreccion() {
 
 function buscarDatosContribuyente() {
     let valor = get("uiNitBusqueda");
-    if (valor === "") {
+    if (valor === "" || !/^([a-zA-Z0-9]){5,13}$/.test(valor)) {
+        if (valor === "") {
+            Warning("Dato vacio");
+        } else {
+            Warning("Formato no válido, ingrese nit sin el guion");
+        }
     }
     else {
         fetchGet("Contribuyente/GetDataContribuyente/?nit=" + valor, "json", function (rpta) {

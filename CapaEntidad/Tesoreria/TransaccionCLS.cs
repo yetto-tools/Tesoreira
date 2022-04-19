@@ -157,6 +157,8 @@ namespace CapaEntidad.Tesoreria
 
         public short CodigoCanalVenta { get; set; }
 
+        public short CodigoOtroIngreso { get; set; }
+
     }
 
 

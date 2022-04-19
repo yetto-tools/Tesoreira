@@ -438,7 +438,7 @@ namespace CapaDatos.Administracion
                     }
                     conexion.Close();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     lista = null;
                     conexion.Close();

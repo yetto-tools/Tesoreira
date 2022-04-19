@@ -144,7 +144,8 @@ namespace CapaDatos.Tesoreria
                                                           codigo_tipo_doc_deposito,
                                                           numero_voucher,
                                                           nombre_proveedor,
-                                                          codigo_canal_venta)
+                                                          codigo_canal_venta,
+                                                          codigo_otro_ingreso)
                     VALUES(@CodigoTransaccion,
                            @CodigoSeguridad,
                            @CodigoEmpresa,
@@ -211,7 +212,8 @@ namespace CapaDatos.Tesoreria
                            @CodigoTipoDocumentoDeposito,
                            @NumeroVoucher,
                            @NombreProveedor,
-                           @CodigoCanalVenta)";
+                           @CodigoCanalVenta,
+                           @CodigoOtroIngreso)";
 
                     cmd.CommandText = sentenciaSQL;
                     cmd.Parameters.AddWithValue("@CodigoTransaccion", codigoTransaccion);
@@ -281,6 +283,7 @@ namespace CapaDatos.Tesoreria
                     cmd.Parameters.AddWithValue("@NumeroVoucher", objTransaccion.NumeroVoucher == null ? DBNull.Value : objTransaccion.NumeroVoucher);
                     cmd.Parameters.AddWithValue("@NombreProveedor", objTransaccion.NombreProveedor == null ? DBNull.Value : objTransaccion.NombreProveedor);
                     cmd.Parameters.AddWithValue("@CodigoCanalVenta", objTransaccion.CodigoCanalVenta);
+                    cmd.Parameters.AddWithValue("@CodigoOtroIngreso", objTransaccion.CodigoOtroIngreso);
                     cmd.ExecuteNonQuery();
 
                     #region Registro en Cuenta Corriente
@@ -536,7 +539,8 @@ namespace CapaDatos.Tesoreria
                                                           numero_voucher,  
                                                           nombre_proveedor,  
                                                           codigo_transaccion_ant, 
-                                                          codigo_canal_venta)
+                                                          codigo_canal_venta,
+                                                          codigo_otro_ingreso)
                     VALUES(@CodigoTransaccion,
                            @CodigoSeguridad,
                            @CodigoEmpresa,
@@ -603,7 +607,8 @@ namespace CapaDatos.Tesoreria
                            @NumeroVoucher, 
                            @NombreProveedor, 
                            @CodigoTransaccionAnt,
-                           @CodigoCanalVenta)";
+                           @CodigoCanalVenta,
+                           @CodigoOtroIngreso)";
 
                     cmd.CommandText = sentenciaSQL;
                     cmd.Parameters.AddWithValue("@CodigoTransaccion", codigoTransaccion);
@@ -673,6 +678,7 @@ namespace CapaDatos.Tesoreria
                     cmd.Parameters.AddWithValue("@NombreProveedor", objTransaccion.NombreProveedor == null ? DBNull.Value : objTransaccion.NombreProveedor);
                     cmd.Parameters.AddWithValue("@CodigoTransaccionAnt", objTransaccion.CodigoTransaccion);
                     cmd.Parameters.AddWithValue("@CodigoCanalVenta", objTransaccion.CodigoCanalVenta);
+                    cmd.Parameters.AddWithValue("@CodigoOtroIngreso", objTransaccion.CodigoOtroIngreso);
                     cmd.ExecuteNonQuery();
 
                     #region Registro en Cuenta Corriente
@@ -1126,7 +1132,8 @@ namespace CapaDatos.Tesoreria
                                                           numero_voucher,  
                                                           nombre_proveedor,  
                                                           codigo_transaccion_ant,
-                                                          codigo_canal_venta)
+                                                          codigo_canal_venta,
+                                                          codigo_otro_ingreso)
                     VALUES(@CodigoTransaccion,
                            @CodigoSeguridad,
                            @CodigoEmpresa,
@@ -1193,7 +1200,8 @@ namespace CapaDatos.Tesoreria
                            @NumeroVaucher,
                            @NombreProveedor,
                            @CodigoTransaccionAnt,
-                           @CodigoCanalVenta)";
+                           @CodigoCanalVenta,
+                           @CodigoOtroIngreso)";
 
                     cmd.CommandText = sentenciaSQL;
                     cmd.Parameters.AddWithValue("@CodigoTransaccion", codigoTransaccion);
@@ -1263,7 +1271,7 @@ namespace CapaDatos.Tesoreria
                     cmd.Parameters.AddWithValue("@NombreProveedor", objTransaccion.NombreProveedor == null ? DBNull.Value : objTransaccion.NombreProveedor);
                     cmd.Parameters.AddWithValue("@CodigoTransaccionAnt", objTransaccion.CodigoTransaccion);
                     cmd.Parameters.AddWithValue("@CodigoCanalVenta", objTransaccion.CodigoCanalVenta);
-
+                    cmd.Parameters.AddWithValue("@CodigoOtroIngreso", objTransaccion.CodigoOtroIngreso);
                     cmd.ExecuteNonQuery();
 
                     #region Registro en Cuenta Corriente
@@ -3271,7 +3279,8 @@ namespace CapaDatos.Tesoreria
                             x.codigo_canal_venta,
                             CONCAT(CASE WHEN x.efectivo = 1 THEN 'Efectivo,' ELSE '' END,CASE WHEN x.deposito = 1 THEN 'Depósito,' ELSE '' END,CASE WHEN x.cheque = 1 THEN 'Cheque' ELSE '' END) AS recursos,
                             FORMAT(GETDATE(), 'dd/MM/yyyy, hh:mm:ss') AS fecha_impresion_str,
-                            x.usuario_ing
+                            x.usuario_ing,
+                            x.codigo_otro_ingreso
                             
                     FROM db_tesoreria.transaccion x
                     INNER JOIN db_tesoreria.operacion w
@@ -3358,6 +3367,7 @@ namespace CapaDatos.Tesoreria
                             int postRecursos = dr.GetOrdinal("recursos");
                             int postFechaImpresionStr = dr.GetOrdinal("fecha_impresion_str");
                             int postUsuarioIng = dr.GetOrdinal("usuario_ing");
+                            int postCodigoOtroIngreso = dr.GetOrdinal("codigo_otro_ingreso");
 
 
                             while (dr.Read())
@@ -3424,6 +3434,7 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.Recursos = dr.IsDBNull(postRecursos) ? "" : dr.GetString(postRecursos);
                                 objTransaccion.FechaImpresionStr = dr.GetString(postFechaImpresionStr);
                                 objTransaccion.UsuarioIng = dr.GetString(postUsuarioIng);
+                                objTransaccion.CodigoOtroIngreso = dr.GetInt16(postCodigoOtroIngreso);
 
                             }
                         }
@@ -3603,7 +3614,7 @@ namespace CapaDatos.Tesoreria
                     }// fin using
                     conexion.Close();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     conexion.Close();
                     objTransaccionComboCLS = null;

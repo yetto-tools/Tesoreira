@@ -124,32 +124,33 @@ namespace CapaDatos.Tesoreria
             }
         }
 
-        public OperacionComboCLS GetAllOperacionesConfiguracion()
+        public List<OperacionCLS> GetAllOperacionesConfiguracion()
         {
-            OperacionComboCLS objOperacionComboCLS = new OperacionComboCLS();
+            List<OperacionCLS> lista = null;
             using (SqlConnection conexion = new SqlConnection(cadenaTesoreria))
             {
                 try
                 {
                     string sql = @"
                     SELECT x.codigo_operacion, 
-	                       x.codigo_categoria_operacion,
-	                       x.nombre_operacion,
+                           x.nombre_operacion,
 	                       x.nombre_reporte_caja,
+	                       x.codigo_categoria_operacion,
+                           z.nombre AS categoria_operacion,
 	                       x.descripcion,
 	                       x.habilitar_para_caja,
 	                       CASE 
 	                          WHEN x.habilitar_para_caja = 0 THEN 'NO'
 		                      WHEN x.habilitar_para_caja = 1 THEN 'SI'
 		                      ELSE ''
-	                       END AS habilitar_para_caja,
+	                       END AS habilitar_para_caja_tesoreria,
 	                       x.estado AS codigo_estado,
 	                       CASE 
 		                      WHEN x.estado = 0 THEN 'BLOQUEADO'
 		                      WHEN x.estado = 1 THEN 'ACTIVO'
 		                      ELSE 'NO DEFINIDO'
 	                       END AS estado,
-	                       x.codigo_concepto,
+	                       COALESCE(x.codigo_concepto,0) AS codigo_concepto,
 	                       w.nombre AS concepto,
 	                       CASE
 		                     WHEN x.aplica_caja_chica = 0 THEN 'NO'
@@ -163,7 +164,11 @@ namespace CapaDatos.Tesoreria
 		                     ELSE 'NO DEFINIDO'
 	                       END AS incluir_en_configuracion_entidad_generica,
 	                       x.codigo_tipo_operacion,
-	                       q.nombre AS tipo_operacion
+	                       q.nombre AS tipo_operacion,
+                           x.grupo_01,
+						   x.grupo_02,
+						   x.grupo_03
+
                     FROM db_tesoreria.operacion x
                     INNER JOIN db_tesoreria.tipo_operacion y
                     ON x.codigo_tipo_operacion = y.codigo_tipo_operacion
@@ -171,6 +176,8 @@ namespace CapaDatos.Tesoreria
                     ON x.codigo_categoria_operacion = z.codigo_categoria_operacion
                     LEFT JOIN db_tesoreria.concepto w
                     ON x.codigo_concepto = w.codigo_concepto
+                    INNER JOIN db_tesoreria.tipo_operacion q
+					ON x.codigo_tipo_operacion = q.codigo_tipo_operacion
                     ORDER BY x.nombre_operacion ASC";
 
                     conexion.Open();
@@ -182,32 +189,61 @@ namespace CapaDatos.Tesoreria
                         SqlDataReader dr = cmd.ExecuteReader();
                         if (dr != null)
                         {
-                            List<OperacionCLS> listaOperaciones = new List<OperacionCLS>();
+                            lista = new List<OperacionCLS>();
                             int postCodigoOperacion = dr.GetOrdinal("codigo_operacion");
-                            int postNombre = dr.GetOrdinal("nombre");
+                            int postNombreOperacion = dr.GetOrdinal("nombre_operacion");
                             int postNombreReporteCaja = dr.GetOrdinal("nombre_reporte_caja");
+                            int postCodigoCategoriaOperacion = dr.GetOrdinal("codigo_categoria_operacion");
+                            int postCategoriaOperacion = dr.GetOrdinal("categoria_operacion");
+                            int postDescripcion = dr.GetOrdinal("descripcion");
+                            int postHabilitarParaCajaTesoreria = dr.GetOrdinal("habilitar_para_caja_tesoreria");
+                            int postCodigoEstado = dr.GetOrdinal("codigo_estado");
+                            int postEstado = dr.GetOrdinal("estado");
+                            int postCodigoConcepto = dr.GetOrdinal("codigo_concepto");
+                            int postConcepto = dr.GetOrdinal("concepto");
+                            int postAplicaCajaChica = dr.GetOrdinal("aplica_caja_chica");
+                            int postIncluirEnConfiguracionEntidadGenerica = dr.GetOrdinal("incluir_en_configuracion_entidad_generica");
+                            int postCodigoTipoOperacion = dr.GetOrdinal("codigo_tipo_operacion");
+                            int postTipoOperacion = dr.GetOrdinal("tipo_operacion");
+                            int postGrupo01 = dr.GetOrdinal("grupo_01");
+                            int postGrupo02 = dr.GetOrdinal("grupo_02");
+                            int postGrupo03 = dr.GetOrdinal("grupo_03");
 
                             OperacionCLS objOperacionCLS;
                             while (dr.Read())
                             {
                                 objOperacionCLS = new OperacionCLS();
                                 objOperacionCLS.CodigoOperacion = dr.GetInt16(postCodigoOperacion);
-                                objOperacionCLS.Nombre = dr.GetString(postNombre);
+                                objOperacionCLS.Nombre = dr.GetString(postNombreOperacion);
                                 objOperacionCLS.NombreReporteCaja = dr.GetString(postNombreReporteCaja);
-                                listaOperaciones.Add(objOperacionCLS);
+                                objOperacionCLS.CodigoCategoriaOperacion = dr.GetInt16(postCodigoCategoriaOperacion);
+                                objOperacionCLS.CategoriaOperacion = dr.GetString(postCategoriaOperacion);
+                                objOperacionCLS.Descripcion = dr.IsDBNull(postDescripcion) ? "" : dr.GetString(postDescripcion);
+                                objOperacionCLS.HabilitarParaCajaTesoreria = dr.GetString(postHabilitarParaCajaTesoreria);
+                                objOperacionCLS.CodigoEstado = dr.GetByte(postCodigoEstado);
+                                objOperacionCLS.Estado = dr.GetString(postEstado);
+                                objOperacionCLS.CodigoConcepto = (short)dr.GetInt32(postCodigoConcepto);
+                                objOperacionCLS.Concepto = dr.IsDBNull(postConcepto) ? "": dr.GetString(postConcepto);
+                                objOperacionCLS.AplicaCajaChica = dr.GetString(postAplicaCajaChica);
+                                objOperacionCLS.IncluirEnConfiguracionEntidadGenerica = dr.GetString(postIncluirEnConfiguracionEntidadGenerica);
+                                objOperacionCLS.CodigoTipoOperacion = dr.GetInt16(postCodigoTipoOperacion);
+                                objOperacionCLS.TipoOperacion = dr.GetString(postTipoOperacion);
+                                objOperacionCLS.Grupo01 = dr.GetByte(postGrupo01);
+                                objOperacionCLS.Grupo02 = dr.GetByte(postGrupo02);
+                                objOperacionCLS.Grupo03 = dr.GetByte(postGrupo03);
+                                lista.Add(objOperacionCLS);
                             }//fin while
-                            objOperacionComboCLS.listaOperaciones = listaOperaciones;
                         }// fin if
                     }// fin using
                     conexion.Close();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     conexion.Close();
-                    objOperacionComboCLS = null;
+                    lista = null;
 
                 }
-                return objOperacionComboCLS;
+                return lista;
             }
         }
 

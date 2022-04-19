@@ -177,6 +177,11 @@ function clearDataFormulario() {
     let elementNombreProveedor = document.getElementById('uiNombreProveedor');
     elementNombreProveedor.value = "";
     elementNombreProveedor.classList.remove('obligatorio');
+
+    // Especiales 1
+    let elementOtrosIngresos = document.getElementById("uiCodigoOtroIngreso");
+    elementOtrosIngresos.classList.remove('obligatorio');
+    document.getElementById('div-otros-ingresos').style.display = 'none';
 }
 
 function setValueNumeroDocumentoDeposito(obj) {
@@ -250,6 +255,22 @@ function fillAnioSueldosIndirectorDonPepe() {
     }
 }
 
+function fillComboNewOtrosIngresos(obj) {
+    let valor = parseInt(obj);
+    // 1. POR CLIENTES
+    // 2. INGRESOS VARIOS
+    let elementOtrosIngresos = document.getElementById("uiCodigoOtroIngreso");
+    if (valor == TIPO_ESPECIAL1_OTROS_INGRESOS) {
+        fetchGet("Configuracion/GetListaOtrosIngresos", "json", function (rpta) {
+            FillCombo(rpta, "uiCodigoOtroIngreso", "codigoOtroIngreso", "nombre", "- seleccione -", "-1");
+            elementOtrosIngresos.classList.add('obligatorio');
+            document.getElementById('div-otros-ingresos').style.display = 'block';
+        })
+    } else {
+        elementOtrosIngresos.classList.remove('obligatorio');
+        document.getElementById('div-otros-ingresos').style.display = 'none';
+    }
+}
 
 function fillCombosNew() {
     fetchGet("Transaccion/FillCombosNuevaTransaccion/?codigoTipoOperacion=1", "json", function (rpta) {
@@ -301,7 +322,6 @@ function fillCombosEdit(codigoTransaccion) {
                 set("uiCodigoCategoriaEntidad", data.codigoCategoriaEntidad.toString());
                 set("uiCategoriaEntidad", data.categoriaEntidad);
                 set("uiCodigoCanalVenta", data.codigoCanalVenta.toString());
-                set("uiNombreEntidad", data.nombreEntidad);
                 set("uiNombreEntidad", data.nombreEntidad);
                 set("uiMontoTransaccion", Number(data.monto).toFixed(2).toString());
                 set("uiObservaciones", data.observaciones);
@@ -617,24 +637,6 @@ function MostrarEntidadesGenericas(value) {
     }
 }
 
-
-//onclick = "setNombreEntidadEspeciales1(this)"
-/*function setNombreEntidadEspeciales1(obj) {
-    let codigoTipoEspeciales1 = parseInt(obj.value);
-    if (codigoTipoEspeciales1 == TIPO_ESPECIAL1_OTROS_INGRESOS) {
-        set("uiCodigoCategoriaEntidad", "");
-        set("uiCodigoEntidad", "");
-        set("uiCodigoArea", "");
-        set("uiNombreEntidad", "");
-        document.getElementById('divTabla').style.display = 'block';
-    } else {
-        set("uiCodigoCategoriaEntidad", "");
-        set("uiCodigoEntidad", "");
-        set("uiCodigoArea", "");
-        set("uiNombreEntidad", "");
-        document.getElementById('divTabla').style.display = 'block';
-    }
-}*/
 
 function showControls(obj) {
     let valor = parseInt(obj);
@@ -1162,6 +1164,19 @@ function setDataControls(codigoOperacion, data) {
             document.getElementById('div-tipo-especiales1').style.display = 'block';
             document.getElementById('div-bonos-extra').style.display = 'none';
             setCheckedValueOfRadioButtonGroup('TipoEspeciales1', data.tipoEspeciales1);
+            let elementOtrosIngresos = document.getElementById("uiCodigoOtroIngreso");
+            if (data.tipoEspeciales1 == TIPO_ESPECIAL1_OTROS_INGRESOS) {
+                fetchGet("Configuracion/GetListaOtrosIngresos", "json", function (rpta) {
+                    FillCombo(rpta, "uiCodigoOtroIngreso", "codigoOtroIngreso", "nombre", "- seleccione -", "-1");
+                    elementOtrosIngresos.classList.add('obligatorio');
+                    document.getElementById('div-otros-ingresos').style.display = 'block';
+                    document.querySelector('#uiCodigoOtroIngreso').value = data.codigoOtroIngreso.toString();
+                })
+            } else {
+                document.getElementById('div-otros-ingresos').style.display = 'none';
+                elementOtrosIngresos.classList.remove('obligatorio');
+            }
+
             break;
         case PRESTAMO:
             document.getElementById('divTabla').style.display = 'block';
@@ -2432,7 +2447,7 @@ function ActualizarTransaccion(){
     Confirmacion("Corrección de Transacción", "¿Está Seguro(a) de realizar la corrección de esta transacción?", function (rpta) {
         fetchPost("Transaccion/ActualizarTransaccion", "text", frm, function (data) {
             if (data == "OK") {
-                Exito("Transaccion", "CorreccionTransaccion", true);
+                Exito("Transaccion", "Index", true);
             } else {
                 MensajeError(data);
             }

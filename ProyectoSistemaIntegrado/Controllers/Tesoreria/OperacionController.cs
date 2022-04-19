@@ -32,6 +32,11 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
             OperacionBL obj = new OperacionBL();
             return obj.GetListOperacionesCajaChica();
         }
+        public List<OperacionCLS> GetAllOperacionesConfiguracion()
+        {
+            OperacionBL obj = new OperacionBL();
+            return obj.GetAllOperacionesConfiguracion();
+        }
 
     }
 }

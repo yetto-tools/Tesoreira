@@ -135,7 +135,7 @@ namespace CapaDatos.Contabilidad
                     }
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     lista = null;
@@ -152,6 +152,11 @@ namespace CapaDatos.Contabilidad
             {
                 try
                 {
+                    string filterReporte = "AND x.codigo_reporte NOT IN (0,100)";
+                    if (codigoTipoReporte == Constantes.Reporte.CUENTAS_POR_COBRAR) {
+                        filterReporte = "AND x.codigo_reporte NOT IN (0)";
+                    }
+
                     string sql = @"
                     SELECT x.codigo_reporte, 
                            @CodigoTipoReporte AS codigo_tipo_reporte, 
@@ -191,7 +196,7 @@ namespace CapaDatos.Contabilidad
                     INNER JOIN  db_admon.tipo_reporte z
                     ON @CodigoTipoReporte = z.codigo_tipo_reporte
                     WHERE x.codigo_estado <> @CodigoEstadoAnulado
-                      AND x.codigo_reporte NOT IN (0)  
+                    " + filterReporte + @"
                     ORDER BY x.codigo_reporte DESC";
 
                     conexion.Open();

@@ -28,5 +28,11 @@ namespace CapaNegocio.Tesoreria
             return obj.GetListOperacionesCajaChica();
         }
 
+        public List<OperacionCLS> GetAllOperacionesConfiguracion()
+        {
+            OperacionDAL obj = new OperacionDAL();
+            return obj.GetAllOperacionesConfiguracion();
+        }
+
     }
 }

@@ -16,5 +16,11 @@ namespace CapaNegocio.Ventas
             ClienteDAL obj = new ClienteDAL();
             return obj.GuardarCliente(objEntidad, usuarioIng);
         }
+
+        public List<ClienteCLS> GetListAllClientes()
+        {
+            ClienteDAL obj = new ClienteDAL();
+            return obj.GetListAllClientes();
+        }
     }
 }

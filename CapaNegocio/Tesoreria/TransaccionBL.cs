@@ -25,11 +25,11 @@ namespace CapaNegocio.Tesoreria
         /// <param name="codigoOperacion"></param>
         /// <param name="codigoCategoriaEntidad"></param>
         /// <returns></returns>
-        public List<TransaccionCLS> BuscarTransaccionesEdicion(string idUsuario, int codigoOperacion, int codigoCategoriaEntidad)
-        {
-            TransaccionDAL obj = new TransaccionDAL();
-            return obj.BuscarTransaccionesEdicion(idUsuario, codigoOperacion, codigoCategoriaEntidad);
-        }
+        //public List<TransaccionCLS> BuscarTransaccionesEdicion(string idUsuario, int codigoOperacion, int codigoCategoriaEntidad)
+        //{
+        //    TransaccionDAL obj = new TransaccionDAL();
+        //    return obj.BuscarTransaccionesEdicion(idUsuario, codigoOperacion, codigoCategoriaEntidad);
+        //}
 
         public List<TransaccionCLS> BuscarTransaccionesConsulta(int anioOperacion, int semanaOperacion, int codigoReporte, int codigoOperacion, int codigoCategoriaEntidad, int diaOperacion)
         {

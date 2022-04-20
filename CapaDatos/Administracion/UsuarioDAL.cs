@@ -605,6 +605,7 @@ namespace CapaDatos.Administracion
                     }
 
                     cmd.Parameters.RemoveAt("@CodigoEmpresa");
+                    cmd.Parameters.RemoveAt("@CodigoCajaChica");
                     cmd.Parameters.Add("@CodigoTipoReporte", SqlDbType.Int);
                     string sqlInsertReportes = @"
                     INSERT INTO db_admon.usuario_tipo_reporte(codigo_tipo_reporte, id_usuario,estado,usuario_ing,fecha_ing)

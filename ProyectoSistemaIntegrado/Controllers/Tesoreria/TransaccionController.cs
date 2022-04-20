@@ -103,13 +103,13 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
         }
 
 
-        public List<TransaccionCLS> BuscarTransaccionesEdicion(string idUsuario, int codigoOperacion, int codigoCategoriaEntidad)
-        {
-            ViewBag.Message = HttpContext.Session.GetString("usuario");
-            UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
-            TransaccionBL obj = new TransaccionBL();
-            return obj.BuscarTransaccionesEdicion(objUsuario.IdUsuario, codigoOperacion, codigoCategoriaEntidad);
-        }
+        //public List<TransaccionCLS> BuscarTransaccionesEdicion(string idUsuario, int codigoOperacion, int codigoCategoriaEntidad)
+        //{
+        //    ViewBag.Message = HttpContext.Session.GetString("usuario");
+        //    UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
+        //    TransaccionBL obj = new TransaccionBL();
+        //    return obj.BuscarTransaccionesEdicion(objUsuario.IdUsuario, codigoOperacion, codigoCategoriaEntidad);
+        //}
 
 
         public List<TransaccionCLS> BuscarTransaccionesConsulta(int anioOperacion, int semanaOperacion, int codigoReporte, int codigoOperacion, int codigoCategoriaEntidad, int diaOperacion)

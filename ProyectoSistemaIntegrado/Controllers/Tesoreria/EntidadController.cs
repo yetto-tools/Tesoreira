@@ -65,7 +65,7 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
         public string GuardarEntidad(EntidadGenericaCLS objEntidad, string idUsuario)
         {
             string resultado = "";
-            if (objEntidad.CodigoCategoriaEntidad == Constantes.Entidad.Categoria.CLIENTES_ESPECIALES_2)
+            if (objEntidad.CodigoCategoriaEntidad == Constantes.Entidad.Categoria.CLIENTES_ESPECIALES_2 || objEntidad.CodigoCategoriaEntidad == Constantes.Entidad.Categoria.CLIENTES_ESPECIALES_1)
             {
                 ClienteBL obj = new ClienteBL();
                 resultado = obj.GuardarCliente(objEntidad, idUsuario);

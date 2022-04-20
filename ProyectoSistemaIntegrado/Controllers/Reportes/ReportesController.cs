@@ -199,10 +199,12 @@ namespace ProyectoSistemaIntegrado.Controllers.Reportes
             TransaccionViewModel obj = new TransaccionViewModel();
             obj.CodigoTransaccion = codigoTransaccion;
             var demoViewPortrait = new ViewAsPdf("ViewConstanciaIngreso", String.Empty, obj);
+            demoViewPortrait.PageMargins = new Margins { Left = 2, Right = 2};
+            demoViewPortrait.PageHeight = 297;
+            demoViewPortrait.PageWidth = 76;
             //demoViewPortrait.PageMargins = new Margins { Bottom = 5, Left = 5, Right = 5, Top = 5 };
             //demoViewPortrait.PageSize = Size.A5;
             //demoViewPortrait.PageOrientation = Orientation.Portrait;
-            //demoViewPortrait.PageHeight = 
 
             return demoViewPortrait;
         }
@@ -212,6 +214,8 @@ namespace ProyectoSistemaIntegrado.Controllers.Reportes
             TransaccionViewModel obj = new TransaccionViewModel();
             obj.CodigoTransaccion = codigoTransaccion;
             var demoViewPortrait = new ViewAsPdf("ViewConstanciaEgreso", String.Empty, obj);
+            demoViewPortrait.PageHeight = 297;
+            demoViewPortrait.PageWidth = 76;
             //demoViewPortrait.PageMargins = new Margins { Bottom = 5, Left = 5, Right = 5, Top = 5 };
             //demoViewPortrait.PageSize = Size.Letter;
 

@@ -2,6 +2,7 @@
 using CapaEntidad.Ventas;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -26,8 +27,8 @@ namespace CapaDatos.Ventas
                     long codigoSecuencia = (long)cmd.ExecuteScalar();
 
                     string sentenciaSQL = @"
-                    INSERT INTO db_ventas.cliente(codigo_cliente, nombre_completo, nombre_corto, codigo_tipo_cliente, descripcion, estado, usuario_ing, fecha_ing)
-                    VALUES(@CodigoCliente,@NombreCompleto,@NombreCorto,@CodigoTipoCliente,@Descripcion,@CodigoEstado, @UsuarioIng, @FechaIng)";
+                    INSERT INTO db_ventas.cliente(codigo_cliente, nombre_completo, nombre_corto, codigo_tipo_cliente, descripcion, estado, usuario_ing, fecha_ing, codigo_cliente_origen)
+                    VALUES(@CodigoCliente,@NombreCompleto,@NombreCorto,@CodigoTipoCliente,@Descripcion,@CodigoEstado, @UsuarioIng, @FechaIng, @CodigoClienteOrigen)";
 
                     cmd.CommandText = sentenciaSQL;
                     string codigoCliente = "9" + codigoSecuencia.ToString("D6");
@@ -35,7 +36,21 @@ namespace CapaDatos.Ventas
                     cmd.Parameters.AddWithValue("@CodigoCliente", codigoCliente);
                     cmd.Parameters.AddWithValue("@NombreCompleto", objEntidad.NombreEntidad);
                     cmd.Parameters.AddWithValue("@NombreCorto", objEntidad.NombreEntidad);
-                    cmd.Parameters.AddWithValue("@CodigoTipoCliente", Constantes.Cliente.Tipo.ESPECIALES_2);
+                    switch (objEntidad.CodigoCategoriaEntidad)
+                    {
+                        case Constantes.Entidad.Categoria.CLIENTES_ESPECIALES_1:
+                            cmd.Parameters.AddWithValue("@CodigoTipoCliente", Constantes.Cliente.Tipo.ESPECIALES_1);
+                            cmd.Parameters.AddWithValue("@CodigoClienteOrigen", objEntidad.CodigoEntidad);
+                            break;
+                        case Constantes.Entidad.Categoria.CLIENTES_ESPECIALES_2:
+                            cmd.Parameters.AddWithValue("@CodigoTipoCliente", Constantes.Cliente.Tipo.ESPECIALES_2);
+                            cmd.Parameters.AddWithValue("@CodigoClienteOrigen", DBNull.Value);
+                            break;
+                        default:
+                            cmd.Parameters.AddWithValue("@CodigoTipoCliente", 0);
+                            cmd.Parameters.AddWithValue("@CodigoClienteOrigen", DBNull.Value);
+                            break;
+                    }
                     cmd.Parameters.AddWithValue("@Descripcion", objEntidad.Descripcion == null ? DBNull.Value : objEntidad.Descripcion);
                     cmd.Parameters.AddWithValue("@CodigoEstado", Constantes.Empleado.EstadoEmpleado.ACTIVO);
                     cmd.Parameters.AddWithValue("@UsuarioIng", usuarioIng);
@@ -54,97 +69,51 @@ namespace CapaDatos.Ventas
             return resultado;
         }
 
-        //public List<ClienteCLS> buscarCliente()
-        //{
-        //    List<ClienteCLS> lista = null;
-        //    //using (SqlConnection conexion = new SqlConnection(cadenaQSystems))
-        //    using (OdbcConnection conexion = new OdbcConnection(cadenaQSystems))
-        //    {
-        //        try
-        //        {
-        //            conexion.Open();
-        //            String sql = @"
-        //            SELECT x.CLI_EMPRESA AS CODIGO_EMPRESA, 
-        //                   x.CLI_CODIGO AS CODIGO_CLIENTE,
-        //                   x.CLI_NOMBRE AS NOMBRE_CLIENTE,
-        //                   x.CLI_NIT AS NIT,
-        //                   x.CLI_VENDEDOR AS CODIGO_VENDEDOR
-        //            FROM MASTCLI x
-        //            LEFT JOIN CLIENTES_EXTRA y
-        //            ON x.CLI_EMPRESA = y.EXT_EMPRESA AND x.CLI_CODIGO = y.EXT_CLIENTE
-        //            WHERE x.CLI_EMPRESA = 'PAN'  AND x.CLI_CODIGO = '13608'";
+        public List<ClienteCLS> GetListAllClientes()
+        {
+            List<ClienteCLS> lista = null;
+            using (SqlConnection conexion = new SqlConnection(cadenaQSystems))
+            {
+                try
+                {
+                    String sql = @"
+                    SELECT cli_codigo AS codigo_cliente, 
+	                       cli_nombre AS nombre_cliente
+                    FROM MASTCLI 
+                    WHERE cli_empresa = 'PSA'
+                      AND cli_vendedor NOT IN (0,1,4,332) AND cli_codigo NOT IN ('000001')";
 
-        //            OdbcCommand command = new OdbcCommand(sql, conexion);
-        //            try
-        //            {
-        //                conexion.Open();
-        //                OdbcDataReader dr = command.ExecuteReader();
-        //                //SqlDataReader dr = cmd.ExecuteReader();
-        //                if (dr != null)
-        //                {
-        //                    ClienteCLS objCliente;
-        //                    lista = new List<ClienteCLS>();
-        //                    int postCodigoEmpresa = dr.GetOrdinal("codigo_empresa");
-        //                    int postCodigoCliente = dr.GetOrdinal("codigo_cliente");
-        //                    int postNombre = dr.GetOrdinal("nombre_cliente");
-        //                    int postNit = dr.GetOrdinal("nit");
-        //                    int postCodigoVendedor = dr.GetOrdinal("codigo_vendedor");
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand(sql, conexion))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        SqlDataReader dr = cmd.ExecuteReader();
+                        if (dr != null)
+                        {
+                            ClienteCLS objCliente;
+                            lista = new List<ClienteCLS>();
+                            int postCodigoCliente = dr.GetOrdinal("codigo_cliente");
+                            int postNombreCliente = dr.GetOrdinal("nombre_cliente");
+                            while (dr.Read())
+                            {
+                                objCliente = new ClienteCLS();
+                                objCliente.CodigoCliente = dr.GetString(postCodigoCliente);
+                                objCliente.NombreCompleto = dr.GetString(postNombreCliente);
+                                lista.Add(objCliente);
+                            }
+                        }
+                    }
+                    conexion.Close();
+                }
+                catch (Exception)
+                {
+                    conexion.Close();
+                    lista = null;
+                }
 
-        //                    while (dr.Read())
-        //                    {
-        //                        objCliente = new ClienteCLS();
-        //                        objCliente.codigoEmpresa = dr.GetString(postCodigoEmpresa);
-        //                        objCliente.codigo = dr.GetString(postCodigoCliente);
-        //                        objCliente.nombre = dr.GetString(postNombre);
-        //                        objCliente.nit = dr.IsDBNull(postNit) ? "" : dr.GetString(postNit);
-        //                        objCliente.codigoVendedor = dr.IsDBNull(postCodigoVendedor) ? 0 : dr.GetInt32(postCodigoVendedor);
-        //                        lista.Add(objCliente);
-        //                    }
-        //                }
-
-        //                command.ExecuteNonQuery();
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                Console.WriteLine(ex.Message);
-        //            }
-
-        //            /*using (SqlCommand cmd = new SqlCommand(sql, conexion))
-        //            {
-        //                cmd.CommandType = CommandType.Text;
-        //                SqlDataReader dr = cmd.ExecuteReader();
-        //                if (dr != null)
-        //                {
-        //                    ClienteCLS objCliente;
-        //                    lista = new List<ClienteCLS>();
-        //                    int postCodigoEmpresa = dr.GetOrdinal("codigo_empresa");
-        //                    int postCodigoCliente = dr.GetOrdinal("codigo_cliente");
-        //                    int postNombre = dr.GetOrdinal("nombre_cliente");
-        //                    int postNit = dr.GetOrdinal("nit");
-        //                    int postCodigoVendedor = dr.GetOrdinal("codigo_vendedor");
-
-        //                    while (dr.Read())
-        //                    {
-        //                        objCliente = new ClienteCLS();
-        //                        objCliente.codigoEmpresa = dr.GetString(postCodigoEmpresa);
-        //                        objCliente.codigo = dr.GetString(postCodigoCliente);
-        //                        objCliente.nombre = dr.GetString(postNombre);
-        //                        objCliente.nit = dr.IsDBNull(postNit) ? "" : dr.GetString(postNit);
-        //                        objCliente.codigoVendedor = dr.IsDBNull(postCodigoVendedor) ? 0 : dr.GetInt32(postCodigoVendedor);
-        //                        lista.Add(objCliente);
-        //                    }
-        //                }
-        //            }*/
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            conexion.Close();
-        //            lista = null;
-        //        }
-
-        //        return lista;
-        //    }
-        //}
+                return lista;
+            }
+        }
 
         /*public List<ClienteCLS> listaCliente()
         {

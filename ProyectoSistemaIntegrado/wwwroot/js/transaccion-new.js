@@ -1544,8 +1544,8 @@ function GuardarDatos() {
     } else {
         frm.set("Cheque", "0");
     }
-    //let codigo
 
+    let codigoTipoOperacion = parseInt(frm.get("CodigoTipoOperacion"));
     Confirmacion(undefined, undefined, function (rpta) {
         fetchPost("Transaccion/GuardarDatos/?complemento=0", "text", frm, function (data) {
             if (!/^[0-9]+$/.test(data)) {
@@ -1553,10 +1553,10 @@ function GuardarDatos() {
             } else {
                 let setSemanaAnterior = parseInt(document.getElementById("uiSetSemanaAnterior").value);
                 if (setSemanaAnterior == 0) {
-                    PrintConstanciaIngresos(data);
+                    PrintConstanciaIngresos(data, codigoTipoOperacion);
                     setTimeout(() => {
                         Exito("Transaccion", "Index", true);
-                    }, 2000);
+                    }, 1000);
                 } else {
                     Exito("Transaccion", "Index", true);
                 }
@@ -1565,7 +1565,7 @@ function GuardarDatos() {
     })
 }
 
-function ImprimirConstanciaIngresos(codigoOperacion, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion) {
+/*function ImprimirConstanciaIngresos(codigoOperacion, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion) {
     let html = getHtmlConstanciaIngreso(codigoOperacion, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion);
     document.getElementById("html-content-holder").innerHTML = html;
 
@@ -1577,10 +1577,10 @@ function ImprimirConstanciaIngresos(codigoOperacion, numeroRecibo, fechaRecibo, 
         anchorTag.target = '_blank';
         anchorTag.click();
     });
-}
+}*/
 
 
-function ImprimirConstanciaEgresos(numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion) {
+/*function ImprimirConstanciaEgresos(numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion) {
     let html = getHtmlConstanciaEgreso(numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion);
 
     document.getElementById("html-content-holder").innerHTML = html;
@@ -1592,7 +1592,7 @@ function ImprimirConstanciaEgresos(numeroRecibo, fechaRecibo, nombreEntidad, nom
         anchorTag.target = '_blank';
         anchorTag.click();
     });
-}
+}**/
 
 
 function intelligenceSearch() {
@@ -1942,13 +1942,62 @@ function addEntidad() {
     setI("uiTitlePopupEntidad", "Registro de Nueva Entidad");
     document.getElementById("ShowPopupEntidad").click();
     set("uiNewEntidadNombre", "");
+    set("uiNewCodigoCliente", "0");
+    document.getElementById('div-tabla-clientes').style.display = 'none';
     fillCategoriaEntidad();
+}
+
+function mostrarTodosLosClientes(obj) {
+    set("uiNewCodigoCliente", "0");
+    set("uiNewEntidadNombre", "");
+    let codigoCategoriaEntidad = parseInt(obj.value);
+    if (codigoCategoriaEntidad == CLIENTES_ESPECIALES_1) {
+        document.getElementById('div-tabla-clientes').style.display = 'block';
+        document.getElementById("uiNewEntidadNombre").readOnly = true;
+        intelligenceSearchCliente();
+    } else {
+        document.getElementById('div-tabla-clientes').style.display = 'none';
+        document.getElementById("uiNewEntidadNombre").readOnly = false;
+    }
+}
+
+function intelligenceSearchCliente() {
+    // Incluir el radioButton al inicio, por eso se comienza por la columna 1
+    let objGlobalConfigTransaccion = {
+        url: "Cliente/GetListAllClientes",
+        cabeceras: ["Código", "Nombre Cliente"],
+        propiedades: ["codigoCliente", "nombreCompleto"],
+        divContenedorTabla: "divContenedorTablaClientes",
+        paginar: true,
+        ocultarColumnas: true,
+        hideColumns: [
+            {
+                "targets": [1],
+                "visible": true,
+                "className": "dt-body-center"
+            }],
+        divPintado: "divTablaClientes",
+        idtabla: "tablaClientes",
+        slug: "codigoCliente",
+        radio: true,
+        eventoradio: "Clientes"
+    }
+    pintar(objGlobalConfigTransaccion);
 }
 
 function fillCategoriaEntidad() {
     fetchGet("EntidadCategoria/GetCategoriasParaRegistrarEntidad", "json", function (rpta) {
         FillCombo(rpta, "uiNewEntidadCategoria", "codigoCategoriaEntidad", "nombreCategoriaEntidad", "- seleccione -", "-1");
     })
+}
+
+function getDataRowRadioClientes(obj) {
+    let table = $('#tablaClientes').DataTable();
+    $('#tablaClientes tbody').on('change', 'tr', 'input:radio', function () {
+        let rowIdx = table.row(this).index();
+        set("uiNewCodigoCliente", table.cell(rowIdx, 1).data());
+        set("uiNewEntidadNombre", table.cell(rowIdx, 2).data());
+    });
 }
 
 function GuardarEntidad(obj) {

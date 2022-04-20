@@ -1,7 +1,7 @@
-﻿function getHtmlConstanciaIngreso(codigoOperacion, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion) {
+﻿function getHtmlConstanciaIngreso(codigoOperacion, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion, codigoSeguridad) {
     let table = `<div style="width: 287px; max-width: 287px; text-align: center; align-content: center; margin-left: 25px;">
                  <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">CAJA CENTRAL<br>
-                 <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">OMAVOHDNN<br>
+                 <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">${codigoSeguridad}<br>
                  <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif';">VALE DE INGRESOS<br>
                  <table style="border-top: 1px solid black; border-collapse: collapse;">
                     <tr style="border-collapse: collapse;">
@@ -41,10 +41,10 @@
     return table;
 }
 
-function getHtmlConstanciaEgreso(numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion) {
+function getHtmlConstanciaEgreso(numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion, codigoSeguridad) {
     let table = `<div style="width: 287px; max-width: 287px; text-align: center; align-content: center; margin-left: 25px;">
                  <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">CAJA CENTRAL<br>
-                 <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">OMAVOHDNN<br>
+                 <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">${codigoSeguridad}<br>
                  <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif';">COMPROBANTE DE EGRESO<br>
                  <table style="border-top: 1px solid black; border-collapse: collapse;">
                     <tr style="border-collapse: collapse;">
@@ -76,14 +76,23 @@ function getHtmlConstanciaEgreso(numeroRecibo, fechaRecibo, nombreEntidad, nombr
 }
 
 
-function PrintConstanciaIngresos(codigoTransaccion) {
-    //contentType: 'application/my-binary-type',
-    fetchGet("Reportes/ViewConstanciaIngreso/?codigoTransaccion=" + codigoTransaccion, "pdf", function (data) {
+function PrintConstanciaIngresos(codigoTransaccion, codigoTipoOperacion) {
+    let constancia = "";
+    switch (codigoTipoOperacion) {
+        case 1:
+            constancia = "ViewConstanciaIngreso";
+            break;
+        case -1:
+            constancia = "ViewConstanciaEgreso";
+            break;
+        default:
+            break;
+    }
+        //contentType: 'application/my-binary-type',
+    fetchGet("Reportes/" + constancia + "/?codigoTransaccion=" + codigoTransaccion, "pdf", function (data) {
         let blob = new Blob([data], { type: 'application/pdf' });
         /*var fileURL = URL.createObjectURL(blob);
         window.open(fileURL, "EPrescription");*/
-
-
         var formData = new FormData()
         formData.append('source', blob)
         $.ajax({

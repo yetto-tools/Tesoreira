@@ -551,12 +551,12 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupEntidad">&times;</button>
             </div>
             <div class="modal-body">
-
                 <form method="post" id="frmNewEntidad">
+                    <input type="hidden" name="CodigoEntidad" class="form-control obligatorio" id="uiNewCodigoCliente" readonly />
                     <div class="mb-3 row">
                         <label class="col-sm-2 col-form-label">Categoría:</label>
                         <div class="col-sm-4">
-                            <select class="form-control obligatorio" id="uiNewEntidadCategoria" name="CodigoCategoriaEntidad">
+                            <select class="form-control obligatorio" id="uiNewEntidadCategoria" name="CodigoCategoriaEntidad" onchange="mostrarTodosLosClientes(this)">
                             </select>
                         </div>
                     </div>
@@ -567,7 +567,10 @@
                         </div>
                     </div>
                 </form>
-
+                <div id="div-tabla-clientes" style="display:none;">
+                    <div id="divTablaClientes">
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>

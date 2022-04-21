@@ -132,6 +132,8 @@ namespace CapaDatos.Contabilidad
                 string sentenciaSQL = @"
                 UPDATE db_contabilidad.deposito_btb
                 SET monto = @Monto,
+                    codigo_banco_deposito = @CodigoBancoDeposito,
+                    numero_cuenta = @NumeroCuenta,
                     numero_boleta = @NumeroBoleta,
                     usuario_act = @UsuarioAct,
                     fecha_act = @FechaAct
@@ -142,6 +144,8 @@ namespace CapaDatos.Contabilidad
                     SqlCommand cmd = conexion.CreateCommand();
                     cmd.CommandText = sentenciaSQL;
                     cmd.Parameters.AddWithValue("@Monto", objDeposito.Monto);
+                    cmd.Parameters.AddWithValue("@CodigoBancoDeposito", objDeposito.CodigoBancoDeposito);
+                    cmd.Parameters.AddWithValue("@NumeroCuenta", objDeposito.NumeroCuenta);
                     cmd.Parameters.AddWithValue("@NumeroBoleta", objDeposito.NumeroBoleta);
                     cmd.Parameters.AddWithValue("@UsuarioAct", usuarioAct);
                     cmd.Parameters.AddWithValue("@FechaAct", DateTime.Now);
@@ -308,6 +312,7 @@ namespace CapaDatos.Contabilidad
                             int postSemanaOperacion = dr.GetOrdinal("semana_operacion");
                             int postCodigoReporte = dr.GetOrdinal("codigo_reporte");
                             int postPeriodo = dr.GetOrdinal("periodo");
+                            int postCodigoBancoDeposito = dr.GetOrdinal("codigo_banco_deposito");
                             int postBancoDeposito = dr.GetOrdinal("banco_deposito");
                             int postNumeroCuenta = dr.GetOrdinal("numero_cuenta");
                             int postNumeroBoleta = dr.GetOrdinal("numero_boleta");
@@ -332,6 +337,7 @@ namespace CapaDatos.Contabilidad
                                 objDepositosBTBCLS.SemanaOperacion = dr.GetByte(postSemanaOperacion);
                                 objDepositosBTBCLS.CodigoReporte = dr.GetInt32(postCodigoReporte);
                                 objDepositosBTBCLS.Periodo = dr.GetString(postPeriodo);
+                                objDepositosBTBCLS.CodigoBancoDeposito = dr.GetInt16(postCodigoBancoDeposito);
                                 objDepositosBTBCLS.BancoDeposito = dr.GetString(postBancoDeposito);
                                 objDepositosBTBCLS.NumeroCuenta = dr.GetString(postNumeroCuenta);
                                 objDepositosBTBCLS.NumeroBoleta = dr.GetString(postNumeroBoleta);

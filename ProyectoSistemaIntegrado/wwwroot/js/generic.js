@@ -295,8 +295,8 @@ function pintar(objConfiguracion) {
         objConfiguracionGlobal.aceptarmultiplesparametros = false;
     if (objConfiguracionGlobal.sumarcolumna == undefined)
         objConfiguracionGlobal.sumarcolumna = false;
-    if (objConfiguracionGlobal.columnasuma == undefined)
-        objConfiguracionGlobal.columnasuma = 0;
+    //if (objConfiguracionGlobal.columnasuma == undefined)
+    //    objConfiguracionGlobal.columnasuma = 0;
     let parser = new DOMParser();
     let xmlDoc = "";
     let abstracts = "";
@@ -310,51 +310,52 @@ function pintar(objConfiguracion) {
             if (objConfiguracionGlobal.ocultarColumnas == false) {
                 $("#" + objConfiguracion.idtabla).DataTable();
             } else {
-                if (objConfiguracionGlobal.sumarcolumna == true && objConfiguracionGlobal.columnasuma > 0) {
+                //if (objConfiguracionGlobal.sumarcolumna == true && objConfiguracionGlobal.columnasuma > 0) {
+                if (objConfiguracionGlobal.sumarcolumna == true) {
                     $("#" + objConfiguracion.idtabla).DataTable({
                         "autoWidth": objConfiguracionGlobal.autoWidth,
                         "columnDefs": objConfiguracionGlobal.hideColumns, "order": [[0, "desc"]],
                         "footerCallback": function (row, data, start, end, display) {
                             let api = this.api();
-                            let total = api
-                                .column(objConfiguracionGlobal.columnasuma)  // get column 1 , which is mark
-                                .data()
-                                .reduce(function (a, b) {
-                                    let valorA = a;
-                                    let valorB = b;
-                                    if (!/^\d*(\.\d{1})?\d{0,1}$/.test(valorA)) {
-                                        xmlDoc = parser.parseFromString(valorA, "text/xml");
-                                        abstracts = xmlDoc.querySelectorAll("input");
-                                        abstracts.forEach(a => {
-                                            valorA = a.getAttribute('value');
-                                        });
-                                    }
+                            objConfiguracionGlobal.columnasumalist.map(( columna ) => {
+                                let total = api
+                                    .column(columna)  // get column 1 , which is mark
+                                    .data()
+                                    .reduce(function (a, b) {
+                                        let valorA = a;
+                                        let valorB = b;
+                                        if (!/^\d*(\.\d{1})?\d{0,1}$/.test(valorA)) {
+                                            xmlDoc = parser.parseFromString(valorA, "text/xml");
+                                            abstracts = xmlDoc.querySelectorAll("input");
+                                            abstracts.forEach(a => {
+                                                valorA = a.getAttribute('value');
+                                            });
+                                        }
 
-                                    if (!/^\d*(\.\d{1})?\d{0,1}$/.test(valorB)) {
-                                        xmlDoc = parser.parseFromString(valorB, "text/xml");
-                                        abstracts = xmlDoc.querySelectorAll("input");
-                                        abstracts.forEach(a => {
-                                            valorB = a.getAttribute('value');
-                                        });
-                                    }
+                                        if (!/^\d*(\.\d{1})?\d{0,1}$/.test(valorB)) {
+                                            xmlDoc = parser.parseFromString(valorB, "text/xml");
+                                            abstracts = xmlDoc.querySelectorAll("input");
+                                            abstracts.forEach(a => {
+                                                valorB = a.getAttribute('value');
+                                            });
+                                        }
 
-                                    if (isNaN(valorA) || isNaN(valorB)) {
-                                        alert("Error en la sumatoria de columna");
-                                    }
+                                        if (isNaN(valorA) || isNaN(valorB)) {
+                                            alert("Error en la sumatoria de columna");
+                                        }
 
-                                    return parseFloat(valorA) + parseFloat(valorB);  // calculate the mark column
+                                        return parseFloat(valorA) + parseFloat(valorB);  // calculate the mark column
+
+                                    });
+
+                                const formatterQuetzales = new Intl.NumberFormat('qut', {
+                                    minimumFractionDigits: 2 // 2 decimales
                                 });
 
-                            //Intl.NumberFormat('es-ES'
-                            //style: 'currency',
-                            //currency: 'GTQ',
-                            const formatterQuetzales = new Intl.NumberFormat('qut', {
-                                minimumFractionDigits: 2 // 2 decimales
+                                $(api.column(columna).footer()).html(  // update the footer using the  total of mark column
+                                    formatterQuetzales.format(total)
+                                );
                             });
-
-                            $(api.column(objConfiguracionGlobal.columnasuma).footer()).html(  // update the footer using the  total of mark column
-                                formatterQuetzales.format(total)
-                            );
                         }
                     });
                 } else {
@@ -556,7 +557,7 @@ function generarTabla(res, objConfiguracionGlobal) {
                 if (objConfiguracionGlobal.addTextBox == true) {
                     objConfiguracionGlobal.propertiesColumnTextBox.map(({ value, name, align, validate }) => {
                         contenido += "<td style='padding: 2px;'>";
-                        contenido += `<input type='text' class="form-control ${align} ${validate}" id="ui${name}${i}" name='${name}' maxlength="20" multiline="false" type="text"  value ='${obj[value]}' autocomplete="off"/>`;
+                        contenido += `<input type='text' class="form-control ${align} ${validate}" id="ui${name}${i}" name='${name}' maxlength="20" multiline="false" type="text"  value ='${obj[value]}' autocomplete="off" onchange="onChangeMontoPorDevolver()" />`;
                         contenido += "</td>";
                     });
                 }

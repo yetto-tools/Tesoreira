@@ -50,7 +50,7 @@
 
 <!-- Modal Edit Depósitos BTB -->
 <div class="modal fade" id="staticBackdropEditDepositoBTB" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelEditDepositosBTB" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="uiTitlePopupEditDepositosBTB"></h5>
@@ -74,6 +74,21 @@
                         <label class="col-sm-2 col-form-label">Nombre Empleado:</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control obligatorio" id="uiEditNombreEmpleado" name="NombreEmpleado" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label"> </label>
+                        <div class="col-sm-4">
+                            <label class="col-form-label">Banco</label>
+                            <select class="form-control obligatorio" id="uiEditCodigoBancoDeposito" name="CodigoBancoDeposito" onchange="fillEditCuentasBancarias(this)">
+                                <option value="-1">-- Seleccione --</option>
+                                <option value="2">Banco Industrial, S.A</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="col-form-label">Numero Cuenta</label>
+                            <select class="form-control obligatorio" id="uiEditNumeroCuenta" name="NumeroCuenta">
+                            </select>
                         </div>
                     </div>
                     <div class="mb-3 row">

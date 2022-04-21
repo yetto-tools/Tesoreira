@@ -1780,7 +1780,7 @@ function getDataRowRadioEntidades(obj) {
                     set("uiCodigoArea", table.cell(rowIdx, 6).data());
                     break;
                 case ANTICIPO_LIQUIDABLE:
-                    if (codigoCategoriaEntidad == CATEGORIA_EMPLEADO || codigoCategoriaEntidad == CATEGORIA_VENDEDOR || codigoCategoriaEntidad == CATEGORIA_RUTERO_LOCAL ||
+                    if (codigoCategoriaEntidad == CATEGORIA_EMPLEADO || codigoCategoriaEntidad == CATEGORIA_EMPLEADO_INDIRECTO || codigoCategoriaEntidad == CATEGORIA_VENDEDOR || codigoCategoriaEntidad == CATEGORIA_RUTERO_LOCAL ||
                         codigoCategoriaEntidad == CATEGORIA_RUTERO_INTERIOR || codigoCategoriaEntidad == CATEGORIA_CAFETERIA || codigoCategoriaEntidad == CATEGORIA_SUPERMERCADOS) {
                         set("uiCodigoEntidad", table.cell(rowIdx, 1).data());
                         set("uiNombreEntidad", table.cell(rowIdx, 2).data());
@@ -1794,7 +1794,7 @@ function getDataRowRadioEntidades(obj) {
                     }
                     break;
                 case DEVOLUCION_ANTICIPIO_LIQUIDABLE:
-                    if (codigoCategoriaEntidad == CATEGORIA_EMPLEADO || codigoCategoriaEntidad == CATEGORIA_VENDEDOR || codigoCategoriaEntidad == CATEGORIA_RUTERO_LOCAL ||
+                    if (codigoCategoriaEntidad == CATEGORIA_EMPLEADO || codigoCategoriaEntidad == CATEGORIA_EMPLEADO_INDIRECTO || codigoCategoriaEntidad == CATEGORIA_VENDEDOR || codigoCategoriaEntidad == CATEGORIA_RUTERO_LOCAL ||
                         codigoCategoriaEntidad == CATEGORIA_RUTERO_INTERIOR || codigoCategoriaEntidad == CATEGORIA_CAFETERIA || codigoCategoriaEntidad == CATEGORIA_SUPERMERCADOS) {
                         set("uiCodigoEntidad", table.cell(rowIdx, 1).data());
                         set("uiNombreEntidad", table.cell(rowIdx, 2).data());

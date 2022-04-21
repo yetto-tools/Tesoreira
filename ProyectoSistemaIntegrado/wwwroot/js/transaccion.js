@@ -127,7 +127,7 @@ function MostrarTransacciones(codigoOperacion, codigoCategoriaEntidad, diaOperac
         imprimir: true,
         paginar: true,
         sumarcolumna: true,
-        columnasuma: 14,
+        columnasumalist: [14],
         ocultarColumnas: true,
         hideColumns: [
             {
@@ -278,7 +278,7 @@ function MostrarTransaccionesConsulta(anioOperacion, semanaOperacion, codigoRepo
         funcionalerta: "CorreccionTransaccion",
         imprimir: true,
         sumarcolumna: true,
-        columnasuma: 14,
+        columnasumalist: [14],
         paginar: true,
         ocultarColumnas: true,
         hideColumns: [

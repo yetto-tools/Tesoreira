@@ -776,10 +776,10 @@ function GuardarDesglocePlanilla() {
     let frm = new FormData(frmGuardar);
     Confirmacion(undefined, undefined, function (rpta) {
         fetchPost("Transaccion/GuardarDatos/?complemento=1", "text", frm, function (data) {
-            if (data == "OK") {
-                setFiltroDesglocePagoPlanillas();
-            } else {
+            if (!/^[0-9]+$/.test(data)) {
                 MensajeError(data);
+            } else {
+                setFiltroDesglocePagoPlanillas();
             }
         })
     })

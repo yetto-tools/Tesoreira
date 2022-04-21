@@ -99,7 +99,7 @@ function MostrarTransaccionesFacturaAlContado() {
         funcioneliminar: "TransaccionComplemento",
         paginar: true,
         sumarcolumna: true,
-        columnasuma: 8,
+        columnasumalist: [8],
         ocultarColumnas: true,
         hideColumns: [
             {
@@ -186,7 +186,7 @@ function MostrarCompromisosFiscales(codigoEmpresa, anioOperacion, semanaOperacio
         ocultarColumnas: true,
         verdetalle: true,
         sumarcolumna: true,
-        columnasuma: 12,
+        columnasumalist: [12],
         funciondetalle: "CompromisoFiscal",
         hideColumns: [
             {
@@ -241,7 +241,7 @@ function MostrarDetalleCompromisoFiscal(codigoEmpresa, anioOperacion, semanaOper
         paginar: true,
         ocultarColumnas: true,
         sumarcolumna: true,
-        columnasuma: 7,
+        columnasumalist: [7],
         hideColumns: [
             {
                 "targets": [1],
@@ -271,7 +271,7 @@ function MostrarCompromisosFiscalesEdicion(codigoEmpresa, anioOperacion, semanaO
         ocultarColumnas: true,
         verdetalle: true,
         sumarcolumna: true,
-        columnasuma: 12,
+        columnasumalist: [12],
         funciondetalle: "CompromisoFiscalEdicion",
         hideColumns: [
             {
@@ -328,7 +328,7 @@ function MostrarDetalleCompromisoFiscalEdicion(codigoEmpresa, anioOperacion, sem
         sumarcolumna: true,
         eliminar: true,
         funcioneliminar: "DetalleCompromisoFiscalEdicion",
-        columnasuma: 8,
+        columnasumalist: [8],
         hideColumns: [
             {
                 "targets": [1],

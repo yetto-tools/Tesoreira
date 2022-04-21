@@ -100,6 +100,17 @@ function fillCuentasBancarias(obj) {
     })
 }
 
+function fillEditCuentasBancarias(obj) {
+    let valor = parseInt(obj.value);
+    fetchGet("CuentaBancaria/GetCuentasBancariasTesoreria/?codigoBanco=" + valor.toString(), "json", function (rpta) {
+        if (rpta.length > 0) {
+            FillCombo(rpta, "uiEditNumeroCuenta", "numeroCuenta", "numeroCuentaDescriptivo", "- seleccione cuenta -", "-1");
+        } else {
+            FillComboUnicaOpcion("uiEditNumeroCuenta", "-1", "-- No existe cuenta -- ");
+        }
+    })
+}
+
 function CalcularMontosPagosBTB() {
     let codigoTipoPlanilla = parseInt(document.getElementById("uiFiltroTipoPlanilla").value);
     let anioPlanilla = parseInt(document.getElementById("uiFiltroAnioPlanilla").value);
@@ -110,8 +121,8 @@ function CalcularMontosPagosBTB() {
 function MostrarEmpleadosBackToBack(codigoTipoPlanilla, anioPlanilla, mesPlanilla) {
     objConfiguracion = {
         url: "PlanillaTemporal/GetEmpleadosBackToBackPlanilla/?codigoTipoPlanilla=" + codigoTipoPlanilla.toString() + "&anioPlanilla=" + anioPlanilla.toString() + "&mesPlanilla=" + mesPlanilla.toString(),
-        cabeceras: ["Código Empresa", "Empresa", "Código Empleado", "Nombre Empleado", "Código Operación", "Operación", "Codigo Frecuencia Pago", "Frecuencia de Pago", "Tipo BTB", "Bono Decreto 37-2001", "Salario Diario"],
-        propiedades: ["codigoEmpresa", "nombreEmpresa", "codigoEmpleado", "nombreCompleto", "codigoOperacion", "operacion", "codigoFrecuenciaPago", "frecuenciaPago", "codigoTipoBTB", "bonoDecreto372001", "salarioDiario"],
+        cabeceras: ["Código Empresa", "Empresa", "Código Empleado", "Nombre Empleado", "Código Operación", "Operación", "Codigo Frecuencia Pago", "Frecuencia de Pago", "Tipo BTB", "Bono Decreto 37-2001", "Salario Diario", "Monto Calculado"],
+        propiedades: ["codigoEmpresa", "nombreEmpresa", "codigoEmpleado", "nombreCompleto", "codigoOperacion", "operacion", "codigoFrecuenciaPago", "frecuenciaPago", "codigoTipoBTB", "bonoDecreto372001", "salarioDiario", "montoDevolucionBTB"],
         divContenedorTabla: "divContenedorTabla",
         displaydecimals: ["monto"],
         divPintado: "divTabla",
@@ -122,6 +133,12 @@ function MostrarEmpleadosBackToBack(codigoTipoPlanilla, anioPlanilla, mesPlanill
                 "header": "Monto Devolución",
                 "value": "montoDevolucionBTB",
                 "name": "MontoDevolucionBTB",
+                "align": "text-right",
+                "validate": "decimal-2"
+            }, {
+                "header": "Monto Descuento",
+                "value": "montoDescuento",
+                "name": "MontoDescuento",
                 "align": "text-right",
                 "validate": "decimal-2"
             }],
@@ -143,9 +160,120 @@ function MostrarEmpleadosBackToBack(codigoTipoPlanilla, anioPlanilla, mesPlanill
             }],
         slug: "codigoEmpresa",
         sumarcolumna: true,
-        columnasuma: 11
+        columnasumalist: [11,12,13]
     }
     pintar(objConfiguracion);
+}
+
+function onChangeMontoPorDevolver() {
+    let table = $('#tabla').DataTable();
+    //table.cells($(this).closest('td')).invalidate().draw(false);
+    // Redraw table (optional)
+    //table.draw(false);
+    let column = table.column(12);
+    let parser = new DOMParser();
+    let xmlDoc = "";
+    let abstracts = "";
+
+    /*let total = column.data().reduce(function (a, b) {
+        let valorA = a;
+        let valorB = b;
+        if (!/^\d*(\.\d{1})?\d{0,1}$/.test(valorA)) {
+            xmlDoc = parser.parseFromString(valorA, "text/xml");
+            abstracts = xmlDoc.querySelectorAll("input");
+            abstracts.forEach(a => {
+                valorA = a.getAttribute('value');
+            });
+        }
+
+        if (!/^\d*(\.\d{1})?\d{0,1}$/.test(valorB)) {
+            xmlDoc = parser.parseFromString(valorB, "text/xml");
+            abstracts = xmlDoc.querySelectorAll("input");
+            abstracts.forEach(a => {
+                valorB = a.getAttribute('value');
+            });
+        }
+
+        if (isNaN(valorA) || isNaN(valorB)) {
+            alert("Error en la sumatoria de columna");
+        }
+
+        return parseFloat(valorA) + parseFloat(valorB);  // calculate the mark column
+    });
+    const formatterQuetzales = new Intl.NumberFormat('qut', {
+        minimumFractionDigits: 2 // 2 decimales
+    });*/
+
+    //$('#tabla tbody').on('change', 'tr', function () {
+    //    var $row = table.row(this).nodes().to$(),
+    //    currentInputValue = $row.find('td:eq(0) input').val()
+    //    console.log(currentInputValue)
+    //})
+
+    //$(column.footer()).html(
+    //    column.data().reduce(function (a, b) {
+    //        return a + b;
+    //    })
+    //);
+
+    $(column.footer()).html(
+        //formatterQuetzales.format(total)
+        column.data().reduce(function (a, b) {
+            let valorA = a;
+            let valorB = b;
+            if (!/^\d*(\.\d{1})?\d{0,1}$/.test(valorA)) {
+                xmlDoc = parser.parseFromString(valorA, "text/xml");
+                abstracts = xmlDoc.querySelectorAll("input");
+                abstracts.forEach(a => {
+                    valorA = a.getAttribute('value');
+                });
+            }
+
+            if (!/^\d*(\.\d{1})?\d{0,1}$/.test(valorB)) {
+                xmlDoc = parser.parseFromString(valorB, "text/xml");
+                abstracts = xmlDoc.querySelectorAll("input");
+                abstracts.forEach(a => {
+                    valorB = a.getAttribute('value');
+                });
+            }
+
+            if (isNaN(valorA) || isNaN(valorB)) {
+                alert("Error en la sumatoria de columna");
+            }
+
+            return parseFloat(valorA) + parseFloat(valorB);  // calculate the mark column
+        })
+    );
+
+
+    $(column.footer()).html(
+        //formatterQuetzales.format(total)
+        column.data().reduce(function (a, b) {
+            let valorA = a;
+            let valorB = b;
+            if (!/^\d*(\.\d{1})?\d{0,1}$/.test(valorA)) {
+                xmlDoc = parser.parseFromString(valorA, "text/xml");
+                abstracts = xmlDoc.querySelectorAll("input");
+                abstracts.forEach(a => {
+                    valorA = a.getAttribute('value');
+                });
+            }
+
+            if (!/^\d*(\.\d{1})?\d{0,1}$/.test(valorB)) {
+                xmlDoc = parser.parseFromString(valorB, "text/xml");
+                abstracts = xmlDoc.querySelectorAll("input");
+                abstracts.forEach(a => {
+                    valorB = a.getAttribute('value');
+                });
+            }
+
+            if (isNaN(valorA) || isNaN(valorB)) {
+                alert("Error en la sumatoria de columna");
+            }
+
+            return parseFloat(valorA) + parseFloat(valorB);  // calculate the mark column
+        })
+    );
 }
 
 function FillReportesDeCaja() {
@@ -184,7 +312,7 @@ function CargarDevolucionBTB() {
             CodigoOperacion: codigoOperacion,
             Anio: anioPlanilla,
             Mes: mesPlanilla,
-            Monto: table.cell(index, 11).nodes().to$().find('input').val()
+            Monto: table.cell(index, 12).nodes().to$().find('input').val()
         };
         arrayProperties.push(obj);
     });
@@ -254,7 +382,7 @@ function MostrarEmpleadosBackToBackDepositos(codigoTipoPlanilla, anioPlanilla, m
             }],
         slug: "codigoEmpresa",
         sumarcolumna: true,
-        columnasuma: 13
+        columnasumalist: [13]
     }
     pintar(objConfiguracion);
 }
@@ -376,7 +504,7 @@ function MostrarBTBDepositosConsulta(anioPlanilla, anioOperacion, semanaOperacio
             }],
         slug: "codigoDepositoBTB",
         sumarcolumna: true,
-        columnasuma: 11
+        columnasumalist: [11]
     }
     pintar(objConfiguracion);
 }
@@ -392,8 +520,8 @@ function BuscarBoletasDepositosBTBEdicion() {
 function MostrarBTBDepositosEdicion(anioPlanilla, anioOperacion, semanaOperacion, codigoReporte) {
     objConfiguracion = {
         url: "DepositosBTB/GetDepositosBTB/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString() + "&anioPlanilla=" + anioPlanilla.toString() + "&codigoReporte=" + codigoReporte.toString(),
-        cabeceras: ["Código", "Año Planilla", "Mes", "Empresa", "Código Empleado", "Nombre Empleado", "Año operación", "Semana Operación", "Periodo", "Número Boleta", "Monto", "Creado por", "Fecha Creación"],
-        propiedades: ["codigoDepositoBTB", "anioPlanilla", "nombreMesPlanilla", "nombreEmpresa", "codigoEmpleado", "nombreEmpleado", "anioOperacion", "semanaOperacion", "periodo", "numeroBoleta", "monto", "usuarioIng", "fechaIngStr"],
+        cabeceras: ["Código","codigoBancoDeposito","Banco","Cuenta", "Año Planilla", "Mes", "Empresa", "Código Empleado", "Nombre Empleado", "Año operación", "Semana Operación", "Periodo", "Número Boleta", "Monto", "Creado por", "Fecha Creación"],
+        propiedades: ["codigoDepositoBTB", "codigoBancoDeposito","bancoDeposito", "numeroCuenta", "anioPlanilla", "nombreMesPlanilla", "nombreEmpresa", "codigoEmpleado", "nombreEmpleado", "anioOperacion", "semanaOperacion", "periodo", "numeroBoleta", "monto", "usuarioIng", "fechaIngStr"],
         divContenedorTabla: "divContenedorTabla",
         displaydecimals: ["monto"],
         divPintado: "divTabla",
@@ -405,13 +533,16 @@ function MostrarBTBDepositosEdicion(anioPlanilla, anioOperacion, semanaOperacion
         ocultarColumnas: true,
         hideColumns: [
             {
-                "targets": [10],
+                "targets": [1],
+                "visible": false
+            }, {
+                "targets": [13],
                 "visible": true,
                 "className": "dt-body-right"
             }],
         slug: "codigoDepositoBTB",
         sumarcolumna: true,
-        columnasuma: 10
+        columnasumalist: [10]
     }
     pintar(objConfiguracion);
 }
@@ -421,18 +552,30 @@ function EditarDepositoBTB(obj) {
     $('#tabla tbody').on('click', '.option-editar', function () {
         let rowIdx = table.row(this).index();
         let codigoDepositoBTB = obj;
-        let codigoEmpleado = table.cell(rowIdx, 4).data();
-        let nombreEmpleado = table.cell(rowIdx, 5).data();
-        let numeroBoleta = table.cell(rowIdx, 9).data();
-        let monto = table.cell(rowIdx, 10).data();
+        let codigoBancoDeposito = table.cell(rowIdx, 1).data();
+        let numeroCuenta = table.cell(rowIdx, 3).data();
+        let codigoEmpleado = table.cell(rowIdx, 7).data();
+        let nombreEmpleado = table.cell(rowIdx, 8).data();
+        let numeroBoleta = table.cell(rowIdx, 12).data();
+        
+        let monto = table.cell(rowIdx, 13).data();
 
         setI("uiTitlePopupEditDepositosBTB", "Edición de Depósitos BTB");
         document.getElementById("ShowPopupEditDepositoBTB").click();
+        document.getElementById("uiEditCodigoBancoDeposito").value = codigoBancoDeposito;
         set("uiEditCodigoDepositosBTB", codigoDepositoBTB);
         set("uiEditCodigoEmpleado", codigoEmpleado);
         set("uiEditNombreEmpleado", nombreEmpleado);
         set("uiEditNumeroBoleta", numeroBoleta);
         set("uiEditMonto", monto);
+        fetchGet("CuentaBancaria/GetCuentasBancariasTesoreria/?codigoBanco=" + codigoBancoDeposito, "json", function (rpta) {
+            if (rpta.length > 0) {
+                FillCombo(rpta, "uiEditNumeroCuenta", "numeroCuenta", "numeroCuentaDescriptivo", "- seleccione cuenta -", "-1");
+                document.getElementById("uiEditNumeroCuenta").value = numeroCuenta;
+            } else {
+                FillComboUnicaOpcion("uiEditNumeroCuenta", "-1", "-- No existe cuenta -- ");
+            }
+        })
     });
 
 }

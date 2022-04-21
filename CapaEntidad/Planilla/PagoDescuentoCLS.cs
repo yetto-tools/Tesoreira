@@ -36,5 +36,6 @@ namespace CapaEntidad.Planilla
         public byte PermisoAnular { get; set; }
         public string Periodo { get; set; }
         public string NumeroBoleta { get; set; }
+        public decimal MontoDescuento { get; set; }
     }
 }

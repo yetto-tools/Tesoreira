@@ -43,6 +43,7 @@ namespace ProyectoSistemaIntegrado.Controllers.RRHH
             return obj.GuardarPersona(objPersona, objUsuario.IdUsuario);
         }
 
+
         public string ActualizarPersona(PersonaCLS objPersona)
         {
             ViewBag.Message = HttpContext.Session.GetString("usuario");

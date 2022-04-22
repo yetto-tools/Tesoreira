@@ -1,4 +1,6 @@
-﻿using CapaEntidad.Administracion;
+﻿using CapaDatos.RRHH;
+using CapaEntidad.Administracion;
+using CapaEntidad.RRHH;
 using CapaEntidad.Tesoreria;
 using CapaNegocio.Tesoreria;
 using CapaNegocio.Ventas;
@@ -64,16 +66,34 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
 
         public string GuardarEntidad(EntidadGenericaCLS objEntidad, string idUsuario)
         {
+            ClienteBL objCliente = new ClienteBL();
             string resultado = "";
-            if (objEntidad.CodigoCategoriaEntidad == Constantes.Entidad.Categoria.CLIENTES_ESPECIALES_2 || objEntidad.CodigoCategoriaEntidad == Constantes.Entidad.Categoria.CLIENTES_ESPECIALES_1)
+            switch (objEntidad.CodigoCategoriaEntidad)
             {
-                ClienteBL obj = new ClienteBL();
-                resultado = obj.GuardarCliente(objEntidad, idUsuario);
+                case Constantes.Entidad.Categoria.CLIENTES_ESPECIALES_2:
+                    resultado = objCliente.GuardarCliente(objEntidad, idUsuario);
+                    break;
+                case Constantes.Entidad.Categoria.CLIENTES_ESPECIALES_1:
+                    resultado = objCliente.GuardarCliente(objEntidad, idUsuario);
+                    break;
+                case Constantes.Entidad.Categoria.EMPLEADO_INDIRECTO:
+                    PersonaCLS objPersona = new PersonaCLS();
+                    objPersona.PrimerNombre = objEntidad.PrimerNombre;
+                    objPersona.SegundoNombre = objEntidad.SegundoNombre;
+                    objPersona.PrimerApellido = objEntidad.PrimerApellido;
+                    objPersona.SegundoApellido = objEntidad.SegundoApellido;
+                    objPersona.CodigoGenero = objEntidad.CodigoGenero;
+                    objPersona.NoIncluidoEnPlanilla = 1;
+                    objPersona.CodigoArea = Constantes.Area.PRODUCCION;
+                    PersonaDAL obj = new PersonaDAL();
+                    resultado = obj.GuardarPersonaIndirecta(objPersona, idUsuario);
+                    break;
+                default:
+                    EntidadBL objEntidadGenerica = new EntidadBL();
+                    resultado = objEntidadGenerica.GuardarEntidad(objEntidad, idUsuario);
+                    break;
             }
-            else {
-                EntidadBL obj = new EntidadBL();
-                resultado = obj.GuardarEntidad(objEntidad, idUsuario);
-            }
+
             return resultado;
         }
 

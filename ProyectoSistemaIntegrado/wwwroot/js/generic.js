@@ -285,6 +285,8 @@ function pintar(objConfiguracion) {
         objConfiguracionGlobal.funciondetalle = "";
     if (objConfiguracionGlobal.fieldNameExcluir == undefined)
         objConfiguracionGlobal.fieldNameExcluir = "";
+    if (objConfiguracionGlobal.ExcluirEnabled == undefined)
+        objConfiguracionGlobal.ExcluirEnabled = "enabled";
 
     //if (objConfiguracionGlobal.addcolumntextbox == undefined)
     //    objConfiguracionGlobal.addcolumntextbox = false;
@@ -557,7 +559,7 @@ function generarTabla(res, objConfiguracionGlobal) {
                 if (objConfiguracionGlobal.addTextBox == true) {
                     objConfiguracionGlobal.propertiesColumnTextBox.map(({ value, name, align, validate }) => {
                         contenido += "<td style='padding: 2px;'>";
-                        contenido += `<input type='text' class="form-control ${align} ${validate}" id="ui${name}${i}" name='${name}' maxlength="20" multiline="false" type="text"  value ='${obj[value]}' autocomplete="off" onchange="onChangeMontoPorDevolver()" />`;
+                        contenido += `<input type='text' class="form-control ${align} ${validate}" id="ui${name}${i}" name='${name}' maxlength="20" multiline="false" type="text"  value ='${obj[value]}' autocomplete = "off" onclick="clickMontoPorDevolver(this)" />`;
                         contenido += "</td>";
                     });
                 }
@@ -605,7 +607,7 @@ function generarTabla(res, objConfiguracionGlobal) {
                     let fieldNameExcluir = objConfiguracionGlobal.fieldNameExcluir;
                     contenido += "<td style='padding: 2px; text-align:center' class='option-check'>";
                     if (obj[fieldNameExcluir] == 1) { //  1=Excluir (set checked)
-                        contenido += `<input class="form-check-input" type="checkbox" value="${obj[fieldNameExcluir]}" id="flexCheckDefault" onClick="Excluir(this)" checked>`;
+                        contenido += `<input class="form-check-input" type="checkbox" value="${obj[fieldNameExcluir]}" id="flexCheckDefault" onClick="Excluir(this)" checked ${objConfiguracionGlobal.ExcluirEnabled}>`;
                     } else {
                         contenido += `<input class="form-check-input" type="checkbox" value="${obj[fieldNameExcluir]}" id="flexCheckDefault" onClick="Excluir(this)">`;
                     }

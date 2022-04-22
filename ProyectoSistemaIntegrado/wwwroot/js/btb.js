@@ -121,13 +121,16 @@ function CalcularMontosPagosBTB() {
 function MostrarEmpleadosBackToBack(codigoTipoPlanilla, anioPlanilla, mesPlanilla) {
     objConfiguracion = {
         url: "PlanillaTemporal/GetEmpleadosBackToBackPlanilla/?codigoTipoPlanilla=" + codigoTipoPlanilla.toString() + "&anioPlanilla=" + anioPlanilla.toString() + "&mesPlanilla=" + mesPlanilla.toString(),
-        cabeceras: ["Código Empresa", "Empresa", "Código Empleado", "Nombre Empleado", "Código Operación", "Operación", "Codigo Frecuencia Pago", "Frecuencia de Pago", "Tipo BTB", "Bono Decreto 37-2001", "Salario Diario", "Monto Calculado"],
-        propiedades: ["codigoEmpresa", "nombreEmpresa", "codigoEmpleado", "nombreCompleto", "codigoOperacion", "operacion", "codigoFrecuenciaPago", "frecuenciaPago", "codigoTipoBTB", "bonoDecreto372001", "salarioDiario", "montoDevolucionBTB"],
+        cabeceras: ["Código Empresa", "Empresa", "Código Empleado", "Nombre Empleado", "Código Operación", "Operación", "Codigo Frecuencia Pago", "Frecuencia de Pago", "Tipo BTB", "Bono Decreto 37-2001", "Salario Diario", "ExistePagoBTB","Monto Calculado", ],
+        propiedades: ["codigoEmpresa", "nombreEmpresa", "codigoEmpleado", "nombreCompleto", "codigoOperacion", "operacion", "codigoFrecuenciaPago", "frecuenciaPago", "codigoTipoBTB", "bonoDecreto372001", "salarioDiario", "existePagoBTB", "montoDevolucionBTB"],
         divContenedorTabla: "divContenedorTabla",
         displaydecimals: ["monto"],
         divPintado: "divTabla",
         paginar: true,
         addTextBox: true,
+        excluir: true,
+        ExcluirEnabled: "disabled",
+        fieldNameExcluir: "existePagoBTB",
         propertiesColumnTextBox: [
             {
                 "header": "Monto Devolución",
@@ -160,120 +163,58 @@ function MostrarEmpleadosBackToBack(codigoTipoPlanilla, anioPlanilla, mesPlanill
             }],
         slug: "codigoEmpresa",
         sumarcolumna: true,
-        columnasumalist: [11,12,13]
+        columnasumalist: [12,13,14]
     }
     pintar(objConfiguracion);
 }
 
-function onChangeMontoPorDevolver() {
+function clickMontoPorDevolver(obj) {
     let table = $('#tabla').DataTable();
-    //table.cells($(this).closest('td')).invalidate().draw(false);
-    // Redraw table (optional)
-    //table.draw(false);
-    let column = table.column(12);
-    let parser = new DOMParser();
-    let xmlDoc = "";
-    let abstracts = "";
+    $("#tabla td input").on('change', function () {
+        var $td = $(this).parent();
+        $td.find('input').attr('value', this.value);
+        table.cell($td).invalidate().draw();
 
-    /*let total = column.data().reduce(function (a, b) {
-        let valorA = a;
-        let valorB = b;
-        if (!/^\d*(\.\d{1})?\d{0,1}$/.test(valorA)) {
-            xmlDoc = parser.parseFromString(valorA, "text/xml");
-            abstracts = xmlDoc.querySelectorAll("input");
-            abstracts.forEach(a => {
-                valorA = a.getAttribute('value');
-            });
-        }
+        let column = table.column(13);
+        let parser = new DOMParser();
+        let xmlDoc = "";
+        let abstracts = "";
 
-        if (!/^\d*(\.\d{1})?\d{0,1}$/.test(valorB)) {
-            xmlDoc = parser.parseFromString(valorB, "text/xml");
-            abstracts = xmlDoc.querySelectorAll("input");
-            abstracts.forEach(a => {
-                valorB = a.getAttribute('value');
-            });
-        }
+        let total = column.data().reduce(function (a, b) {
+            let valorA = a;
+            let valorB = b;
+            if (!/^\d*(\.\d{1})?\d{0,1}$/.test(valorA)) {
+                xmlDoc = parser.parseFromString(valorA, "text/xml");
+                abstracts = xmlDoc.querySelectorAll("input");
+                abstracts.forEach(a => {
+                    valorA = a.getAttribute('value');
+                });
+            }
 
-        if (isNaN(valorA) || isNaN(valorB)) {
-            alert("Error en la sumatoria de columna");
-        }
+            if (!/^\d*(\.\d{1})?\d{0,1}$/.test(valorB)) {
+                xmlDoc = parser.parseFromString(valorB, "text/xml");
+                abstracts = xmlDoc.querySelectorAll("input");
+                abstracts.forEach(a => {
+                    valorB = a.getAttribute('value');
+                });
+            }
 
-        return parseFloat(valorA) + parseFloat(valorB);  // calculate the mark column
+            if (isNaN(valorA) || isNaN(valorB)) {
+                alert("Error en la sumatoria de columna");
+            }
+
+            return parseFloat(valorA) + parseFloat(valorB);  // calculate the mark column
+        });
+
+        const formatterQuetzales = new Intl.NumberFormat('qut', {
+            minimumFractionDigits: 2 // 2 decimales
+        });
+
+        $(column.footer()).html(
+            formatterQuetzales.format(total)
+        );
+
     });
-    const formatterQuetzales = new Intl.NumberFormat('qut', {
-        minimumFractionDigits: 2 // 2 decimales
-    });*/
-
-    //$('#tabla tbody').on('change', 'tr', function () {
-    //    var $row = table.row(this).nodes().to$(),
-    //    currentInputValue = $row.find('td:eq(0) input').val()
-    //    console.log(currentInputValue)
-    //})
-
-    //$(column.footer()).html(
-    //    column.data().reduce(function (a, b) {
-    //        return a + b;
-    //    })
-    //);
-
-    $(column.footer()).html(
-        //formatterQuetzales.format(total)
-        column.data().reduce(function (a, b) {
-            let valorA = a;
-            let valorB = b;
-            if (!/^\d*(\.\d{1})?\d{0,1}$/.test(valorA)) {
-                xmlDoc = parser.parseFromString(valorA, "text/xml");
-                abstracts = xmlDoc.querySelectorAll("input");
-                abstracts.forEach(a => {
-                    valorA = a.getAttribute('value');
-                });
-            }
-
-            if (!/^\d*(\.\d{1})?\d{0,1}$/.test(valorB)) {
-                xmlDoc = parser.parseFromString(valorB, "text/xml");
-                abstracts = xmlDoc.querySelectorAll("input");
-                abstracts.forEach(a => {
-                    valorB = a.getAttribute('value');
-                });
-            }
-
-            if (isNaN(valorA) || isNaN(valorB)) {
-                alert("Error en la sumatoria de columna");
-            }
-
-            return parseFloat(valorA) + parseFloat(valorB);  // calculate the mark column
-        })
-    );
-
-
-    $(column.footer()).html(
-        //formatterQuetzales.format(total)
-        column.data().reduce(function (a, b) {
-            let valorA = a;
-            let valorB = b;
-            if (!/^\d*(\.\d{1})?\d{0,1}$/.test(valorA)) {
-                xmlDoc = parser.parseFromString(valorA, "text/xml");
-                abstracts = xmlDoc.querySelectorAll("input");
-                abstracts.forEach(a => {
-                    valorA = a.getAttribute('value');
-                });
-            }
-
-            if (!/^\d*(\.\d{1})?\d{0,1}$/.test(valorB)) {
-                xmlDoc = parser.parseFromString(valorB, "text/xml");
-                abstracts = xmlDoc.querySelectorAll("input");
-                abstracts.forEach(a => {
-                    valorB = a.getAttribute('value');
-                });
-            }
-
-            if (isNaN(valorA) || isNaN(valorB)) {
-                alert("Error en la sumatoria de columna");
-            }
-
-            return parseFloat(valorA) + parseFloat(valorB);  // calculate the mark column
-        })
-    );
 }
 
 function FillReportesDeCaja() {
@@ -303,18 +244,24 @@ function CargarDevolucionBTB() {
     var data = table.rows().data();
     let arrayProperties = new Array();
     let obj = null;
+    let excluir = 0;
     data.each(function (value, index) {
-        obj = {
-            CodigoEmpresa: table.cell(index, 0).data(),
-            CodigoEmpleado: table.cell(index, 2).data(),
-            codigoTipoPlanilla: codigoTipoPlanilla,
-            CodigoFrecuenciaPago: codigoFrecuenciaPago,
-            CodigoOperacion: codigoOperacion,
-            Anio: anioPlanilla,
-            Mes: mesPlanilla,
-            Monto: table.cell(index, 12).nodes().to$().find('input').val()
-        };
-        arrayProperties.push(obj);
+        excluir = table.cell(index, 15).nodes().to$().find('input').prop('checked') == true ? 1 : 0;
+        if (excluir == 0) {
+            obj = {
+                CodigoEmpresa: table.cell(index, 0).data(),
+                CodigoEmpleado: table.cell(index, 2).data(),
+                codigoTipoPlanilla: codigoTipoPlanilla,
+                CodigoFrecuenciaPago: codigoFrecuenciaPago,
+                CodigoOperacion: codigoOperacion,
+                Anio: anioPlanilla,
+                Mes: mesPlanilla,
+                MontoCalculado: table.cell(index, 12).data(),
+                MontoPlanillaExcel: table.cell(index, 13).nodes().to$().find('input').val(),
+                MontoDescuento: table.cell(index, 14).nodes().to$().find('input').val()
+            };
+            arrayProperties.push(obj);
+        }
     });
     if (Array.isArray(arrayProperties) && arrayProperties.length) {
         let jsonData = JSON.stringify(arrayProperties);

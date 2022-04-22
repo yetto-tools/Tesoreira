@@ -565,11 +565,55 @@
                             <input type="text" name="NombreEntidad" class="form-control obligatorio" id="uiNewEntidadNombre" />
                         </div>
                     </div>
+
+                    <div id="div-empleado-indirecto" style="display:none;">
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label"> </label>
+                            <div class="col-md-3">
+                                <label class="col-form-label">Primer Nombre</label>
+                                <input type="text" name="PrimerNombre" class="form-control obligatorio" id="uiNewPrimerNombre" placeholder="Primer Nombre" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="col-form-label">Segundo Nombre</label>
+                                <input type="text" name="SegundoNombre" class="form-control" id="uiNewSegundoNombre" placeholder="Segundo Nombre" />
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label"> </label>
+                            <div class="col-md-3">
+                                <label class="col-form-label">Primer Apellido</label>
+                                <input type="text" name="PrimerApellido" class="form-control obligatorio" id="uiNewPrimerApellido"
+                                       placeholder="Primer Apellido" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="col-form-label">Segundo Apellido</label>
+                                <input type="text" name="SegundoApellido" class="form-control" id="uiNewSegundoApellido"
+                                       placeholder="Segundo Apellido" />
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label"> </label>
+                            <div class="col-md-3">
+                                <label class="col-form-label">Sexo</label>
+                                <select class="form-control obligatorio" id="uiNewGenero" name="CodigoGenero">
+                                    <option value='-1'>-- Seleccione -- </option>
+                                    <option value='M'>MASCULINO</option>
+                                    <option value='F'>FEMENINO</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+
+
                 </form>
                 <div id="div-tabla-clientes" style="display:none;">
                     <div id="divTablaClientes">
                     </div>
                 </div>
+
+
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>

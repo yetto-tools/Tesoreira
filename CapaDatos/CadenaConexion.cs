@@ -27,7 +27,7 @@ namespace CapaDatos
         {
             IConfigurationBuilder builder = new ConfigurationBuilder();
 
-            // Ambiente de Prodduccion
+            // Ambiente de Produccion
             builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
             // Ambiente de Desarrollo
             //builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.Development.json"));

@@ -27,6 +27,12 @@ namespace CapaNegocio.RRHH
             return obj.GuardarPersona(objPersona, usuarioIng);
         }
 
+        public string GuardarPersonaIndirecta(PersonaCLS objPersona, string usuarioIng)
+        {
+            PersonaDAL obj = new PersonaDAL();
+            return obj.GuardarPersonaIndirecta(objPersona, usuarioIng);
+        }
+
         public string ActualizarPersona(PersonaCLS objPersona, string usuarioAct)
         {
             PersonaDAL obj = new PersonaDAL();

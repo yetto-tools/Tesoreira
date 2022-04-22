@@ -31,6 +31,7 @@ namespace CapaDatos.Planilla
                            x.bono_decreto_37_2001,
                            x.codigo_tipo_btb,
                            db_contabilidad.GetMontoDevolucionBTB(@CodigoTipoPlanilla, @AnioPlanilla, @MesPlanilla, x.salario_diario, x.bono_decreto_37_2001, x.codigo_tipo_btb) AS monto_devolucion_btb,
+                           db_contabilidad.ExistePagoBTB(@CodigoTipoPlanilla, @AnioPlanilla, @MesPlanilla, x.codigo_empleado, x.codigo_empresa) AS existe_pago_btb,
                            0.00 AS monto_descuento 
                     FROM db_rrhh.empleado x
                     INNER JOIN db_admon.empresa y
@@ -72,6 +73,7 @@ namespace CapaDatos.Planilla
                             int postMontoDevolucionBTB = dr.GetOrdinal("monto_devolucion_btb");
                             int postCodigoTipoBTB = dr.GetOrdinal("codigo_tipo_btb");
                             int postMontoDescuento = dr.GetOrdinal("monto_descuento");
+                            int postExistePagoBTB = dr.GetOrdinal("existe_pago_btb");
 
                             while (dr.Read())
                             {
@@ -89,13 +91,14 @@ namespace CapaDatos.Planilla
                                 objPagoDescuentoCLS.SalarioDiario = dr.GetDecimal(postSalarioDiario);
                                 objPagoDescuentoCLS.CodigoTipoBTB = dr.GetByte(postCodigoTipoBTB);
                                 objPagoDescuentoCLS.MontoDescuento = dr.GetDecimal(postMontoDescuento);
+                                objPagoDescuentoCLS.ExistePagoBTB = (byte)dr.GetInt32(postExistePagoBTB);
                                 lista.Add(objPagoDescuentoCLS);
                             }//fin while
                         }// fin if
                     }// fin using
                     conexion.Close();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     conexion.Close();
                     lista = null;
@@ -227,6 +230,7 @@ namespace CapaDatos.Planilla
                         sqlSequence = "SELECT NEXT VALUE FOR db_contabilidad.SQ_PAGO_DESCUENTO";
                         cmd.CommandText = sqlSequence;
                         codigoPagoDescuento = (long)cmd.ExecuteScalar();
+
                         if (contador == 0)
                         {
                             cmd.Parameters.Add("@CodigoPago", SqlDbType.Int);
@@ -240,13 +244,19 @@ namespace CapaDatos.Planilla
                             cmd.Parameters.Add("@CodigoQuincena", SqlDbType.Int);
                             cmd.Parameters.Add("@NumeroSemana", SqlDbType.TinyInt);
                             cmd.Parameters.Add("@Monto", SqlDbType.Decimal);
+                            cmd.Parameters.Add("@MontoDescuento", SqlDbType.Decimal);
+                            cmd.Parameters.Add("@MontoCalculado", SqlDbType.Decimal);
+                            cmd.Parameters.Add("@MontoPlanillaExcel", SqlDbType.Decimal);
                             cmd.Parameters.Add("@CodigoEstado", SqlDbType.TinyInt);
                             cmd.Parameters.Add("@UsuarioIng", SqlDbType.VarChar);
                             cmd.Parameters.Add("@FechaIng", SqlDbType.DateTime);
                         }
+
                         sentenciaInsertPagos = @"
-                        INSERT INTO db_contabilidad.pagos_y_descuentos(codigo_pago,codigo_tipo_planilla,codigo_empresa,codigo_empleado,codigo_frecuencia_pago,codigo_operacion,anio,mes,codigo_quincena,numero_semana,monto,codigo_estado,usuario_ing,fecha_ing)
-                        VALUES(@CodigoPago,@CodigoTipoPlanilla,@CodigoEmpresa,@CodigoEmpleado,@CodigoFrecuenciaPago,@CodigoOperacion,@Anio,@Mes,@CodigoQuincena,@NumeroSemana,@Monto,@CodigoEstado,@UsuarioIng,@FechaIng)";
+                        INSERT INTO db_contabilidad.pagos_y_descuentos(codigo_pago,codigo_tipo_planilla,codigo_empresa,codigo_empleado,codigo_frecuencia_pago,codigo_operacion,anio,mes,codigo_quincena,numero_semana,monto,codigo_estado,usuario_ing,fecha_ing, monto_descuento, monto_calculado, monto_planilla_excel)
+                        VALUES(@CodigoPago,@CodigoTipoPlanilla,@CodigoEmpresa,@CodigoEmpleado,@CodigoFrecuenciaPago,@CodigoOperacion,@Anio,@Mes,@CodigoQuincena,@NumeroSemana,@Monto,@CodigoEstado,@UsuarioIng,@FechaIng,@MontoDescuento,@MontoCalculado,@MontoPlanillaExcel)";
+
+                        objPago.Monto = objPago.MontoPlanillaExcel - objPago.MontoDescuento;
 
                         cmd.CommandType = CommandType.Text;
                         cmd.CommandText = sentenciaInsertPagos;
@@ -264,6 +274,9 @@ namespace CapaDatos.Planilla
                         cmd.Parameters["@CodigoEstado"].Value = Constantes.Planilla.EstadoPagoDescuento.COBRADO;
                         cmd.Parameters["@UsuarioIng"].Value = usuarioIng;
                         cmd.Parameters["@FechaIng"].Value = DateTime.Now;
+                        cmd.Parameters["@MontoDescuento"].Value = objPago.MontoDescuento;
+                        cmd.Parameters["@MontoCalculado"].Value = objPago.MontoCalculado;
+                        cmd.Parameters["@MontoPlanillaExcel"].Value = objPago.MontoPlanillaExcel;
                         cmd.ExecuteNonQuery();
 
                         cadena.Append(codigoPagoDescuento.ToString());

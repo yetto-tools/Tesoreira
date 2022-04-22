@@ -327,8 +327,103 @@ namespace CapaDatos.RRHH
                     cmd.Parameters.AddWithValue("@CodigoArea", objPersona.CodigoArea == -1 ? DBNull.Value : objPersona.CodigoArea);
 
                     cmd.ExecuteNonQuery();
+                    conexion.Close();
 
                     resultado = "OK";
+                }
+                catch (Exception ex)
+                {
+                    conexion.Close();
+                    resultado = "Error [0]: " + ex.Message;
+                }
+            }
+
+            return resultado;
+        }
+
+        public string GuardarPersonaIndirecta(PersonaCLS objPersona, string usuarioIng)
+        {
+            string resultado = "";
+            using (SqlConnection conexion = new SqlConnection(cadenaRRHH))
+            {
+                conexion.Open();
+
+                SqlCommand cmd = conexion.CreateCommand();
+                SqlTransaction transaction;
+
+                // Start a local transaction.
+                transaction = conexion.BeginTransaction("SampleTransaction");
+
+                // Must assign both transaction object and connection
+                // to Command object for a pending local transaction
+                cmd.Connection = conexion;
+                cmd.Transaction = transaction;
+
+                try
+                {
+                    string sqlSequence = "SELECT NEXT VALUE FOR db_rrhh.SQ_CUI_GENERICO";
+                    cmd.CommandText = sqlSequence;
+                    long codigo = (long)cmd.ExecuteScalar();
+                    string cui = codigo.ToString("D13");
+
+                    string sentenciaSQL = @"
+                    INSERT INTO db_rrhh.persona( cui,primer_nombre,segundo_nombre,tercer_nombre,primer_apellido,segundo_apellido,apellido_casada,nombre_completo,
+	                                             fecha_nacimiento,codigo_genero,correo_electronico,codigo_departamento_residencia,codigo_municipio_residencia,
+	                                             zona,direccion_residencia,codigo_estado,usuario_ing,fecha_ing,usuario_act,fecha_act,no_incluido_en_planilla,codigo_area)
+
+                                        VALUES ( @Cui,
+                                                 @PrimerNombre,
+                                                 @SegundoNombre,
+                                                 @TercerNombre,
+                                                 @PrimerApellido,
+                                                 @SegundoApellido,
+                                                 @ApellidoCasada,
+                                                 @NombreCompleto,
+                                                 @FechaNacimiento,
+	                                             @CodigoGenero,
+                                                 @CorreoElectronico,
+                                                 @CodigoDepartamentoResidencia,
+                                                 @CodigoMunicipioResidencia,
+                                                 @Zona,
+                                                 @DireccionResidencia,
+	                                             @CodigoEstado,
+                                                 @UsuarioIng,
+                                                 @FechaIng,
+                                                 @UsuarioAct,
+                                                 @FechaAct,
+                                                 @NoIncluidoEnPlanilla,
+                                                 @CodigoArea)";
+
+                    cmd.CommandText = sentenciaSQL;
+                    string nombreCompleto = objPersona.PrimerNombre + (objPersona.SegundoNombre == null ? "" : " " + objPersona.SegundoNombre) + (objPersona.TercerNombre == null ? "" : " " + objPersona.TercerNombre) + (objPersona.PrimerApellido == null ? "" : " " + objPersona.PrimerApellido) + (objPersona.SegundoApellido == null ? "" : " " + objPersona.SegundoApellido);
+                    cmd.Parameters.AddWithValue("@Cui", cui);
+                    cmd.Parameters.AddWithValue("@PrimerNombre", objPersona.PrimerNombre);
+                    cmd.Parameters.AddWithValue("@SegundoNombre", objPersona.SegundoNombre == null ? DBNull.Value : objPersona.SegundoNombre);
+                    cmd.Parameters.AddWithValue("@TercerNombre", objPersona.TercerNombre == null ? DBNull.Value : objPersona.TercerNombre);
+                    cmd.Parameters.AddWithValue("@PrimerApellido", objPersona.PrimerApellido);
+                    cmd.Parameters.AddWithValue("@SegundoApellido", objPersona.SegundoApellido == null ? DBNull.Value : objPersona.SegundoApellido);
+                    cmd.Parameters.AddWithValue("@ApellidoCasada", objPersona.ApellidoCasada == null ? DBNull.Value : objPersona.ApellidoCasada);
+                    cmd.Parameters.AddWithValue("@NombreCompleto", nombreCompleto);
+                    cmd.Parameters.AddWithValue("@FechaNacimiento", new DateTime(2030, 1, 1));
+                    cmd.Parameters.AddWithValue("@CodigoGenero", objPersona.CodigoGenero);
+                    cmd.Parameters.AddWithValue("@CorreoElectronico", objPersona.CorreoElectronico == null ? DBNull.Value : objPersona.CorreoElectronico);
+                    cmd.Parameters.AddWithValue("@CodigoDepartamentoResidencia", Constantes.Departamento.GUATEMALA);
+                    cmd.Parameters.AddWithValue("@CodigoMunicipioResidencia", Constantes.Municipio.GUATEMALA);
+                    cmd.Parameters.AddWithValue("@Zona", 0);
+                    cmd.Parameters.AddWithValue("@DireccionResidencia", objPersona.DireccionResidencia == null ? "" : objPersona.DireccionResidencia);
+                    cmd.Parameters.AddWithValue("@CodigoEstado", Constantes.EstadoRegistro.ACTIVO);
+                    cmd.Parameters.AddWithValue("@UsuarioIng", usuarioIng);
+                    cmd.Parameters.AddWithValue("@FechaIng", DateTime.Now);
+                    cmd.Parameters.AddWithValue("@UsuarioAct", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@FechaAct", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@NoIncluidoEnPlanilla", objPersona.NoIncluidoEnPlanilla);
+                    cmd.Parameters.AddWithValue("@CodigoArea", objPersona.CodigoArea == -1 ? DBNull.Value : objPersona.CodigoArea);
+                    cmd.ExecuteNonQuery();
+
+                    transaction.Commit();
+                    conexion.Close();
+
+                    resultado = cui;
                 }
                 catch (Exception ex)
                 {

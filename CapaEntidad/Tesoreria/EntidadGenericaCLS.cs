@@ -20,5 +20,12 @@ namespace CapaEntidad.Tesoreria
         public short CodigoArea { get; set; }
         public short CodigoOperacionEntidad { get; set; }
         public short CodigoCanalVenta { get; set; }
+
+        public string PrimerNombre { get; set; }
+        public string SegundoNombre { get; set; }
+
+        public string PrimerApellido { get; set; }
+        public string SegundoApellido { get; set; }
+        public string CodigoGenero { get; set; }
     }
 }

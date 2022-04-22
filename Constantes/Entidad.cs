@@ -49,6 +49,7 @@ namespace Constantes
             //public static short Mantenimiento de Maquinaria	35
             public const short EMPLEADO = 36;
             public const short VENDEDORES = 37;  // para la agrupación en cuentas por cobrar
+            public const short EMPLEADO_INDIRECTO = 41;
 
         }
 

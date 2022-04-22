@@ -37,5 +37,9 @@ namespace CapaEntidad.Planilla
         public string Periodo { get; set; }
         public string NumeroBoleta { get; set; }
         public decimal MontoDescuento { get; set; }
+        public decimal MontoCalculado { get; set; }
+        public decimal MontoPlanillaExcel { get; set; }
+        public byte ExistePagoBTB { get; set; }
+       
     }
 }

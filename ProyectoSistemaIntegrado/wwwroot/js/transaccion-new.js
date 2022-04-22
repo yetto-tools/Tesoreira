@@ -1949,15 +1949,45 @@ function addEntidad() {
 
 function mostrarTodosLosClientes(obj) {
     set("uiNewCodigoCliente", "0");
-    set("uiNewEntidadNombre", "");
+    set("uiNewCodigoCliente", "0");
+    set("uiNewPrimerNombre", "");
+    set("uiNewSegundoNombre", "");
+    set("uiNewPrimerApellido", "");
+    set("uiNewSegundoApellido", "");
+    let elementNombreCompleto = document.getElementById("uiNewEntidadNombre");
+    let elementPrimerNombre = document.getElementById("uiNewPrimerNombre");
+    let elementPrimerApellido = document.getElementById("uiNewPrimerApellido");
+    let elementGenero = document.getElementById("uiNewGenero");
     let codigoCategoriaEntidad = parseInt(obj.value);
-    if (codigoCategoriaEntidad == CLIENTES_ESPECIALES_1) {
-        document.getElementById('div-tabla-clientes').style.display = 'block';
-        document.getElementById("uiNewEntidadNombre").readOnly = true;
-        intelligenceSearchCliente();
-    } else {
-        document.getElementById('div-tabla-clientes').style.display = 'none';
-        document.getElementById("uiNewEntidadNombre").readOnly = false;
+    switch (codigoCategoriaEntidad) {
+        case CLIENTES_ESPECIALES_1:
+            document.getElementById('div-tabla-clientes').style.display = 'block';
+            document.getElementById('div-empleado-indirecto').style.display = 'none';
+            elementNombreCompleto.readOnly = true;
+            elementNombreCompleto.classList.add('obligatorio');
+            elementPrimerNombre.classList.remove('obligatorio');
+            elementPrimerApellido.classList.remove('obligatorio');
+            elementGenero.classList.remove('obligatorio');
+            intelligenceSearchCliente();
+            break;
+        case CATEGORIA_EMPLEADO_INDIRECTO:
+            document.getElementById('div-tabla-clientes').style.display = 'none';
+            elementNombreCompleto.readOnly = true;
+            elementNombreCompleto.classList.remove('obligatorio');
+            elementPrimerNombre.classList.add('obligatorio');
+            elementPrimerApellido.classList.add('obligatorio');
+            elementGenero.classList.add('obligatorio');
+            document.getElementById('div-empleado-indirecto').style.display = 'block';
+            break;
+        default:
+            document.getElementById('div-tabla-clientes').style.display = 'none';
+            document.getElementById('div-empleado-indirecto').style.display = 'none';
+            elementNombreCompleto.readOnly = false;
+            elementNombreCompleto.classList.add('obligatorio');
+            elementPrimerNombre.classList.remove('obligatorio');
+            elementPrimerApellido.classList.remove('obligatorio');
+            elementGenero.classList.remove('obligatorio');
+            break;
     }
 }
 
@@ -2011,6 +2041,11 @@ function GuardarEntidad(obj) {
     let frmGuardar = document.getElementById("frmNewEntidad");
     let frm = new FormData(frmGuardar);
     let nombreEntidad = frm.get("NombreEntidad");
+    if (nombreEntidad == "") {
+        let primerNombre = frm.get("PrimerNombre");
+        let primerApellido = frm.get("PrimerApellido");
+        nombreEntidad = primerNombre + " " + primerApellido;
+    }
     let codigoCategoriaEntidad = frm.get("CodigoCategoriaEntidad");
     if (codigoCategoriaEntidad == CLIENTES_ESPECIALES_1) {
         codigoOperacionCaja = OPERACION_ESPECIALES_1;
@@ -2020,8 +2055,8 @@ function GuardarEntidad(obj) {
         } 
     }
     let codigoArea = 0;
-    let codigoTemporal1 = 0;
-    let codigoTemporal2 = 0;
+    let codigoOperacionEntidad = 0;
+    let codigoCanalVenta = 0;
     let objCategoria = document.getElementById('uiNewEntidadCategoria');
     let nombreCategoria = objCategoria.options[objCategoria.selectedIndex].text;
     
@@ -2040,8 +2075,8 @@ function GuardarEntidad(obj) {
                     nombreCategoria,
                     codigoOperacionCaja,
                     codigoArea,
-                    codigoTemporal1,
-                    codigoTemporal2
+                    codigoOperacionEntidad,
+                    codigoCanalVenta
 
                 ]).draw();
 

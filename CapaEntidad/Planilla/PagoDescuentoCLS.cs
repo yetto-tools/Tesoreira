@@ -27,6 +27,7 @@ namespace CapaEntidad.Planilla
         public decimal BonoDecreto372001 { get; set; }
         public decimal SalarioDiario { get; set; }
         public byte CodigoTipoBTB { get; set; }
+        public string TipoBTB { get; set; }
         public decimal MontoDevolucionBTB { get; set; }
         public decimal MontoDescuentoPrestamo { get; set; }
         public decimal Monto { get; set; }

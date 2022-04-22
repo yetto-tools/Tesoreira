@@ -122,9 +122,9 @@ function MostrarEmpleadosBackToBack(codigoTipoPlanilla, anioPlanilla, mesPlanill
     objConfiguracion = {
         url: "PlanillaTemporal/GetEmpleadosBackToBackPlanilla/?codigoTipoPlanilla=" + codigoTipoPlanilla.toString() + "&anioPlanilla=" + anioPlanilla.toString() + "&mesPlanilla=" + mesPlanilla.toString(),
         cabeceras: ["Código Empresa", "Empresa", "Código Empleado", "Nombre Empleado", "Código Operación", "Operación", "Codigo Frecuencia Pago", "Frecuencia de Pago", "Tipo BTB", "Bono Decreto 37-2001", "Salario Diario", "ExistePagoBTB","Monto Calculado", ],
-        propiedades: ["codigoEmpresa", "nombreEmpresa", "codigoEmpleado", "nombreCompleto", "codigoOperacion", "operacion", "codigoFrecuenciaPago", "frecuenciaPago", "codigoTipoBTB", "bonoDecreto372001", "salarioDiario", "existePagoBTB", "montoDevolucionBTB"],
+        propiedades: ["codigoEmpresa", "nombreEmpresa", "codigoEmpleado", "nombreCompleto", "codigoOperacion", "operacion", "codigoFrecuenciaPago", "frecuenciaPago", "tipoBTB", "bonoDecreto372001", "salarioDiario", "existePagoBTB", "montoDevolucionBTB"],
         divContenedorTabla: "divContenedorTabla",
-        displaydecimals: ["monto"],
+        displaydecimals: ["bonoDecreto372001","salarioDiario", "montoDevolucionBTB"],
         divPintado: "divTabla",
         paginar: true,
         addTextBox: true,
@@ -157,7 +157,18 @@ function MostrarEmpleadosBackToBack(codigoTipoPlanilla, anioPlanilla, mesPlanill
                 "targets": [6],
                 "visible": false
             }, {
-                "targets": [8],
+                "targets": [9],
+                "visible": true,
+                "className": "dt-body-right"
+            }, {
+                "targets": [10],
+                "visible": true,
+                "className": "dt-body-right"
+            }, {
+                "targets": [11],
+                "visible": false
+            }, {
+                "targets": [12],
                 "visible": true,
                 "className": "dt-body-right"
             }],

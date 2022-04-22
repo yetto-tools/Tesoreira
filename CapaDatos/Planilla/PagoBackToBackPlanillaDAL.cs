@@ -30,6 +30,7 @@ namespace CapaDatos.Planilla
                            x.salario_diario,
                            x.bono_decreto_37_2001,
                            x.codigo_tipo_btb,
+                           w.nombre AS tipo_btb, 
                            db_contabilidad.GetMontoDevolucionBTB(@CodigoTipoPlanilla, @AnioPlanilla, @MesPlanilla, x.salario_diario, x.bono_decreto_37_2001, x.codigo_tipo_btb) AS monto_devolucion_btb,
                            db_contabilidad.ExistePagoBTB(@CodigoTipoPlanilla, @AnioPlanilla, @MesPlanilla, x.codigo_empleado, x.codigo_empresa) AS existe_pago_btb,
                            0.00 AS monto_descuento 
@@ -72,6 +73,7 @@ namespace CapaDatos.Planilla
                             int postBonoDecreto372001 = dr.GetOrdinal("bono_decreto_37_2001");
                             int postMontoDevolucionBTB = dr.GetOrdinal("monto_devolucion_btb");
                             int postCodigoTipoBTB = dr.GetOrdinal("codigo_tipo_btb");
+                            int postTipoBTB = dr.GetOrdinal("tipo_btb");
                             int postMontoDescuento = dr.GetOrdinal("monto_descuento");
                             int postExistePagoBTB = dr.GetOrdinal("existe_pago_btb");
 
@@ -90,6 +92,7 @@ namespace CapaDatos.Planilla
                                 objPagoDescuentoCLS.MontoDevolucionBTB = dr.GetDecimal(postMontoDevolucionBTB);
                                 objPagoDescuentoCLS.SalarioDiario = dr.GetDecimal(postSalarioDiario);
                                 objPagoDescuentoCLS.CodigoTipoBTB = dr.GetByte(postCodigoTipoBTB);
+                                objPagoDescuentoCLS.TipoBTB = dr.GetString(postTipoBTB);
                                 objPagoDescuentoCLS.MontoDescuento = dr.GetDecimal(postMontoDescuento);
                                 objPagoDescuentoCLS.ExistePagoBTB = (byte)dr.GetInt32(postExistePagoBTB);
                                 lista.Add(objPagoDescuentoCLS);

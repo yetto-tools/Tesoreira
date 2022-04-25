@@ -135,7 +135,7 @@ function GenerarPdfTrasladoLiquidacion(obj) {
         let anioOperacion = table.cell(rowIdx, 1).data();
         let semanaOperacion = table.cell(rowIdx, 2).data();
         let bloqueado = parseInt(table.cell(rowIdx, 8).data());
-        if (bloqueado == 0) {
+        if (bloqueado == 1) {
             fetchGet("Liquidacion/ViewReporteTrasladoLiquidacion/?codigoTraslado=" + codigoTraslado + "&anioOperacion=" + anioOperacion + "&semanaOperacion=" + semanaOperacion, "pdf", function (data) {
                 var file = new Blob([data], { type: 'application/pdf' });
                 var fileURL = URL.createObjectURL(file);

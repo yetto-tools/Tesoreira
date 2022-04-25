@@ -22,17 +22,17 @@
                 fillCombosBusquedaConsulta();
                 MostrarTransaccionesRevision(-1, -1, -1, -1, -1);
                 break;
+            case "ComplementoDepositosBancarios":
+                fillCombosBusquedaComplemento();
+                MostrarDepositosBancarios(-1, -1, -1);
+                break;
             case "SolicitudesCorreccion":
                 fillCombosBusquedaConsulta();
                 MostrarSolicitudesCorreccion(-1, -1, -1, -1, -1);
                 break;
-            case "CorreccionTransaccion":
-                //fillCombosBusquedaConsulta();
-                //MostrarTransaccionesCorreccion(-1, -1, -1, -1, -1);
-                break;
-            case "ComplementoDepositosBancarios":
-                fillCombosBusquedaComplemento();
-                MostrarDepositosBancarios(-1, -1, -1);
+            case "ConsultaCorrecciones":
+                fillCombosBusquedaConsulta();
+                mostrarConsultaCorrecciones(-1, -1, -1, -1, -1);
                 break;
             default:
                 break;
@@ -814,6 +814,84 @@ function AutorizarCorreccion() {
         });
     });
 }
+
+
+function mostrarConsultaCorrecciones(anioOperacion, semanaOperacion, codigoReporte, codigoOperacion, codigoCategoriaEntidad) {
+    let objConfiguracion = {
+        url: "Transaccion/GetSolicitudesDeCorreccion/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString() + "&codigoReporte=" + codigoReporte.toString() + "&codigoOperacion=" + codigoOperacion.toString() + "&codigoCategoriaEntidad=" + codigoCategoriaEntidad.toString(),
+        cabeceras: ["Código", "codigoTransaccionAnt", "correccion", "Código Operación", "Operación", "Código Cuenta por Cobrar", "Fecha Operación", "Día Operación", "Fecha Recibo", "Número Recibo", "Entidad", "Categoría", "Monto", "Estado", "Fecha Transacción", "Creado por", "Anular", "Editar", "Signo", "Número Recibo", "Ruta", "Fecha Impresión", "Recursos", "Revisado", "Corregir", "Autorizar", "codigoEstadoSolicitudCorreccion", "Estado Corrección", "codigoTipoCorreccion", "Tipo Corrección"],
+        propiedades: ["codigoTransaccion", "codigoTransaccionAnt", "correccion", "codigoOperacion", "operacion", "codigoCuentaPorCobrar", "fechaStr", "nombreDiaOperacion", "fechaReciboStr", "numeroReciboStr", "nombreEntidad", "categoriaEntidad", "monto", "estado", "fechaIngStr", "usuarioIng", "permisoAnular", "permisoEditar", "signo", "numeroReciboStr", "ruta", "fechaImpresionStr", "recursos", "revisado", "permisoCorregir", "permisoAutorizar", "codigoEstadoSolicitudCorreccion", "estadoSolicitudCorreccion", "codigoTipoCorreccion", "tipoCorreccion"],
+        displaydecimals: ["monto"],
+        divContenedorTabla: "divContenedorTabla",
+        divPintado: "divTabla",
+        alerta: true,
+        funcionalerta: "CorreccionTransaccion",
+        paginar: true,
+        ocultarColumnas: true,
+        hideColumns: [
+            {
+                "targets": [1],
+                "visible": false
+            }, {
+                "targets": [2],
+                "visible": false
+            }, {
+                "targets": [3],
+                "visible": false
+            }, {
+                "targets": [5],
+                "visible": false
+            }, {
+                "targets": [12],
+                "className": "dt-body-right"
+            }, {
+                "targets": [16],
+                "visible": false
+            }, {
+                "targets": [17],
+                "visible": false
+            }, {
+                "targets": [18],
+                "visible": false
+            }, {
+                "targets": [19],
+                "visible": false
+            }, {
+                "targets": [20],
+                "visible": false
+            }, {
+                "targets": [21],
+                "visible": false
+            }, {
+                "targets": [22],
+                "visible": false
+            }, {
+                "targets": [23],
+                "visible": false
+            }, {
+                "targets": [24],
+                "visible": false
+            }, {
+                "targets": [25],
+                "visible": false
+            }, {
+                "targets": [26],
+                "visible": false
+            }, {
+                "targets": [27],
+                "visible": true
+            }, {
+                "targets": [28],
+                "visible": false
+            }, {
+                "targets": [29],
+                "visible": true
+            }],
+        slug: "codigoTransaccion"
+    }
+    pintar(objConfiguracion);
+}
+
 
 
 function ImprimirConstanciaIngresos(codigoOperacion, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion, codigoSeguridad) {

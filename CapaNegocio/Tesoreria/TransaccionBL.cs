@@ -443,16 +443,16 @@ namespace CapaNegocio.Tesoreria
             return obj.AceptarTransaccionComplementoContabilidad(codigoTransaccion, usuarioAct);
         }
 
-        public List<ReporteCajaCLS> GetTransaccionParaCambioDeSemanaOperacion()
+        public List<ReporteCajaCLS> GetTransaccionParaCambioDeSemanaOperacion(string usuarioIng)
         {
             TransaccionDAL obj = new TransaccionDAL();
-            return obj.GetTransaccionParaCambioDeSemanaOperacion();
+            return obj.GetTransaccionParaCambioDeSemanaOperacion(usuarioIng);
         }
 
-        public string CambiarSemanaOperacionTransacciones(int anioOperacion, int semanaOperacion)
+        public string CambiarSemanaOperacionTransacciones(int anioOperacion, int semanaOperacion, string usuarioIng)
         {
             TransaccionDAL obj = new TransaccionDAL();
-            return obj.CambiarSemanaOperacionTransacciones(anioOperacion, semanaOperacion);
+            return obj.CambiarSemanaOperacionTransacciones(anioOperacion, semanaOperacion, usuarioIng);
         }
 
         public string AceptarRevision(long codigoTransaccion, int revisado, string usuarioAct)

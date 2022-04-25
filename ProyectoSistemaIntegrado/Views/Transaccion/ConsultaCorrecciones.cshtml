@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Http;
 @{
     ViewData["Title"] = "Index";
-    Context.Session.SetString("tituloPrincipal", "Solicitudes para Aprobación de Correcciones");
+    Context.Session.SetString("tituloPrincipal", "Consulta de correcciones en transacciones");
 }
 
 <button type="button" id="ShowPopupCorreccionAprobada" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropCorreccionAprobada" style="display:none">
@@ -54,7 +54,6 @@
     </form>
 
 </fieldset>
-
 <div style="height: 25px; width:100%;">
 </div>
 

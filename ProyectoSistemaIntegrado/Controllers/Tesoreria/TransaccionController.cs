@@ -49,11 +49,6 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
         }
 
 
-        public IActionResult CorreccionTransaccion()
-        {
-            return View();
-        }
-
         public IActionResult SolicitudesCorreccion()
         {
             return View();
@@ -70,6 +65,11 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
         }
 
         public IActionResult EditRevision(Int64 slug)
+        {
+            return View();
+        }
+
+        public IActionResult ConsultaCorrecciones()
         {
             return View();
         }
@@ -292,14 +292,21 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
 
         public List<ReporteCajaCLS> GetTransaccionParaCambioDeSemanaOperacion()
         {
+            ViewBag.Message = HttpContext.Session.GetString("usuario");
+            UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
+
             TransaccionBL obj = new TransaccionBL();
-            return obj.GetTransaccionParaCambioDeSemanaOperacion();
+
+            return obj.GetTransaccionParaCambioDeSemanaOperacion(objUsuario.IdUsuario);
         }
 
         public string CambiarSemanaOperacionTransacciones(int anioOperacion, int semanaOperacion)
         {
+            ViewBag.Message = HttpContext.Session.GetString("usuario");
+            UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
+
             TransaccionBL obj = new TransaccionBL();
-            return obj.CambiarSemanaOperacionTransacciones(anioOperacion, semanaOperacion);
+            return obj.CambiarSemanaOperacionTransacciones(anioOperacion, semanaOperacion, objUsuario.IdUsuario);
         }
 
         public string AceptarRevision(long codigoTransaccion, int revisado)

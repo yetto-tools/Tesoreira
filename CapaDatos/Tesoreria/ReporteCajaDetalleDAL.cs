@@ -907,7 +907,7 @@ namespace CapaDatos.Tesoreria
                                 objReporteCajaDetalle.MontoViernes = dr.GetDecimal(postMontoViernes);
                                 objReporteCajaDetalle.MontoSabado = dr.GetDecimal(postMontoSabado);
                                 objReporteCajaDetalle.MontoDomingo = dr.GetDecimal(postMontoDomingo);
-                                objReporteCajaDetalle.TotalSemana = dr.GetDecimal(postMontoLunes) + dr.GetDecimal(postMontoMartes) + dr.GetDecimal(postMontoMiercoles) + dr.GetDecimal(postMontoJueves) + dr.GetDecimal(postMontoViernes) + dr.GetDecimal(postMontoSabado) + dr.GetDecimal(postMontoDomingo);
+                                objReporteCajaDetalle.TotalSemana = dr.GetDecimal(postMontoLunes) + dr.GetDecimal(postMontoMartes) + dr.GetDecimal(postMontoMiercoles) + dr.GetDecimal(postMontoJueves) + dr.GetDecimal(postMontoViernes) + dr.GetDecimal(postMontoSabado) + dr.GetDecimal(postMontoDomingo) + dr.GetDecimal(postDevoluciones);
                                 objReporteCajaDetalle.Devoluciones = dr.GetDecimal(postDevoluciones);
                                 objReporteCajaDetalle.Acumulado = dr.GetDecimal(postSaldoAnterior) +  dr.GetDecimal(postMontoLunes) + dr.GetDecimal(postMontoMartes) + dr.GetDecimal(postMontoMiercoles) + dr.GetDecimal(postMontoJueves) + dr.GetDecimal(postMontoViernes) + dr.GetDecimal(postMontoSabado) + dr.GetDecimal(postMontoDomingo);
                                 objReporteCajaDetalle.Observaciones = dr.IsDBNull(postObservaciones) ? "" : dr.GetString(postObservaciones);

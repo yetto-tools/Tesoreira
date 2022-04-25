@@ -255,7 +255,7 @@ function clickSelectItemTree() {
         let texto = data.node.text;
         let valor = data.node.li_attr.value;
 
-        //alert('The selected node is: value: ' + valor + ' text: ' + texto);
+        alert('The selected node is: value: ' + valor + ' text: ' + texto);
         /*if (data.selected.length) {
             $(data.selected).each(function (idx) {
                 let node = data.instance.get_node(data.selected[idx]);
@@ -268,11 +268,38 @@ function clickSelectItemTree() {
 }
 
 function clickMostrarCodigos() {
+    var selectedNode = $("#jstree").jstree("get_selected");
+    var node_info = $('#jstree').jstree("get_node", selectedNode[0]);
+
+    // this node_info contains **children_d** an array of all child nodes' id .
+    // **parents** an array of parent nodes
+    alert(node_info.children_d.join(','));
+    alert(node_info.parents.join(','));
+    alert(node_info.id);
+
+    //var childrens = $("#jstree").jstree("get_children_dom", selectedNode);
+    //for (var i = 0; i < childrens.length; i++) {
+    //    alert(childrens[i].innerText);
+    //}
+
+    //$('#jstree').on("select_node.jstree", function (e, data) { alert("node_id: " + data.node.id); });
+
+    //filter(function () { return $(this).parents('li.jstree-checked').length == 0; }).map(function () { return this.id; }).get();
+    
+    /*var instance = $('#jstree').jstree(true);
+    selected = instance.get_selected()[0];
+    console.log(instance.get_node(selected).children);*/
+    
+
+
+    
+
+
     //$("#jstree").jstree("select_node", ["list of nodes go here"]);
 
 
 
-    let arrayProperties = new Array();
+    //let arrayProperties = new Array();
 
 
     //let selectedData = [];

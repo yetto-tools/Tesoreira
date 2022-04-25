@@ -76,6 +76,8 @@ namespace CapaDatos.Ventas
             {
                 try
                 {
+                    //AND cli_codigo NOT IN(SELECT codigo_cliente_origen FROM db_ventas.cliente WHERE codigo_tipo_cliente = @CodigoTipoCliente)
+
                     String sql = @"
                     SELECT cli_codigo AS codigo_cliente, 
 	                       cli_nombre AS nombre_cliente
@@ -87,6 +89,7 @@ namespace CapaDatos.Ventas
                     using (SqlCommand cmd = new SqlCommand(sql, conexion))
                     {
                         cmd.CommandType = CommandType.Text;
+                        cmd.Parameters.AddWithValue("@CodigoTipoCliente", Constantes.Cliente.Tipo.ESPECIALES_1);
                         SqlDataReader dr = cmd.ExecuteReader();
                         if (dr != null)
                         {

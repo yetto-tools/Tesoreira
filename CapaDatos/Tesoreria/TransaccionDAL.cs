@@ -4018,14 +4018,13 @@ namespace CapaDatos.Tesoreria
         /// Esto mientras el ingreso de las transacciones lo estén realizando del lado de contabilidad.
         /// </summary>
         /// <returns></returns>
-        public List<ReporteCajaCLS> GetTransaccionParaCambioDeSemanaOperacion()
+        public List<ReporteCajaCLS> GetTransaccionParaCambioDeSemanaOperacion(string usuarioIng)
         {
             List<ReporteCajaCLS> lista = null;
             using (SqlConnection conexion = new SqlConnection(cadenaTesoreria))
             {
                 try
                 {
-                    conexion.Open();
                     string sql = @"
                     SELECT anio_operacion, 
                            semana_operacion, 
@@ -4033,8 +4032,10 @@ namespace CapaDatos.Tesoreria
                            1 AS permiso_editar 
 					FROM db_tesoreria.transaccion
 					WHERE codigo_estado = @CodigoEstadoRegistrado
+                      AND usuario_ing = '" + usuarioIng + @"'
 					GROUP BY anio_operacion, semana_operacion";
 
+                    conexion.Open();
                     using (SqlCommand cmd = new SqlCommand(sql, conexion))
                     {
                         cmd.CommandType = CommandType.Text;
@@ -4071,7 +4072,7 @@ namespace CapaDatos.Tesoreria
             }
         }
 
-        public string CambiarSemanaOperacionTransacciones(int anioOperacion, int semanaOperacion)
+        public string CambiarSemanaOperacionTransacciones(int anioOperacion, int semanaOperacion, string usuarioIng)
         {
             string resultado = "";
             using (SqlConnection conexion = new SqlConnection(cadenaTesoreria))
@@ -4096,7 +4097,8 @@ namespace CapaDatos.Tesoreria
                     SET anio_operacion = @AnioOperacion,
                         semana_operacion = @SemanaOperacion,
                         fecha_operacion = db_tesoreria.GetFechaOperacion(@AnioOperacion, @SemanaOperacion, dia_operacion)
-                    WHERE codigo_estado = @CodigoEstadoRegistrado";
+                    WHERE codigo_estado = @CodigoEstadoRegistrado
+                      AND usuario_ing = '" + usuarioIng + "'";
 
                     cmd.CommandType = CommandType.Text;
                     cmd.CommandText = sentenciaUpdateTransaccion;
@@ -4109,7 +4111,7 @@ namespace CapaDatos.Tesoreria
                     UPDATE db_contabilidad.cuenta_por_cobrar
                     SET semana_operacion = @SemanaOperacion,
                         anio_operacion = @AnioOperacion
-                    WHERE codigo_transaccion IN (SELECT codigo_transaccion FROM db_tesoreria.transaccion WHERE codigo_estado = @CodigoEstadoRegistrado)";
+                    WHERE codigo_transaccion IN (SELECT codigo_transaccion FROM db_tesoreria.transaccion WHERE codigo_estado = @CodigoEstadoRegistrado AND usuario_ing = '" + usuarioIng + "')";
                     cmd.CommandType = CommandType.Text;
                     cmd.CommandText = sentenciaUpdateCuentaPorCobrar;
                     cmd.ExecuteNonQuery();

@@ -70,6 +70,21 @@ namespace ProyectoSistemaIntegrado.Controllers.Reportes
             return demoViewPortrait;
         }
 
+        public IActionResult ViewReporteResumenOperacionesCajaDetallado(int anioOperacion, int semanaOperacion, int codigoReporte, int arqueo)
+        {
+
+            ReportContabilidadViewModel obj = new ReportContabilidadViewModel();
+            obj.AnioOperacion = anioOperacion;
+            obj.SemanaOperacion = semanaOperacion;
+            obj.CodigoReporte = codigoReporte;
+            obj.Arqueo = arqueo;
+            var demoViewPortrait = new ViewAsPdf("ViewReporteResumenOperacionesCajaDetallado", String.Empty, obj);
+            demoViewPortrait.PageMargins = new Margins { Bottom = 5, Left = 5, Right = 5, Top = 5 };
+            demoViewPortrait.PageSize = Size.Letter;
+
+            return demoViewPortrait;
+        }
+
 
         public IActionResult ViewReporteOperacionesCaja(int anioOperacion, int semanaOperacion, int codigoReporte, int arqueo)
         {

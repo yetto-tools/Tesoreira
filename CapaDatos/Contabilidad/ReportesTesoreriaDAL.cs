@@ -409,6 +409,187 @@ namespace CapaDatos.Contabilidad
             }
         }
 
+        public ReporteOperacionesCajaListCLS GetReporteResumenOperacionCajaDetallado(int anioOperacion, int semanaOperacion, int codigoReporte, int arqueo)
+        {
+            int postIdTipoOperacion = 0;
+            int postTipoOperacion = 0;
+            int postCodigoOperacion = 0;
+            int postOperacion = 0;
+            int postMontoLunes = 0;
+            int postMontoMartes = 0;
+            int postMontoMiercoles = 0;
+            int postMontoJueves = 0;
+            int postMontoViernes = 0;
+            int postMontoSabado = 0;
+            int postMontoDomingo = 0;
+            int postMontoSemana = 0;
+
+            ReporteOperacionesCajaListCLS objReporte = new ReporteOperacionesCajaListCLS();
+            using (SqlConnection conexion = new SqlConnection(cadenaContabilidad))
+            {
+                try
+                {
+                    string complemento = string.Empty;
+                    if (arqueo == 1)
+                    {
+                        complemento = "arqueo";
+                    }
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand("db_contabilidad.uspGetReporteResumenOperacionesCajaDetallado" + complemento, conexion))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@AnioReporte", anioOperacion);
+                        cmd.Parameters.AddWithValue("@NumeroSemanaReporte", semanaOperacion);
+                        cmd.Parameters.AddWithValue("@CodigoReporte", codigoReporte);
+                        SqlDataReader dr = cmd.ExecuteReader();
+
+                        if (dr != null)
+                        {// Encabezado de la fecha de inicio y fin del reporte
+                            int postFechaInicioStr = dr.GetOrdinal("fecha_operacion_minima");
+                            int postFechaFinStr = dr.GetOrdinal("fecha_operacion_maxima");
+                            List<ProgramacionSemanalCLS> listaEncabezado = new List<ProgramacionSemanalCLS>();
+                            ProgramacionSemanalCLS objEncabezado;
+                            while (dr.Read())
+                            {
+                                objEncabezado = new ProgramacionSemanalCLS();
+                                objEncabezado.FechaInicioSemana = dr.GetString(postFechaInicioStr);
+                                objEncabezado.FechaFinSemana = dr.GetString(postFechaFinStr);
+                                listaEncabezado.Add(objEncabezado);
+                            }
+                            objReporte.listaEncabezado = listaEncabezado;
+                        }
+
+                        if (dr.NextResult())
+                        {// Encabezado de las fechas de la semana indicada
+                            int postFechaStr = dr.GetOrdinal("fecha_str");
+                            List<ProgramacionSemanalCLS> listaEncabezadoFechas = new List<ProgramacionSemanalCLS>();
+                            ProgramacionSemanalCLS objEncabezadoFechas;
+                            while (dr.Read())
+                            {
+                                objEncabezadoFechas = new ProgramacionSemanalCLS();
+                                objEncabezadoFechas.FechaStr = dr.GetString(postFechaStr);
+                                listaEncabezadoFechas.Add(objEncabezadoFechas);
+                            }
+                            objReporte.listaEncabezadoFechas = listaEncabezadoFechas;
+                        }
+
+                        if (dr.NextResult())
+                        {// Operacion: Ingresos
+                            postIdTipoOperacion = dr.GetOrdinal("id");
+                            postTipoOperacion = dr.GetOrdinal("tipo_operacion");
+                            postCodigoOperacion = dr.GetOrdinal("codigo_operacion");
+                            postOperacion = dr.GetOrdinal("nombre_operacion");
+                            postMontoLunes = dr.GetOrdinal("monto_lunes");
+                            postMontoMartes = dr.GetOrdinal("monto_martes");
+                            postMontoMiercoles = dr.GetOrdinal("monto_miercoles");
+                            postMontoJueves = dr.GetOrdinal("monto_jueves");
+                            postMontoViernes = dr.GetOrdinal("monto_viernes");
+                            postMontoSabado = dr.GetOrdinal("monto_sabado");
+                            postMontoDomingo = dr.GetOrdinal("monto_domingo");
+                            postMontoSemana = dr.GetOrdinal("monto_semana");
+
+                            List<ReporteResumenOperacionesCajaCLS> listaIngresos = new List<ReporteResumenOperacionesCajaCLS>();
+                            ReporteResumenOperacionesCajaCLS objReporteDetalle;
+                            while (dr.Read())
+                            {
+                                objReporteDetalle = new ReporteResumenOperacionesCajaCLS();
+                                objReporteDetalle.IdTipoOperacion = dr.GetString(postIdTipoOperacion);
+                                objReporteDetalle.TipoOperacion = dr.GetString(postTipoOperacion);
+                                objReporteDetalle.CodigoOperacion = (short)dr.GetInt32(postCodigoOperacion);
+                                objReporteDetalle.Operacion = dr.GetString(postOperacion);
+                                objReporteDetalle.MontoLunes = dr.GetDecimal(postMontoLunes);
+                                objReporteDetalle.MontoMartes = dr.GetDecimal(postMontoMartes);
+                                objReporteDetalle.MontoMiercoles = dr.GetDecimal(postMontoMiercoles);
+                                objReporteDetalle.MontoJueves = dr.GetDecimal(postMontoJueves);
+                                objReporteDetalle.MontoViernes = dr.GetDecimal(postMontoViernes);
+                                objReporteDetalle.MontoSabado = dr.GetDecimal(postMontoSabado);
+                                objReporteDetalle.MontoDomingo = dr.GetDecimal(postMontoDomingo);
+                                objReporteDetalle.MontoSemana = dr.GetDecimal(postMontoSemana);
+                                listaIngresos.Add(objReporteDetalle);
+                            }// fin while
+                            objReporte.listaIngresos = listaIngresos;
+                        }// fin if
+
+                        if (dr.NextResult())
+                        {// Operacion: Egresos
+                            postIdTipoOperacion = dr.GetOrdinal("id");
+                            postTipoOperacion = dr.GetOrdinal("tipo_operacion");
+                            postMontoLunes = dr.GetOrdinal("monto_lunes");
+                            postMontoMartes = dr.GetOrdinal("monto_martes");
+                            postMontoMiercoles = dr.GetOrdinal("monto_miercoles");
+                            postMontoJueves = dr.GetOrdinal("monto_jueves");
+                            postMontoViernes = dr.GetOrdinal("monto_viernes");
+                            postMontoSabado = dr.GetOrdinal("monto_sabado");
+                            postMontoDomingo = dr.GetOrdinal("monto_domingo");
+                            postMontoSemana = dr.GetOrdinal("monto_semana");
+
+                            List<ReporteResumenOperacionesCajaCLS> listaEgresos = new List<ReporteResumenOperacionesCajaCLS>();
+                            ReporteResumenOperacionesCajaCLS objReporteDetalle;
+                            while (dr.Read())
+                            {
+                                objReporteDetalle = new ReporteResumenOperacionesCajaCLS();
+                                objReporteDetalle.IdTipoOperacion = dr.GetString(postIdTipoOperacion);
+                                objReporteDetalle.TipoOperacion = dr.GetString(postTipoOperacion);
+                                objReporteDetalle.MontoLunes = dr.GetDecimal(postMontoLunes);
+                                objReporteDetalle.MontoMartes = dr.GetDecimal(postMontoMartes);
+                                objReporteDetalle.MontoMiercoles = dr.GetDecimal(postMontoMiercoles);
+                                objReporteDetalle.MontoJueves = dr.GetDecimal(postMontoJueves);
+                                objReporteDetalle.MontoViernes = dr.GetDecimal(postMontoViernes);
+                                objReporteDetalle.MontoSabado = dr.GetDecimal(postMontoSabado);
+                                objReporteDetalle.MontoDomingo = dr.GetDecimal(postMontoDomingo);
+                                objReporteDetalle.MontoSemana = dr.GetDecimal(postMontoSemana);
+                                listaEgresos.Add(objReporteDetalle);
+                            }// fin while
+                            objReporte.listaEgresos = listaEgresos;
+                        }// fin if
+
+                        if (dr.NextResult())
+                        {// Operacion: Total de Ingresos
+                            postIdTipoOperacion = dr.GetOrdinal("id");
+                            postTipoOperacion = dr.GetOrdinal("tipo_operacion");
+                            postMontoLunes = dr.GetOrdinal("monto_lunes");
+                            postMontoMartes = dr.GetOrdinal("monto_martes");
+                            postMontoMiercoles = dr.GetOrdinal("monto_miercoles");
+                            postMontoJueves = dr.GetOrdinal("monto_jueves");
+                            postMontoViernes = dr.GetOrdinal("monto_viernes");
+                            postMontoSabado = dr.GetOrdinal("monto_sabado");
+                            postMontoDomingo = dr.GetOrdinal("monto_domingo");
+                            postMontoSemana = dr.GetOrdinal("monto_semana");
+
+                            List<ReporteResumenOperacionesCajaCLS> listaIngresosTotales = new List<ReporteResumenOperacionesCajaCLS>();
+                            ReporteResumenOperacionesCajaCLS objReporteDetalle;
+                            while (dr.Read())
+                            {
+                                objReporteDetalle = new ReporteResumenOperacionesCajaCLS();
+                                objReporteDetalle.IdTipoOperacion = dr.GetString(postIdTipoOperacion);
+                                objReporteDetalle.TipoOperacion = dr.GetString(postTipoOperacion);
+                                objReporteDetalle.MontoLunes = dr.GetDecimal(postMontoLunes);
+                                objReporteDetalle.MontoMartes = dr.GetDecimal(postMontoMartes);
+                                objReporteDetalle.MontoMiercoles = dr.GetDecimal(postMontoMiercoles);
+                                objReporteDetalle.MontoJueves = dr.GetDecimal(postMontoJueves);
+                                objReporteDetalle.MontoViernes = dr.GetDecimal(postMontoViernes);
+                                objReporteDetalle.MontoSabado = dr.GetDecimal(postMontoSabado);
+                                objReporteDetalle.MontoDomingo = dr.GetDecimal(postMontoDomingo);
+                                objReporteDetalle.MontoSemana = dr.GetDecimal(postMontoSemana);
+                                listaIngresosTotales.Add(objReporteDetalle);
+                            }// fin while
+                            objReporte.listaIngresosTotales = listaIngresosTotales;
+                        }// fin if
+
+
+                    }
+                    conexion.Close();
+                }
+                catch (Exception ex)
+                {
+                    conexion.Close();
+                    objReporte = null;
+                }
+
+                return objReporte;
+            }
+        }
+
         public ReporteOperacionesCajaListCLS GetReporteOperacionCaja(int anioOperacion, int semanaOperacion, int codigoReporte, int arqueo)
         {
             int postCodigoTipoOperacion = 0;

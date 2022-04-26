@@ -14,6 +14,8 @@ namespace CapaEntidad.Contabilidad
         public List<ProgramacionSemanalCLS> listaEncabezadoFechas { get; set; }
 
         public List<ReporteResumenOperacionesCajaCLS> listaIngresos { get; set; }
+
+        public List<ReporteResumenOperacionesCajaCLS> listaIngresosTotales { get; set; }
         public List<ReporteResumenOperacionesCajaCLS> listaEgresos { get; set; }
         public List<ReporteOperacionesCajaCLS> listaTransaccciones { get; set; }
 

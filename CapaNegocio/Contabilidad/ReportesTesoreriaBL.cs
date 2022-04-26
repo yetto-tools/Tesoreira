@@ -30,6 +30,12 @@ namespace CapaNegocio.Contabilidad
             return obj.GetReporteResumenOperacionCaja(anioOperacion, semanaOperacion, codigoReporte, arqueo);
         }
 
+        public ReporteOperacionesCajaListCLS GetReporteResumenOperacionCajaDetallado(int anioOperacion, int semanaOperacion, int codigoReporte, int arqueo)
+        {
+            ReportesTesoreriaDAL obj = new ReportesTesoreriaDAL();
+            return obj.GetReporteResumenOperacionCajaDetallado(anioOperacion, semanaOperacion, codigoReporte, arqueo);
+        }
+
         public ReporteOperacionesCajaListCLS GetReporteOperacionCaja(int anioOperacion, int semanaOperacion, int codigoReporte, int arqueo)
         {
             ReportesTesoreriaDAL obj = new ReportesTesoreriaDAL();

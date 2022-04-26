@@ -209,6 +209,10 @@ function MostrarRutas() {
         ocultarColumnas: true,
         hideColumns: [
             {
+                "targets": [0],
+                "visible": true,
+                "className": "dt-body-center"
+            }, {
                 "targets": [2],
                 "visible": false
             }, {
@@ -286,10 +290,13 @@ function ActualizarRuta() {
 
 function AgregarRuta(obj) {
     document.getElementById("ShowPopupNewRuta").click();
-    set("uiEditRuta", "");
-    set("uiEditNombre", "");
-    set("uiEditNombreCorto", "");
-    set("uiEditDescripcion", "");
+    set("uiNewRuta", "");
+    set("uiNewNombre", "");
+    set("uiNewNombreCorto", "");
+    set("uiNewDescripcion", "");
+    document.getElementById("uiNewCodigoTipoRuta").selectedIndex = 0;
+    document.getElementById("uiNewCodigoEstado").selectedIndex = 0;
+    document.getElementById("uiNewMigracionCompleta").checked = false;
     FillComboCanalVenta("uiNewCodigoCanalVenta");
 }
 

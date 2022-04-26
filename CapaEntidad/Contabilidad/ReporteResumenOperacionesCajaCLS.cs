@@ -10,6 +10,8 @@ namespace CapaEntidad.Contabilidad
     {
         public string IdTipoOperacion { get; set; }
         public string TipoOperacion { get; set; }
+        public short CodigoOperacion { get; set; }
+        public string Operacion { get; set; }
         public decimal MontoLunes { get; set; }
         public decimal MontoMartes { get; set; }
         public decimal MontoMiercoles { get; set; }

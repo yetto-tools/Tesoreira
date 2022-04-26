@@ -1,0 +1,421 @@
+﻿@using CapaNegocio.Contabilidad;
+@using CapaEntidad.Contabilidad;
+@model ReportContabilidadViewModel
+
+
+@{
+    Layout = null;
+    ReportesTesoreriaBL obj = new ReportesTesoreriaBL();
+    ReporteOperacionesCajaListCLS reporte = obj.GetReporteResumenOperacionCajaDetallado(Model.AnioOperacion, Model.SemanaOperacion, Model.CodigoReporte, Model.Arqueo);
+
+    // Inicio Operacion
+    string[] word = reporte.listaEncabezado[0].FechaInicioSemana.Split('/');
+    int anio = Convert.ToInt32(word[2]);
+    int mes = Convert.ToInt32(word[1]);
+    int dia = Convert.ToInt32(word[0]);
+    DateTime fechaInicio = new DateTime(anio, mes, dia);
+    string fechaInicioStr = fechaInicio.Day.ToString() + "/" + fechaInicio.Month.ToString() + "/" + fechaInicio.Year.ToString();
+    int diaSemana = Util.Conversion.DayOfWeek(fechaInicio);
+    string diaInicioStr = Util.Conversion.nombreDia(diaSemana);
+
+
+    // Fin Operacion
+    word = reporte.listaEncabezado[0].FechaFinSemana.Split('/');
+    anio = Convert.ToInt32(word[2]);
+    mes = Convert.ToInt32(word[1]);
+    dia = Convert.ToInt32(word[0]);
+    DateTime fechaFin = new DateTime(anio, mes, dia);
+    string fechaFinStr = fechaFin.Day.ToString() + "/" + fechaFin.Month.ToString() + "/" + fechaFin.Year.ToString();
+    diaSemana = Util.Conversion.DayOfWeek(fechaFin);
+    string diaFinStr = Util.Conversion.nombreDia(diaSemana);
+}
+
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+
+    <h2 style="text-align: center;">RESUMEN  DE OPERACIONES EN CAJA (DETALLE)</h2>
+    <h3 style="text-align: center;">ESTE REPORTE INCLUYE LAS OPERACIONES DE RESERVA</h3>
+    <h2 style="text-align: left;"></h2>
+    <table style="border: 1px solid black; border-collapse: collapse; margin: 0 auto;">
+        <tr style="border: 1px solid black;">
+            <td colspan="2" style="border: 1px solid black; padding: 4px;"><div style="text-align: center;">Rango de fechas</div></td>
+        </tr>
+        <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 4px;"><div style="text-align: center;">@fechaInicioStr</div></td>
+            <td style="border: 1px solid black; padding: 4px;"><div style="text-align: center;">@fechaFinStr</div></td>
+        </tr>
+        <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 4px;"><div style="text-align: center;">@diaInicioStr</div></td>
+            <td style="border: 1px solid black; padding: 4px;"><div style="text-align: center;">@diaFinStr</div></td>
+        </tr>
+    </table>
+    <h2 style="text-align: left;"></h2>
+    <h2 style="text-align: left;">INGRESOS</h2>
+    <table style="border: 1px solid black; border-collapse: collapse; margin: 0 auto;">
+        <tr style="border-bottom: 1px solid black;">
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;"></div></td>
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;"></div></td>
+            @foreach (var dr in reporte.listaEncabezadoFechas)
+            {
+                <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">@dr.FechaStr</div></td>
+            }
+        </tr>
+        <tr style="border-bottom: 1px solid black;">
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;"></div></td>
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">OPERACION</div></td>
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">LUNES</div></td>
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">MARTES</div></td>
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">MIERCOLES</div></td>
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">JUEVES</div></td>
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">VIERNES</div></td>
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">SABADO</div></td>
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">DOMINGO</div></td>
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">Total General</div></td>
+        </tr>
+        @{string idTipoOperacion = "";}
+        @{decimal totalIngresoLunes = 0;}
+        @{decimal totalIngresoMartes = 0;}
+        @{decimal totalIngresoMiercoles = 0;}
+        @{decimal totalIngresoJueves = 0;}
+        @{decimal totalIngresoViernes = 0;}
+        @{decimal totalIngresoSabado = 0;}
+        @{decimal totalIngresoDomingo = 0;}
+        @{decimal totalIngresoSemana = 0;}
+
+
+        @{decimal montoIngresoLunes = 0;}
+        @{decimal montoIngresoMartes = 0;}
+        @{decimal montoIngresoMiercoles = 0;}
+        @{decimal montoIngresoJueves = 0;}
+        @{decimal montoIngresoViernes = 0;}
+        @{decimal montoIngresoSabado = 0;}
+        @{decimal montoIngresoDomingo = 0;}
+        @{decimal montoIngresoSemana = 0;}
+
+
+        @{decimal totalIngresoVentasLunes = 0;}
+        @{decimal totalIngresoVentasMartes = 0;}
+        @{decimal totalIngresoVentasMiercoles = 0;}
+        @{decimal totalIngresoVentasJueves = 0;}
+        @{decimal totalIngresoVentasViernes = 0;}
+        @{decimal totalIngresoVentasSabado = 0;}
+        @{decimal totalIngresoVentasDomingo = 0;}
+        @{decimal totalIngresoVentasSemana = 0;}
+
+        @foreach (var dr in reporte.listaIngresos)
+        {
+            if (@dr.IdTipoOperacion != idTipoOperacion)
+            {
+                @foreach (var drRow in reporte.listaIngresosTotales)
+                {
+                    if (drRow.IdTipoOperacion == @dr.IdTipoOperacion)
+                    {
+                        montoIngresoLunes = drRow.MontoLunes;
+                        montoIngresoMartes = drRow.MontoMartes;
+                        montoIngresoMiercoles = drRow.MontoMiercoles;
+                        montoIngresoJueves = drRow.MontoJueves;
+                        montoIngresoViernes = drRow.MontoViernes;
+                        montoIngresoSabado = drRow.MontoSabado;
+                        montoIngresoDomingo = drRow.MontoDomingo;
+                        montoIngresoSemana = drRow.MontoSemana;
+                        break;
+                    }
+                }
+                <tr>
+                    <td style="padding: 4px; font-size: 12px">@dr.IdTipoOperacion</td>
+                    <td style="padding: 4px; font-size: 12px; width: 200px;">@dr.TipoOperacion</td>
+                    <td style="padding: 4px; font-size: 12px; width: 90px;">
+                        <div style="text-align: right; font-weight: bold;">
+                            @if (dr.MontoLunes != 0)
+                            {@montoIngresoLunes.ToString("N2")}
+                        </div>
+                    </td>
+                    <td style="padding: 4px; font-size: 12px; width: 90px;">
+                        <div style="text-align: right; font-weight: bold;">
+                            @if (dr.MontoMartes != 0)
+                            {@montoIngresoMartes.ToString("N2")}
+                        </div>
+                    </td>
+                    <td style="padding: 4px; font-size: 12px; width: 90px;">
+                        <div style="text-align: right; font-weight: bold;">
+                            @if (dr.MontoMiercoles != 0)
+                            {@montoIngresoMiercoles.ToString("N2")}
+                        </div>
+                    </td>
+                    <td style="padding: 4px; font-size: 12px; width: 90px;">
+                        <div style="text-align: right; font-weight: bold;">
+                            @if (dr.MontoJueves != 0)
+                            {@montoIngresoJueves.ToString("N2")}
+                        </div>
+                    </td>
+                    <td style="padding: 4px; font-size: 12px; width: 90px;">
+                        <div style="text-align: right; font-weight: bold;">
+                            @if (dr.MontoViernes != 0)
+                            {@montoIngresoViernes.ToString("N2")}
+                        </div>
+                    </td>
+                    <td style="padding: 4px; font-size: 12px; width: 90px;">
+                        <div style="text-align: right; font-weight: bold;">
+                            @if (dr.MontoSabado != 0)
+                            {@montoIngresoSabado.ToString("N2")}
+                        </div>
+                    </td>
+                    <td style="padding: 4px; font-size: 12px; width: 90px;">
+                        <div style="text-align: right; font-weight: bold;">
+                            @if (dr.MontoDomingo != 0)
+                            {@montoIngresoDomingo.ToString("N2")}
+                        </div>
+                    </td>
+                    <td style="padding: 4px; font-size: 12px; width: 90px;">
+                        <div style="text-align: right; font-weight: bold;">
+                            @if (dr.MontoSemana != 0)
+                            {@montoIngresoSemana.ToString("N2")}
+                        </div>
+                    </td>
+                </tr>
+                idTipoOperacion = @dr.IdTipoOperacion;
+            }
+
+            <tr>
+                <td style="padding: 4px; font-size: 12px"></td>
+                <td style="padding: 4px; font-size: 12px; width: 200px;">@dr.Operacion</td>
+                <td style="padding: 4px; font-size: 12px; width: 90px;">
+                    <div style="text-align: right;">
+                        @if (dr.MontoLunes != 0)
+                        {@dr.MontoLunes.ToString("N2")}
+                    </div>
+                </td>
+                <td style="padding: 4px; font-size: 12px; width: 90px;">
+                    <div style="text-align: right;">
+                        @if (dr.MontoMartes != 0)
+                        {@dr.MontoMartes.ToString("N2")}
+                    </div>
+                </td>
+                <td style="padding: 4px; font-size: 12px; width: 90px;">
+                    <div style="text-align: right;">
+                        @if (dr.MontoMiercoles != 0)
+                        {@dr.MontoMiercoles.ToString("N2")}
+                    </div>
+                </td>
+                <td style="padding: 4px; font-size: 12px; width: 90px;">
+                    <div style="text-align: right;">
+                        @if (dr.MontoJueves != 0)
+                        {@dr.MontoJueves.ToString("N2")}
+                    </div>
+                </td>
+                <td style="padding: 4px; font-size: 12px; width: 90px;">
+                    <div style="text-align: right;">
+                        @if (dr.MontoViernes != 0)
+                        {@dr.MontoViernes.ToString("N2")}
+                    </div>
+                </td>
+                <td style="padding: 4px; font-size: 12px; width: 90px;">
+                    <div style="text-align: right;">
+                        @if (dr.MontoSabado != 0)
+                        {@dr.MontoSabado.ToString("N2")}
+                    </div>
+                </td>
+                <td style="padding: 4px; font-size: 12px; width: 90px;">
+                    <div style="text-align: right;">
+                        @if (dr.MontoDomingo != 0)
+                        {@dr.MontoDomingo.ToString("N2")}
+                    </div>
+                </td>
+                <td style="padding: 4px; font-size: 12px; width: 90px;">
+                    <div style="text-align: right;">
+                        @if (dr.MontoSemana != 0)
+                        {@dr.MontoSemana.ToString("N2")}
+                    </div>
+                </td>
+            </tr>
+            totalIngresoLunes = totalIngresoLunes + dr.MontoLunes;
+            totalIngresoMartes = totalIngresoMartes + dr.MontoMartes;
+            totalIngresoMiercoles = totalIngresoMiercoles + dr.MontoMiercoles;
+            totalIngresoJueves = totalIngresoJueves + dr.MontoJueves;
+            totalIngresoViernes = totalIngresoViernes + dr.MontoViernes;
+            totalIngresoSabado = totalIngresoSabado + dr.MontoSabado;
+            totalIngresoDomingo = totalIngresoDomingo + dr.MontoDomingo;
+            totalIngresoSemana = totalIngresoSemana + dr.MontoSemana;
+
+            if (dr.IdTipoOperacion == "B" || dr.IdTipoOperacion == "C")
+            {
+                totalIngresoVentasLunes = totalIngresoVentasLunes + dr.MontoLunes;
+                totalIngresoVentasMartes = totalIngresoVentasMartes + dr.MontoMartes;
+                totalIngresoVentasMiercoles = totalIngresoVentasMiercoles + dr.MontoMiercoles;
+                totalIngresoVentasJueves = totalIngresoVentasJueves + dr.MontoJueves;
+                totalIngresoVentasViernes = totalIngresoVentasViernes + dr.MontoViernes;
+                totalIngresoVentasSabado = totalIngresoVentasSabado + dr.MontoSabado;
+                totalIngresoVentasDomingo = totalIngresoVentasDomingo + dr.MontoDomingo;
+                totalIngresoVentasSemana = totalIngresoVentasSemana + dr.MontoSemana;
+            }
+        }
+
+        <tr style="border: 1pt solid black; ">
+            <td style="padding: 4px; font-size: 10px;" colspan="2"><div style="text-align: left; font-weight: bold; font-family: Arial, Helvetica, Verdana;">Total general</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalIngresoLunes.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalIngresoMartes.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalIngresoMiercoles.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalIngresoJueves.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalIngresoViernes.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalIngresoSabado.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalIngresoDomingo.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalIngresoSemana.ToString("N2")</div></td>
+        </tr>
+        <tr>
+            <td colspan="9"></td>
+        </tr>
+        <tr>
+            <td colspan="9"></td>
+        </tr>
+        <tr style="border: 1pt solid black; ">
+            <td style="padding: 4px; font-size: 10px;" colspan="2"><div style="text-align: left; font-weight: bold; font-family: Arial, Helvetica, Verdana;">INGRESOS POR VENTAS</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalIngresoVentasLunes.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalIngresoVentasMartes.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalIngresoVentasMiercoles.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalIngresoVentasJueves.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalIngresoVentasViernes.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalIngresoVentasSabado.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalIngresoVentasDomingo.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalIngresoVentasSemana.ToString("N2")</div></td>
+        </tr>
+    </table>
+
+    <h2 style="text-align: left;">EGRESOS</h2>
+    <table style="border: 1px solid black; border-collapse: collapse; margin: 0 auto;">
+        <tr style="border-bottom: 1px solid black;">
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;"></div></td>
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;"></div></td>
+            @foreach (var dr in reporte.listaEncabezadoFechas)
+            {
+                <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">@dr.FechaStr</div></td>
+            }
+        </tr>
+        <tr style="border-bottom: 1px solid black;">
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;"></div></td>
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">OPERACION</div></td>
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">LUNES</div></td>
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">MARTES</div></td>
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">MIERCOLES</div></td>
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">JUEVES</div></td>
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">VIERNES</div></td>
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">SABADO</div></td>
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">DOMINGO</div></td>
+            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">Total General</div></td>
+        </tr>
+        @{decimal totalEgresoLunes = 0;}
+        @{decimal totalEgresoMartes = 0;}
+        @{decimal totalEgresoMiercoles = 0;}
+        @{decimal totalEgresoJueves = 0;}
+        @{decimal totalEgresoViernes = 0;}
+        @{decimal totalEgresoSabado = 0;}
+        @{decimal totalEgresoDomingo = 0;}
+        @{decimal totalEgresoSemana = 0;}
+
+        @foreach (var dr in reporte.listaEgresos)
+        {
+            <tr>
+                <td style="padding: 4px; font-size: 12px">@dr.IdTipoOperacion</td>
+                <td style="padding: 4px; font-size: 12px; width: 200px;">@dr.TipoOperacion</td>
+                <td style="padding: 4px; font-size: 12px; width: 90px;">
+                    <div style="text-align: right;">
+                        @if (dr.MontoLunes != 0)
+                        {@dr.MontoLunes.ToString("N2")}
+                    </div>
+                </td>
+                <td style="padding: 4px; font-size: 12px; width: 90px;">
+                    <div style="text-align: right;">
+                        @if (dr.MontoMartes != 0)
+                        {@dr.MontoMartes.ToString("N2")}
+                    </div>
+                </td>
+                <td style="padding: 4px; font-size: 12px; width: 90px;">
+                    <div style="text-align: right;">
+                        @if (dr.MontoMiercoles != 0)
+                        {@dr.MontoMiercoles.ToString("N2")}
+                    </div>
+                </td>
+                <td style="padding: 4px; font-size: 12px; width: 90px;">
+                    <div style="text-align: right;">
+                        @if (dr.MontoJueves != 0)
+                        {@dr.MontoJueves.ToString("N2")}
+                    </div>
+                </td>
+                <td style="padding: 4px; font-size: 12px; width: 90px;">
+                    <div style="text-align: right;">
+                        @if (dr.MontoViernes != 0)
+                        {@dr.MontoViernes.ToString("N2")}
+                    </div>
+                </td>
+                <td style="padding: 4px; font-size: 12px; width: 90px;">
+                    <div style="text-align: right;">
+                        @if (dr.MontoSabado != 0)
+                        {@dr.MontoSabado.ToString("N2")}
+                    </div>
+                </td>
+                <td style="padding: 4px; font-size: 12px; width: 90px;">
+                    <div style="text-align: right;">
+                        @if (dr.MontoDomingo != 0)
+                        {@dr.MontoDomingo.ToString("N2")}
+                    </div>
+                </td>
+                <td style="padding: 4px; font-size: 12px; width: 90px;">
+                    <div style="text-align: right;">
+                        @if (dr.MontoSemana != 0)
+                        {@dr.MontoSemana.ToString("N2")}
+                    </div>
+                </td>
+            </tr>
+            totalEgresoLunes = totalEgresoLunes + dr.MontoLunes;
+            totalEgresoMartes = totalEgresoMartes + dr.MontoMartes;
+            totalEgresoMiercoles = totalEgresoMiercoles + dr.MontoMiercoles;
+            totalEgresoJueves = totalEgresoJueves + dr.MontoJueves;
+            totalEgresoViernes = totalEgresoViernes + dr.MontoViernes;
+            totalEgresoSabado = totalEgresoSabado + dr.MontoSabado;
+            totalEgresoDomingo = totalEgresoDomingo + dr.MontoDomingo;
+            totalEgresoSemana = totalEgresoSemana + dr.MontoSemana;
+        }
+
+        <tr style="border: 1pt solid black; ">
+            <td style="padding: 4px; font-size: 10px;" colspan="2"><div style="text-align: left; font-weight: bold; font-family: Arial, Helvetica, Verdana;">Total general</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalEgresoLunes.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalEgresoMartes.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalEgresoMiercoles.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalEgresoJueves.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalEgresoViernes.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalEgresoSabado.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalEgresoDomingo.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalEgresoSemana.ToString("N2")</div></td>
+        </tr>
+        <tr>
+            <td colspan="9"></td>
+        </tr>
+        <tr>
+            <td colspan="9"></td>
+        </tr>
+        @{decimal saldoLunes = totalIngresoLunes - totalEgresoLunes;}
+        @{decimal saldoMartes = totalIngresoMartes - totalEgresoMartes;}
+        @{decimal saldoMiercoles = totalIngresoMiercoles - totalEgresoMiercoles;}
+        @{decimal saldoJueves = totalIngresoJueves - totalEgresoJueves;}
+        @{decimal saldoViernes = totalIngresoViernes - totalEgresoViernes;}
+        @{decimal saldoSabado = totalIngresoSabado - totalEgresoSabado;}
+        @{decimal saldoDomingo = totalIngresoDomingo - totalEgresoDomingo;}
+        @{decimal saldoSemana = totalIngresoSemana - totalEgresoSemana;}
+        <tr style="border: 1pt solid black; ">
+            <td style="padding: 4px; font-size: 10px;" colspan="2"><div style="text-align: left; font-weight: bold; font-family: Arial, Helvetica, Verdana;">Saldo</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@saldoLunes.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@saldoMartes.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@saldoMiercoles.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@saldoJueves.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@saldoViernes.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@saldoSabado.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@saldoDomingo.ToString("N2")</div></td>
+            <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@saldoSemana.ToString("N2")</div></td>
+        </tr>
+    </table>
+
+</body>
+</html>

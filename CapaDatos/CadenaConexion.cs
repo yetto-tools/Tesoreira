@@ -38,7 +38,10 @@ namespace CapaDatos
                     // Ambiente de Produccion
                     builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
                     break;
-                default: break;
+                default:
+                    // Ambiente Local
+                    builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.Development.json"));
+                    break;
             }
             
             var root = builder.Build();

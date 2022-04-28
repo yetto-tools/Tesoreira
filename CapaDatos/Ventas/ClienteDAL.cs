@@ -76,13 +76,13 @@ namespace CapaDatos.Ventas
             {
                 try
                 {
-                    //AND cli_codigo NOT IN(SELECT codigo_cliente_origen SQL_Latin1_General_CP1_CI_AS FROM tesoreria.db_ventas.cliente WHERE codigo_tipo_cliente = 2)
                     String sql = @"
                     SELECT cli_codigo AS codigo_cliente, 
 	                       cli_nombre AS nombre_cliente
                     FROM MASTCLI 
                     WHERE cli_empresa = 'PSA'
-                      AND cli_vendedor NOT IN (0,1,4,332) AND cli_codigo NOT IN ('000001')";
+                      AND cli_vendedor NOT IN (0,1,4,332) AND cli_codigo NOT IN ('000001')
+                      AND cli_codigo NOT IN(SELECT codigo_cliente_origen FROM SysTesoreria.db_ventas.cliente WHERE codigo_tipo_cliente = 2)";
 
                     conexion.Open();
                     using (SqlCommand cmd = new SqlCommand(sql, conexion))

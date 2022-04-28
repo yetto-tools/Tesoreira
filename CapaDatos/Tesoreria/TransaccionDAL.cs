@@ -1313,7 +1313,7 @@ namespace CapaDatos.Tesoreria
                         long codigoCuentaPorCobrar = (long)cmd.ExecuteScalar();
 
                         sentenciaSQL = @"
-                        INSERT INTO db_contabilidad.cuenta_por_cobrar(codigo_cxc,codigo_tipo_cxc,codigo_categoria_entidad,codigo_categoria,codigo_entidad,nombre_entidad,fecha_prestamo,fecha_inicio_pago,anio_operacion,semana_operacion,monto,observaciones,codigo_transaccion,codigo_planilla,codigo_operacion,codigo_estado,usuario_ing,fecha_ing,usuario_act,fecha_act,carga_inicial)
+                        INSERT INTO db_contabilidad.cuenta_por_cobrar(codigo_cxc,codigo_tipo_cxc,codigo_categoria_entidad,codigo_categoria,codigo_entidad,nombre_entidad,fecha_prestamo,fecha_inicio_pago,anio_operacion,semana_operacion,monto,observaciones,codigo_transaccion,codigo_planilla,codigo_operacion,codigo_estado,usuario_ing,fecha_ing,usuario_act,fecha_act,carga_inicial,codigo_reporte)
                         VALUES( @CodigoCuentaCobrar,
                                 @CodigoTipoCuentaPorCobrar,
                                 @CodigoCategoriaEntidad,
@@ -1334,7 +1334,8 @@ namespace CapaDatos.Tesoreria
                                 @FechaIng,
                                 @UsuarioAct,
                                 @FechaAct,
-                                @CargaInicial)";
+                                @CargaInicial,
+                                @CodigoReporte)";
 
                         cmd.CommandText = sentenciaSQL;
                         cmd.Parameters.AddWithValue("@CodigoCuentaCobrar", codigoCuentaPorCobrar);
@@ -1343,7 +1344,7 @@ namespace CapaDatos.Tesoreria
                         cmd.Parameters.AddWithValue("@FechaPrestamo", objTransaccion.FechaPrestamo == null ? DBNull.Value : objTransaccion.FechaPrestamo);
                         cmd.Parameters.AddWithValue("@FechaInicioPago", objTransaccion.FechaInicioPago == null ? DBNull.Value : objTransaccion.FechaInicioPago);
                         cmd.Parameters.AddWithValue("@CodigoPlanillaDescuento", DBNull.Value);
-                        cmd.Parameters.AddWithValue("@CodigoEstadoCxC", Constantes.CuentaPorCobrar.Estado.REGISTRADO);
+                        cmd.Parameters.AddWithValue("@CodigoEstadoCxC", Constantes.CuentaPorCobrar.Estado.PARA_INCLUIR_EN_REPORTE);
                         cmd.Parameters.AddWithValue("@CargaInicial", 0);
 
                         cmd.Parameters["@CodigoTipoCuentaPorCobrar"].Value = objTransaccion.CodigoTipoCuentaPorCobrar;
@@ -1359,6 +1360,7 @@ namespace CapaDatos.Tesoreria
                         cmd.Parameters["@FechaIng"].Value = DateTime.Now;
                         cmd.Parameters["@UsuarioAct"].Value = DBNull.Value;
                         cmd.Parameters["@FechaAct"].Value = DBNull.Value;
+                        cmd.Parameters["@CodigoReporte"].Value = objTransaccion.CodigoReporte;
                         cmd.ExecuteNonQuery();
 
                         sentenciaSQL = @"
@@ -2114,7 +2116,7 @@ namespace CapaDatos.Tesoreria
                     }
                     conexion.Close();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     conexion.Close();
                     lista = null;

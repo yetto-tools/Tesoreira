@@ -181,23 +181,14 @@ function GenerarPdf(obj) {
         let codigoReporte = parseInt(table.cell(rowIdx, 0).data());
         let anioOperacion = parseInt(table.cell(rowIdx, 1).data());
         let semanaOperacion = parseInt(table.cell(rowIdx, 2).data());
-        //fetchGet("CorteCajaSemanal/ViewReporteSemanalCajaPDF/?codigoReporte=" + codigoReporte.toString(), "pdf", function (data) {
         fetchGet("CorteCajaSemanal/ViewReporteSemanalCajaPDF/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString() + "&codigoReporte=" + codigoReporte.toString(), "pdf", function (data) {
             var file = new Blob([data], { type: 'application/pdf' });
             var fileURL = URL.createObjectURL(file);
             window.open(fileURL, "EPrescription");
         })
     });
-
-    /*let codigoReporte = parseInt(obj);
-    fetchGet("CorteCajaSemanal/ViewReporteSemanalCajaPDF/?codigoReporte=" + codigoReporte.toString(), "pdf", function (data) {
-        var file = new Blob([data], { type: 'application/pdf' });
-        var fileURL = URL.createObjectURL(file);
-        window.open(fileURL, "EPrescription");
-    })*/
 }
 
-//bloqueado: "bloqueado",
 function MostrarReportesGeneradosParaElVistoBuenoDeContabilidad() {
     let objConfiguracion = {
         url: "ReportesTesoreria/GetReportesSemanalesCajaParaVistoBueno",

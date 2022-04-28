@@ -185,6 +185,8 @@ function MostrarCompromisosFiscales(codigoEmpresa, anioOperacion, semanaOperacio
         paginar: true,
         ocultarColumnas: true,
         verdetalle: true,
+        reporte: true,
+        funcionreporte: "CompromisoFiscal",
         sumarcolumna: true,
         columnasumalist: [12],
         funciondetalle: "CompromisoFiscal",
@@ -217,6 +219,20 @@ function MostrarCompromisosFiscales(codigoEmpresa, anioOperacion, semanaOperacio
         slug: "codigoEmpresa"
     }
     pintar(objConfiguracion);
+}
+
+function GenerarPdfCompromisoFiscal() {
+    let table = $('#tabla').DataTable();
+    $('#tabla tbody').on('click', '.option-reporte', function () {
+        let rowIdx = table.row(this).index();
+        let codigoReporte = parseInt(table.cell(rowIdx, 4).data());
+        fetchGet("CompromisoFiscal/ViewReporteCompromisoFiscal/?codigoReporte=" + codigoReporte.toString(), "pdf", function (data) {
+            var file = new Blob([data], { type: 'application/pdf' });
+            var fileURL = URL.createObjectURL(file);
+            window.open(fileURL, "EPrescription");
+        })
+    });
+
 }
 
 function VerDetalleCompromisoFiscal(obj) {

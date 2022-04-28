@@ -24,7 +24,7 @@ function intelligenceSearch() {
         url: "Persona/GetAllPersonas/?noIncluidoEnPlanilla=0",
         cabeceras: ["CUI", "Nombre Completo", "Correo Electrónico"],
         propiedades: ["cui", "nombreCompleto", "correoElectronico"],
-        divContenedorTabla: "divContenedorTablaMovimiento",
+        divContenedorTabla: "divContenedorTablaPersonas",
         idtabla: "tabla-personas",
         ocultarColumnas: true,
         hideColumns: [
@@ -36,12 +36,11 @@ function intelligenceSearch() {
                 "visible": true
             }],
         autoWidth: false,
-        divPintado: "divTablaMovimiento",
+        divPintado: "divTablaPersonas",
         radio: true,
         paginar: true,
         eventoradio: "Personas",
         slug: "cui"
-
     }
     pintar(objConfigTransaccion);
 }

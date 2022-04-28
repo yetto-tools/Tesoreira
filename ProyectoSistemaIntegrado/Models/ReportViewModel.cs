@@ -3,6 +3,8 @@
     public class ReportViewModel
     {
         public int CodigoReporte { get; set; }
+
+        public int CodigoEmpresa { get; set; }
         public int AnioOperacion { get; set; }
         public int SemanaOperacion { get; set; }
 

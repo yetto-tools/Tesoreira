@@ -29,6 +29,12 @@ namespace ProyectoSistemaIntegrado
             services.AddControllersWithViews();
             services.AddMvc();
             services.AddScoped<Seguridad>();
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Identity/Account/Login";
+                options.SlidingExpiration = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

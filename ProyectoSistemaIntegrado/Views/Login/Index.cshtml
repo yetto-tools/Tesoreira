@@ -1,6 +1,21 @@
 ﻿
 @{
     Layout = null;
+    string value = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+    string nombreAmbiente = "";
+    string styleAmbiente = "Background-color: red";
+    switch (value) {
+        case "Development":
+            nombreAmbiente = "CAPACITACION";
+            styleAmbiente = "Background-color: lightblue;";
+            break;
+        case "Production":
+            nombreAmbiente = "PRODUCCION";
+            styleAmbiente = "Background-color: white;";
+            break;
+        default: break;
+    }
+
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -11,7 +26,7 @@
     <link rel="stylesheet" href="~/css/style.css" />
     <title>Panificadora Login</title>
 </head>
-<body class="d-flex text-center">
+<body class="d-flex text-center" style="@styleAmbiente">
     <input type="hidden" id="hdfOculto" value="@Url.Content("~")" />
     <div id="divLoading" style="display:none;background-image:url(@Url.Content("~")/images/loading.gif);position:absolute;top:0;left:0;
 	width:100%;height:100%;background-repeat:no-repeat;background-position:center">
@@ -23,6 +38,7 @@
             <path fill-rule="evenodd" d="M8.537 12H5.062V3.545h3.399c1.587 0 2.543.809 2.543 2.11 0 .884-.65 1.675-1.483 1.816v.1c1.143.117 1.904.931 1.904 2.033 0 1.488-1.084 2.396-2.888 2.396zM6.375 4.658v2.467h1.558c1.16 0 1.764-.428 1.764-1.23 0-.78-.569-1.237-1.541-1.237H6.375zm1.898 6.229H6.375V8.162h1.822c1.236 0 1.887.463 1.887 1.348 0 .896-.627 1.377-1.811 1.377z" />
         </svg>*@
 
+        <h1 class="h3 mb-3 fa-bold">@nombreAmbiente</h1>
         <h1 class="h3 mb-3 font-weight-normal">Panificadora Login</h1>
         <!-- 'sr-only' will hide the text : 'Email Address'. So, 'Email Address' will be invisible -->
         <label for="uiUsuario" class="sr-only">Usuario</label>

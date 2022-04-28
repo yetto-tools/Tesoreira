@@ -332,6 +332,7 @@ function fillCombosEdit(codigoTransaccion) {
                 set("uiFechaReciboStr", data.fechaReciboStr);
                 set("uiNombreProveedor", data.nombreProveedor);
                 setDataControls(codigoOperacion, data);
+
             })
         }
     });

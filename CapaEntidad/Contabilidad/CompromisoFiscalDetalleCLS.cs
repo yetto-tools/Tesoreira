@@ -13,6 +13,7 @@ namespace CapaEntidad.Contabilidad
         public string NombreEmpresa { get; set; }
         public short AnioOperacion { get; set; }
         public byte SemanaOperacion { get; set; }
+        public string Periodo { get; set; }
         public byte DiaOperacion { get; set; }
         public string NombreDia { get; set; }
         public decimal Monto { get; set; }
@@ -22,5 +23,7 @@ namespace CapaEntidad.Contabilidad
         public string UsuarioIng { get; set; }
         public byte PermisoAnular { get; set; }
         public int CodigoReporte { get; set; }
+
+
     }
 }

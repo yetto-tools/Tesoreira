@@ -5,6 +5,7 @@
         public const int CUENTAS_POR_COBRAR = 5;
         public const int CIERRE = 7;
         public const int CORTE_CAJA_CHICA = 9;
+        public const int COMPROMISO_FISCAL = 10;
 
 
         /*RESUMEN DE OPERACIONES EN CAJA 1

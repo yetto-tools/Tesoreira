@@ -1,0 +1,72 @@
+﻿@using CapaNegocio.Contabilidad;
+@using CapaEntidad.Contabilidad;
+@using System.Globalization;
+@model ReportContabilidadViewModel
+
+
+@{
+    Layout = null;
+    CompromisoFiscalBL obj = new CompromisoFiscalBL();
+    List<CompromisoFiscalDetalleCLS> reporte = obj.GetDetalleReporteCompromisoFiscal(Model.AnioOperacion, Model.SemanaOperacion);
+
+}
+
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h1 style="text-align: center;">REPORTE DE VENTAS FACTURADAS AL CONTADO</h1>
+    <h2 style="text-align: center;">AÑO: @reporte[0].AnioOperacion</h2>
+    <h2 style="text-align: center;">PERIODO: @reporte[0].Periodo</h2>
+    @{int codigoEmpresa = 0;}
+    @{int contador = 0;}
+    @{decimal sumaMonto = 0;}
+    @{decimal sumaMontoPorEmpresa = 0;}
+
+    <table style="border: 1px solid black; border-collapse: collapse; margin: 0 auto;">
+        @foreach (var dr in reporte)
+        {
+            if (codigoEmpresa != dr.CodigoEmpresa)
+            {
+                if (contador != 0)
+                { 
+                    <tr style="border: 1pt solid black; ">
+                        <td style="padding: 4px; font-size: 24px;"><div style="text-align: left; font-weight: bold; font-family: Arial, Helvetica, Verdana;">Monto</div></td>
+                        <td style="padding: 4px; font-size: 24px;"><div style="text-align: right; font-weight: bold; font-family: Arial, Helvetica, Verdana;">@sumaMontoPorEmpresa.ToString("N2")</div></td>
+                    </tr>
+                }
+                <tr style="border-bottom: 1px solid black;">
+                    <td style="font-size: 24px; margin: auto; border: 1px solid black;" colspan="2"><div style="text-align: center;">@dr.NombreEmpresa</div></td>
+                </tr>
+                <tr style="border-bottom: 1px solid black;">
+                    <td style="font-size: 24px; margin: auto; border: 1px solid black;"><div style="text-align: center;">Día</div></td>
+                    <td style="font-size: 24px; margin: auto; border: 1px solid black;"><div style="text-align: center;">Monto</div></td>
+                </tr>
+                codigoEmpresa = @dr.CodigoEmpresa;
+                sumaMontoPorEmpresa = 0;
+            }
+            <tr>
+                <td style="padding: 4px; font-size: 24px;"><div style="text-align: left;">@dr.NombreDia</div></td>
+                <td style="padding: 4px; font-size: 24px;"><div style="text-align: right;">@dr.Monto.ToString("N2")</div></td>
+            </tr>
+            sumaMonto = sumaMonto + dr.Monto;
+            sumaMontoPorEmpresa = sumaMonto + dr.Monto;
+            contador = contador + 1;
+        }
+        <tr style="border: 1pt solid black; ">
+            <td style="padding: 4px; font-size: 24px;"><div style="text-align: left; font-weight: bold; font-family: Arial, Helvetica, Verdana;">Monto</div></td>
+            <td style="padding: 4px; font-size: 24px;"><div style="text-align: right; font-weight: bold; font-family: Arial, Helvetica, Verdana;">@sumaMontoPorEmpresa.ToString("N2")</div></td>
+        </tr>
+        <tr style="border: 1pt solid black; ">
+            <td style="padding: 4px; font-size: 24px;"></td>
+            <td style="padding: 4px; font-size: 24px;"></td>
+        </tr>
+        <tr style="border: 1pt solid black; ">
+            <td style="padding: 4px; font-size: 24px;"><div style="text-align: left; font-weight: bold; font-family: Arial, Helvetica, Verdana;">TOTAL</div></td>
+            <td style="padding: 4px; font-size: 24px;"><div style="text-align: right; font-weight: bold; font-family: Arial, Helvetica, Verdana;">@sumaMonto.ToString("N2")</div></td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -23,6 +23,18 @@ namespace CapaNegocio.Contabilidad
             return obj.GetDetalleCompromisoFiscal(codigoEmpresa, anioOperacion, semanaOperacion);
         }
 
+        public List<CompromisoFiscalCLS> GetReportesCompromisoFiscal(int anioOperacion)
+        {
+            CompromisoFiscalDAL obj = new CompromisoFiscalDAL();
+            return obj.GetReportesCompromisoFiscal(anioOperacion);
+        }
+
+        public List<CompromisoFiscalDetalleCLS> GetDetalleReporteCompromisoFiscal(int anioOperacion, int semanaOperacion)
+        {
+            CompromisoFiscalDAL obj = new CompromisoFiscalDAL();
+            return obj.GetDetalleReporteCompromisoFiscal(anioOperacion, semanaOperacion);
+        }
+
         public string CargarCompromisoFiscal(List<TransaccionCLS> listaTransacciones, string usuarioAct)
         {
             CompromisoFiscalDAL obj = new CompromisoFiscalDAL();

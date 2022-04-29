@@ -388,5 +388,191 @@ namespace CapaDatos.Contabilidad
             }
         }
 
+        public List<CompromisoFiscalCLS> GetReportesCompromisoFiscal(int anioOperacion)
+        {
+            List<CompromisoFiscalCLS> lista = null;
+            using (SqlConnection conexion = new SqlConnection(cadenaTesoreria))
+            {
+                try
+                {
+                    string filterAnioOperacion = String.Empty;
+                    if (anioOperacion != -1) {
+                        filterAnioOperacion = "AND anio_operacion = " + anioOperacion.ToString();
+                    } 
+
+                    string sql = @" 
+                    SELECT @CodigoTipoReporte AS codigo_tipo_reporte,
+                           x.anio_operacion,
+                           x.semana_operacion,
+                           x.periodo,
+                           x.monto_total,
+                           w.nombre_controlador,
+                           w.nombre_accion,
+                           w.pdf,
+                           w.excel,
+                           w.web
+                    FROM ( SELECT anio_operacion, 
+	                              semana_operacion, 
+                                  db_admon.GetPeriodoSemana(anio_operacion, semana_operacion) periodo,
+	                              SUM(monto) AS monto_total
+                           FROM db_tesoreria.transaccion
+                           WHERE codigo_operacion = @CodigoOperacion 
+                             AND codigo_estado <> 0
+                           " + filterAnioOperacion + @"
+                           GROUP BY anio_operacion, semana_operacion
+                         ) x
+                    INNER JOIN  db_admon.tipo_reporte w
+                    ON @CodigoTipoReporte = w.codigo_tipo_reporte";
+
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand(sql, conexion))
+                    {
+                        // CommandType, Gets or sets a value indicating how the CommandText property is to be interpreted.
+                        // The Text CommandType.Text is used when the command is raw SQL
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Parameters.AddWithValue("@CodigoOperacion", Constantes.Operacion.Neutro.REGISTRO_FACTURAS_AL_CONTADO);
+                        cmd.Parameters.AddWithValue("@CodigoTipoReporte", Constantes.Reporte.COMPROMISO_FISCAL);
+                        SqlDataReader dr = cmd.ExecuteReader();
+                        if (dr != null)
+                        {
+                            CompromisoFiscalCLS objCompromisoFiscalCLS;
+                            lista = new List<CompromisoFiscalCLS>();
+                            int postAnioOperacion = dr.GetOrdinal("anio_operacion");
+                            int postSemanaOperacion = dr.GetOrdinal("semana_operacion");
+                            int postPeriodo = dr.GetOrdinal("periodo");
+                            int postMontoTotal = dr.GetOrdinal("monto_total");
+                            int postNombreControlador = dr.GetOrdinal("nombre_controlador");
+                            int postNombreAccion = dr.GetOrdinal("nombre_accion");
+                            while (dr.Read())
+                            {
+                                objCompromisoFiscalCLS = new CompromisoFiscalCLS();
+                                objCompromisoFiscalCLS.AnioOperacion = dr.GetInt16(postAnioOperacion);
+                                objCompromisoFiscalCLS.SemanaOperacion = dr.GetByte(postSemanaOperacion);
+                                objCompromisoFiscalCLS.Periodo = dr.GetString(postPeriodo);
+                                objCompromisoFiscalCLS.MontoTotal = dr.GetDecimal(postMontoTotal);
+                                objCompromisoFiscalCLS.NombreControlador = dr.GetString(postNombreControlador);
+                                objCompromisoFiscalCLS.NombreAccion = dr.GetString(postNombreAccion);
+                                lista.Add(objCompromisoFiscalCLS);
+
+                            }//fin while
+                        }// fin if
+                    }// fin using
+                    conexion.Close();
+                }
+                catch (Exception)
+                {
+                    conexion.Close();
+                    lista = null;
+
+                }
+                return lista;
+            }
+        }
+
+        public List<CompromisoFiscalDetalleCLS> GetDetalleReporteCompromisoFiscal(int anioOperacion, int semanaOperacion)
+        {
+            List<CompromisoFiscalDetalleCLS> lista = null;
+            using (SqlConnection conexion = new SqlConnection(cadenaTesoreria))
+            {
+                try
+                {
+                    string sql = @" 
+                    SELECT x.codigo_transaccion,
+                           x.codigo_empresa,
+	                       y.nombre_comercial AS nombre_empresa, 
+	                       x.anio_operacion, 
+	                       x.semana_operacion, 
+                           db_admon.GetPeriodoSemana(x.anio_operacion, x.semana_operacion) periodo,
+                           x.codigo_reporte, 
+	                       x.dia_operacion,
+	                       CASE
+		                     WHEN x.dia_operacion = 1 THEN 'Lunes'
+		                     WHEN x.dia_operacion = 2 THEN 'Martes'
+		                     WHEN x.dia_operacion = 3 THEN 'Miercoles'
+		                     WHEN x.dia_operacion = 4 THEN 'Jueves'
+		                     WHEN x.dia_operacion = 5 THEN 'Viernes'
+		                     WHEN x.dia_operacion = 6 THEN 'Sábado'
+		                     WHEN x.dia_operacion = 7 THEN 'Domingo'
+		                     ELSE 'No definido'
+	                       END AS nombre_dia,
+                           x.codigo_operacion,
+                           z.nombre_operacion, 
+	                       x.monto,
+	                       FORMAT(x.fecha_ing, 'dd/MM/yyyy, hh:mm:ss') AS fecha_ing_str,
+	                       x.usuario_ing                           
+                    FROM db_tesoreria.transaccion x
+                    INNER JOIN db_admon.empresa y
+                    ON x.codigo_empresa = y.codigo_empresa
+                    INNER JOIN db_tesoreria.operacion z
+                    ON x.codigo_operacion = z.codigo_operacion
+                    WHERE x.codigo_operacion = @CodigoOperacion 
+                      AND x.codigo_estado <> 0
+                      AND x.anio_operacion = @AnioOperacion
+                      AND x.semana_operacion = @SemanaOperacion
+                    ORDER BY y.nombre_comercial DESC, x.dia_operacion ASC";
+
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand(sql, conexion))
+                    {
+                        // CommandType, Gets or sets a value indicating how the CommandText property is to be interpreted.
+                        // The Text CommandType.Text is used when the command is raw SQL
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Parameters.AddWithValue("@CodigoOperacion", Constantes.Operacion.Neutro.REGISTRO_FACTURAS_AL_CONTADO);
+                        cmd.Parameters.AddWithValue("@AnioOperacion", anioOperacion);
+                        cmd.Parameters.AddWithValue("@SemanaOperacion", semanaOperacion);
+                        SqlDataReader dr = cmd.ExecuteReader();
+                        if (dr != null)
+                        {
+                            CompromisoFiscalDetalleCLS objCompromisoFiscalDetalleCLS;
+                            lista = new List<CompromisoFiscalDetalleCLS>();
+                            int postCodigoTransaccion = dr.GetOrdinal("codigo_transaccion");
+                            int postCodigoEmpresa = dr.GetOrdinal("codigo_empresa");
+                            int postNombreEmpresa = dr.GetOrdinal("nombre_empresa");
+                            int postCodigoReporte = dr.GetOrdinal("codigo_reporte");
+                            int postAnioOperacion = dr.GetOrdinal("anio_operacion");
+                            int postSemanaOperacion = dr.GetOrdinal("semana_operacion");
+                            int postPeriodo = dr.GetOrdinal("periodo");
+                            int postDiaOperacion = dr.GetOrdinal("dia_operacion");
+                            int postNombreDia = dr.GetOrdinal("nombre_dia");
+                            int postCodigoOperacion = dr.GetOrdinal("codigo_operacion");
+                            int postOperacion = dr.GetOrdinal("nombre_operacion");
+                            int postFechaIngStr = dr.GetOrdinal("fecha_ing_str");
+                            int postUsuarioIng = dr.GetOrdinal("usuario_ing");
+                            int postMonto = dr.GetOrdinal("monto");
+                            while (dr.Read())
+                            {
+                                objCompromisoFiscalDetalleCLS = new CompromisoFiscalDetalleCLS();
+                                objCompromisoFiscalDetalleCLS.CodigoTransaccion = dr.GetInt64(postCodigoTransaccion);
+                                objCompromisoFiscalDetalleCLS.CodigoEmpresa = dr.GetInt16(postCodigoEmpresa);
+                                objCompromisoFiscalDetalleCLS.NombreEmpresa = dr.GetString(postNombreEmpresa);
+                                objCompromisoFiscalDetalleCLS.CodigoReporte = dr.GetInt32(postCodigoReporte);
+                                objCompromisoFiscalDetalleCLS.AnioOperacion = dr.GetInt16(postAnioOperacion);
+                                objCompromisoFiscalDetalleCLS.SemanaOperacion = dr.GetByte(postSemanaOperacion);
+                                objCompromisoFiscalDetalleCLS.Periodo = dr.GetString(postPeriodo) + " [" + dr.GetByte(postSemanaOperacion).ToString() + "]";
+                                objCompromisoFiscalDetalleCLS.DiaOperacion = dr.GetByte(postDiaOperacion);
+                                objCompromisoFiscalDetalleCLS.NombreDia = dr.GetString(postNombreDia);
+                                objCompromisoFiscalDetalleCLS.FechaIngresoStr = dr.GetString(postFechaIngStr);
+                                objCompromisoFiscalDetalleCLS.UsuarioIng = dr.GetString(postUsuarioIng);
+                                objCompromisoFiscalDetalleCLS.Monto = dr.GetDecimal(postMonto);
+                                objCompromisoFiscalDetalleCLS.CodigoOperacion = dr.GetInt16(postCodigoOperacion);
+                                objCompromisoFiscalDetalleCLS.Operacion = dr.GetString(postOperacion);
+                                lista.Add(objCompromisoFiscalDetalleCLS);
+
+                            }//fin while
+                        }// fin if
+                    }// fin using
+                    conexion.Close();
+                }
+                catch (Exception ex)
+                {
+                    conexion.Close();
+                    lista = null;
+
+                }
+                return lista;
+            }
+        }
+
+
     }
 }

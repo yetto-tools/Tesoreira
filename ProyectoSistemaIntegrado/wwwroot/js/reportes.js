@@ -26,6 +26,10 @@
                     fillComboCajaChica();
                     ListarCortesCajaChica(0, -1)
                     break;
+                case "MostrarReporteCompromisoFiscal":
+                    //fillComboCajaChica();
+                    ListarReportesCompromisoFiscal(-1);
+                    break;
                 default:
                     break;
             }// fin switch
@@ -226,19 +230,24 @@ function MostrarReportes() {
 }
 
 function VerDetalleReporte(obj) {
-    let codigoTiporeporte = obj;
+    let codigoTipoReporte = obj;
     let table = $('#tabla').DataTable();
     $('#tabla tbody').on('click', '.option-detalle', function () {
         let rowIdx = table.row(this).index();
-        let codigoTipoReporte = table.cell(rowIdx, 0).data();
-        if (codigoTipoReporte == REPORTE_CORTE_CAJA_CHICA) {
-            Redireccionar("Reportes", "MostrarReporteCorteCajaChica/?codigoTipoReporte=" + codigoTiporeporte.toString());
-        } else {
-            Redireccionar("Reportes", "MostrarReporte/?codigoTipoReporte=" + codigoTiporeporte.toString());
-        }
+        //let codigoTipoReporte = table.cell(rowIdx, 0).data();
+        switch (codigoTipoReporte) {
+            case REPORTE_CORTE_CAJA_CHICA:
+                Redireccionar("Reportes", "MostrarReporte/?codigoTipoReporte=" + codigoTipoReporte.toString());
+                break;
+            case REPORTE_COMPROMISO_FISCAL:
+                Redireccionar("Reportes", "MostrarReporteCompromisoFiscal");
+                break;
+            default:
+                Redireccionar("Reportes", "MostrarReporteCorteCajaChica");
+                break;
+        }// fin switch
     });
 }
-
 
 function ListarReportes(codigoTipoReporte) {
     let objConfiguracion = {
@@ -337,7 +346,6 @@ function GenerarExcelReporte(obj) {
     });
 }
 
-
 function buscarReporteCortesCajaChica() {
     let errores = ValidarDatos("frmBusquedaCortesCajaChica")
     if (errores != "") {
@@ -415,4 +423,62 @@ function ListarCortesCajaChica(anioOperacion, codigoCajaChica) {
     pintar(objConfiguracion);
 }
 
+
+function ListarReportesCompromisoFiscal(anioOperacion) {
+    let objConfiguracion = {
+        url: "Reportes/GetReportesCompromisoFiscal/?anioOperacion=" + anioOperacion.toString(),
+        cabeceras: ["nombreControlador","nombreAccion", "Año", "Semana", "Periodo", "Monto"],
+        propiedades: ["nombreControlador","nombreAccion", "anioOperacion", "semanaOperacion", "periodo","montoTotal"],
+        divContenedorTabla: "divContenedorTabla",
+        divPintado: "divTabla",
+        reporte: true,
+        funcionreporte: "ReporteDetalleCompromisoFiscal",
+        paginar: true,
+        excel: true,
+        funcionexcel: "ReporteDetalleCompromisoFiscal",
+        excelvalue: "excel",
+        web: true,
+        webvalue: "web",
+        paginar: true,
+        ocultarColumnas: true,
+        hideColumns: [
+            {
+                "targets": [0],
+                "visible": true
+            }, {
+                "targets": [1],
+                "visible": true
+            }, {
+                "targets": [2],
+                "visible": true,
+                "className": "dt-body-center"
+            }, {
+                "targets": [3],
+                "visible": true,
+                "className": "dt-body-center"
+            }, {
+                "targets": [5],
+                "className": "dt-body-right",
+                "visible": true
+            }],
+        slug: "anioOperacion"
+    }
+    pintar(objConfiguracion);
+}
+
+function GenerarPdfReporteDetalleCompromisoFiscal(obj) {
+    let table = $('#tabla').DataTable();
+    $('#tabla tbody').on('click', '.option-reporte', function () {
+        let rowIdx = table.row(this).index();
+        let nombreControlador = table.cell(rowIdx, 0).data();
+        let nombreAccion = table.cell(rowIdx, 1).data();
+        let anioOperacion = table.cell(rowIdx, 2).data();
+        let semanaOperacion = table.cell(rowIdx, 3).data();
+        fetchGet(nombreControlador + "/" + nombreAccion + "/?anioOperacion=" + anioOperacion + "&semanaOperacion=" + semanaOperacion, "pdf", function (data) {
+            var file = new Blob([data], { type: 'application/pdf' });
+            var fileURL = URL.createObjectURL(file);
+            window.open(fileURL, "EPrescription");
+        });
+    });
+}
 

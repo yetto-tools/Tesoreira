@@ -42,17 +42,6 @@ namespace ProyectoSistemaIntegrado.Controllers.Contabilidad
             return View();
         }
 
-        public IActionResult ViewReporteCompromisoFiscal(int codigoEmpresa, int anioOperacion, int semanaOperacion)
-        {
-            ReportViewModel obj = new ReportViewModel();
-            obj.CodigoEmpresa = codigoEmpresa;
-            var demoViewPortrait = new ViewAsPdf("ViewReporteCompromisoFiscal", String.Empty, obj);
-            demoViewPortrait.PageMargins = new Margins { Bottom = 5, Left = 5, Right = 5, Top = 5 };
-            demoViewPortrait.PageSize = Size.Letter;
-
-            return demoViewPortrait;
-        }
-
         public List<CompromisoFiscalCLS> GetCompromisosFiscales(int codigoEmpresa, int anioOperacion, int semanaOperacion)
         {
             CompromisoFiscalBL obj = new CompromisoFiscalBL();

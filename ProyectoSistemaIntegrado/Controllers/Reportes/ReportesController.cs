@@ -34,6 +34,11 @@ namespace ProyectoSistemaIntegrado.Controllers.Reportes
             return View();
         }
 
+        public IActionResult MostrarReporteCompromisoFiscal()
+        {
+            return View();
+        }
+
         public List<TipoReporteCLS> GetTiposDeReportesAsignados()
         {
             ViewBag.Message = HttpContext.Session.GetString("usuario");
@@ -54,6 +59,19 @@ namespace ProyectoSistemaIntegrado.Controllers.Reportes
             ReportesTesoreriaBL obj = new ReportesTesoreriaBL();
             return obj.GetCortesCajaChica(anioOperacion, codigoCajaChica);
         }
+
+        public List<CompromisoFiscalCLS> GetReportesCompromisoFiscal(int anioOperacion)
+        {
+            CompromisoFiscalBL obj = new CompromisoFiscalBL();
+            return obj.GetReportesCompromisoFiscal(anioOperacion);
+        }
+
+        /*public List<CompromisoFiscalDetalleCLS> GetReportesCompromisoFiscal()
+        {
+            ReportesTesoreriaBL obj = new ReportesTesoreriaBL();
+            public List<CompromisoFiscalDetalleCLS> GetDetalleReporteCompromisoFiscalSemanal(int anioOperacion, int semanaOperacion)
+            return obj.GetDetalleReporteCompromisoFiscalSemanal();
+        }*/
 
         public IActionResult ViewReporteResumenOperacionesCaja(int anioOperacion, int semanaOperacion, int codigoReporte, int arqueo)
         {
@@ -233,6 +251,18 @@ namespace ProyectoSistemaIntegrado.Controllers.Reportes
             demoViewPortrait.PageWidth = 76;
             //demoViewPortrait.PageMargins = new Margins { Bottom = 5, Left = 5, Right = 5, Top = 5 };
             //demoViewPortrait.PageSize = Size.Letter;
+
+            return demoViewPortrait;
+        }
+
+        public IActionResult ViewReporteCompromisoFiscal(int anioOperacion, int semanaOperacion)
+        {
+            ReportContabilidadViewModel obj = new ReportContabilidadViewModel();
+            obj.AnioOperacion = anioOperacion;
+            obj.SemanaOperacion = semanaOperacion;
+            var demoViewPortrait = new ViewAsPdf("ViewReporteCompromisoFiscal", String.Empty, obj);
+            demoViewPortrait.PageMargins = new Margins { Bottom = 5, Left = 5, Right = 5, Top = 5 };
+            demoViewPortrait.PageSize = Size.Letter;
 
             return demoViewPortrait;
         }

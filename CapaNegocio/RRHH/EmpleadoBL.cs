@@ -18,6 +18,12 @@ namespace CapaNegocio.RRHH
             return obj.GetListaEmpleados(codigoEmpresa, codigoArea, codigoPuesto, codigoEstado, btb, saldoPrestamo);
         }
 
+        public List<EmpleadoCLS> GetListaEmpleadosRetirados(int codigoEmpresa, int codigoArea, int codigoPuesto, int saldoPrestamo, int pagoPendiente)
+        {
+            EmpleadoDAL obj = new EmpleadoDAL();
+            return obj.GetListaEmpleadosRetirados(codigoEmpresa, codigoArea, codigoPuesto, saldoPrestamo, pagoPendiente);
+        }
+
         public EmpleadoComboCLS FillCombosNewEmpleado()
         {
             EmpleadoDAL obj = new EmpleadoDAL();

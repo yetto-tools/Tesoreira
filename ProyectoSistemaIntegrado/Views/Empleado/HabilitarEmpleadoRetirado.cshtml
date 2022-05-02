@@ -1,0 +1,169 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using CapaEntidad.Administracion;
+@{
+    ViewData["Title"] = "Index";
+    string cadena = Context.Session.GetString("usuario");
+    UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(cadena);
+    string idUsuario = objUsuario.IdUsuario;
+    Context.Session.SetString("tituloPrincipal", "Listado de Empleados Retirados");
+}
+
+<button type="button" id="ShowPopupDeBaja" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropDeBaja" style="display:none">
+</button>
+
+<fieldset>
+    <div class="row">
+        <div class="col-md-3">
+            <label class="col-sm-2 col-form-label">Empresa</label>
+            <select class="form-control" id="uiFiltroEmpresa" name="CodigoEmpresa">
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="col-sm-2 col-form-label">Area</label>
+            <select class="form-control" id="uiFiltroArea" name="CodigoArea">
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="col-sm-2 col-form-label">Puesto</label>
+            <select class="form-control" id="uiFiltroPuesto" name="CodigoPuesto">
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="col-sm-2 col-form-label"> </label>
+            <input type="button" class="form-control btn btn-primary" value="BUSCAR" onclick="buscarEmpleados()" />
+        </div>
+        <div class="col-md-3">
+            <label class="col-sm-2 col-form-label">Estados</label>
+            <select class="form-control" id="uiFiltroEstados" name="CodigoEstadoEmpleado">
+            </select>
+        </div>
+    </div>
+    <div style="height: 25px; width:100%;">
+    </div>
+
+</fieldset>
+
+<div id="divTabla">
+
+
+</div>
+
+
+<!-- Modal De Baja -->
+<div class="modal fade" id="staticBackdropDeBaja" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelDeBaja" aria-hidden="true">
+
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupDeBaja"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupDeBaja">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="frmDeBajaEmpleado">
+                    <input type="hidden" name="CodigoEmpresa" class="form-control obligatorio" id="uiCodigoEmpresa" readonly />
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Empresa:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="NombreEmpresa" class="form-control obligatorio" id="uiNombreEmpresa" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Código:</label>
+                        <div class="col-sm-4">
+                            <input type="text" name="CodigoEmpleado" class="form-control obligatorio" id="uiCodigoEmpleado" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Nombre:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="NombreEmpleado" class="form-control obligatorio" id="uiNombreEmpleado" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Motivo:</label>
+                        <div class="col-sm-4">
+                            <select class="form-control obligatorio" id="uiCodigoMotivoBaja" name="CodigoMotivoBaja" onchange="MostrarDataAdicionalMotivoDeBaja(this)">
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display:none;" id="div-data-egreso">
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label"> </label>
+                            <div class="col-md-3">
+                                <label class="col-form-label">Fecha Egreso</label>
+                                <input type="text" name="FechaEgresoStr" class="form-control text-center" id="uiFechaEgreso" readonly />
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display:none;" id="div-data-suspension">
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label"> </label>
+                            <div class="col-md-3">
+                                <label class="col-form-label">Motivo de Suspensión</label>
+                                <select class="form-control" id="uiCodigoMotivoSuspension" name="CodigoMotivoSuspension">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label"> </label>
+                            <div class="col-md-3">
+                                <label class="col-form-label">Inicio Suspensión</label>
+                                <input type="text" name="FechaInicioSuspensionStr" class="form-control text-center" id="uiFechaInicioSuspension" readonly />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="col-form-label">Fin Suspensión</label>
+                                <input type="text" name="FechaFinSuspensionStr" class="form-control text-center" id="uiFechaFinSuspension" readonly />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Observaciones:</label>
+                        <div class="col-sm-10">
+                            <textarea name="Observaciones" class="form-control" id="uiObservaciones"></textarea>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="DarDeBajaEmpleado()">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/jqueryui.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/empleado.js"></script>
+    <script>
+        $(function () {
+            $("#uiFechaEgreso").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeYear: true
+            });
+        });
+
+        $(function () {
+            $("#uiFechaInicioSuspension").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeYear: true
+            });
+        });
+
+        $(function () {
+            $("#uiFechaFinSuspension").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeYear: true
+            });
+        });
+
+
+    </script>
+
+}

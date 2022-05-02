@@ -30,10 +30,21 @@ namespace ProyectoSistemaIntegrado.Controllers.RRHH
             return View();
         }
 
+        public IActionResult HabilitarEmpleadoRetirado()
+        {
+            return View();
+        }
+
         public List<EmpleadoCLS> BuscarEmpleados(int codigoEmpresa, int codigoArea, int codigoPuesto, int codigoEstado, int btb, int saldoPrestamo)
         {
             EmpleadoBL obj = new EmpleadoBL();
             return obj.GetListaEmpleados(codigoEmpresa, codigoArea, codigoPuesto, codigoEstado, btb, saldoPrestamo);
+        }
+
+        public List<EmpleadoCLS> GetListaEmpleadosRetirados(int codigoEmpresa, int codigoArea, int codigoPuesto, int saldoPrestamo, int pagoPendiente)
+        {
+            EmpleadoBL obj = new EmpleadoBL();
+            return obj.GetListaEmpleadosRetirados(codigoEmpresa, codigoArea, codigoPuesto, saldoPrestamo, pagoPendiente);
         }
 
         public EmpleadoComboCLS FillCombosNewEmpleado()

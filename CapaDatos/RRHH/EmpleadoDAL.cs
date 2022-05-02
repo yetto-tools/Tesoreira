@@ -233,6 +233,167 @@ namespace CapaDatos.RRHH
             }
         }
 
+        public List<EmpleadoCLS> GetListaEmpleadosRetirados(int codigoEmpresa, int codigoArea, int codigoPuesto, int saldoPrestamo, int pagoPendiente)
+        {
+            List<EmpleadoCLS> lista = null;
+            using (SqlConnection conexion = new SqlConnection(cadenaRRHH))
+            {
+                try
+                {
+                    string filterEmpresa = string.Empty;
+                    string filterArea = string.Empty;
+                    string filterPuesto = string.Empty;
+                    string filterSaldoPrestamo = string.Empty;
+                    if (codigoEmpresa != -1)
+                    {
+                        filterEmpresa = " AND x.codigo_empresa = " + codigoEmpresa.ToString();
+                    }
+                    if (codigoArea != -1)
+                    {
+                        filterArea = " AND x.codigo_area = " + codigoArea.ToString(); ;
+                    }
+                    if (codigoPuesto != -1)
+                    {
+                        filterPuesto = " AND x.codigo_puesto = " + codigoPuesto.ToString();
+                    }
+
+                    if (saldoPrestamo != 0)
+                    {
+                        filterSaldoPrestamo = "AND x.saldo_prestamo =" + saldoPrestamo.ToString();
+                    }
+                    string sql = @"
+                    SELECT x.codigo_empresa,
+	                       s.nombre_comercial AS empresa,			
+	                       x.codigo_empleado,
+                           db_rrhh.GetNombreCompletoEmpleado(x.cui) AS nombre_completo,
+	                       x.codigo_tipo_identificacion,
+	                       x.cui,
+	                       x.codigo_area,
+	                       y.nombre AS area,
+	                       x.codigo_seccion,
+	                       z.nombre AS seccion,
+	                       x.codigo_puesto,
+	                       w.nombre AS puesto,
+	                       x.codigo_ubicacion,
+	                       m.nombre AS ubicacion,
+	                       x.codigo_jornada,
+	                       n.nombre AS jornada,
+                           x.codigo_frecuencia_pago,
+                           p.nombre as frecuencia_pago, 
+                           FORMAT(x.fecha_ingreso, 'dd/MM/yyyy') AS fecha_ingreso_str,
+                           CASE
+                             WHEN x.fecha_egreso IS NOT NULL THEN FORMAT(x.fecha_egreso, 'dd/MM/yyyy')
+                             ELSE ''
+                           END fecha_egreso_str, 
+                           x.codigo_estado,
+                           o.nombre as estado_empleado,
+                           CASE
+                            WHEN x.codigo_estado = @CodigoEstadoRetirado THEN 0
+                            ELSE 1
+                           END AS  permiso_anular,
+                           1 AS permiso_editar
+                            
+                    FROM db_rrhh.empleado x
+                    INNER JOIN db_admon.empresa s
+                    ON x.codigo_empresa = s.codigo_empresa
+                    INNER JOIN db_rrhh.area y
+                    ON x.codigo_area = y.codigo_area
+                    INNER JOIN db_rrhh.seccion z
+                    ON x.codigo_seccion = z.codigo_seccion
+                    INNER JOIN db_rrhh.puesto w
+                    ON x.codigo_puesto = w.codigo_puesto
+                    INNER JOIN db_rrhh.ubicacion m
+                    ON x.codigo_ubicacion = m.codigo_ubicacion
+                    INNER JOIN db_rrhh.jornada n
+                    ON x.codigo_jornada = n.codigo_jornada
+                    INNER JOIN db_rrhh.estado_empleado o
+                    ON x.codigo_estado = o.codigo_estado_empleado
+                    INNER JOIN db_rrhh.frecuencia_pago p
+                    ON x.codigo_frecuencia_pago = p.codigo_frecuencia_pago
+                    WHERE x.codigo_estado = @CodigoEstadoRetirado
+                    " + filterEmpresa + @"    
+                    " + filterArea + @"    
+                    " + filterPuesto + @"
+                    " + filterSaldoPrestamo;
+
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand(sql, conexion))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Parameters.AddWithValue("@CodigoEstadoRetirado", Constantes.Empleado.EstadoEmpleado.RETIRADO);
+                        SqlDataReader dr = cmd.ExecuteReader();
+                        if (dr != null)
+                        {
+                            EmpleadoCLS objEmpleado;
+                            lista = new List<EmpleadoCLS>();
+                            int postCodigoEmpresa = dr.GetOrdinal("codigo_empresa");
+                            int postEmpresa = dr.GetOrdinal("empresa");
+                            int postCodigoEmpleado = dr.GetOrdinal("codigo_empleado");
+                            int postNombreCompleto = dr.GetOrdinal("nombre_completo");
+                            int postCodigoTipoIdentificacion = dr.GetOrdinal("codigo_tipo_identificacion");
+                            int postCui = dr.GetOrdinal("cui");
+                            int postCodigoArea = dr.GetOrdinal("codigo_area");
+                            int postArea = dr.GetOrdinal("area");
+                            int postCodigoSeccion = dr.GetOrdinal("codigo_seccion");
+                            int postSeccion = dr.GetOrdinal("seccion");
+                            int postCodigoPuesto = dr.GetOrdinal("codigo_puesto");
+                            int postPuesto = dr.GetOrdinal("puesto");
+                            int postCodigoUbicacion = dr.GetOrdinal("codigo_ubicacion");
+                            int postUbicacion = dr.GetOrdinal("ubicacion");
+                            int postCodigoJornada = dr.GetOrdinal("codigo_jornada");
+                            int postJornada = dr.GetOrdinal("jornada");
+                            int postCodigoFrecuenciaPago = dr.GetOrdinal("codigo_frecuencia_pago");
+                            int postFrecuenciaPago = dr.GetOrdinal("frecuencia_pago");
+                            int postFechaIngresoStr = dr.GetOrdinal("fecha_ingreso_str");
+                            int postFechaEgresoStr = dr.GetOrdinal("fecha_egreso_str");
+                            int postCodigoEstadoEmpleado = dr.GetOrdinal("codigo_estado");
+                            int postEstadoEmpleado = dr.GetOrdinal("estado_empleado");
+                            int postPermisoAnular = dr.GetOrdinal("permiso_anular");
+                            int postPermisoEditar = dr.GetOrdinal("permiso_editar");
+
+                            while (dr.Read())
+                            {
+                                objEmpleado = new EmpleadoCLS();
+                                objEmpleado.CodigoEmpresa = dr.GetInt16(postCodigoEmpresa);
+                                objEmpleado.Empresa = dr.GetString(postEmpresa);
+                                objEmpleado.CodigoEmpleado = dr.GetString(postCodigoEmpleado);
+                                objEmpleado.NombreCompleto = dr.GetString(postNombreCompleto);
+                                objEmpleado.CodigoTipoIdentificacion = dr.GetString(postCodigoTipoIdentificacion);
+                                objEmpleado.Cui = dr.GetString(postCui);
+                                objEmpleado.CodigoArea = dr.GetInt16(postCodigoArea);
+                                objEmpleado.Area = dr.GetString(postArea);
+                                objEmpleado.CodigoSeccion = dr.GetInt16(postCodigoSeccion);
+                                objEmpleado.Seccion = dr.GetString(postSeccion);
+                                objEmpleado.CodigoPuesto = dr.GetInt16(postCodigoPuesto);
+                                objEmpleado.Puesto = dr.GetString(postPuesto);
+                                objEmpleado.CodigoUbicacion = dr.GetInt16(postCodigoUbicacion);
+                                objEmpleado.Ubicacion = dr.GetString(postUbicacion);
+                                objEmpleado.CodigoJornada = dr.GetByte(postCodigoJornada);
+                                objEmpleado.Jornada = dr.GetString(postJornada);
+                                objEmpleado.CodigoFrecuenciaPago = dr.GetByte(postCodigoFrecuenciaPago);
+                                objEmpleado.FrecuenciaPago = dr.GetString(postFrecuenciaPago);
+                                objEmpleado.FechaIngresoStr = dr.GetString(postFechaIngresoStr);
+                                objEmpleado.FechaEgresoStr = dr.GetString(postFechaEgresoStr);
+                                objEmpleado.CodigoEstado = dr.GetInt16(postCodigoEstadoEmpleado);
+                                objEmpleado.EstadoEmpleado = dr.GetString(postEstadoEmpleado);
+                                objEmpleado.PermisoAnular = (byte)dr.GetInt32(postPermisoAnular);
+                                objEmpleado.PermisoEditar = (byte)dr.GetInt32(postPermisoEditar);
+                                lista.Add(objEmpleado);
+                            }
+                        }
+                    }
+                    conexion.Close();
+                }
+                catch (Exception)
+                {
+                    conexion.Close();
+                    lista = null;
+                }
+
+                return lista;
+            }
+        }
+
         public EmpleadoCLS GetDataEmpleado(string codigoEmpleado)
         {
             EmpleadoCLS objEmpleado = null;

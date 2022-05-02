@@ -19,6 +19,11 @@
                 fillCombosEditEmpleado();
                 MostrarDataEmpleado(codigoEmpleado);
                 break;
+            case "HabilitarEmpleadoRetirado":
+                fillCombosFiltroEmpleados();
+                mostrarEmpleadosRetirados(-1, -1, -1, -1, 0, 0);
+                break;
+            case "New":
             default:
                 break;
         }// fin switch
@@ -507,6 +512,33 @@ function DarDeBajaEmpleado() {
             }
         })
     })
+}
 
-
+function mostrarEmpleadosRetirados(codigoEmpresa, codigoArea, codigoPuesto, codigoEstado, btb, saldoPrestamo) {
+    objConfiguracion = {
+        url: "Empleado/GetListaEmpleadosRetirados/?codigoEmpresa=" + codigoEmpresa.toString() + "&codigoArea=" + codigoArea.toString() + "&codigoPuesto=" + codigoPuesto.toString() + "&codigoEstado=" + codigoEstado.toString() + "&btb=" + btb.toString() + "&saldoPrestamo=" + saldoPrestamo.toString(),
+        cabeceras: ["Código Empresa", "Empresa", "Código Empleado", "Nombre", "CUI", "Area", "Sección", "Puesto", "Ubicación", "Jornada", "Fecha Ingreso", "Fecha Egreso", "Estado", "Editar", "Anular"],
+        propiedades: ["codigoEmpresa", "empresa", "codigoEmpleado", "nombreCompleto", "cui", "area", "seccion", "puesto", "ubicacion", "jornada", "fechaIngresoStr", "fechaEgresoStr", "estadoEmpleado", "permisoEditar", "permisoAnular"],
+        divContenedorTabla: "divContenedorTabla",
+        divPintado: "divTabla",
+        editar: true,
+        funcioneditar: "Empleado",
+        eliminar: true,
+        funcioneliminar: "Empleado",
+        paginar: true,
+        ocultarColumnas: true,
+        hideColumns: [
+            {
+                "targets": [0],
+                "visible": false
+            }, {
+                "targets": [13],
+                "visible": false
+            }, {
+                "targets": [14],
+                "visible": false
+            }],
+        slug: "codigoEmpleado"
+    }
+    pintar(objConfiguracion);
 }

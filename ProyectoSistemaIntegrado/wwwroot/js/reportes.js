@@ -444,10 +444,10 @@ function ListarReportesCompromisoFiscal(anioOperacion) {
         hideColumns: [
             {
                 "targets": [0],
-                "visible": true
+                "visible": false
             }, {
                 "targets": [1],
-                "visible": true
+                "visible": false
             }, {
                 "targets": [2],
                 "visible": true,

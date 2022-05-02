@@ -461,8 +461,8 @@ namespace CapaDatos.Administracion
                 try
                 {
                     string sentenciaSQL = @"
-                    INSERT INTO db_admon.sitemap(codigo_sistema,titulo,descripcion,nombre_controller,nombre_action,codigo_sitemap_padre,nivel,estado,usuario_ing,fecha_ing)
-                    VALUES(@CodigoSistema,@Titulo,@Descripcion,@NombreController,@NombreAction,@CodigoSiteMapPadre,@Nivel,@codigoEstado,@usuarioIng,@fechaIng)";
+                    INSERT INTO db_admon.sitemap(codigo_sitemap, codigo_sistema,titulo,descripcion,nombre_controller,nombre_action,codigo_sitemap_padre,nivel,estado,usuario_ing,fecha_ing)
+                    VALUES(NEXT VALUE FOR db_admon.SQ_SITEMAP, @CodigoSistema,@Titulo,@Descripcion,@NombreController,@NombreAction,@CodigoSiteMapPadre,@Nivel,@codigoEstado,@usuarioIng,@fechaIng)";
 
                     cmd.CommandText = sentenciaSQL;
                     cmd.Parameters.AddWithValue("@codigoSistema", objMenu.CodigoSistema);

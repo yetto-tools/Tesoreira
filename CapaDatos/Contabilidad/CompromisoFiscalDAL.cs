@@ -422,7 +422,8 @@ namespace CapaDatos.Contabilidad
                            GROUP BY anio_operacion, semana_operacion
                          ) x
                     INNER JOIN  db_admon.tipo_reporte w
-                    ON @CodigoTipoReporte = w.codigo_tipo_reporte";
+                    ON @CodigoTipoReporte = w.codigo_tipo_reporte
+                    ORDER BY x.anio_operacion DESC, x.semana_operacion DESC";
 
                     conexion.Open();
                     using (SqlCommand cmd = new SqlCommand(sql, conexion))

@@ -31,8 +31,10 @@ namespace CapaDatos
             switch (value)
             {
                 case "Development":
+                    // Ambiente de Produccion
+                    builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
                     // Ambiente de Desarrollo
-                    builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.Development.json"));
+                    //builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.Development.json"));
                     break;
                 case "Production":
                     // Ambiente de Produccion

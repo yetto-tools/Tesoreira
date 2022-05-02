@@ -156,10 +156,10 @@ function BuscarCUI() {
 
     fetchGet("Persona/BusquedaPersona/?cui=" + cui, "json", function (data) {
         if (data.cui == null) {
-            /*document.getElementById("ShowPopupNewPersona").click();
+            document.getElementById("ShowPopupNewPersona").click();
             set("uiNewCui", cui);
-            fillCombosNewPersona();*/
-            MensajeError("CUI " + cui + " No existe, registre los datos de la persona en la opción Persona del Menú RRHH previo a agregarlo como empleado");
+            fillCombosNewPersona();
+            //MensajeError("CUI " + cui + " No existe, registre los datos de la persona en la opción Persona del Menú RRHH previo a agregarlo como empleado");
         } else {
             set("filtroCui", "");
             set("uiCui", data.cui);

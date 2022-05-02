@@ -237,13 +237,13 @@ function VerDetalleReporte(obj) {
         //let codigoTipoReporte = table.cell(rowIdx, 0).data();
         switch (codigoTipoReporte) {
             case REPORTE_CORTE_CAJA_CHICA:
-                Redireccionar("Reportes", "MostrarReporte/?codigoTipoReporte=" + codigoTipoReporte.toString());
+                Redireccionar("Reportes", "MostrarReporteCorteCajaChica");
                 break;
             case REPORTE_COMPROMISO_FISCAL:
                 Redireccionar("Reportes", "MostrarReporteCompromisoFiscal");
                 break;
             default:
-                Redireccionar("Reportes", "MostrarReporteCorteCajaChica");
+                Redireccionar("Reportes", "MostrarReporte/?codigoTipoReporte=" + codigoTipoReporte.toString());
                 break;
         }// fin switch
     });

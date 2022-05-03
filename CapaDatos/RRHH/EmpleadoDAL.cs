@@ -233,7 +233,7 @@ namespace CapaDatos.RRHH
             }
         }
 
-        public List<EmpleadoCLS> GetListaEmpleadosRetirados(int codigoEmpresa, int codigoArea, int codigoPuesto, int saldoPrestamo, int pagoPendiente)
+        public List<EmpleadoCLS> GetListaEmpleadosRetirados(int codigoEmpresa, int codigoArea, int codigoPuesto)
         {
             List<EmpleadoCLS> lista = null;
             using (SqlConnection conexion = new SqlConnection(cadenaRRHH))
@@ -257,10 +257,6 @@ namespace CapaDatos.RRHH
                         filterPuesto = " AND x.codigo_puesto = " + codigoPuesto.ToString();
                     }
 
-                    if (saldoPrestamo != 0)
-                    {
-                        filterSaldoPrestamo = "AND x.saldo_prestamo =" + saldoPrestamo.ToString();
-                    }
                     string sql = @"
                     SELECT x.codigo_empresa,
 	                       s.nombre_comercial AS empresa,			
@@ -280,7 +276,9 @@ namespace CapaDatos.RRHH
 	                       n.nombre AS jornada,
                            x.codigo_frecuencia_pago,
                            p.nombre as frecuencia_pago, 
+                           x.fecha_ingreso,
                            FORMAT(x.fecha_ingreso, 'dd/MM/yyyy') AS fecha_ingreso_str,
+                           x.fecha_egreso,
                            CASE
                              WHEN x.fecha_egreso IS NOT NULL THEN FORMAT(x.fecha_egreso, 'dd/MM/yyyy')
                              ELSE ''
@@ -291,7 +289,17 @@ namespace CapaDatos.RRHH
                             WHEN x.codigo_estado = @CodigoEstadoRetirado THEN 0
                             ELSE 1
                            END AS  permiso_anular,
-                           1 AS permiso_editar
+                           1 AS permiso_editar,
+                           x.saldo_prestamo,
+                           CASE
+                             WHEN x.saldo_prestamo = 1 THEN 'SI'
+                             ELSE 'NO'
+                           END AS saldo_prestamo_str, 
+                           x.pago_pendiente,
+                           CASE
+                             WHEN x.pago_pendiente = 1 THEN 'SI'
+                             ELSE 'NO'
+                           END AS pago_pendiente_str 
                             
                     FROM db_rrhh.empleado x
                     INNER JOIN db_admon.empresa s
@@ -344,12 +352,18 @@ namespace CapaDatos.RRHH
                             int postJornada = dr.GetOrdinal("jornada");
                             int postCodigoFrecuenciaPago = dr.GetOrdinal("codigo_frecuencia_pago");
                             int postFrecuenciaPago = dr.GetOrdinal("frecuencia_pago");
+                            int postFechaIngreso = dr.GetOrdinal("fecha_ingreso");
                             int postFechaIngresoStr = dr.GetOrdinal("fecha_ingreso_str");
+                            int postFechaEgreso = dr.GetOrdinal("fecha_egreso");
                             int postFechaEgresoStr = dr.GetOrdinal("fecha_egreso_str");
                             int postCodigoEstadoEmpleado = dr.GetOrdinal("codigo_estado");
                             int postEstadoEmpleado = dr.GetOrdinal("estado_empleado");
                             int postPermisoAnular = dr.GetOrdinal("permiso_anular");
                             int postPermisoEditar = dr.GetOrdinal("permiso_editar");
+                            int postSaldoPrestamo = dr.GetOrdinal("saldo_prestamo");
+                            int postSaldoPrestamoStr = dr.GetOrdinal("saldo_prestamo_str");
+                            int postPagoPendiente = dr.GetOrdinal("pago_pendiente");
+                            int postPagoPendienteStr = dr.GetOrdinal("pago_pendiente_str");
 
                             while (dr.Read())
                             {
@@ -372,12 +386,18 @@ namespace CapaDatos.RRHH
                                 objEmpleado.Jornada = dr.GetString(postJornada);
                                 objEmpleado.CodigoFrecuenciaPago = dr.GetByte(postCodigoFrecuenciaPago);
                                 objEmpleado.FrecuenciaPago = dr.GetString(postFrecuenciaPago);
+                                objEmpleado.FechaIngreso = dr.GetDateTime(postFechaIngreso).Date;
                                 objEmpleado.FechaIngresoStr = dr.GetString(postFechaIngresoStr);
+                                objEmpleado.FechaEgreso = dr.IsDBNull(postFechaEgreso) ? null :  dr.GetDateTime(postFechaEgreso);
                                 objEmpleado.FechaEgresoStr = dr.GetString(postFechaEgresoStr);
                                 objEmpleado.CodigoEstado = dr.GetInt16(postCodigoEstadoEmpleado);
                                 objEmpleado.EstadoEmpleado = dr.GetString(postEstadoEmpleado);
                                 objEmpleado.PermisoAnular = (byte)dr.GetInt32(postPermisoAnular);
                                 objEmpleado.PermisoEditar = (byte)dr.GetInt32(postPermisoEditar);
+                                objEmpleado.SaldoPrestamo = dr.GetByte(postSaldoPrestamo);
+                                objEmpleado.SaldoPrestamoStr = dr.GetString(postSaldoPrestamoStr);
+                                objEmpleado.PagoPendiente = dr.GetByte(postPagoPendiente);
+                                objEmpleado.PagoPendienteStr = dr.GetString(postPagoPendienteStr);
                                 lista.Add(objEmpleado);
                             }
                         }
@@ -451,7 +471,7 @@ namespace CapaDatos.RRHH
                            o.nombre as estado_empleado,
                            1 AS permiso_anular,
                            1 AS permiso_editar,
-                           foto,
+                           t.foto,
                            salario_diario,
                            bono_decreto_37_2001 
                             
@@ -1067,6 +1087,50 @@ namespace CapaDatos.RRHH
             }
 
             return resultado;
+        }
+
+        public string ActualizarEmpleadoOperacionPendiente(EmpleadoCLS objEmpleado, string usuarioAct)
+        {
+            string resultado = "";
+            using (SqlConnection conexion = new SqlConnection(cadenaRRHH))
+            {
+                try
+                {
+                    string sql = @"
+                    UPDATE db_rrhh.empleado
+                    SET saldo_prestamo = @SaldoPrestamo,
+                        pago_pendiente = @PagoPendiente,
+                        usuario_act = @UsuarioAct,
+                        fecha_act = @FechaAct
+                    WHERE codigo_empresa = @CodigoEmpresa 
+                      AND codigo_empleado = @CodigoEmpleado";
+
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand(sql, conexion))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Parameters.AddWithValue("@SaldoPrestamo", objEmpleado.SaldoPrestamo);
+                        cmd.Parameters.AddWithValue("@PagoPendiente", objEmpleado.PagoPendiente);
+                        cmd.Parameters.AddWithValue("@CodigoEmpresa", objEmpleado.CodigoEmpresa);
+                        cmd.Parameters.AddWithValue("@CodigoEmpleado", objEmpleado.CodigoEmpleado);
+                        cmd.Parameters.AddWithValue("@UsuarioAct", usuarioAct);
+                        cmd.Parameters.AddWithValue("@FechaAct", DateTime.Now);
+
+                        // rows sotred the number of rows affected
+                        int rows = cmd.ExecuteNonQuery();
+                        conexion.Close();
+                    }
+                    resultado = "OK";
+                }
+                catch (Exception ex)
+                {
+                    resultado = "Error [0]: " + ex.Message;
+                    conexion.Close();
+                }
+
+                return resultado;
+            }
+           
         }
 
         public string ActualizarEmpleadoPlanilla(EmpleadoCLS objEmpleado, string usuarioAct)

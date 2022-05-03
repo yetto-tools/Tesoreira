@@ -41,10 +41,10 @@ namespace ProyectoSistemaIntegrado.Controllers.RRHH
             return obj.GetListaEmpleados(codigoEmpresa, codigoArea, codigoPuesto, codigoEstado, btb, saldoPrestamo);
         }
 
-        public List<EmpleadoCLS> GetListaEmpleadosRetirados(int codigoEmpresa, int codigoArea, int codigoPuesto, int saldoPrestamo, int pagoPendiente)
+        public List<EmpleadoCLS> GetListaEmpleadosRetirados(int codigoEmpresa, int codigoArea, int codigoPuesto)
         {
             EmpleadoBL obj = new EmpleadoBL();
-            return obj.GetListaEmpleadosRetirados(codigoEmpresa, codigoArea, codigoPuesto, saldoPrestamo, pagoPendiente);
+            return obj.GetListaEmpleadosRetirados(codigoEmpresa, codigoArea, codigoPuesto);
         }
 
         public EmpleadoComboCLS FillCombosNewEmpleado()
@@ -75,6 +75,15 @@ namespace ProyectoSistemaIntegrado.Controllers.RRHH
 
             EmpleadoBL obj = new EmpleadoBL();
             return obj.ActualizarEmpleado(objEmpleado, objUsuario.IdUsuario);
+        }
+
+        public string ActualizarEmpleadoOperacionPendiente(EmpleadoCLS objEmpleado)
+        {
+            ViewBag.Message = HttpContext.Session.GetString("usuario");
+            UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
+
+            EmpleadoBL obj = new EmpleadoBL();
+            return obj.ActualizarEmpleadoOperacionPendiente(objEmpleado, objUsuario.IdUsuario);
         }
 
         public string ActualizarEmpleadoPlanilla(EmpleadoCLS objEmpleado)

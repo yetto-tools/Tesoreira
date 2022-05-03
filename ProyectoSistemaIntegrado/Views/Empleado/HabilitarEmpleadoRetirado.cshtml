@@ -9,7 +9,7 @@
     Context.Session.SetString("tituloPrincipal", "Listado de Empleados Retirados");
 }
 
-<button type="button" id="ShowPopupDeBaja" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropDeBaja" style="display:none">
+<button type="button" id="ShowPopupCheckPendientes" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropCheckPendientes" style="display:none">
 </button>
 
 <fieldset>
@@ -31,12 +31,7 @@
         </div>
         <div class="col-md-2">
             <label class="col-sm-2 col-form-label"> </label>
-            <input type="button" class="form-control btn btn-primary" value="BUSCAR" onclick="buscarEmpleados()" />
-        </div>
-        <div class="col-md-3">
-            <label class="col-sm-2 col-form-label">Estados</label>
-            <select class="form-control" id="uiFiltroEstados" name="CodigoEstadoEmpleado">
-            </select>
+            <input type="button" class="form-control btn btn-primary" value="BUSCAR" onclick="buscarEmpleadosRetirados()" />
         </div>
     </div>
     <div style="height: 25px; width:100%;">
@@ -50,17 +45,17 @@
 </div>
 
 
-<!-- Modal De Baja -->
-<div class="modal fade" id="staticBackdropDeBaja" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelDeBaja" aria-hidden="true">
+<!-- Modal De Operaciones Pendientes -->
+<div class="modal fade" id="staticBackdropCheckPendientes" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelCheckPendientes" aria-hidden="true">
 
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="uiTitlePopupDeBaja"></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupDeBaja">&times;</button>
+                <h5 class="modal-title" id="uiTitlePopupCheckPendientes"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupCheckPendientes">&times;</button>
             </div>
             <div class="modal-body">
-                <form method="post" id="frmDeBajaEmpleado">
+                <form method="post" id="frmOperacionPendiente">
                     <input type="hidden" name="CodigoEmpresa" class="form-control obligatorio" id="uiCodigoEmpresa" readonly />
                     <div class="mb-3 row">
                         <label class="col-sm-2 col-form-label">Empresa:</label>
@@ -80,47 +75,18 @@
                             <input type="text" name="NombreEmpleado" class="form-control obligatorio" id="uiNombreEmpleado" readonly />
                         </div>
                     </div>
+
                     <div class="mb-3 row">
-                        <label class="col-sm-2 col-form-label">Motivo:</label>
-                        <div class="col-sm-4">
-                            <select class="form-control obligatorio" id="uiCodigoMotivoBaja" name="CodigoMotivoBaja" onchange="MostrarDataAdicionalMotivoDeBaja(this)">
-                            </select>
-                        </div>
-                    </div>
-                    <div style="display:none;" id="div-data-egreso">
-                        <div class="mb-3 row">
-                            <label class="col-sm-2 col-form-label"> </label>
-                            <div class="col-md-3">
-                                <label class="col-form-label">Fecha Egreso</label>
-                                <input type="text" name="FechaEgresoStr" class="form-control text-center" id="uiFechaEgreso" readonly />
-                            </div>
-                        </div>
-                    </div>
-                    <div style="display:none;" id="div-data-suspension">
-                        <div class="mb-3 row">
-                            <label class="col-sm-2 col-form-label"> </label>
-                            <div class="col-md-3">
-                                <label class="col-form-label">Motivo de Suspensión</label>
-                                <select class="form-control" id="uiCodigoMotivoSuspension" name="CodigoMotivoSuspension">
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mb-3 row">
-                            <label class="col-sm-2 col-form-label"> </label>
-                            <div class="col-md-3">
-                                <label class="col-form-label">Inicio Suspensión</label>
-                                <input type="text" name="FechaInicioSuspensionStr" class="form-control text-center" id="uiFechaInicioSuspension" readonly />
-                            </div>
-                            <div class="col-md-3">
-                                <label class="col-form-label">Fin Suspensión</label>
-                                <input type="text" name="FechaFinSuspensionStr" class="form-control text-center" id="uiFechaFinSuspension" readonly />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label class="col-sm-2 col-form-label">Observaciones:</label>
+                        <label class="col-sm-2 col-form-label">Pendiente:</label>
                         <div class="col-sm-10">
-                            <textarea name="Observaciones" class="form-control" id="uiObservaciones"></textarea>
+                            <div class="form-check form-check-inline">
+                                <input class='form-check-input' id="uiEditCheckSaldoPrestamo" type="checkbox" name="SaldoPrestamo" value="0">
+                                <label class="form-check-label" for="uiEditCheckSaldoPrestamo">Saldo de Préstamo</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" id="uiEditCheckPagoPendiente" type="checkbox" name="PagoPendiente" value="0">
+                                <label class="form-check-label" for="uiEditCheckPagoPendiente">Pago Pendiente</label>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -128,7 +94,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="DarDeBajaEmpleado()">Aceptar</button>
+                <button type="button" class="btn btn-primary" onclick="ActualizarOperacionesPendientes()">Aceptar</button>
             </div>
         </div>
     </div>
@@ -141,29 +107,4 @@
     <script src="~/js/sweetalert.js"></script>
     <script src="~/js/generic.js"></script>
     <script src="~/js/empleado.js"></script>
-    <script>
-        $(function () {
-            $("#uiFechaEgreso").datepicker({
-                dateFormat: 'dd/mm/yy',
-                changeYear: true
-            });
-        });
-
-        $(function () {
-            $("#uiFechaInicioSuspension").datepicker({
-                dateFormat: 'dd/mm/yy',
-                changeYear: true
-            });
-        });
-
-        $(function () {
-            $("#uiFechaFinSuspension").datepicker({
-                dateFormat: 'dd/mm/yy',
-                changeYear: true
-            });
-        });
-
-
-    </script>
-
 }

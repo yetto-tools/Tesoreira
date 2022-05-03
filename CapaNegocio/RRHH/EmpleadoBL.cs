@@ -18,10 +18,10 @@ namespace CapaNegocio.RRHH
             return obj.GetListaEmpleados(codigoEmpresa, codigoArea, codigoPuesto, codigoEstado, btb, saldoPrestamo);
         }
 
-        public List<EmpleadoCLS> GetListaEmpleadosRetirados(int codigoEmpresa, int codigoArea, int codigoPuesto, int saldoPrestamo, int pagoPendiente)
+        public List<EmpleadoCLS> GetListaEmpleadosRetirados(int codigoEmpresa, int codigoArea, int codigoPuesto)
         {
             EmpleadoDAL obj = new EmpleadoDAL();
-            return obj.GetListaEmpleadosRetirados(codigoEmpresa, codigoArea, codigoPuesto, saldoPrestamo, pagoPendiente);
+            return obj.GetListaEmpleadosRetirados(codigoEmpresa, codigoArea, codigoPuesto);
         }
 
         public EmpleadoComboCLS FillCombosNewEmpleado()
@@ -48,6 +48,12 @@ namespace CapaNegocio.RRHH
             EmpleadoDAL obj = new EmpleadoDAL();
             objEmpleado.FechaIngreso = Util.Conversion.ConvertDateSpanishToEnglish(objEmpleado.FechaIngresoStr);
             return obj.ActualizarEmpleado(objEmpleado, usuarioAct);
+        }
+
+        public string ActualizarEmpleadoOperacionPendiente(EmpleadoCLS objEmpleado, string usuarioAct)
+        {
+            EmpleadoDAL obj = new EmpleadoDAL();
+            return obj.ActualizarEmpleadoOperacionPendiente(objEmpleado, usuarioAct);
         }
 
         public string ActualizarEmpleadoPlanilla(EmpleadoCLS objEmpleado, string usuarioAct)

@@ -62,9 +62,12 @@ namespace CapaEntidad.RRHH
         public Byte PermisoAnular { get; set; }
         public Byte PermisoEditar { get; set; }
         public string  Foto { get; set; }
-
         public decimal SalarioDiario { get; set; }
         public decimal BonoDecreto372001 { get; set; }
+        public Byte PagoPendiente { get; set; }
+        public Byte SaldoPrestamo { get; set; }
+        public string PagoPendienteStr { get; set; }
+        public string SaldoPrestamoStr { get; set; }
 
 
     }

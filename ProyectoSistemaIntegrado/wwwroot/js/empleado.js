@@ -20,8 +20,8 @@
                 MostrarDataEmpleado(codigoEmpleado);
                 break;
             case "HabilitarEmpleadoRetirado":
-                fillCombosFiltroEmpleados();
-                mostrarEmpleadosRetirados(-1, -1, -1, -1, 0, 0);
+                fillCombosFiltroEmpleadosRetirados();
+                mostrarEmpleadosRetirados(-1, -1, -1);
                 break;
             case "New":
             default:
@@ -339,6 +339,17 @@ function fillCombosFiltroEmpleados() {
     })
 }
 
+function fillCombosFiltroEmpleadosRetirados() {
+    fetchGet("Empleado/GetListFillCombosConsulta", "json", function (rpta) {
+        var listaEmpresas = rpta.listaEmpresas;
+        let listaAreas = rpta.listaAreas;
+        let listaPuestos = rpta.listaPuestos;
+        FillCombo(listaEmpresas, "uiFiltroEmpresa", "codigoEmpresa", "nombreComercial", "- Todos -", "-1");
+        FillCombo(listaAreas, "uiFiltroArea", "codigoArea", "nombre", "- Todos -", "-1");
+        FillCombo(listaPuestos, "uiFiltroPuesto", "codigoPuesto", "nombre", "- Todos -", "-1");
+    })
+}
+
 function buscarEmpleados() {
     let objEmpresa = document.getElementById("uiFiltroEmpresa");
     let objArea = document.getElementById("uiFiltroArea");
@@ -514,17 +525,28 @@ function DarDeBajaEmpleado() {
     })
 }
 
-function mostrarEmpleadosRetirados(codigoEmpresa, codigoArea, codigoPuesto, codigoEstado, btb, saldoPrestamo) {
+function buscarEmpleadosRetirados() {
+    let objEmpresa = document.getElementById("uiFiltroEmpresa");
+    let objArea = document.getElementById("uiFiltroArea");
+    let objPuesto = document.getElementById("uiFiltroPuesto");
+    let codigoEmpresa = parseInt(objEmpresa.options[objEmpresa.selectedIndex].value);
+    let codigoArea = parseInt(objArea.options[objArea.selectedIndex].value);
+    let codigoPuesto = parseInt(objPuesto.options[objPuesto.selectedIndex].value);
+    mostrarEmpleadosRetirados(codigoEmpresa, codigoArea, codigoPuesto);
+}
+
+
+//moment().format('L');
+function mostrarEmpleadosRetirados(codigoEmpresa, codigoArea, codigoPuesto) {
     objConfiguracion = {
-        url: "Empleado/GetListaEmpleadosRetirados/?codigoEmpresa=" + codigoEmpresa.toString() + "&codigoArea=" + codigoArea.toString() + "&codigoPuesto=" + codigoPuesto.toString() + "&codigoEstado=" + codigoEstado.toString() + "&btb=" + btb.toString() + "&saldoPrestamo=" + saldoPrestamo.toString(),
-        cabeceras: ["Código Empresa", "Empresa", "Código Empleado", "Nombre", "CUI", "Area", "Sección", "Puesto", "Ubicación", "Jornada", "Fecha Ingreso", "Fecha Egreso", "Estado", "Editar", "Anular"],
-        propiedades: ["codigoEmpresa", "empresa", "codigoEmpleado", "nombreCompleto", "cui", "area", "seccion", "puesto", "ubicacion", "jornada", "fechaIngresoStr", "fechaEgresoStr", "estadoEmpleado", "permisoEditar", "permisoAnular"],
+        url: "Empleado/GetListaEmpleadosRetirados/?codigoEmpresa=" + codigoEmpresa.toString() + "&codigoArea=" + codigoArea.toString() + "&codigoPuesto=" + codigoPuesto.toString(),
+        cabeceras: ["Código Empresa", "Empresa", "Código Empleado", "Nombre", "CUI", "Area", "Sección", "Puesto", "Ubicación", "Jornada", "Fecha Ingreso", "Fecha Egreso", "Estado", "saldoPrestamo", "pagoPendiente", "Saldo Préstamo", "Pago Pendiente", "Editar", "Anular"],
+        propiedades: ["codigoEmpresa", "empresa", "codigoEmpleado", "nombreCompleto", "cui", "area", "seccion", "puesto", "ubicacion", "jornada", "fechaIngresoStr", "fechaEgresoStr", "estadoEmpleado", "saldoPrestamo", "pagoPendiente", "saldoPrestamoStr", "pagoPendienteStr", "permisoEditar", "permisoAnular"],
         divContenedorTabla: "divContenedorTabla",
         divPintado: "divTabla",
         editar: true,
-        funcioneditar: "Empleado",
-        eliminar: true,
-        funcioneliminar: "Empleado",
+        funcioneditar: "EmpleadoRetiradoParaTesoreria",
+        sortFieldDate: ["fechaIngresoStr"],
         paginar: true,
         ocultarColumnas: true,
         hideColumns: [
@@ -532,13 +554,96 @@ function mostrarEmpleadosRetirados(codigoEmpresa, codigoArea, codigoPuesto, codi
                 "targets": [0],
                 "visible": false
             }, {
+                "targets": [6],
+                "visible": false
+            }, {
+                "targets": [8],
+                "visible": false
+            }, {
                 "targets": [13],
                 "visible": false
             }, {
                 "targets": [14],
                 "visible": false
+                
+            }, {
+                "targets": [15],
+                "visible": true,
+                "className": "dt-body-center"
+            }, {
+                "targets": [16],
+                "visible": true,
+                "className": "dt-body-center"
+            }, {
+                "targets": [17],
+                "visible": false
+            }, {
+                "targets": [18],
+                "visible": false
             }],
         slug: "codigoEmpleado"
     }
     pintar(objConfiguracion);
+}
+
+
+function EditarEmpleadoRetiradoParaTesoreria(obj) {
+    let table = $('#tabla').DataTable();
+    $('#tabla tbody').on('click', '.option-editar', function () {
+        let rowIdx = table.row(this).index();
+        let codigoEmpresa = table.cell(rowIdx, 0).data();
+        let nombreEmpresa = table.cell(rowIdx, 1).data();
+        let codigoEmpleado = table.cell(rowIdx, 2).data();
+        let nombreEmpleado = table.cell(rowIdx, 3).data();
+        let saldoPrestamo = parseInt(table.cell(rowIdx, 13).data());
+        let pagoPendiente = parseInt(table.cell(rowIdx, 14).data());
+
+        setI("uiTitlePopupCheckPendientes", "Operaciones Pendientes");
+        document.getElementById("ShowPopupCheckPendientes").click();
+        set("uiCodigoEmpresa", codigoEmpresa);
+        set("uiNombreEmpresa", nombreEmpresa);
+        set("uiCodigoEmpleado", codigoEmpleado);
+        set("uiNombreEmpleado", nombreEmpleado);
+        document.querySelector('#uiEditCheckPagoPendiente').checked = pagoPendiente == 1 ? true : false;
+        document.querySelector('#uiEditCheckSaldoPrestamo').checked = saldoPrestamo == 1 ? true : false;
+    });
+}
+
+
+function ActualizarOperacionesPendientes() {
+    let errores = ValidarDatos("frmOperacionPendiente")
+    if (errores != "") {
+        MensajeError(errores);
+        return;
+    }
+
+    var frmGuardar = document.getElementById("frmOperacionPendiente");
+    var frm = new FormData(frmGuardar);
+
+    let checkSaldoPrestamo = document.getElementById('uiEditCheckSaldoPrestamo');
+    let checkPagoPendiente = document.getElementById('uiEditCheckPagoPendiente');
+
+    if (checkSaldoPrestamo.checked == true) {
+        frm.set("SaldoPrestamo", "1");
+    } else {
+        frm.set("SaldoPrestamo", "0");
+    }
+
+    if (checkPagoPendiente.checked == true) {
+        frm.set("PagoPendiente", "1");
+    } else {
+        frm.set("PagoPendiente", "0");
+    }
+
+    Confirmacion(undefined, undefined, function (rpta) {
+        fetchPost("Empleado/ActualizarEmpleadoOperacionPendiente", "text", frm, function (data) {
+            document.getElementById("uiClosePopupCheckPendientes").click();
+            if (data == "OK") {
+                Exito("Empleado", "HabilitarEmpleadoRetirado", true);
+            } else {
+                MensajeError(data);
+            }
+        })
+    })
+
 }

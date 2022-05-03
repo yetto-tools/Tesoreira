@@ -102,7 +102,7 @@ namespace CapaDatos.Tesoreria
                     FROM db_rrhh.empleado y
                     INNER JOIN db_rrhh.area x
                     ON y.codigo_area = x.codigo_area
-                    WHERE (y.codigo_estado <> @CodigoEstadoEmpleado OR y.saldo_prestamo = 1) 
+                    WHERE (y.codigo_estado <> @CodigoEstadoEmpleado OR y.saldo_prestamo = 1 OR y.pago_pendiente = 1) 
 
                     UNION
 

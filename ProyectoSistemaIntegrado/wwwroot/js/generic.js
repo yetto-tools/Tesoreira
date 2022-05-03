@@ -227,8 +227,6 @@ function pintar(objConfiguracion) {
 
     if (objConfiguracionGlobal.slug == undefined)
         objConfiguracionGlobal.slug = ""
-    //if (objConfiguracionGlobal.bloqueado == undefined)
-        //objConfiguracionGlobal.bloqueado = 1;
     if (objConfiguracionGlobal.radio == undefined)
         objConfiguracionGlobal.radio = false;
     if (objConfiguracionGlobal.check == undefined)
@@ -247,14 +245,16 @@ function pintar(objConfiguracion) {
         objConfiguracionGlobal.eventoradio = "Generico";
     if (objConfiguracionGlobal.datesWithoutTime == undefined)
         objConfiguracionGlobal.datesWithoutTime = [];
+    if (objConfiguracionGlobal.displaydecimals == undefined)
+        objConfiguracionGlobal.displaydecimals = [];
+    if (objConfiguracionGlobal.sortFieldDate == undefined)
+        objConfiguracionGlobal.sortFieldDate = [];
     if (objConfiguracionGlobal.ocultarColumnas == undefined)
         objConfiguracionGlobal.ocultarColumnas = false;
     if (objConfiguracionGlobal.hideColumns == undefined)
         objConfiguracionGlobal.hideColumns = [];
     if (objConfiguracionGlobal.autoWidth == undefined)
         objConfiguracionGlobal.autoWidth = true;
-    if (objConfiguracionGlobal.displaydecimals == undefined)
-        objConfiguracionGlobal.displaydecimals = [];
     if (objConfiguracionGlobal.generar == undefined)
         objConfiguracionGlobal.generar = false;
     if (objConfiguracionGlobal.arqueo == undefined)
@@ -287,18 +287,12 @@ function pintar(objConfiguracion) {
         objConfiguracionGlobal.fieldNameExcluir = "";
     if (objConfiguracionGlobal.ExcluirEnabled == undefined)
         objConfiguracionGlobal.ExcluirEnabled = "enabled";
-
-    //if (objConfiguracionGlobal.addcolumntextbox == undefined)
-    //    objConfiguracionGlobal.addcolumntextbox = false;
-
     if (objConfiguracionGlobal.addTextBox == undefined)
         objConfiguracionGlobal.addTextBox = false;
     if (objConfiguracionGlobal.aceptarmultiplesparametros == undefined)
         objConfiguracionGlobal.aceptarmultiplesparametros = false;
     if (objConfiguracionGlobal.sumarcolumna == undefined)
         objConfiguracionGlobal.sumarcolumna = false;
-    //if (objConfiguracionGlobal.columnasuma == undefined)
-    //    objConfiguracionGlobal.columnasuma = 0;
     let parser = new DOMParser();
     let xmlDoc = "";
     let abstracts = "";
@@ -379,6 +373,7 @@ function generarTabla(res, objConfiguracionGlobal) {
     let nombrePropiedades = objConfiguracionGlobal.propiedades;
     let datesWithoutTime = objConfiguracionGlobal.datesWithoutTime;
     let displaydecimals = objConfiguracionGlobal.displaydecimals;
+    let sortFieldDate = objConfiguracionGlobal.sortFieldDate;
 
     let countColumns = 0;
     let nregistros = res.length;
@@ -525,11 +520,17 @@ function generarTabla(res, objConfiguracionGlobal) {
                 if (datesWithoutTime.find(el => el === nombrePropiedadActual) != undefined) {
                     contenido += "<td class='chkSelected'>" + (new Date(obj[nombrePropiedadActual])).toLocaleDateString() + "</td>";
                 } else {
-                    // formato a los montos
-                    if (displaydecimals.find(el => el === nombrePropiedadActual) != undefined) {
-                        contenido += "<td class='chkSelected'>" + obj[nombrePropiedadActual].toFixed(2) + "</td>";
+                    if (sortFieldDate.find(el => el === nombrePropiedadActual) != undefined) {
+                        let ukDatea = obj[nombrePropiedadActual].split('/');
+                        let codigo = (ukDatea[2] + ukDatea[1] + ukDatea[0]) * 1;
+                        contenido += "<td class='chkSelected'><span hidden> " + codigo.toString() + "</span>" + obj[nombrePropiedadActual] + "</td>";
                     } else {
-                        contenido += "<td class='chkSelected'>" + obj[nombrePropiedadActual] + "</td>";
+                        // formato a los montos
+                        if (displaydecimals.find(el => el === nombrePropiedadActual) != undefined) {
+                            contenido += "<td class='chkSelected'>" + obj[nombrePropiedadActual].toFixed(2) + "</td>";
+                        } else {
+                            contenido += "<td class='chkSelected'>" + obj[nombrePropiedadActual] + "</td>";
+                        }
                     }
                 }
             }

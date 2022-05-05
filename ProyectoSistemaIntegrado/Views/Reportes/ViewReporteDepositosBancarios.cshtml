@@ -56,32 +56,33 @@
 
     <h2 style="text-align: left;"></h2>
     <table style="border: 1px solid black; border-collapse: collapse; margin: 0 auto;">
-        <tr style="border-bottom: 1px solid black;">
-            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;"></div></td>
-            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;"></div></td>
-            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;"></div></td>
-            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;"></div></td>
-            @foreach (var dr in reporte.listaEncabezadoFechas)
-            {
-                <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">@dr.FechaStr</div></td>
-            }
-            <td style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;"></div></td>
-        </tr>
-
-        <tr style="border-bottom: 1px solid black;">
-            <td style="font-size: 12px; margin: auto; border: 1px solid black; width: 20px;"><div style="text-align: center;"></div></td>
-            <td style="font-size: 12px; margin: auto; border: 1px solid black; width: 375px;"><div style="text-align: center;">ENTIDAD</div></td>
-            <td style="font-size: 12px; margin: auto; border: 1px solid black; width: 130px;"><div style="text-align: center;"># CUENTA</div></td>
-            <td style="font-size: 12px; margin: auto; border: 1px solid black; width: 100px;"><div style="text-align: center;"># BOLETA</div></td>
-            <td style="font-size: 12px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">LUNES</div></td>
-            <td style="font-size: 12px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">MARTES</div></td>
-            <td style="font-size: 12px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">MIERCOLES</div></td>
-            <td style="font-size: 12px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">JUEVES</div></td>
-            <td style="font-size: 12px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">VIERNES</div></td>
-            <td style="font-size: 12px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">SABADO</div></td>
-            <td style="font-size: 12px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">DOMINGO</div></td>
-            <td style="font-size: 12px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">Total General</div></td>
-        </tr>
+        <thead>
+            <tr style="border-bottom: 1px solid black;">
+                <th style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;"></div></th>
+                <th style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;"></div></th>
+                <th style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;"></div></th>
+                <th style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;"></div></th>
+                @foreach (var dr in reporte.listaEncabezadoFechas)
+                {
+                    <th style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">@dr.FechaStr</div></th>
+                }
+                <th style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;"></div></th>
+            </tr>
+            <tr style="border-bottom: 1px solid black;">
+                <th style="font-size: 12px; margin: auto; border: 1px solid black; width: 20px;"><div style="text-align: center;"></div></th>
+                <th style="font-size: 12px; margin: auto; border: 1px solid black; width: 375px;"><div style="text-align: center;">ENTIDAD</div></th>
+                <th style="font-size: 12px; margin: auto; border: 1px solid black; width: 130px;"><div style="text-align: center;"># CUENTA</div></th>
+                <th style="font-size: 12px; margin: auto; border: 1px solid black; width: 100px;"><div style="text-align: center;"># BOLETA</div></th>
+                <th style="font-size: 12px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">LUNES</div></th>
+                <th style="font-size: 12px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">MARTES</div></th>
+                <th style="font-size: 12px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">MIERCOLES</div></th>
+                <th style="font-size: 12px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">JUEVES</div></th>
+                <th style="font-size: 12px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">VIERNES</div></th>
+                <th style="font-size: 12px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">SABADO</div></th>
+                <th style="font-size: 12px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">DOMINGO</div></th>
+                <th style="font-size: 12px; margin: auto; border: 1px solid black; width: 90px;"><div style="text-align: center;">Total General</div></th>
+            </tr>
+        </thead>
         @{decimal totalLunes = 0;}
         @{decimal totalMartes = 0;}
         @{decimal totalMiercoles = 0;}
@@ -142,9 +143,9 @@
             if (@dr.CodigoOrigen != codigoOrigen)
             {
                 <tr>
-                    <td style="padding: 4px; font-size: 12px;"></td>
-                    <td style="padding-left: 30px; font-size: 12px;">@dr.Origen</td>
-                    <td style="padding: 4px; font-size: 12px;" colspan="9"></td>
+                    <td style="padding: 4px; font-size: 12px; border-bottom: 1px solid black;"></td>
+                    <td style="padding-left: 30px; font-size: 12px; border-bottom: 1px solid black;">@dr.Origen</td>
+                    <td style="padding: 4px; font-size: 12px; border-bottom: 1px solid black;" colspan="9"></td>
                     @foreach (var drRow in reporte.listaMontosPorOrigen)
                     {
                         if (drRow.CodigoOrigen == @dr.CodigoOrigen)
@@ -152,7 +153,7 @@
                             montoTotalPorOrigen = drRow.MontoTotal;
                         }
                     }
-                    <td style="padding: 4px; font-size: 12px;"><div style="text-align: right; font-weight: bold;">@montoTotalPorOrigen.ToString("N2")</div></td>
+                    <td style="padding: 4px; font-size: 12px; border: 1px solid black;"><div style="text-align: right; font-weight: bold;">@montoTotalPorOrigen.ToString("N2")</div></td>
                 </tr>
             }
 

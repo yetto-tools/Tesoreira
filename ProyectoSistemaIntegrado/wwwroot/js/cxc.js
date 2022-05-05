@@ -386,21 +386,26 @@ function GenerarReporte(obj) {
 /// Revisado
 function clickAceptarReporteSemanalCxC(obj) {
     let table = $('#tabla').DataTable();
-    $('#tabla tbody').on('click', 'tr', '.option-aceptar', function () {
+    $('#tabla tbody').on('click','.option-aceptar', function () {
         let rowIdx = table.row(this).index();
         let codigoReporte = table.cell(rowIdx, 0).data();
         let anioOperacion = table.cell(rowIdx, 1).data();
         let semanaOperacion = table.cell(rowIdx, 2).data();
-        Confirmacion("Reporte de Cuenta por Cobrar", "¿Aceptar el reporte como válido?", function (rpta) {
-            fetchGet("CuentasPorCobrarReporte/AceptarReporteComoValido/?codigoReporte=" + codigoReporte + "&anioOperacion=" + anioOperacion + "&semanaOperacion=" + semanaOperacion, "text", function (data) {
-                if (data != "OK") {
-                    MensajeError(data);
-                    return;
-                } else {
-                    ListarCuentasPorCobrarReporteGeneracion();
-                }
+        let codigoEstadoReporte = parseInt(table.cell(rowIdx, 15).data());
+        if (codigoEstadoReporte == ESTADO_REPORTE_CXC_GENERADO) {
+            Confirmacion("Reporte de Cuenta por Cobrar", "¿Aceptar el reporte como válido?", function (rpta) {
+                fetchGet("CuentasPorCobrarReporte/AceptarReporteComoValido/?codigoReporte=" + codigoReporte + "&anioOperacion=" + anioOperacion + "&semanaOperacion=" + semanaOperacion, "text", function (data) {
+                    if (data != "OK") {
+                        MensajeError(data);
+                        return;
+                    } else {
+                        ListarCuentasPorCobrarReporteGeneracion();
+                    }
+                })
             })
-        })
+        } else {
+            Warning("Falta la generación del reporte");
+        }
     });
 }
 

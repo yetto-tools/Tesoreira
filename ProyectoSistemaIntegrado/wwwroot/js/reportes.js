@@ -326,7 +326,7 @@ function GenerarPdfReporte(obj) {
         fetchGet(nombreControlador + "/" + nombreAccion + "/?anioOperacion=" + anioOperacion + "&semanaOperacion=" + semanaOperacion + "&codigoReporte=" + codigoReporte + "&arqueo=" + arqueo, "pdf", function (data) {
             var file = new Blob([data], { type: 'application/pdf' });
             var fileURL = URL.createObjectURL(file);
-            window.open(fileURL, "EPrescription");
+            window.open(fileURL, "reporte" + codigoTipoReporte + codigoReporte);
         });
     });
 }

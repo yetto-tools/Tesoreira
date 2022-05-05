@@ -112,9 +112,17 @@ namespace ProyectoSistemaIntegrado.Controllers.Reportes
             obj.CodigoReporte = codigoReporte;
             obj.Arqueo = arqueo;
             var demoViewPortrait = new ViewAsPdf("ViewReporteOperacionesCaja", String.Empty, obj);
-            demoViewPortrait.PageMargins = new Margins { Bottom = 5, Left = 5, Right = 5, Top = 5 };
+            demoViewPortrait.PageMargins = new Margins { Bottom = 15, Left = 5, Right = 5, Top = 5 };
             demoViewPortrait.PageSize = Size.Letter;
-            demoViewPortrait.CustomSwitches = "--page-offset 0 --footer-center [page] --footer-font-size 8";
+            //demoViewPortrait.CustomSwitches = "--page-offset 0 --footer-center [page] --footer-font-size 8";
+            //demoViewPortrait.CustomSwitches = "--page-offset 0 --footer-center Página:[page]/[toPage] --footer-line --footer-font-size 10";
+            demoViewPortrait.CustomSwitches = "--footer-center Página:[page]/[toPage] --footer-font-size 10 --footer-spacing 2";
+            /*demoViewPortrait.CustomSwitches =
+                    "--footer-center \"Name: " + "XYZ" + "  DOS: " +
+                    DateTime.Now.Date.ToString("MM/dd/yyyy") + "  
+                    Page:[page]/[toPage]\"" +
+                   " --footer-line --footer-font-size \"9\" 
+                   --footer - spacing 6--footer - font - name \"calibri light\""*/
 
             return demoViewPortrait;
         }

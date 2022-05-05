@@ -81,14 +81,19 @@ namespace CapaDatos.Administracion
             return resultado;
         }
 
-        public List<UsuarioCLS> GetListaUsuarios()
+        public List<UsuarioCLS> GetListaUsuarios(int esSuperAdmin)
         {
             List<UsuarioCLS> lista = null;
             using (SqlConnection conexion = new SqlConnection(cadenaAdmon))
             {
                 try
                 {
-                    conexion.Open();
+                    string filterSuperAdmin = String.Empty;
+                    if (esSuperAdmin == 0)
+                    {
+                        filterSuperAdmin = "WHERE x.super_admin = 0";
+                    }
+
                     string sql = @"
                     SELECT x.id_usuario, 
 	                       x.nombre_usuario, 
@@ -108,11 +113,14 @@ namespace CapaDatos.Administracion
                               WHEN x.super_admin = 1 THEN 'SI'
                               ELSE 'NO'
                            END AS es_super_admin, 
-                           1 AS permiso_editar
+                           1 AS permiso_editar,
+                           1 AS permiso_anular 
                     FROM db_admon.usuario x
                     INNER JOIN db_rrhh.persona y
-                    ON x.cui = y.cui";
+                    ON x.cui = y.cui
+                    " + filterSuperAdmin;
 
+                    conexion.Open();
                     using (SqlCommand cmd = new SqlCommand(sql, conexion))
                     {
                         cmd.CommandType = CommandType.Text;
@@ -126,6 +134,7 @@ namespace CapaDatos.Administracion
                             int postCodigoEstado = dr.GetOrdinal("codigo_estado");
                             int postEstado = dr.GetOrdinal("estado");
                             int postPermisoEditar = dr.GetOrdinal("permiso_editar");
+                            int postPermisoAnular = dr.GetOrdinal("permiso_anular");
                             int postSuperAdmin = dr.GetOrdinal("super_admin");
                             int postEsSuperAdministrador = dr.GetOrdinal("es_super_admin");
                             while (dr.Read())
@@ -138,6 +147,7 @@ namespace CapaDatos.Administracion
                                 objUsuario.SuperAdmin = dr.GetByte(postSuperAdmin);
                                 objUsuario.EsSuperAdmin = dr.GetString(postEsSuperAdministrador);
                                 objUsuario.PermisoEditar = dr.GetInt32(postPermisoEditar);
+                                objUsuario.PermisoAnular = dr.GetInt32(postPermisoAnular);
                                 lista.Add(objUsuario);
                             }
                         }
@@ -204,7 +214,7 @@ namespace CapaDatos.Administracion
                     }
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                 }
@@ -508,7 +518,6 @@ namespace CapaDatos.Administracion
             }
         }
 
-
         public string GuardarPermisos(List<PermisoCLS> objPermisos, string idUsuario, string usuarioIng)
         {
             string resultado = "";
@@ -625,6 +634,59 @@ namespace CapaDatos.Administracion
                         }
                     }
 
+
+                    transaction.Commit();
+                    conexion.Close();
+
+                    resultado = "OK";
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    conexion.Close();
+                    resultado = "Error [0]: " + ex.Message;
+                }
+            }
+
+            return resultado;
+        }
+
+
+        public string EliminarUsuario(string idUsuario)
+        {
+            string resultado = "";
+            using (SqlConnection conexion = new SqlConnection(cadenaAdmon))
+            {
+                conexion.Open();
+                SqlCommand cmd = conexion.CreateCommand();
+                SqlTransaction transaction;
+
+                // Start a local transaction.
+                transaction = conexion.BeginTransaction("SampleTransaction");
+
+                // Must assign both transaction object and connection
+                // to Command object for a pending local transaction
+                cmd.Connection = conexion;
+                cmd.Transaction = transaction;
+
+                try
+                {
+                    string sqlDeleteRoles = "DELETE FROM db_admon.usuario_rol WHERE id_usuario = '" + idUsuario + "'";
+                    string sqlDeleteCajasChicas = "DELETE FROM db_admon.usuario_caja_chica WHERE id_usuario = '" + idUsuario + "'";
+                    string sqlDeleteEmpresas = "DELETE FROM db_admon.usuario_empresa WHERE id_usuario = '" + idUsuario + "'";
+                    string sqlDeleteReportes = "DELETE FROM db_admon.usuario_tipo_reporte WHERE id_usuario = '" + idUsuario + "'";
+                    string sqlDeleteUsuario = "DELETE FROM db_admon.usuario WHERE id_usuario = '" + idUsuario + "'";
+
+                    cmd.CommandText = sqlDeleteRoles;
+                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = sqlDeleteCajasChicas;
+                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = sqlDeleteEmpresas;
+                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = sqlDeleteReportes;
+                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = sqlDeleteUsuario;
+                    cmd.ExecuteNonQuery();
 
                     transaction.Commit();
                     conexion.Close();

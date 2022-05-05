@@ -25,6 +25,7 @@ namespace CapaEntidad.Administracion
 
         public byte SetSemanaAnterior { get; set; }
         public int PermisoEditar { get; set; }
+        public int PermisoAnular { get; set; }
 
     }
 }

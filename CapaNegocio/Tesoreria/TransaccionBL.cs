@@ -48,6 +48,20 @@ namespace CapaNegocio.Tesoreria
             return obj.BuscarTransaccionesDepositosBancarios(anioOperacion, semanaOperacion, codigoReporte, esSuperAdmin);
         }
 
+        /// <summary>
+        /// Obtener transacciones gasto para completar la empresa asignada al gasto, esto se realizar en contabilidad
+        /// </summary>
+        /// <param name="anioOperacion"></param>
+        /// <param name="semanaOperacion"></param>
+        /// <param name="codigoReporte"></param>
+        /// <param name="esSuperAdmin"></param>
+        /// <returns></returns>
+        public List<TransaccionCLS> BuscarTransaccionesGasto(int anioOperacion, int semanaOperacion, int codigoReporte, int esSuperAdmin)
+        {
+            TransaccionDAL obj = new TransaccionDAL();
+            return obj.BuscarTransaccionesGasto(anioOperacion, semanaOperacion, codigoReporte, esSuperAdmin);
+        }
+
         public List<TransaccionCLS> GetSolicitudesDeCorreccion(int anioOperacion, int semanaOperacion, int codigoReporte, int codigoOperacion, int codigoCategoriaEntidad, int esSuperAdmin)
         {
             TransaccionDAL obj = new TransaccionDAL();

@@ -17,16 +17,22 @@ namespace CapaNegocio.Administracion
             return obj.GuardarUsuario(objUsuario);
         }
 
+        public string EliminarUsuario(string idUsuario)
+        {
+            UsuarioDAL obj = new UsuarioDAL();
+            return obj.EliminarUsuario(idUsuario);
+        }
+
         public string ActualizarContrasenia(UsuarioCLS objUsuario)
         {
             UsuarioDAL obj = new UsuarioDAL();
             return obj.ActualizarContrasenia(objUsuario);
         }
 
-        public List<UsuarioCLS> GetListaUsuarios()
+        public List<UsuarioCLS> GetListaUsuarios(int esSuperAdmin)
         {
             UsuarioDAL obj = new UsuarioDAL();
-            return obj.GetListaUsuarios();
+            return obj.GetListaUsuarios(esSuperAdmin);
         }
 
         public UsuarioCLS GetDataUsuario(string idUsuario)

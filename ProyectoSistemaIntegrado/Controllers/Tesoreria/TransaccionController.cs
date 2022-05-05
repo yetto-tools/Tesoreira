@@ -64,6 +64,11 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
             return View();
         }
 
+        public IActionResult ComplementoEmpresaGastos()
+        {
+            return View();
+        }
+
         public IActionResult EditRevision(Int64 slug)
         {
             return View();
@@ -134,6 +139,12 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
 
             TransaccionBL obj = new TransaccionBL();
             return obj.BuscarTransaccionesDepositosBancarios(anioOperacion, semanaOperacion, codigoReporte, objUsuario.SuperAdmin);
+        }
+
+        public List<TransaccionCLS> BuscarTransaccionesGasto(int anioOperacion, int semanaOperacion, int codigoReporte, int esSuperAdmin)
+        {
+            TransaccionBL obj = new TransaccionBL();
+            return obj.BuscarTransaccionesGasto(anioOperacion, semanaOperacion, codigoReporte, esSuperAdmin);
         }
 
         public List<TransaccionCLS> GetSolicitudesDeCorreccion(int anioOperacion, int semanaOperacion, int codigoReporte, int codigoOperacion, int codigoCategoriaEntidad)

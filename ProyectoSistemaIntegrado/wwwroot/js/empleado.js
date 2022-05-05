@@ -546,7 +546,7 @@ function mostrarEmpleadosRetirados(codigoEmpresa, codigoArea, codigoPuesto) {
         divPintado: "divTabla",
         editar: true,
         funcioneditar: "EmpleadoRetiradoParaTesoreria",
-        sortFieldDate: ["fechaIngresoStr"],
+        sortFieldDate: ["fechaIngresoStr","fechaEgresoStr"],
         paginar: true,
         ocultarColumnas: true,
         hideColumns: [

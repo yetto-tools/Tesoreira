@@ -1,8 +1,15 @@
 ﻿@using Microsoft.AspNetCore.Http;
 @using Newtonsoft.Json;
+@using CapaEntidad.Administracion;
 @{
     ViewData["Title"] = "Edit";
     Context.Session.SetString("tituloPrincipal", "Edición de Usuario");
+
+    string cadena = Context.Session.GetString("usuario");
+    UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(cadena);
+    string idUsuario = objUsuario.IdUsuario;
+    byte esSuperAdmin = objUsuario.SuperAdmin;
+    string habilitar = esSuperAdmin == 1 ? "" : "disabled";
 }
 
 <button type="button" class="btn btn-outline-success" onclick="Redireccionar('Usuario', 'Index')">
@@ -41,7 +48,7 @@
             <label class="col-sm-2 col-form-label"></label>
             <div class="col-sm-10">
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="uiEsSuperAdmin" name="SuperAdmin" onclick="changeValueCheckSuperAdmin(this)" value="0">
+                    <input class="form-check-input" type="checkbox" id="uiEsSuperAdmin" name="SuperAdmin" onclick="changeValueCheckSuperAdmin(this)" value="0" @habilitar>
                     <label class="form-check-label" for="uiEsSuperAdmin">
                         Super Administrador
                     </label>

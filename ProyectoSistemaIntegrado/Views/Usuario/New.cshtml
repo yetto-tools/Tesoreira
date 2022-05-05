@@ -1,29 +1,40 @@
 ﻿@using Microsoft.AspNetCore.Http;
 @using Newtonsoft.Json;
+@using CapaEntidad.Administracion;
 @{
     ViewData["Title"] = "Create";
     Context.Session.SetString("tituloPrincipal", "Nuevo Usuario");
+
+    string cadena = Context.Session.GetString("usuario");
+    UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(cadena);
+    string idUsuario = objUsuario.IdUsuario;
+    byte esSuperAdmin = objUsuario.SuperAdmin;
+    string habilitar = esSuperAdmin == 1 ? "" : "disabled";
+
 }
 
-<div style="height: 25px; width:100%;">Regresar</div>
+<button type="button" id="ShowPopupPersonas" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropPersonas" style="display:none">
+</button>
+
 <button type="button" class="btn btn-outline-success" onclick="Redireccionar('Usuario', 'Index')">
     <i class="bi bi-arrow-left-circle">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z" />
         </svg>
+        Regresar
     </i>
 </button>
 
+<div style="height: 15px; width:100%;"></div>
 <fieldset>
     <form method="post" id="frmGuardarUsuario" name="frmUsuario">
 
         <div class="mb-3 row">
             <label class="col-sm-2 col-form-label"> </label>
-            <div class="col-sm-6">
+            <div class="col-sm-8">
                 <label class="col-form-label"> </label>
                 <div class="input-group rounded">
-                    <input type="search" class="form-control rounded" placeholder="Código único de identificación" aria-label="Search"
-                           aria-describedby="search-addon" id="uiCuiBusqueda" />
+                    <input type="search" class="form-control rounded" placeholder="Código único de identificación" aria-label="Search" aria-describedby="search-addon" id="uiCuiBusqueda" />
                     <span class="input-group-text border-0" id="search-addon" onClick="buscarPersona(this)">
                         <i class="fas fa-search"></i>
                     </span>
@@ -63,10 +74,8 @@
         <div class="form-group row">
             <div class="col-sm-10">
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="uiEsSuperAdmin" name="SuperAdmin" onclick="changeValueCheckSuperAdmin(this)" value="0">
-                    <label class="form-check-label" for="uiEsSuperAdmin">
-                        Super Administrador
-                    </label>
+                    <input class="form-check-input" type="checkbox" id="uiEsSuperAdmin" name="SuperAdmin" onclick="changeValueCheckSuperAdmin(this)" value="0" @habilitar>
+                    <label class="form-check-label" for="uiEsSuperAdmin">Super Administrador</label>
                 </div>
             </div>
         </div>
@@ -80,7 +89,32 @@
 
 <button class="btn btn-primary" onclick="guardarUsuario()">Guardar</button>
 
+
+<!-- Modal Personas -->
+<div class="modal fade" id="staticBackdropPersonas" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelPersonas" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupPersonas"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupPersonas">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="frmNewConfiguracion">
+                    <div id="divTablaPersonas">
+
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
+    <script src="~/js/datatable.js"></script>
     <script src="~/js/bootstrap.js"></script>
     <script src="~/js/sweetalert.js"></script>
     <script src="~/js/generic.js"></script>

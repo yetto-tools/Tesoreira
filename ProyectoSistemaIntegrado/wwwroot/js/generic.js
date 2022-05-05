@@ -521,9 +521,13 @@ function generarTabla(res, objConfiguracionGlobal) {
                     contenido += "<td class='chkSelected'>" + (new Date(obj[nombrePropiedadActual])).toLocaleDateString() + "</td>";
                 } else {
                     if (sortFieldDate.find(el => el === nombrePropiedadActual) != undefined) {
-                        let ukDatea = obj[nombrePropiedadActual].split('/');
-                        let codigo = (ukDatea[2] + ukDatea[1] + ukDatea[0]) * 1;
-                        contenido += "<td class='chkSelected'><span hidden> " + codigo.toString() + "</span>" + obj[nombrePropiedadActual] + "</td>";
+                        if (nombrePropiedadActual != "") {
+                            let ukDatea = obj[nombrePropiedadActual].split('/');
+                            let codigo = (ukDatea[2] + ukDatea[1] + ukDatea[0]) * 1;
+                            contenido += "<td class='chkSelected'><span hidden> " + codigo.toString() + "</span>" + obj[nombrePropiedadActual] + "</td>";
+                        } else {
+                            contenido += "<td class='chkSelected'>" + obj[nombrePropiedadActual] + "</td>";
+                        }
                     } else {
                         // formato a los montos
                         if (displaydecimals.find(el => el === nombrePropiedadActual) != undefined) {

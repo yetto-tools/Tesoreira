@@ -10,7 +10,7 @@
                 listarUsuarios();
                 break;
             case "New":
-                listarEmpresas();
+                //listarEmpresas();
                 break;
             case "Edit":
                 let idUsuario = url1.searchParams.get("idUsuario");
@@ -37,6 +37,8 @@ function listarUsuarios() {
         divPintado: "divTabla",
         editar: true,
         funcioneditar: "Usuario",
+        eliminar: true,
+        funcioneliminar: "Usuario",
         paginar: true,
         ocultarColumnas: true,
         hideColumns: [
@@ -60,11 +62,31 @@ function EditarUsuario(obj) {
 
 }
 
+function EliminarUsuario(obj) {
+    let table = $('#tabla').DataTable();
+    $('#tabla tbody').on('click', '.option-eliminar', function () {
+        let rowIdx = table.row(this).index();
+        let idUsuario = table.cell(rowIdx, 0).data()
+        let frm = new FormData();
+        frm.set("idUsuario", idUsuario);
+        Confirmacion("Eliminación de Usuario", "¿Está seguro de eliminar al usuario " + idUsuario + "?", function (rpta) {
+            fetchPost("Usuario/EliminarUsuario", "text", frm, function (data) {
+                if (data == "OK") {
+                    listarUsuarios();
+                } else {
+                    MensajeError(data);
+                }
+            });
+        });
+    });
+}
+
 function setDataUsuario(idUsuario) {
     fetchGet("Usuario/GetDataUsuario/?idUsuario=" + idUsuario, "json", function (rpta) {
         set("uiIdUsuario", rpta.idUsuario);
         set("uiCui", rpta.cui);
         set("uiNombreUsuario", rpta.nombreUsuario);
+        document.querySelector('#uiEsSuperAdmin').checked = rpta.superAdmin == 1 ? true : false;
         mostrarPermisosroles(idUsuario);
         mostrarPermisosCajasChicas(idUsuario);
         mostrarPermisosEmpresas(idUsuario);
@@ -174,10 +196,40 @@ function mostrarPermisosReportes(idUsuario) {
 }
 
 
+function intelligenceSearchPersona() {
+    let objConfigTransaccion = {
+        url: "Persona/GetAllPersonasSinUsuario",
+        cabeceras: ["CUI", "Nombre Completo", "primerNombre","primerApellido"],
+        propiedades: ["cui", "nombreCompleto", "primerNombre","primerApellido"],
+        divContenedorTabla: "divContenedorTablaPersonas",
+        idtabla: "tabla-personas",
+        paginar: true,
+        ocultarColumnas: true,
+        hideColumns: [
+            {
+                "targets": [3],
+                "visible": false
+            }, {
+                "targets": [4],
+                "visible": false
+            }],
+        autoWidth: false,
+        divPintado: "divTablaPersonas",
+        radio: true,
+        eventoradio: "Personas",
+        slug: "cui"
+    }
+    pintar(objConfigTransaccion);
+}
+
+
 
 function buscarPersona() {
     let valor = get("uiCuiBusqueda");
     if (valor === "") {
+        intelligenceSearchPersona();
+        setI("uiTitlePopupPersonas", "Búsqueda de Personas");
+        document.getElementById("ShowPopupPersonas").click();
     }
     else {
         fetchGet("Persona/BusquedaPersona/?cui=" + valor, "json", function (rpta) {
@@ -194,6 +246,23 @@ function buscarPersona() {
             }
         })
     }
+}
+
+function getDataRowRadioPersonas(obj) {
+    let table = $('#tabla-personas').DataTable();
+    $('#tabla-personas tbody').on('change', 'tr', 'input:radio', function () {
+        let rowIdx = table.row(this).index();
+        // Incluir el radioButton al inicio, por eso se comienza por la columna 1
+        let cui = table.cell(rowIdx, 1).data();
+        let primerNombre = table.cell(rowIdx, 3).data();
+        let primerApellido = table.cell(rowIdx, 4).data();
+        set("uiCuiBusqueda", "");
+        set("uiCui", cui);
+        set("uiPrimerNombre", primerNombre);
+        set("uiPrimerApellido", primerApellido);
+        set("uiIdUsuario", primerNombre.toLowerCase() + '.' + primerApellido.toLowerCase());
+        document.getElementById("uiClosePopupPersonas").click();
+    });
 }
 
 function changeValueCheckSuperAdmin(obj) {
@@ -225,7 +294,7 @@ function guardarUsuario() {
     })
 }
 
-function listarEmpresas() {
+/*function listarEmpresas() {
     let objConfiguracion = {
         url: "Empresa/GetAllEmpresas",
         cabeceras: ["codigo", "nombre empresa"],
@@ -236,7 +305,7 @@ function listarEmpresas() {
 
     }
     pintar(objConfiguracion);
-}
+}*/
 
 
 function ActualizarUsuario() {

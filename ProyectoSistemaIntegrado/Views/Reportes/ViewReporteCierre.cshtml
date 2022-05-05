@@ -53,7 +53,7 @@
         </tr>
     </table>
     <h3 style="height: 5px;"> </h3>
-    @{decimal montoCompromisoFiscal = reporte.objCierre.MontoSaldoAnterior + reporte.objCierre.MontoFacturado - reporte.objCierre.MontoCompras - reporte.objCierre.MontoDepositos; }
+    @{decimal montoCompromisoFiscal = reporte.objCierre.MontoSaldoAnterior + reporte.objCierre.MontoFacturado - reporte.objCierre.MontoCompras - reporte.objCierre.MontoSalariosFiscales - reporte.objCierre.MontoDepositosBTB - reporte.objCierre.MontoDepositos; }
     @{decimal montoNeto = reporte.objCierre.MontoReserva + reporte.objCierre.MontoLibre; }
     @{decimal montoDepositoSemanasiguiente = 0;}
     @{decimal montoCompromisoNeto = montoCompromisoFiscal + montoDepositoSemanasiguiente;
@@ -63,7 +63,11 @@
             compromisoFiscal = 0;
         }
     }
-    @{decimal montoRetiroDeSociosRecomendado = Math.Round((montoNeto - compromisoFiscal - 25000) / 1000, 0) * 1000; }
+    @{  decimal montoRetiroDeSociosRecomendado = Math.Round((montoNeto - compromisoFiscal - 25000) / 1000, 0) * 1000;
+        if (montoRetiroDeSociosRecomendado < 0) {
+            montoRetiroDeSociosRecomendado = 0;
+        }
+     }
     <table style="border-collapse: collapse; margin: 0 auto;">
         <tr>
             <td colspan="3" style="font-size: 24px; font-weight: bold;">
@@ -129,13 +133,25 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2" style="font-size: 20px;"><div style="text-align: left;">COMPRAS, SALARIOS Y BTB</div></td>
+            <td colspan="2" style="font-size: 20px;"><div style="text-align: left;">COMPRAS</div></td>
             <td style="font-size: 20px; border: 1px solid black;"><div style="text-align: right; padding-right: 2px;">@reporte.objCierre.MontoCompras.ToString("N2")</div></td>
             <td>
             </td>
         </tr>
         <tr>
-            <td colspan="2" style="font-size: 20px;"><div style="text-align: left;">DEPOSITOS</div></td>
+            <td colspan="2" style="font-size: 20px;"><div style="text-align: left;">SALARIOS FISCALES</div></td>
+            <td style="font-size: 20px; border: 1px solid black;"><div style="text-align: right; padding-right: 2px;">@reporte.objCierre.MontoSalariosFiscales.ToString("N2")</div></td>
+            <td>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-size: 20px;"><div style="text-align: left;">DEPÓSITOS BTB</div></td>
+            <td style="font-size: 20px; border: 1px solid black;"><div style="text-align: right; padding-right: 2px;">@reporte.objCierre.MontoDepositosBTB.ToString("N2")</div></td>
+            <td>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-size: 20px;"><div style="text-align: left;">DEPÓSITOS</div></td>
             <td style="font-size: 20px; border: 1px solid black;"><div style="text-align: right; padding-right: 2px;">@reporte.objCierre.MontoDepositos.ToString("N2")</div></td>
             <td>
             </td>

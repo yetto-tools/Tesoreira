@@ -580,7 +580,7 @@ namespace CapaDatos.Contabilidad
                     }
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     objReporte = null;
@@ -1379,6 +1379,24 @@ namespace CapaDatos.Contabilidad
                             while (dr.Read())
                             {
                                 objCierre.MontoCompras = dr.GetDecimal(postMontoCompras);
+                            }// fin while
+                        }// fin if
+
+                        if (dr.NextResult())
+                        {// Operacion: Todas las operaciones
+                            int postMontoSalariosFiscales = dr.GetOrdinal("monto_salarios_fiscales");
+                            while (dr.Read())
+                            {
+                                objCierre.MontoSalariosFiscales = dr.GetDecimal(postMontoSalariosFiscales);
+                            }// fin while
+                        }// fin if
+
+                        if (dr.NextResult())
+                        {// Operacion: Todas las operaciones
+                            int postMontoDepositosBTB = dr.GetOrdinal("depositos_btb");
+                            while (dr.Read())
+                            {
+                                objCierre.MontoDepositosBTB = dr.GetDecimal(postMontoDepositosBTB);
                             }// fin while
                         }// fin if
 

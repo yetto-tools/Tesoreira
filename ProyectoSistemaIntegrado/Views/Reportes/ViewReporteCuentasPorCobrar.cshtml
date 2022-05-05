@@ -37,33 +37,44 @@
     @{decimal montoTotalSolicitado = 0; }
     @{decimal montoTotalDevoluciones = 0; }
     @{decimal montoTotalSaldoFinal = 0; }
+    @{string nombreEmpresa = "-1"; }
     <table style="border-collapse: collapse; margin: 0 auto;">
-        <tr>
-            <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Código Entidad</div></th>
-            <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Entidad</div></th>
-            <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Categoría</div></th>
-            <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Operación</div></th>
-            <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Saldo Inicial</div></th>
-            <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Monto Solicitado</div></th>
-            <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Monto Devuelto</div></th>
-            <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Saldo Final</div></th>
-        </tr>
+        <thead>
+            <tr>
+                <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Código Entidad</div></th>
+                <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Entidad</div></th>
+                <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Categoría</div></th>
+                <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Operación</div></th>
+                <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Saldo Inicial</div></th>
+                <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Monto Solicitado</div></th>
+                <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Monto Devuelto</div></th>
+                <th style="font-size: 16px; font-weight: bold; border: 1px solid black;"><div style="text-align: center;">Saldo Final</div></th>
+            </tr>
+        <thead>
+
         @foreach (var dr in reporte.listaDetalleCuentasPorCobrar)
         {
             montoTotalSaldoInicial = montoTotalSaldoInicial + dr.SaldoInicial;
             montoTotalSolicitado = montoTotalSolicitado + dr.MontoSolicitado;
             montoTotalDevoluciones = montoTotalDevoluciones + dr.MontoDevolucion;
             montoTotalSaldoFinal = montoTotalSaldoFinal + dr.SaldoFinal;
-            <tr>
-                <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: right;">@dr.CodigoEntidad</div></td>
-                <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: left;">@dr.NombreEntidad</div></td>
-                <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: left;">@dr.Categoria</div></td>
-                <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: left;">@dr.Operacion</div></td>
-                <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: right;">@dr.SaldoInicial.ToString("N2")</div></td>
-                <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: right;">@dr.MontoSolicitado.ToString("N2")</div></td>
-                <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: right;">@dr.MontoDevolucion.ToString("N2")</div></td>
-                <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: right;">@dr.SaldoFinal.ToString("N2")</div></td>
-            </tr>
+            @if (dr.NombreEmpresa != nombreEmpresa)
+            { 
+                <tr>
+                    <td style="font-size: 18px; border: 1px solid black; padding-left: 2px; padding-right: 2px; font-weight: bold;" colspan="8"><div style="text-align: left;">@dr.NombreEmpresa</div></td>
+                </tr>            
+            }
+                <tr>
+                    <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: right;">@dr.CodigoEntidad</div></td>
+                    <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: left;">@dr.NombreEntidad</div></td>
+                    <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: left;">@dr.Categoria</div></td>
+                    <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: left;">@dr.Operacion</div></td>
+                    <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: right;">@dr.SaldoInicial.ToString("N2")</div></td>
+                    <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: right;">@dr.MontoSolicitado.ToString("N2")</div></td>
+                    <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: right;">@dr.MontoDevolucion.ToString("N2")</div></td>
+                    <td style="font-size: 12px; border: 1px solid black; padding-left: 2px; padding-right: 2px;"><div style="text-align: right;">@dr.SaldoFinal.ToString("N2")</div></td>
+                </tr>
+            nombreEmpresa = dr.NombreEmpresa;
         }
         <tr>
             <td></td>

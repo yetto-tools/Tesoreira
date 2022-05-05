@@ -15,6 +15,14 @@ namespace CapaNegocio.RRHH
             PersonaDAL obj = new PersonaDAL();
             return obj.GetAllPersonas(noIncluidoEnPlanilla);
         }
+
+        public List<PersonaCLS> GetAllPersonasSinUsuario()
+        {
+            PersonaDAL obj = new PersonaDAL();
+            return obj.GetAllPersonasSinUsuario();
+        }
+
+
         public PersonaCLS GetDataPersona(string cui)
         {
             PersonaDAL obj = new PersonaDAL();

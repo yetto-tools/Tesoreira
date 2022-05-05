@@ -26,6 +26,10 @@
                 fillCombosBusquedaComplemento();
                 MostrarDepositosBancarios(-1, -1, -1);
                 break;
+            case "ComplementoEmpresaGastos":
+                fillCombosBusquedaComplemento();
+                MostrarGastosParaAsignacionDeEmpresa(-1, -1, -1);
+                break;
             case "SolicitudesCorreccion":
                 fillCombosBusquedaConsulta();
                 MostrarSolicitudesCorreccion(-1, -1, -1, -1, -1);
@@ -1196,4 +1200,84 @@ function GenerarExcelTransaccionesEnProceso() {
     document.getElementById("uiExportarExcel").href = "/Transaccion/ExportarExcelTransaccionesEnProceso/?codigoOperacion=" + codigoOperacion.toString() + "&codigoCategoriaEntidad=" + codigoCategoriaEntidad.toString() + "&diaOperacion=" + diaOperacion.toString();
     document.getElementById("uiExportarExcel").click();
 
+}
+
+
+function MostrarGastosParaAsignacionDeEmpresa(anioOperacion, semanaOperacion, codigoReporte) {
+    let objConfiguracion = {
+        url: "Transaccion/BuscarTransaccionesGasto/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString() + "&codigoReporte=" + codigoReporte.toString(),
+        cabeceras: ["Código", "Código Operación", "Operación", "Fecha Operación", "Día Operación", "Fecha Recibo", "Número Recibo", "Entidad", "Cuenta", "Categoría", "Monto", "Número Voucher", "Número Boleta", "Estado", "codigoEstadoSolicitudCorreccion", "Estado Corrección", "Fecha Transacción", "Creado por", "Signo", "Número Recibo", "Ruta", "Fecha Impresión", "codigoTransaccionAnt", "Revisado", "permisoActualizar"],
+        propiedades: ["codigoTransaccion", "codigoOperacion", "operacion", "fechaStr", "nombreDiaOperacion", "fechaReciboStr", "numeroReciboStr", "nombreEntidad", "numeroCuenta", "categoriaEntidad", "monto", "numeroVoucher", "numeroBoleta", "estado", "codigoEstadoSolicitudCorreccion", "estadoSolicitudCorreccion", "fechaIngStr", "usuarioIng", "signo", "numeroReciboStr", "ruta", "fechaImpresionStr", "codigoTransaccionAnt", "revisado", "permisoActualizar"],
+        displaydecimals: ["monto"],
+        divContenedorTabla: "divContenedorTabla",
+        divPintado: "divTabla",
+        addTextBox: true,
+        propertiesColumnTextBox: [
+            {
+                "header": "Número Boleta",
+                "value": "numeroBoleta",
+                "name": "NumeroBoleta",
+                "align": "text-center",
+                "validate": "solonumeros"
+            }],
+        actualizar: true,
+        funcionactualizar: "NumeroBoletaDeposito",
+        paginar: true,
+        ocultarColumnas: true,
+        hideColumns: [
+            {
+                "targets": [1],
+                "visible": false
+            }, {
+                "targets": [5],
+                "visible": false
+            }, {
+                "targets": [6],
+                "visible": false
+            }, {
+                "targets": [9],
+                "visible": false
+            }, {
+                "targets": [10],
+                "className": "dt-body-right"
+            }, {
+                "targets": [13],
+                "visible": false
+            }, {
+                "targets": [14],
+                "visible": false
+            }, {
+                "targets": [15],
+                "visible": false
+            }, {
+                "targets": [16],
+                "visible": false
+            }, {
+                "targets": [17],
+                "visible": false
+            }, {
+                "targets": [18],
+                "visible": false
+            }, {
+                "targets": [19],
+                "visible": false
+            }, {
+                "targets": [20],
+                "visible": false
+            }, {
+                "targets": [21],
+                "visible": false
+            }, {
+                "targets": [22],
+                "visible": false
+            }, {
+                "targets": [23],
+                "visible": false
+            }, {
+                "targets": [24],
+                "visible": false
+            }],
+        slug: "codigoTransaccion"
+    }
+    pintar(objConfiguracion);
 }

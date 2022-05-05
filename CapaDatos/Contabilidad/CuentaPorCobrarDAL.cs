@@ -252,7 +252,6 @@ namespace CapaDatos.Contabilidad
             return resultado;
         }
 
-
         public string CargarCxCTemporal(string usuarioAct)
         {
             string resultado = "";

@@ -27,6 +27,12 @@ namespace ProyectoSistemaIntegrado.Controllers.RRHH
             return obj.GetAllPersonas(noIncluidoEnPlanilla);
         }
 
+        public List<PersonaCLS> GetAllPersonasSinUsuario()
+        {
+            PersonaBL obj = new PersonaBL();
+            return obj.GetAllPersonasSinUsuario();
+        }
+
         public PersonaCLS BusquedaPersona(string cui)
         {
             PersonaBL obj = new PersonaBL();

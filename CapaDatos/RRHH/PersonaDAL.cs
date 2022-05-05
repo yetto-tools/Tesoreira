@@ -142,6 +142,135 @@ namespace CapaDatos.RRHH
             return lista;
         }
 
+        public List<PersonaCLS> GetAllPersonasSinUsuario()
+        {
+            List<PersonaCLS> lista = null;
+            using (SqlConnection conexion = new SqlConnection(cadenaRRHH))
+            {
+                try
+                {
+                    string sql = @"
+                    SELECT x.cui, 
+                           x.primer_nombre,
+                           x.segundo_nombre,
+                           x.tercer_nombre,
+                           x.primer_apellido,
+                           x.segundo_apellido,
+                           x.apellido_casada, 
+		                   x.nombre_completo, 
+		                   x.fecha_nacimiento, 
+                           FORMAT(x.fecha_nacimiento,'dd/MM/yyyy') AS fecha_nacimiento_str,
+		                   x.codigo_genero,
+                           CASE
+                             WHEN x.codigo_genero = 'M' THEN 'MASCULINO'
+                             WHEN x.codigo_genero = 'F' THEN 'FEMENINO'
+                             ELSE 'NO DEFINIDO'   
+                           END AS genero, 
+		                   x.correo_electronico,
+		                   x.codigo_departamento_residencia,
+		                   z.nombre AS departamento_residencia,
+		                   x.codigo_municipio_residencia,
+		                   y.nombre AS municipio_residencia,
+		                   x.zona,
+		                   x.direccion_residencia,
+		                   x.no_incluido_en_planilla,
+		                   COALESCE(x.codigo_area,0) AS codigo_area,
+		                   w.nombre AS area,
+		                   x.codigo_estado,
+		                   m.nombre AS estado,
+                           1 AS permiso_editar
+                    FROM db_rrhh.persona x
+                    LEFT JOIN db_admon.municipio y
+                    ON x.codigo_municipio_residencia = y.codigo_municipio AND x.codigo_departamento_residencia = y.codigo_departamento
+                    LEFT JOIN db_admon.departamento z
+                    ON x.codigo_departamento_residencia = z.codigo_departamento
+                    LEFT JOIN db_rrhh.area w
+                    ON x.codigo_area = w.codigo_area
+                    INNER JOIN db_rrhh.estado_empleado m
+                    ON x.codigo_estado = m.codigo_estado_empleado
+                    WHERE x.codigo_estado = @CodigoEstadoEmpleado
+                      AND x.no_incluido_en_planilla = 0
+                      AND x.cui NOT IN (SELECT cui FROM db_admon.usuario)";
+
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand(sql, conexion))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Parameters.AddWithValue("@CodigoEstadoEmpleado", Constantes.Empleado.EstadoEmpleado.ACTIVO);
+                        SqlDataReader dr = cmd.ExecuteReader();
+                        if (dr != null)
+                        {
+                            PersonaCLS objPersona;
+                            lista = new List<PersonaCLS>();
+                            int postCui = dr.GetOrdinal("cui");
+                            int postPrimerNombre = dr.GetOrdinal("primer_nombre");
+                            int postSegundoNombre = dr.GetOrdinal("segundo_nombre");
+                            int postTercerNombre = dr.GetOrdinal("tercer_nombre");
+                            int postPrimerApellido = dr.GetOrdinal("primer_apellido");
+                            int postSegundoApellido = dr.GetOrdinal("segundo_apellido");
+                            int postApellidoCasada = dr.GetOrdinal("apellido_casada");
+                            int postNombreCompleto = dr.GetOrdinal("nombre_completo");
+                            int postFechaNacimiento = dr.GetOrdinal("fecha_nacimiento");
+                            int postFechaNacimientoStr = dr.GetOrdinal("fecha_nacimiento_str");
+                            int postCodigoGenero = dr.GetOrdinal("codigo_genero");
+                            int postGenero = dr.GetOrdinal("genero");
+                            int postCorreoElectronico = dr.GetOrdinal("correo_electronico");
+                            int postCodigoDepartamentoResidencia = dr.GetOrdinal("codigo_departamento_residencia");
+                            int postDepartamentoResidencia = dr.GetOrdinal("departamento_residencia");
+                            int postCodigoMunicipioResidencia = dr.GetOrdinal("codigo_municipio_residencia");
+                            int postMunicipioResidencia = dr.GetOrdinal("municipio_residencia");
+                            int postZona = dr.GetOrdinal("zona");
+                            int postDireccionResidencia = dr.GetOrdinal("direccion_residencia");
+                            int postNoIncluidoEnPlanilla = dr.GetOrdinal("no_incluido_en_planilla");
+                            int postCodigoArea = dr.GetOrdinal("codigo_area");
+                            int postArea = dr.GetOrdinal("area");
+                            int postCodigoEstado = dr.GetOrdinal("codigo_estado");
+                            int postEstado = dr.GetOrdinal("estado");
+                            int postPermisoEditar = dr.GetOrdinal("permiso_editar");
+
+                            while (dr.Read())
+                            {
+                                objPersona = new PersonaCLS();
+                                objPersona.Cui = dr.GetString(postCui);
+                                objPersona.PrimerNombre = dr.GetString(postPrimerNombre);
+                                objPersona.SegundoNombre = dr.IsDBNull(postSegundoNombre) ? "" : dr.GetString(postSegundoNombre);
+                                objPersona.TercerNombre = dr.IsDBNull(postTercerNombre) ? "" : dr.GetString(postTercerNombre);
+                                objPersona.PrimerApellido = dr.GetString(postPrimerApellido);
+                                objPersona.SegundoApellido = dr.IsDBNull(postSegundoApellido) ? "" : dr.GetString(postSegundoApellido);
+                                objPersona.ApellidoCasada = dr.IsDBNull(postApellidoCasada) ? "" : dr.GetString(postApellidoCasada);
+                                objPersona.NombreCompleto = dr.GetString(postNombreCompleto);
+                                objPersona.FechaNacimiento = dr.GetDateTime(postFechaNacimiento);
+                                objPersona.FechaNacimientoStr = dr.GetString(postFechaNacimientoStr);
+                                objPersona.CodigoGenero = dr.GetString(postCodigoGenero);
+                                objPersona.Genero = dr.GetString(postGenero);
+                                objPersona.CorreoElectronico = dr.IsDBNull(postCorreoElectronico) ? "" : dr.GetString(postCorreoElectronico);
+                                objPersona.CodigoDepartamentoResidencia = dr.GetInt16(postCodigoDepartamentoResidencia);
+                                objPersona.DepartamentoResidencia = dr.GetString(postDepartamentoResidencia);
+                                objPersona.CodigoMunicipioResidencia = dr.GetInt16(postCodigoMunicipioResidencia);
+                                objPersona.MunicipioResidencia = dr.GetString(postMunicipioResidencia);
+                                objPersona.Zona = dr.GetByte(postZona);
+                                objPersona.DireccionResidencia = dr.IsDBNull(postDireccionResidencia) ? "" : dr.GetString(postDireccionResidencia);
+                                objPersona.NoIncluidoEnPlanilla = dr.GetByte(postNoIncluidoEnPlanilla);
+                                objPersona.CodigoArea = (short)dr.GetInt32(postCodigoArea);
+                                objPersona.Area = dr.IsDBNull(postArea) ? "" : dr.GetString(postArea);
+                                objPersona.CodigoEstado = dr.GetInt16(postCodigoEstado);
+                                objPersona.Estado = dr.GetString(postEstado);
+                                objPersona.PermisoEditar = dr.GetInt32(postPermisoEditar);
+                                lista.Add(objPersona);
+                            }
+                        }
+                    }
+                    conexion.Close();
+                }
+                catch (Exception)
+                {
+                    conexion.Close();
+                    lista = null;
+                }
+            }
+            return lista;
+        }
+
         public PersonaCLS GetDataPersona(string cui)
         {
             PersonaCLS objPersona = new PersonaCLS();

@@ -50,6 +50,12 @@ namespace ProyectoSistemaIntegrado.Controllers.Administracion
             return obj.GuardarUsuario(objUsuarioLogin);
         }
 
+        public string EliminarUsuario(string idUsuario)
+        {
+            UsuarioBL obj = new UsuarioBL();
+            return obj.EliminarUsuario(idUsuario);
+        }
+
         public string ActualizarContrasenia(UsuarioCLS objUsuario)
         {
             UsuarioBL obj = new UsuarioBL();
@@ -58,8 +64,11 @@ namespace ProyectoSistemaIntegrado.Controllers.Administracion
 
         public List<UsuarioCLS> ListarUsuarios()
         {
+            ViewBag.Message = HttpContext.Session.GetString("usuario");
+            UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
+
             UsuarioBL obj = new UsuarioBL();
-            return obj.GetListaUsuarios();
+            return obj.GetListaUsuarios(objUsuario.SuperAdmin);
         }
 
         public UsuarioCLS GetDataUsuario(string idUsuario)

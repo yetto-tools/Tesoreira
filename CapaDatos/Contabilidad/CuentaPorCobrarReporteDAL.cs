@@ -22,7 +22,7 @@ namespace CapaDatos.Contabilidad
                 try
                 {
                     string sql = @"
-                    SELECT COALESCE(x.codigo_reporte,0) AS codigo_reporte,
+                    SELECT COALESCE(x.codigo_reporte, 0) AS codigo_reporte,
                            x.anio_operacion,
 	                       x.semana_operacion, 
 	                       COALESCE(y.anticipo_liquidable,0) AS anticipo_liquidable, 
@@ -40,7 +40,8 @@ namespace CapaDatos.Contabilidad
                            'Por Generar'  AS estado,
                            0 AS permiso_anular
                     FROM ( SELECT m.anio_operacion, m.semana_operacion, m.codigo_reporte
-                           FROM ( SELECT anio_operacion, semana_operacion, codigo_reporte
+                           FROM (
+                                  SELECT anio_operacion, semana_operacion, codigo_reporte
                                   FROM db_contabilidad.cuenta_por_cobrar 
                                   WHERE codigo_estado = @CodigoEstadoParaIncluirEnReporte 
                                     AND carga_inicial = 0
@@ -557,6 +558,7 @@ namespace CapaDatos.Contabilidad
                     string sql = @"
                     SELECT x.codigo_entidad, 
 		                    db_tesoreria.GetNombreEntidadCompleto(x.codigo_categoria, x.codigo_entidad) AS entidad,
+                            db_tesoreria.GetNombreEmpresa(x.codigo_categoria,x.codigo_entidad) AS nombre_empresa,
                             x.codigo_reporte,
 	                        x.anio_operacion,
 		                    x.semana_operacion,
@@ -593,6 +595,7 @@ namespace CapaDatos.Contabilidad
                             lista = new List<CuentaPorCobrarReporteDetalleCLS>();
                             int postCodigoEntidad = dr.GetOrdinal("codigo_entidad");
                             int postEntidad = dr.GetOrdinal("entidad");
+                            int postNombreEmpresa = dr.GetOrdinal("nombre_empresa");
                             int postCodigoReporte = dr.GetOrdinal("codigo_reporte");
                             int postAnioOperacion = dr.GetOrdinal("anio_operacion");
                             int postSemanaOperacion = dr.GetOrdinal("semana_operacion");
@@ -610,6 +613,7 @@ namespace CapaDatos.Contabilidad
                                 objCuentaPorCobrarReporteCLS = new CuentaPorCobrarReporteDetalleCLS();
                                 objCuentaPorCobrarReporteCLS.CodigoEntidad = dr.GetString(postCodigoEntidad);
                                 objCuentaPorCobrarReporteCLS.NombreEntidad = dr.GetString(postEntidad);
+                                objCuentaPorCobrarReporteCLS.NombreEmpresa = dr.IsDBNull(postNombreEmpresa) ? "" : dr.GetString(postNombreEmpresa);
                                 objCuentaPorCobrarReporteCLS.CodigoReporte = dr.GetInt32(postCodigoReporte);
                                 objCuentaPorCobrarReporteCLS.AnioOperacion = dr.GetInt16(postAnioOperacion);
                                 objCuentaPorCobrarReporteCLS.SemanaOperacion = dr.GetByte(postSemanaOperacion);
@@ -621,6 +625,7 @@ namespace CapaDatos.Contabilidad
                                 objCuentaPorCobrarReporteCLS.MontoSolicitado = dr.GetDecimal(postMontoSolicitado);
                                 objCuentaPorCobrarReporteCLS.MontoDevolucion = dr.GetDecimal(postMontoDevolucion);
                                 objCuentaPorCobrarReporteCLS.SaldoFinal = dr.GetDecimal(postSaldoFinal);
+                                
                                 lista.Add(objCuentaPorCobrarReporteCLS);
                             }//fin while
                         }// fin if
@@ -800,25 +805,39 @@ namespace CapaDatos.Contabilidad
                     ORDER BY numero_dia ASC";
 
                     string sqlDetalle = @"
-                    SELECT x.codigo_entidad,
-	                       db_tesoreria.GetNombreEntidadCompleto(x.codigo_categoria,x.codigo_entidad) AS entidad,
-                           x.codigo_operacion,
-	                       y.nombre_operacion,
-	                       x.codigo_categoria,
-	                       z.nombre AS categoria,
-	                       x.saldo_inicial,
-                           x.monto_solicitado, 
-	                       x.monto_devolucion AS monto_devolucion_semana,
-	                       x.saldo_final
-                    FROM " + tableReporte + @" x
-                    INNER JOIN db_tesoreria.operacion y
-                    ON x.codigo_operacion = y.codigo_operacion
-                    INNER JOIN db_tesoreria.entidad_categoria z
-                    ON x.codigo_categoria = z.codigo_categoria_entidad
-                    WHERE x.estado <> 0 
-                      AND x.anio_operacion = @AnioOperacion
-                      AND x.semana_operacion = @SemanaOperacion
-                      AND x.codigo_reporte = @CodigoReporte";
+                    SELECT m.codigo_entidad,
+                           m.entidad,
+                           m.nombre_empresa,
+                           m.codigo_operacion,
+                           m.nombre_operacion,
+                           m.codigo_categoria,
+                           m.categoria,
+                           m.saldo_inicial,
+                           m.monto_solicitado,
+                           m.monto_devolucion_semana,
+                           m.saldo_final 
+                    FROM (  SELECT x.codigo_entidad,
+	                               db_tesoreria.GetNombreEntidadCompleto(x.codigo_categoria,x.codigo_entidad) AS entidad,
+                                   db_tesoreria.GetNombreEmpresa(x.codigo_categoria,x.codigo_entidad) AS nombre_empresa,
+                                   x.codigo_operacion,
+	                               y.nombre_operacion,
+	                               x.codigo_categoria,
+	                               z.nombre AS categoria,
+	                               x.saldo_inicial,
+                                   x.monto_solicitado, 
+	                               x.monto_devolucion AS monto_devolucion_semana,
+	                               x.saldo_final
+                            FROM " + tableReporte + @" x
+                            INNER JOIN db_tesoreria.operacion y
+                            ON x.codigo_operacion = y.codigo_operacion
+                            INNER JOIN db_tesoreria.entidad_categoria z
+                            ON x.codigo_categoria = z.codigo_categoria_entidad
+                            WHERE x.estado <> 0 
+                              AND x.anio_operacion = @AnioOperacion
+                              AND x.semana_operacion = @SemanaOperacion
+                              AND x.codigo_reporte = @CodigoReporte
+                         ) m
+                    ORDER BY m.nombre_empresa, m.categoria, m.nombre_operacion";
 
                     conexion.Open();
                     using (SqlCommand cmd = new SqlCommand(sqlDetalle, conexion))
@@ -836,6 +855,7 @@ namespace CapaDatos.Contabilidad
                             CuentaPorCobrarReporteDetalleCLS objCuentaPorCobrarReporteCLS;
                             int postCodigoEntidad = dr.GetOrdinal("codigo_entidad");
                             int postEntidad = dr.GetOrdinal("entidad");
+                            int postNombreEmpresa = dr.GetOrdinal("nombre_empresa");
                             int postCodigoOperacion = dr.GetOrdinal("codigo_operacion");
                             int postOperacion = dr.GetOrdinal("nombre_operacion");
                             int postCodigoCategoria = dr.GetOrdinal("codigo_categoria");
@@ -850,6 +870,7 @@ namespace CapaDatos.Contabilidad
                                 objCuentaPorCobrarReporteCLS = new CuentaPorCobrarReporteDetalleCLS();
                                 objCuentaPorCobrarReporteCLS.CodigoEntidad = dr.GetString(postCodigoEntidad);
                                 objCuentaPorCobrarReporteCLS.NombreEntidad = dr.GetString(postEntidad);
+                                objCuentaPorCobrarReporteCLS.NombreEmpresa = dr.IsDBNull(postNombreEmpresa) ? "" : dr.GetString(postNombreEmpresa);
                                 objCuentaPorCobrarReporteCLS.CodigoOperacion = dr.GetInt16(postCodigoOperacion);
                                 objCuentaPorCobrarReporteCLS.Operacion = dr.GetString(postOperacion);
                                 objCuentaPorCobrarReporteCLS.CodigoCategoria = dr.GetInt16(postCodigoCategoria);
@@ -888,7 +909,7 @@ namespace CapaDatos.Contabilidad
 
                     conexion.Close();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     conexion.Close();
                     objReporte = null;

@@ -12,6 +12,8 @@ namespace CapaEntidad.Contabilidad
         public decimal MontoLibre { get; set; }
         public decimal MontoFacturado { get; set; }
         public decimal MontoCompras { get; set; }
+        public decimal MontoSalariosFiscales { get; set; }
+        public decimal MontoDepositosBTB { get; set; }
         public decimal MontoDepositos { get; set; }
         public decimal MontoSaldoAnterior { get; set; }
     }

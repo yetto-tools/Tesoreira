@@ -15,6 +15,8 @@ namespace CapaEntidad.Contabilidad
         public string Operacion { get; set; }
         public string CodigoEntidad { get; set; }
         public string NombreEntidad { get; set; }
+
+        public string NombreEmpresa { get; set; }
         public short CodigoCategoria { get; set; }
         public string Categoria { get; set; }
         public decimal SaldoInicial { get; set; }

@@ -329,6 +329,7 @@ function fillCombosEdit(codigoTransaccion) {
                 set("uiCodigoArea", data.codigoArea.toString());
                 set("uiCodigoOperacionCaja", data.codigoOperacionCaja.toString());
                 set("uiNumeroRecibo", data.numeroRecibo.toString());
+                set("uiNumeroReciboReferencia", data.numeroReciboReferencia.toString());
                 set("uiFechaReciboStr", data.fechaReciboStr);
                 set("uiNombreProveedor", data.nombreProveedor);
                 setDataControls(codigoOperacion, data);
@@ -2467,7 +2468,7 @@ function RegistrarCorreccion() {
     Confirmacion("Corrección de Transacción", "¿Está Seguro(a) de realizar la corrección de esta transacción?", function (rpta) {
         fetchPost("Transaccion/RegistrarCorreccion", "text", frm, function (data) {
             if (data == "OK") {
-                Exito("Transaccion", "CorreccionTransaccion", true);
+                Exito("Transaccion", "Revision", true);
             } else {
                 MensajeError(data);
             }

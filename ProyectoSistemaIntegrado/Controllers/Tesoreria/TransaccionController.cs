@@ -211,13 +211,13 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
             UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
 
             if (objUsuario.SetSemanaAnterior == 0) {
-                objTransaccion.NumeroRecibo = -1;
+                objTransaccion.NumeroReciboReferencia = -1;
             }
             TransaccionBL obj = new TransaccionBL();
             return obj.GuardarTransaccion(objTransaccion, objUsuario.IdUsuario, complemento);
         }
 
-        public string ActualizarTransaccion(TransaccionCLS objTransaccion, string usuarioAct)
+        public string ActualizarTransaccion(TransaccionCLS objTransaccion)
         {
             ViewBag.Message = HttpContext.Session.GetString("usuario");
             UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);

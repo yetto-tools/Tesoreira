@@ -117,7 +117,7 @@
         </tr>
         <tr>
             <td colspan="4" style="font-size: 24px; font-weight: bold;">
-                <div style="text-align: left;">COMPROMISO FISCAL</div>
+                <div style="text-align: left;">COMPROMISO (CF)</div>
             </td>
         </tr>
         <tr>
@@ -127,7 +127,7 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2" style="font-size: 20px;"><div style="text-align: left;">FACTURADO</div></td>
+            <td colspan="2" style="font-size: 20px;"><div style="text-align: left;">VENTAS DE LA SEMANA</div></td>
             <td style="font-size: 20px; border: 1px solid black;"><div style="text-align: right; padding-right: 2px;">@reporte.objCierre.MontoFacturado.ToString("N2")</div></td>
             <td>
             </td>
@@ -139,7 +139,7 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2" style="font-size: 20px;"><div style="text-align: left;">SALARIOS FISCALES</div></td>
+            <td colspan="2" style="font-size: 20px;"><div style="text-align: left;">SALARIOS</div></td>
             <td style="font-size: 20px; border: 1px solid black;"><div style="text-align: right; padding-right: 2px;">@reporte.objCierre.MontoSalariosFiscales.ToString("N2")</div></td>
             <td>
             </td>
@@ -157,7 +157,7 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2" style="font-size: 20px;"><div style="text-align: left;">COMPROMISO FISCAL</div></td>
+            <td colspan="2" style="font-size: 20px;"><div style="text-align: left;">SALDO FINAL COMPROMISO</div></td>
             <td style="font-size: 20px; border: 1px solid black;">
                 @if (montoCompromisoFiscal >= 0)
                 {
@@ -169,7 +169,18 @@
                 }
             </td>
             <td>
-                <div style="text-align: right; font-size: 20px;">PENDIENTE</div>
+                @if (montoCompromisoFiscal < 0)
+                {
+                    <div style="text-align: right; font-size: 20px;">
+                        SOBREGIRO
+                    </div>
+                }
+                else
+                {
+                    <div style="text-align: right; font-size: 20px;">
+                        PENDIENTE
+                    </div>
+                }
             </td>
         </tr>
         <tr>
@@ -184,7 +195,6 @@
             <td colspan="2" style="font-size: 20px;"><div style="text-align: left;">COMPROMISO NETO</div></td>
             <td style="font-size: 20px; border: 1px solid black;"><div style="text-align: right; padding-right: 2px;">@montoCompromisoNeto.ToString("N2")</div></td>
             <td>
-                <div style="text-align: right; font-size: 12px;">PENDIENTE</div>
             </td>
         </tr>
         <tr>

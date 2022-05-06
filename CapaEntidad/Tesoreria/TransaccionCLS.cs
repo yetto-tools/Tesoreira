@@ -64,6 +64,8 @@ namespace CapaEntidad.Tesoreria
 
         public long NumeroRecibo { get; set; }
 
+        public long NumeroReciboReferencia { get; set; }
+
         public DateTime FechaRecibo { get; set; }
 
         public string FechaReciboStr { get; set; }

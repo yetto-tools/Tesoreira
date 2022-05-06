@@ -837,7 +837,7 @@ namespace CapaDatos.Contabilidad
                               AND x.semana_operacion = @SemanaOperacion
                               AND x.codigo_reporte = @CodigoReporte
                          ) m
-                    ORDER BY m.nombre_empresa, m.categoria, m.nombre_operacion";
+                    ORDER BY m.nombre_empresa, m.entidad, m.nombre_operacion";
 
                     conexion.Open();
                     using (SqlCommand cmd = new SqlCommand(sqlDetalle, conexion))

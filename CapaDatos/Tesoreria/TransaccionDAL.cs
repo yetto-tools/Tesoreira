@@ -53,25 +53,28 @@ namespace CapaDatos.Tesoreria
                     string sentenciaUpdateTransaccion = string.Empty;
                     string sentenciaUpdateRecibo = string.Empty;
                     long correlativoRecibo = 0;
-                    if (objTransaccion.NumeroRecibo == -1)
+                    long correlativoReciboReferencia = 0;
+                    if (objTransaccion.ComplementoConta == 0)
                     {
-                        sqlSequence = "SELECT sig_valor FROM db_admon.secuencia_detalle WHERE codigo_secuencia = @CodigoSecuenciaRecibo AND anio = @AnioRecibo";
-                        cmd.CommandText = sqlSequence;
+                        sqlSequence = "";
                         if (objTransaccion.CodigoTipoOperacion == 1)
                         { // Ingreso
-                            cmd.Parameters.AddWithValue("@CodigoSecuenciaRecibo", Constantes.Secuencia.SIT_SEQ_RECIBO_INGRESO);
+                            sqlSequence = "SELECT NEXT VALUE FOR db_tesoreria.SQ_RECIBO_INGRESO";
                         }
                         else
                         { // Egreso
-                            cmd.Parameters.AddWithValue("@CodigoSecuenciaRecibo", Constantes.Secuencia.SIT_SEQ_RECIBO_EGRESO);
+                            sqlSequence = "SELECT NEXT VALUE FOR db_tesoreria.SQ_RECIBO_EGRESO";
                         }
-                        cmd.Parameters.AddWithValue("@AnioRecibo", anio);
+                        cmd.CommandText = sqlSequence;
                         correlativoRecibo = (long)cmd.ExecuteScalar();
+                    }
 
-                        sentenciaUpdateRecibo = "UPDATE db_admon.secuencia_detalle SET sig_valor = @siguienteValorRecibo WHERE codigo_secuencia = @CodigoSecuenciaRecibo  AND anio = @AnioRecibo";
+                    if (objTransaccion.NumeroReciboReferencia == -1)
+                    {
+                        correlativoReciboReferencia = 0;
                     }
                     else {
-                        correlativoRecibo = objTransaccion.NumeroRecibo;
+                        correlativoReciboReferencia = objTransaccion.NumeroReciboReferencia;
                     }
 
                     sentenciaUpdateTransaccion = "UPDATE db_admon.secuencia_detalle SET sig_valor = @siguienteValor WHERE codigo_secuencia = @CodigoSecuencia  AND anio = @AnioTransaccion";
@@ -145,7 +148,8 @@ namespace CapaDatos.Tesoreria
                                                           numero_voucher,
                                                           nombre_proveedor,
                                                           codigo_canal_venta,
-                                                          codigo_otro_ingreso)
+                                                          codigo_otro_ingreso,
+                                                          numero_recibo_referencia)
                     VALUES(@CodigoTransaccion,
                            @CodigoSeguridad,
                            @CodigoEmpresa,
@@ -213,7 +217,8 @@ namespace CapaDatos.Tesoreria
                            @NumeroVoucher,
                            @NombreProveedor,
                            @CodigoCanalVenta,
-                           @CodigoOtroIngreso)";
+                           @CodigoOtroIngreso,
+                           @NumeroReciboReferencia)";
 
                     cmd.CommandText = sentenciaSQL;
                     cmd.Parameters.AddWithValue("@CodigoTransaccion", codigoTransaccion);
@@ -284,6 +289,7 @@ namespace CapaDatos.Tesoreria
                     cmd.Parameters.AddWithValue("@NombreProveedor", objTransaccion.NombreProveedor == null ? DBNull.Value : objTransaccion.NombreProveedor);
                     cmd.Parameters.AddWithValue("@CodigoCanalVenta", objTransaccion.CodigoCanalVenta);
                     cmd.Parameters.AddWithValue("@CodigoOtroIngreso", objTransaccion.CodigoOtroIngreso == -1 ? 0 : objTransaccion.CodigoOtroIngreso);
+                    cmd.Parameters.AddWithValue("@NumeroReciboReferencia", correlativoReciboReferencia);
                     cmd.ExecuteNonQuery();
 
                     #region Registro en Cuenta Corriente
@@ -390,12 +396,12 @@ namespace CapaDatos.Tesoreria
                     cmd.Parameters.AddWithValue("@siguienteValor", correlativoTransaccion + 1);
                     cmd.ExecuteNonQuery();
 
-                    if (objTransaccion.NumeroRecibo == -1)
-                    {
-                        cmd.CommandText = sentenciaUpdateRecibo;
-                        cmd.Parameters.AddWithValue("@siguienteValorRecibo", correlativoRecibo + 1);
-                        cmd.ExecuteNonQuery();
-                    }
+                    //if (objTransaccion.NumeroRecibo == -1)
+                    //{
+                        //cmd.CommandText = sentenciaUpdateRecibo;
+                        //cmd.Parameters.AddWithValue("@siguienteValorRecibo", correlativoRecibo + 1);
+                        //cmd.ExecuteNonQuery();
+                    //}
 
                     // Attempt to commit the transaction.
                     transaction.Commit();
@@ -447,7 +453,11 @@ namespace CapaDatos.Tesoreria
 
                     string sentenciaUpdateTransaccion = string.Empty;
                     string sentenciaUpdateRecibo = string.Empty;
-                    long correlativoRecibo = 0;
+
+                    //long correlativoRecibo = objTransaccion.NumeroRecibo;
+                    //long correlativoReciboReferencia = objTransaccion.NumeroReciboReferencia;
+
+                    /*long correlativoRecibo = 0;
                     if (objTransaccion.NumeroRecibo == -1)
                     {
                         sqlSequence = "SELECT sig_valor FROM db_admon.secuencia_detalle WHERE codigo_secuencia = @CodigoSecuenciaRecibo AND anio = @AnioRecibo";
@@ -467,7 +477,7 @@ namespace CapaDatos.Tesoreria
                     else
                     {
                         correlativoRecibo = objTransaccion.NumeroRecibo;
-                    }
+                    }*/
 
                     sentenciaUpdateTransaccion = "UPDATE db_admon.secuencia_detalle SET sig_valor = @siguienteValor WHERE codigo_secuencia = @CodigoSecuencia  AND anio = @AnioTransaccion";
                     long codigoTransaccion = long.Parse(anio.ToString() + correlativoTransaccion.ToString("D6"));
@@ -540,7 +550,8 @@ namespace CapaDatos.Tesoreria
                                                           nombre_proveedor,  
                                                           codigo_transaccion_ant, 
                                                           codigo_canal_venta,
-                                                          codigo_otro_ingreso)
+                                                          codigo_otro_ingreso,
+                                                          numero_recibo_referencia)
                     VALUES(@CodigoTransaccion,
                            @CodigoSeguridad,
                            @CodigoEmpresa,
@@ -608,7 +619,8 @@ namespace CapaDatos.Tesoreria
                            @NombreProveedor, 
                            @CodigoTransaccionAnt,
                            @CodigoCanalVenta,
-                           @CodigoOtroIngreso)";
+                           @CodigoOtroIngreso,
+                           @NumeroReciboReferencia)";
 
                     cmd.CommandText = sentenciaSQL;
                     cmd.Parameters.AddWithValue("@CodigoTransaccion", codigoTransaccion);
@@ -679,6 +691,8 @@ namespace CapaDatos.Tesoreria
                     cmd.Parameters.AddWithValue("@CodigoTransaccionAnt", objTransaccion.CodigoTransaccion);
                     cmd.Parameters.AddWithValue("@CodigoCanalVenta", objTransaccion.CodigoCanalVenta);
                     cmd.Parameters.AddWithValue("@CodigoOtroIngreso", objTransaccion.CodigoOtroIngreso == -1 ? 0 : objTransaccion.CodigoOtroIngreso);
+                    cmd.Parameters.AddWithValue("@NumeroReciboReferencia", objTransaccion.NumeroReciboReferencia);
+
                     cmd.ExecuteNonQuery();
 
                     #region Registro en Cuenta Corriente
@@ -815,12 +829,12 @@ namespace CapaDatos.Tesoreria
                     cmd.Parameters.AddWithValue("@siguienteValor", correlativoTransaccion + 1);
                     cmd.ExecuteNonQuery();
 
-                    if (objTransaccion.NumeroRecibo == -1)
-                    {
-                        cmd.CommandText = sentenciaUpdateRecibo;
-                        cmd.Parameters.AddWithValue("@siguienteValorRecibo", correlativoRecibo + 1);
-                        cmd.ExecuteNonQuery();
-                    }
+                    //if (objTransaccion.NumeroRecibo == -1)
+                    //{
+                    //    cmd.CommandText = sentenciaUpdateRecibo;
+                    //    cmd.Parameters.AddWithValue("@siguienteValorRecibo", correlativoRecibo + 1);
+                    //    cmd.ExecuteNonQuery();
+                    //}
 
                     transaction.Commit();
                     conexion.Close();
@@ -1133,7 +1147,8 @@ namespace CapaDatos.Tesoreria
                                                           nombre_proveedor,  
                                                           codigo_transaccion_ant,
                                                           codigo_canal_venta,
-                                                          codigo_otro_ingreso)
+                                                          codigo_otro_ingreso,
+                                                          numero_recibo_referencia)
                     VALUES(@CodigoTransaccion,
                            @CodigoSeguridad,
                            @CodigoEmpresa,
@@ -1201,7 +1216,8 @@ namespace CapaDatos.Tesoreria
                            @NombreProveedor,
                            @CodigoTransaccionAnt,
                            @CodigoCanalVenta,
-                           @CodigoOtroIngreso)";
+                           @CodigoOtroIngreso,
+                           @NumeroReciboReferencia)";
 
                     cmd.CommandText = sentenciaSQL;
                     cmd.Parameters.AddWithValue("@CodigoTransaccion", codigoTransaccion);
@@ -1272,6 +1288,7 @@ namespace CapaDatos.Tesoreria
                     cmd.Parameters.AddWithValue("@CodigoTransaccionAnt", objTransaccion.CodigoTransaccion);
                     cmd.Parameters.AddWithValue("@CodigoCanalVenta", objTransaccion.CodigoCanalVenta);
                     cmd.Parameters.AddWithValue("@CodigoOtroIngreso", objTransaccion.CodigoOtroIngreso == -1 ? 0 : objTransaccion.CodigoOtroIngreso);
+                    cmd.Parameters.AddWithValue("@NumeroReciboReferencia", objTransaccion.NumeroReciboReferencia);
                     cmd.ExecuteNonQuery();
 
                     #region Registro en Cuenta Corriente
@@ -3470,6 +3487,7 @@ namespace CapaDatos.Tesoreria
     	                    x.numero_documento,
 		                    x.fecha_documento,
 		                    x.numero_recibo,
+                            x.numero_recibo_referencia,
 		                    x.fecha_recibo,
                             FORMAT(x.fecha_recibo, 'dd/MM/yyyy') AS fecha_recibo_str,
                             REPLACE(STR(CAST(x.numero_recibo AS varchar), 6),' ','0') AS numero_recibo_str,
@@ -3557,6 +3575,7 @@ namespace CapaDatos.Tesoreria
                             int postNumeroDocumento = dr.GetOrdinal("numero_documento");
                             int postFechaDocumento = dr.GetOrdinal("fecha_documento");
                             int postNumeroRecibo = dr.GetOrdinal("numero_recibo");
+                            int postNumeroReciboReferencia = dr.GetOrdinal("numero_recibo_referencia");
                             int postFechaRecibo = dr.GetOrdinal("fecha_recibo");
                             int postFechaReciboStr = dr.GetOrdinal("fecha_recibo_str");
                             int postNumeroReciboStr = dr.GetOrdinal("numero_recibo_str");
@@ -3624,6 +3643,7 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.NumeroDocumento = dr.IsDBNull(postNumeroDocumento) ? null : dr.GetInt32(postNumeroDocumento);
                                 objTransaccion.FechaDocumento = dr.IsDBNull(postFechaDocumento) ? null : dr.GetDateTime(postFechaDocumento);
                                 objTransaccion.NumeroRecibo = dr.GetInt64(postNumeroRecibo);
+                                objTransaccion.NumeroReciboReferencia = dr.GetInt64(postNumeroReciboReferencia);
                                 objTransaccion.FechaRecibo = dr.GetDateTime(postFechaRecibo);
                                 objTransaccion.FechaReciboStr = dr.GetString(postFechaReciboStr);
                                 objTransaccion.NumeroReciboStr = dr.GetString(postNumeroReciboStr);

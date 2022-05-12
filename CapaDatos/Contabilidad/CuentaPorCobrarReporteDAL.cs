@@ -1008,9 +1008,11 @@ namespace CapaDatos.Contabilidad
                     SET codigo_estado = @CodigoEstadoRegistrado
                     WHERE anio_operacion = @AnioOperacion 
                       AND semana_operacion = @SemanaOperacion
-                      AND codigo_reporte = @CodigoReporte";
+                      AND codigo_reporte = @CodigoReporte
+                      AND codigo_estado <> @CodigoEstadoCxCAnulado";
                     cmd.CommandText = sqlUpdateTransaccionCxC;
                     cmd.Parameters.AddWithValue("@CodigoEstadoRegistrado", Constantes.CuentaPorCobrar.Estado.PARA_INCLUIR_EN_REPORTE);
+                    cmd.Parameters.AddWithValue("@CodigoEstadoCxCAnulado", Constantes.CuentaPorCobrar.Estado.ANULADO);
                     cmd.ExecuteNonQuery();
 
                     // Attempt to commit the transaction.

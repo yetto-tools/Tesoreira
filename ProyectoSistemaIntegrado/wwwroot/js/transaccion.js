@@ -662,8 +662,11 @@ function clickAlertaCorreccionTransaccion(obj) {
     let table = $('#tabla').DataTable();
     $('#tabla tbody').on('click', '.option-alerta', function () {
         let rowIdx = table.row(this).index();
-        let codigoTransaccion = BigInt(table.cell(rowIdx, 0).data());
-        let codigoTransaccionAnt = BigInt(table.cell(rowIdx, 1).data());
+
+        //let codigoTransaccion = BigInt(table.cell(rowIdx, 0).data());
+        //let codigoTransaccionAnt = BigInt(table.cell(rowIdx, 1).data());
+        let codigoTransaccion = Number(table.cell(rowIdx, 0).data());
+        let codigoTransaccionAnt = Number(table.cell(rowIdx, 1).data());
         let correccion = parseInt(table.cell(rowIdx, 2).data());
         if (correccion == 1) {
             if (codigoTransaccionAnt != 0) {

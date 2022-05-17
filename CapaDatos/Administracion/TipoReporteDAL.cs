@@ -91,29 +91,35 @@ namespace CapaDatos.Administracion
                     if (superAdmin == 1)
                     {
                         sql = @"
-                        SELECT codigo_tipo_reporte, 
-	                           nombre, 
-	                           descripcion, 
-	                           nombre_controlador,
-	                           nombre_accion,
-	                           pdf,
-	                           excel,
-	                           web
-                         FROM db_admon.tipo_reporte";
+                        SELECT x.codigo_tipo_reporte, 
+	                           x.nombre, 
+	                           x.descripcion, 
+	                           x.nombre_controlador,
+	                           x.nombre_accion,
+	                           x.pdf,
+	                           x.excel,
+	                           x.web,
+                               y.nombre AS categoria 
+                         FROM db_admon.tipo_reporte x
+                         INNER JOIN db_admon.categoria_reporte y
+                         ON x.codigo_categoria = y.codigo_categoria";
                     }
                     else
                     {
                         sql = @"
-                        SELECT codigo_tipo_reporte, 
-	                           nombre, 
-	                           descripcion, 
-	                           nombre_controlador,
-	                           nombre_accion,
-	                           pdf,
-	                           excel,
-	                           web
-                         FROM db_admon.tipo_reporte
-                         WHERE codigo_tipo_reporte IN (SELECT codigo_tipo_reporte FROM db_admon.usuario_tipo_reporte WHERE id_usuario = @IdUsuario)";
+                        SELECT x.codigo_tipo_reporte, 
+	                           x.nombre, 
+	                           x.descripcion, 
+	                           x.nombre_controlador,
+	                           x.nombre_accion,
+	                           x.pdf,
+	                           x.excel,
+	                           x.web,
+                               y.nombre AS categoria 
+                         FROM db_admon.tipo_reporte x
+                         INNER JOIN db_admon.categoria_reporte y                                         
+                         ON x.codigo_categoria = y.codigo_categoria
+                         WHERE x.codigo_tipo_reporte IN (SELECT codigo_tipo_reporte FROM db_admon.usuario_tipo_reporte WHERE id_usuario = @IdUsuario)";
                     }
                     
 
@@ -138,6 +144,7 @@ namespace CapaDatos.Administracion
                             int postPdf = dr.GetOrdinal("pdf");
                             int postExcel = dr.GetOrdinal("excel");
                             int postWeb = dr.GetOrdinal("web");
+                            int postCategoria = dr.GetOrdinal("categoria");
 
                             while (dr.Read())
                             {
@@ -150,6 +157,7 @@ namespace CapaDatos.Administracion
                                 objTipoReporte.Pdf = dr.GetByte(postPdf);
                                 objTipoReporte.Excel = dr.GetByte(postExcel);
                                 objTipoReporte.Web = dr.GetByte(postWeb);
+                                objTipoReporte.Categoria = dr.GetString(postCategoria);
                                 lista.Add(objTipoReporte);
                             }
                         }

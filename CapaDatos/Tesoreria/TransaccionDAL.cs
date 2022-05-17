@@ -4590,5 +4590,55 @@ namespace CapaDatos.Tesoreria
             }
         }
 
+        public decimal GetMontoPlanillaParaDesglosar(int anioOperacion, int semanaOperacion, int codigoReporte)
+        {
+            decimal resultado = 0;
+            using (SqlConnection conexion = new SqlConnection(cadenaTesoreria))
+            {
+                try
+                {
+                    string sql = @"
+                    SELECT COALESCE(sum(monto),0) AS monto_planilla_pago_a_desglosar
+                    FROM db_tesoreria.transaccion x
+					INNER JOIN db_tesoreria.operacion y
+					ON x.codigo_operacion = y.codigo_operacion
+					INNER JOIN db_tesoreria.tipo_operacion z
+					ON y.codigo_tipo_operacion = z.codigo_tipo_operacion
+					WHERE x.codigo_estado <> 0 
+					  AND x.anio_operacion = @AnioOperacion
+					  AND x.semana_operacion = @SemanaOperacion
+					  AND x.codigo_reporte = @CodigoReporte
+					  AND x.codigo_operacion = @CodigoOperacion
+					  AND x.codigo_categoria_entidad = @CodigoCategoriaEntidad
+					  AND z.signo = -1
+					  AND x.complemento_conta = 0";
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand(sql, conexion))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Parameters.AddWithValue("@AnioOperacion", anioOperacion);
+                        cmd.Parameters.AddWithValue("@SemanaOperacion", semanaOperacion);
+                        cmd.Parameters.AddWithValue("@CodigoReporte", codigoReporte);
+                        cmd.Parameters.AddWithValue("@CodigoOperacion", Constantes.Operacion.Egreso.PLANILLA_PAGO);
+                        cmd.Parameters.AddWithValue("@CodigoCategoriaEntidad", Constantes.Entidad.Categoria.EMPLEADO);
+
+                        // rows sotred the number of rows affected
+                        //cmd.ExecuteNonQuery();
+                        resultado = (decimal) cmd.ExecuteScalar();
+                    }
+                    conexion.Close();
+                }
+                catch (Exception)
+                {
+                    conexion.Close();
+                    resultado = -1;
+                }
+
+                return resultado;
+            }
+        }
+
+
+
     }
 }

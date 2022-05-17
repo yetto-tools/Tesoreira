@@ -52,13 +52,14 @@
                 <td style="padding: 4px; font-size: 24px;"><div style="text-align: right;">@dr.Monto.ToString("N2")</div></td>
             </tr>
             sumaMonto = sumaMonto + dr.Monto;
-            sumaMontoPorEmpresa = sumaMonto + dr.Monto;
+            sumaMontoPorEmpresa = sumaMontoPorEmpresa + dr.Monto;
             contador = contador + 1;
         }
         <tr style="border: 1pt solid black; ">
             <td style="padding: 4px; font-size: 24px;"><div style="text-align: left; font-weight: bold; font-family: Arial, Helvetica, Verdana;">Monto</div></td>
             <td style="padding: 4px; font-size: 24px;"><div style="text-align: right; font-weight: bold; font-family: Arial, Helvetica, Verdana;">@sumaMontoPorEmpresa.ToString("N2")</div></td>
         </tr>
+
         <tr style="border: 1pt solid black; ">
             <td style="padding: 4px; font-size: 24px;"></td>
             <td style="padding: 4px; font-size: 24px;"></td>

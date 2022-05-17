@@ -22,5 +22,11 @@ namespace CapaNegocio.Administracion
             return obj.GetEmpresasTesoreriaFacturas();
         }
 
+        public List<EmpresaCLS> GetAllEmpresasComercializadoras()
+        {
+            EmpresaDAL obj = new EmpresaDAL();
+            return obj.GetAllEmpresasComercializadoras();
+        }
+
     }
 }

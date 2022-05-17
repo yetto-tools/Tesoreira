@@ -120,6 +120,24 @@ async function fetchGet(url, tipoRespuesta, callback) {
     }
 }
 
+async function fetchGetDownload(url, callback) {
+    try {
+        var raiz = document.getElementById("hdfOculto").value;
+        document.getElementById("divLoading").style.display = "block";
+        //http://localhost
+        var urlCompleta = window.location.protocol + "//" + window.location.host + "/" + raiz
+            + url
+
+        var res = await fetch(urlCompleta)
+        res = await res.arrayBuffer();
+        callback(res);
+    }
+    catch (e) {
+        callback(null);
+        document.getElementById("divLoading").style.display = "none";
+    }
+}
+
 async function fetchPost(url, tipoRespuesta, frm, callback) {
     document.getElementById("divLoading").style.display = "block";
     try {
@@ -1212,3 +1230,4 @@ function getFechaSistema() {
     data = [{ "dia": dia, "mes": mes, "anio": anio }]
     return data;
 }
+

@@ -26,6 +26,8 @@ namespace CapaEntidad.Administracion
         public DateTime? FechaAct { get; set; }
         public int Asignado { get; set; }
 
+        public string Categoria { get; set; }
+
 
     }
 }

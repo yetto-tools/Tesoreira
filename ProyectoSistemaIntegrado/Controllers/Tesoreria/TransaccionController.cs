@@ -98,6 +98,12 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
         //}
 
 
+        public decimal GetMontoPlanillaParaDesglosar(int anioOperacion, int semanaOperacion, int codigoReporte)
+        {
+            TransaccionBL obj = new TransaccionBL();
+            return obj.GetMontoPlanillaParaDesglosar(anioOperacion, semanaOperacion, codigoReporte);
+        }
+
         public List<TransaccionCLS> BuscarTransacciones(int codigoOperacion, int codigoCategoriaEntidad, int diaOperacion)
         {
             ViewBag.Message = HttpContext.Session.GetString("usuario");

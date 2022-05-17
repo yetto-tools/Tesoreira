@@ -5,6 +5,8 @@
     Context.Session.SetString("tituloPrincipal", "Desgloce de planilla de Pago");
 }
 
+
+
 <div style="margin: 0 auto; text-align: center;">
     <form method="post" id="frmDesglocePlanilla" name="frmDesglocePlanilla">
         <table>
@@ -12,7 +14,7 @@
                 <td>AÑO</td>
                 <td>SEMANA</td>
                 <td>REPORTES</td>
-                <td>DIA</td>
+                <td>MONTO A DESGLOSAR</td>
                 <td></td>
             </tr>
             <tr>
@@ -23,18 +25,18 @@
                     <select class="form-control obligatorio" id="uiFiltroSemana" name="SemanaOperacion" onchange="FillComboDiasOperacion()"></select>
                 </td>
                 <td>
-                    <select class="form-control obligatorio" id="uiFiltroReporteCaja" name="CodigoReporte"></select>
+                    <select class="form-control obligatorio" id="uiFiltroReporteCaja" name="CodigoReporte" onchange="MostrarMontoParaDesgloce()"></select>
                 </td>
                 <td>
-                    <select class="form-control obligatorio" id="uiFiltroDiaOperacion" name="FechaStr"></select>
+                    <input type="text" class="form-control obligatorio text-right decimal-2" id="uiMontoParaDesgloce" readonly />
                 </td>
                 <td></td>
             </tr>
             <tr>
                 <td>OPERACION</td>
                 <td>AREA</td>
+                <td>DIA</td>
                 <td>MONTO</td>
-                <td></td>
                 <td></td>
             </tr>
             <tr>
@@ -51,9 +53,15 @@
                         <option value='3'>Administración</option>
                     </select>
                 </td>
+
+                <td>
+                    <select class="form-control obligatorio" id="uiFiltroDiaOperacion" name="FechaStr"></select>
+                </td>
+
                 <td>
                     <input type="text" name="Monto" class="form-control obligatorio text-right decimal-2" id="uiMontoDevengado" />
                 </td>
+
                 <td>
                     <button type="button" class="btn btn-primary" onclick="GuardarDesglocePlanilla()">AGREGAR</button>
                 </td>

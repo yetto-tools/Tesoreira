@@ -68,7 +68,7 @@ namespace CapaDatos.Administracion
 	                       convert(varchar, fecha, 103) as fecha_str,
 	                       CASE 
 			                 WHEN numero_dia = 1 then 'LUNES'
-			                 WHEN numero_dia = 2 then 'ARTES'
+			                 WHEN numero_dia = 2 then 'MARTES'
 			                 WHEN numero_dia = 3 then 'MIERCOLES'
 			                 WHEN numero_dia = 4 then 'JUEVES'
 			                 WHEN numero_dia = 5 then 'VIERNES'

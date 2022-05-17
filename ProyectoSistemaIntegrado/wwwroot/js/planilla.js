@@ -376,8 +376,10 @@ function FillComboDiasOperacion() {
     fetchGet("CorteCajaSemanal/GetReportesCajaEnProceso/?anioOperacion=" + anio.toString() + "&semanaOperacion=" + numeroSemana.toString(), "json", function (rpta) {
         if (rpta == null || rpta == undefined || rpta.length == 0) {
             FillComboUnicaOpcion("uiFiltroReporteCaja", "-1", "-- No existe reportes -- ");
+            document.getElementById("uiMontoParaDesgloce").value = 0;
         } else {
             FillCombo(rpta, "uiFiltroReporteCaja", "codigoReporte", "fechaCorteStr", "- seleccione -", "-1");
+            MostrarMontoParaDesgloce();
         }
     })
 
@@ -864,6 +866,19 @@ function clickAceptarTransaccionComplemento(obj) {
     })
 }
 
+
+function MostrarMontoParaDesgloce() {
+    let anioOperacion = parseInt(document.getElementById("uiFiltroAnioPlanilla").value);
+    let semanaOperacion = parseInt(document.getElementById("uiFiltroSemana").value);
+    let codigoReporte = parseInt(document.getElementById("uiFiltroReporteCaja").value);
+    if (codigoReporte != -1) {
+        fetchGet("Transaccion/GetMontoPlanillaParaDesglosar/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString() + "&codigoReporte=" + codigoReporte.toString(), "text", function (data) {
+            document.getElementById("uiMontoParaDesgloce").value = data;
+        })
+    } else {
+        document.getElementById("uiMontoParaDesgloce").value = 0;
+    }
+}
 
 /*function MostrarFechaOperacionReporteCxC() {
     fetchGet("PlanillaTemporal/GetFechaReporteCxCPagoBTBYDescuento", "json", function (rpta) {

@@ -39,6 +39,11 @@ namespace ProyectoSistemaIntegrado.Controllers.Reportes
             return View();
         }
 
+        public IActionResult MostrarReporteVentasFacturadas()
+        {
+            return View();
+        }
+
         public List<TipoReporteCLS> GetTiposDeReportesAsignados()
         {
             ViewBag.Message = HttpContext.Session.GetString("usuario");

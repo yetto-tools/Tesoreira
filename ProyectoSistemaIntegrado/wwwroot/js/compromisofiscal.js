@@ -4,7 +4,7 @@
     let nameController = url[1];
     let nameAction = url[2];
     let url1 = new URL(url_string);
-    if (nameController == "CompromisoFiscal") {FillComboDiasOperacion
+    if (nameController == "CompromisoFiscal") {
         let codigoEmpresa = parseInt(url1.searchParams.get("codigoEmpresa"));
         let anioOperacion = parseInt(url1.searchParams.get("anioOperacion"));
         let semanaOperacion = parseInt(url1.searchParams.get("semanaOperacion"));
@@ -152,10 +152,10 @@ function GuardarFacturasAlContado() {
     let frm = new FormData(frmGuardar);
     Confirmacion(undefined, undefined, function (rpta) {
         fetchPost("Transaccion/GuardarDatos/?complemento=2", "text", frm, function (data) {
-            if (data == "OK") {
-                setFiltroRegistroFacturasAlContado();
-            } else {
+            if (!/^[0-9]+$/.test(data)) {
                 MensajeError(data);
+            } else {
+                setFiltroRegistroFacturasAlContado();
             }
         })
     })

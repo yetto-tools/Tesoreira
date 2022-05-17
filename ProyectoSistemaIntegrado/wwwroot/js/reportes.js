@@ -16,6 +16,7 @@
         if (nameController == "Reportes") {
             switch (nameAction) {
                 case "Index":
+                    //document.getElementById("uiExportarExcel").href = "/ReportesQSystems/ExportarExcel";
                     MostrarReportes();
                     break;
                 case "MostrarReporte":
@@ -29,6 +30,9 @@
                 case "MostrarReporteCompromisoFiscal":
                     //fillComboCajaChica();
                     ListarReportesCompromisoFiscal(-1);
+                    break;
+                case "MostrarReporteVentasFacturadas":
+                    fillComboEmpresasComercializadoras();
                     break;
                 default:
                     break;
@@ -199,8 +203,8 @@ function ActualizarReporte() {
 function MostrarReportes() {
     let objConfiguracion = {
         url: "Reportes/GetTiposDeReportesAsignados",
-        cabeceras: ["Código", "Nombre", "Descripción", "Nombre Controlador", "Nombre Accion","PDF","EXCEL","WEB"],
-        propiedades: ["codigoTipoReporte", "nombre", "descripcion", "nombreControlador", "nombreAccion","pdf","excel","web"],
+        cabeceras: ["Código", "Nombre", "Descripción", "Nombre Controlador", "Nombre Accion","PDF","EXCEL","WEB","Categoría"],
+        propiedades: ["codigoTipoReporte", "nombre", "descripcion", "nombreControlador", "nombreAccion","pdf","excel","web","categoria"],
         divContenedorTabla: "divContenedorTabla",
         divPintado: "divTabla",
         paginar: true,
@@ -209,6 +213,10 @@ function MostrarReportes() {
         ocultarColumnas: true,
         hideColumns: [
             {
+                "targets": [0],
+                "className": "dt-body-center",
+                "visible": true
+            }, {
                 "targets": [3],
                 "visible": false
             }, {
@@ -241,6 +249,9 @@ function VerDetalleReporte(obj) {
                 break;
             case REPORTE_COMPROMISO_FISCAL:
                 Redireccionar("Reportes", "MostrarReporteCompromisoFiscal");
+                break;
+            case REPORTE_VENTAS_FACTURADAS:
+                Redireccionar("Reportes", "MostrarReporteVentasFacturadas");
                 break;
             default:
                 Redireccionar("Reportes", "MostrarReporte/?codigoTipoReporte=" + codigoTipoReporte.toString());
@@ -482,3 +493,71 @@ function GenerarPdfReporteDetalleCompromisoFiscal(obj) {
     });
 }
 
+
+/* Reporte de Ventas Facturadas */
+
+function fillComboEmpresasComercializadoras() {
+    fetchGet("Empresa/GetAllEmpresasComercializadoras", "json", function (rpta) {
+        if (rpta == null || rpta == undefined || rpta.length == 0) {
+            FillComboUnicaOpcion("uiFiltroEmpresa", "-1", "-- No Existen empresas -- ");
+        } else {
+            FillCombo(rpta, "uiFiltroEmpresa", "codigoQsystem", "nombreComercial", "- seleccione -", "-1");
+        }
+    })
+}
+
+
+function mostrarVentasFacturadas() {
+
+
+}
+
+async function generarExcelVentasFacturadas() {
+    let errores = ValidarDatos("frmBusqueda")
+    if (errores != "") {
+        MensajeError(errores);
+        return;
+    }
+
+    let codigoEmpresa = document.getElementById("uiFiltroEmpresa").value;
+    let fechaInicio = document.getElementById("uiFechaInicio").value;
+    let fechaFin = document.getElementById("uiFechaFin").value;
+
+    fetchGetDownload("ReportesQSystems/ExportarExcelVentaPorRangoFechaDetallado/?codigoEmpresa=" + codigoEmpresa + "&fechaInicio=" + fechaInicio + "&fechaFin=" + fechaFin, function (data) {
+        var file = new Blob([data], { type: 'application/vnd.ms-excel' });
+        var fileURL = URL.createObjectURL(file);
+        window.open(fileURL, "EPrescription");
+    }).finally(() => {
+        document.getElementById('divLoading').style.display = 'none';
+    });
+}
+
+
+// cookies
+function deleteCookie() {
+    var cook = getCookie('ExcelDownloadFlag');
+    if (cook != "") {
+        //document.cookie = "ExcelDownloadFlag=; Path = /; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+        document.cookie = "ExcelDownloadFlag=; Path = /; expires=Thu, 01 Jan 1970 00: 00: 01 GMT";
+    }
+}
+
+function IsCookieValid() {
+    var cook = getCookie('ExcelDownloadFlag');
+    return cook != '';
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}

@@ -112,7 +112,59 @@ namespace CapaDatos.Administracion
             }
         }
 
-        
+        public List<EmpresaCLS> GetAllEmpresasComercializadoras()
+        {
+            List<EmpresaCLS> lista = null;
+            using (SqlConnection conexion = new SqlConnection(cadenaAdmon))
+            {
+                try
+                {
+                    conexion.Open();
+                    string sql = @"
+                    SELECT codigo_empresa, 
+                           nombre_razon_social, 
+                           nombre_comercial,
+                           codigo_qsystem 
+                    FROM db_admon.empresa
+                    WHERE estado = @CodigoEstado
+                      AND codigo_tipo_empresa = @CodigoTipoEmpresa";
+
+                    using (SqlCommand cmd = new SqlCommand(sql, conexion))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Parameters.AddWithValue("@CodigoEstado", Constantes.EstadoRegistro.ACTIVO);
+                        cmd.Parameters.AddWithValue("@CodigoTipoEmpresa", Constantes.Empresa.TipoEmpresa.COMERCIALIZADORA);
+                        SqlDataReader dr = cmd.ExecuteReader();
+                        if (dr != null)
+                        {
+                            EmpresaCLS objEmpresa;
+                            lista = new List<EmpresaCLS>();
+                            int postCodigoEmpresa = dr.GetOrdinal("codigo_empresa");
+                            int postNombreEmpresa = dr.GetOrdinal("nombre_comercial");
+                            int postCodigoQSytems = dr.GetOrdinal("codigo_qsystem");
+
+                            while (dr.Read())
+                            {
+                                objEmpresa = new EmpresaCLS();
+                                objEmpresa.CodigoEmpresa = dr.GetInt16(postCodigoEmpresa);
+                                objEmpresa.NombreComercial = dr.GetString(postNombreEmpresa);
+                                objEmpresa.CodigoQsystem = dr.GetString(postCodigoQSytems);
+
+                                lista.Add(objEmpresa);
+                            }
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    conexion.Close();
+                    lista = null;
+                }
+
+                return lista;
+            }
+        }
+
 
     }
 }

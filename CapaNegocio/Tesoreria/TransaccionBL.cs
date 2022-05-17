@@ -487,5 +487,11 @@ namespace CapaNegocio.Tesoreria
             return obj.ActualizarNumeroBoletaDeposito(codigoTransaccion, numeroBoletaDeposito, usuarioAct);
         }
 
+        public decimal GetMontoPlanillaParaDesglosar(int anioOperacion, int semanaOperacion, int codigoReporte)
+        {
+            TransaccionDAL obj = new TransaccionDAL();
+            return obj.GetMontoPlanillaParaDesglosar(anioOperacion, semanaOperacion, codigoReporte);
+        }
+
     }
 }

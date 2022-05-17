@@ -23,6 +23,12 @@ namespace ProyectoSistemaIntegrado.Controllers.Administracion
             return obj.GetAllEmpresas();
         }
 
+        public List<EmpresaCLS> GetAllEmpresasComercializadoras()
+        {
+            EmpresaBL obj = new EmpresaBL();
+            return obj.GetAllEmpresasComercializadoras();
+        }
+
         public List<EmpresaCLS> GetEmpresasTesoreriaFacturas()
         {
             EmpresaBL obj = new EmpresaBL();
@@ -30,6 +36,5 @@ namespace ProyectoSistemaIntegrado.Controllers.Administracion
         }
 
     }
-
 
 }

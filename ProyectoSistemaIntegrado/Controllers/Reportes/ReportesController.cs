@@ -187,13 +187,14 @@ namespace ProyectoSistemaIntegrado.Controllers.Reportes
             return demoViewPortrait;
         }
 
-        public IActionResult ViewReporteCuentasPorCobrar(int anioOperacion, int semanaOperacion, int codigoReporte, int arqueo)
+        public IActionResult ViewReporteCuentasPorCobrar(int anioOperacion, int semanaOperacion, int codigoReporte, int arqueo, int excluirCeros)
         {
             ReportContabilidadViewModel obj = new ReportContabilidadViewModel();
             obj.AnioOperacion = anioOperacion;
             obj.SemanaOperacion = semanaOperacion;
             obj.CodigoReporte = codigoReporte;
             obj.Arqueo = arqueo;
+            obj.ExcluirCeros = excluirCeros;
             var demoViewPortrait = new ViewAsPdf("ViewReporteCuentasPorCobrar", String.Empty, obj);
             demoViewPortrait.PageMargins = new Margins { Bottom = 5, Left = 5, Right = 5, Top = 5 };
             demoViewPortrait.PageSize = Size.Letter;
@@ -214,7 +215,7 @@ namespace ProyectoSistemaIntegrado.Controllers.Reportes
         //}
 
 
-        public FileResult ExportarExcel(int codigoTipoReporte, int anioReporte, int semanaReporte, int codigoReporte, int arqueo)
+        public FileResult ExportarExcel(int codigoTipoReporte, int anioReporte, int semanaReporte, int codigoReporte, int arqueo, int excluirCeros)
         {
             string[] cabeceras = new string[] { };
             string[] nombrePropiedades = new string[] { };
@@ -224,7 +225,7 @@ namespace ProyectoSistemaIntegrado.Controllers.Reportes
             {
                 case Constantes.Reporte.CUENTAS_POR_COBRAR:
                     CuentaPorCobrarReporteBL obj = new CuentaPorCobrarReporteBL();
-                    reporte = obj.GetDetalleCorteCuentasPorCobrar(anioReporte, semanaReporte, codigoReporte, arqueo);
+                    reporte = obj.GetDetalleCorteCuentasPorCobrar(anioReporte, semanaReporte, codigoReporte, arqueo, excluirCeros);
                     lista = reporte.listaDetalleCuentasPorCobrar;
                     cabeceras = new string[10]{ "Código Entidad", "Entidad", "Código Operación", "Operación", "Código Categoría", "Categoría", "Saldo Inicial","Monto Solicitado", "Monto Devoluciones", "Saldo Final" };
                     nombrePropiedades = new string[10]{ "CodigoEntidad", "NombreEntidad", "CodigoOperacion", "Operacion", "CodigoCategoria", "Categoria", "SaldoInicial","MontoSolicitado", "MontoDevolucion", "SaldoFinal" };

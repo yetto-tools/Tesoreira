@@ -188,7 +188,11 @@ namespace CapaDatos.Contabilidad
                               WHEN @CodigoTipoReporte = " + Constantes.Reporte.CIERRE.ToString() + @" AND x.arqueo = 1 THEN 0
                               ELSE z.web
                            END AS web,
-                           z.nombre AS nombre_reporte
+                           z.nombre AS nombre_reporte,
+                           CASE
+                              WHEN @CodigoTipoReporte = " + Constantes.Reporte.CUENTAS_POR_COBRAR.ToString() + @" THEN 0
+                              ELSE 1
+                           END AS deshabilitar_check
 
                     FROM db_tesoreria.reporte_caja x
                     INNER JOIN db_tesoreria.estado_reporte_caja y
@@ -230,6 +234,7 @@ namespace CapaDatos.Contabilidad
                             int postExcel = dr.GetOrdinal("excel");
                             int postWeb = dr.GetOrdinal("web");
                             int postNombreReporte = dr.GetOrdinal("nombre_reporte");
+                            int postDeshabilitarCheck = dr.GetOrdinal("deshabilitar_check");
                             while (dr.Read())
                             {
                                 objReporteCaja = new ReporteCajaCLS();
@@ -252,6 +257,7 @@ namespace CapaDatos.Contabilidad
                                 objReporteCaja.Excel = (byte)dr.GetInt32(postExcel);
                                 objReporteCaja.Web = (byte)dr.GetInt32(postWeb);
                                 objReporteCaja.NombreReporte = dr.GetString(postNombreReporte);
+                                objReporteCaja.DeshabilitarCheck = (byte)dr.GetInt32(postDeshabilitarCheck);
 
                                 lista.Add(objReporteCaja);
                             }

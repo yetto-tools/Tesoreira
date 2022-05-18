@@ -50,10 +50,10 @@ namespace CapaNegocio.Contabilidad
             return obj.EliminarReporteGenerado(codigoReporte, anioOperacion, semanaOperacion, usuarioAct);
         }
 
-        public ReporteOperacionesCajaListCLS GetDetalleCorteCuentasPorCobrar(int anioOperacion, int semanaOperacion, int codigoReporte, int arqueo)
+        public ReporteOperacionesCajaListCLS GetDetalleCorteCuentasPorCobrar(int anioOperacion, int semanaOperacion, int codigoReporte, int arqueo, int excluirCeros)
         {
             CuentaPorCobrarReporteDAL obj = new CuentaPorCobrarReporteDAL();
-            return obj.GetDetalleCorteCuentasPorCobrar(anioOperacion, semanaOperacion, codigoReporte, arqueo);
+            return obj.GetDetalleCorteCuentasPorCobrar(anioOperacion, semanaOperacion, codigoReporte, arqueo, excluirCeros);
         }
 
     }

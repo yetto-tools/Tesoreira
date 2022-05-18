@@ -12,47 +12,52 @@
 <html lang="es">
 <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans" />
+    @*<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans" />*@
+    <link rel="stylesheet" href="~/css/css.css" />
 </head>
 <body style="font-family: 'Open Sans'; font-size: 20px;">
-        <div style="text-align: center; align-content: center; margin-left: 5px;">
-        <p style="text-align: center; align-content: center; font-weight: bold;">CAJA CENTRAL<br>
-        <p style="text-align: center; align-content: center; font-weight: bold;">@objTransaccion.CodigoSeguridad<br>
-        <p style="text-align: center; align-content: center;">
-            VALE DE INGRESOS<br>
-            <table style="border-top: 1px solid black; border-collapse: collapse;">
-                <tr style="border-collapse: collapse;">
-                    <td style="border-collapse: collapse;"><div style="text-align:left;">Recibo:</div></td>
-                    <td><div style="text-align:left;">@objTransaccion.NumeroReciboStr</div></td>
-                </tr>
-                <tr style="border-collapse: collapse;">
-                    <td style="border-collapse: collapse;"><div style="text-align:left;">Fecha:</div></td>
-                    <td><div style="text-align:left;">@objTransaccion.FechaReciboStr</div></td>
-                </tr>
-                <tr style="border-collapse: collapse;">
-                    <td style="border-collapse: collapse;"><div style="text-align:left;">Nombre:</div></td>
-                    <td><div style="text-align:left;">@objTransaccion.NombreEntidad</div></td>
-                </tr>
-                @if (objTransaccion.CodigoOperacion == Constantes.Operacion.Ingreso.VENTAS_EN_RUTA)
-                {
+    <div style="text-align: center; align-content: center; margin-left: 5px;">
+        <p style="text-align: center; align-content: center; font-weight: bold;">CAJA CENTRAL</p>
+        <br>
+        <p style="text-align: center; align-content: center; font-weight: bold;">@objTransaccion.CodigoSeguridad</p>
+        <br>
+        <p style="text-align: center; align-content: center;">VALE DE INGRESOS</p>
+        <br>
+        <p style="text-align: center; align-content: center;">@objTransaccion.CodigoTransaccion</p>
+        <br>
+        <table style="border-top: 1px solid black; border-collapse: collapse;">
+            <tr style="border-collapse: collapse;">
+                <td style="border-collapse: collapse;"><div style="text-align:left;">Recibo:</div></td>
+                <td><div style="text-align:left;">@objTransaccion.NumeroReciboStr</div></td>
+            </tr>
+            <tr style="border-collapse: collapse;">
+                <td style="border-collapse: collapse;"><div style="text-align:left;">Fecha:</div></td>
+                <td><div style="text-align:left;">@objTransaccion.FechaReciboStr</div></td>
+            </tr>
+            <tr style="border-collapse: collapse;">
+                <td style="border-collapse: collapse;"><div style="text-align:left;">Nombre:</div></td>
+                <td><div style="text-align:left;">@objTransaccion.NombreEntidad</div></td>
+            </tr>
+            @if (objTransaccion.CodigoOperacion == Constantes.Operacion.Ingreso.VENTAS_EN_RUTA)
+            {
                 <tr style="border-collapse: collapse;">
                     <td style="border-collapse: collapse;"><div style="text-align:left;">Ruta:</div></td>
                     <td><div style="text-align:left;">@objTransaccion.Ruta</div></td>
                 </tr>
-                }
-                <tr style="border-collapse: collapse;">
-                    <td style="border-collapse: collapse;"><div style="text-align:left;">Concepto:</div></td>
-                    <td><div style="text-align:left;">@objTransaccion.Operacion</div></td>
-                </tr>
-                <tr style="border-collapse: collapse;">
-                    <td style="border-collapse: collapse;"><div style="text-align:left;">Recurso:</div></td>
-                    <td><div style="text-align:left;">@objTransaccion.Recursos.TrimEnd(',')</div></td>
-                </tr>
-                <tr style="border-collapse: collapse;">
-                    <td style="border-collapse: collapse;"><div style="text-align:left;">Monto:</div></td>
-                    <td><div style="text-align:left;">@objTransaccion.Monto.ToString("N2")</div></td>
-                </tr>
-            </table>
+            }
+            <tr style="border-collapse: collapse;">
+                <td style="border-collapse: collapse;"><div style="text-align:left;">Concepto:</div></td>
+                <td><div style="text-align:left;">@objTransaccion.Operacion</div></td>
+            </tr>
+            <tr style="border-collapse: collapse;">
+                <td style="border-collapse: collapse;"><div style="text-align:left;">Recurso:</div></td>
+                <td><div style="text-align:left;">@objTransaccion.Recursos.TrimEnd(',')</div></td>
+            </tr>
+            <tr style="border-collapse: collapse;">
+                <td style="border-collapse: collapse;"><div style="text-align:left;">Monto:</div></td>
+                <td><div style="text-align:left;">@objTransaccion.Monto.ToString("N2")</div></td>
+            </tr>
+        </table>
         <p style="text-align: center; align-content: center;">@objTransaccion.FechaImpresionStr<br>
         <p style="text-align: center; align-content: center;">@objTransaccion.UsuarioIng<br>
     </div>

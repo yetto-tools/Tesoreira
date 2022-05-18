@@ -437,6 +437,10 @@ function generarTabla(res, objConfiguracionGlobal) {
                 countColumns++;
             }
             if (objConfiguracionGlobal.check == true) {
+                //objConfiguracionGlobal.propertiesColumnTextBox.map(({ header }) => {
+                //    contenido += `<td>${header}</td>`
+                //    countColumns++;
+                //})
                 contenido += "<td>" + objConfiguracionGlobal.checkheader + "</td>";
                 countColumns++;
             }
@@ -512,8 +516,7 @@ function generarTabla(res, objConfiguracionGlobal) {
         let obj;
         let valor = "";
         let nombrePropiedadActual;
-        //let clases, resultado;
-        //let parameter1, parameter2, parameter3;
+        let disableCheck = "";
         for (let i = 0; i < nregistros; i++) {
             obj = res[i]
             if (objConfiguracionGlobal.checkid == "default") {
@@ -610,16 +613,20 @@ function generarTabla(res, objConfiguracionGlobal) {
                     contenido += "</td>";
                 }
 
+                disableCheck = "";
+                if (obj[objConfiguracionGlobal.disablecheck] == 1) {
+                    disableCheck = `disabled = "disabled"`;
+                }
 
                 if (objConfiguracionGlobal.check == true) {
                     contenido += `<td class='option-check'>`;
                     if (objConfiguracionGlobal.checkid == "default") {
-                        contenido += `<input type='checkbox' name='check' class='table-row-selected chkSelected' value='0' />`;
+                        contenido += `<input type='checkbox' name='check' class='table-row-selected chkSelected' value='0' ${disableCheck} />`;
                     } else {
                         if (obj[objConfiguracionGlobal.checkid] == 1) {
-                            contenido += `<input type='checkbox' name='check' class='table-row-selected chkSelected' value='1' checked onClick="clickCheck${objConfiguracionGlobal.funcioncheck}(this)" />`;
+                            contenido += `<input type='checkbox' name='check' class='table-row-selected chkSelected' value='1' checked onClick="clickCheck${objConfiguracionGlobal.funcioncheck}(this)" ${disableCheck} />`;
                         } else {
-                            contenido += `<input type='checkbox' name='check' class='table-row-selected chkSelected' value='0' onClick="clickCheck${objConfiguracionGlobal.funcioncheck}(this)" />`;
+                            contenido += `<input type='checkbox' name='check' class='table-row-selected chkSelected' value='0' onClick="clickCheck${objConfiguracionGlobal.funcioncheck}(this)" ${disableCheck} />`;
                         }
                     }
                     contenido += `</td>`;

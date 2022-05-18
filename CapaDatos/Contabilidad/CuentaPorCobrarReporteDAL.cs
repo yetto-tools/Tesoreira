@@ -781,7 +781,7 @@ namespace CapaDatos.Contabilidad
         }
 
         // Revisado
-        public ReporteOperacionesCajaListCLS GetDetalleCorteCuentasPorCobrar(int anioOperacion, int semanaOperacion, int codigoReporte, int arqueo)
+        public ReporteOperacionesCajaListCLS GetDetalleCorteCuentasPorCobrar(int anioOperacion, int semanaOperacion, int codigoReporte, int arqueo, int excluirCeros)
         {
             ReporteOperacionesCajaListCLS objReporte = new ReporteOperacionesCajaListCLS();
             using (SqlConnection conexion = new SqlConnection(cadenaContabilidad))
@@ -789,6 +789,7 @@ namespace CapaDatos.Contabilidad
                 try
                 {
                     string tableReporte = string.Empty;
+                    string filterSaldoFinal = string.Empty;
                     if (arqueo == 1)
                     {
                         tableReporte = "db_contabilidad.cxc_reporte_detalle_arqueo";
@@ -796,6 +797,11 @@ namespace CapaDatos.Contabilidad
                     else {
                         tableReporte = "db_contabilidad.cxc_reporte_detalle";
                     }
+                    if (excluirCeros == 1)
+                    {
+                        filterSaldoFinal = "AND x.saldo_final > 0";
+                    }
+
 
                     string sqlEncabezado = @"
                     SELECT convert(varchar, fecha, 103) as fecha_str
@@ -836,6 +842,7 @@ namespace CapaDatos.Contabilidad
                               AND x.anio_operacion = @AnioOperacion
                               AND x.semana_operacion = @SemanaOperacion
                               AND x.codigo_reporte = @CodigoReporte
+                              " + filterSaldoFinal + @"
                          ) m
                     ORDER BY m.nombre_empresa, m.entidad, m.nombre_operacion";
 

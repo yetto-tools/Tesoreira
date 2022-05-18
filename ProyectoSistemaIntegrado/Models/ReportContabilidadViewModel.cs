@@ -13,5 +13,6 @@ namespace ProyectoSistemaIntegrado.Models
         public int CodigoCajaChica { get; set; }
         public int CodigoReporte { get; set; }
         public int Arqueo { get; set; }
+        public int ExcluirCeros { get; set; }
     }
 }

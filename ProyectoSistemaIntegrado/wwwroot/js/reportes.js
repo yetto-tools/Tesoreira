@@ -260,11 +260,13 @@ function VerDetalleReporte(obj) {
     });
 }
 
+// Columna que contiene si el check esta enable
+//checkid
 function ListarReportes(codigoTipoReporte) {
     let objConfiguracion = {
         url: "Reportes/GetReportes/?codigoTipoReporte=" + codigoTipoReporte.toString(),
-        cabeceras: ["codigoTipoReporte","Arqueo","Código Reporte","Año","Semana","Nombre Reporte","Estado","Fecha Generación", "Nombre Controlador", "Nombre Accion", "PDF", "EXCEL", "WEB","Tipo"],
-        propiedades: ["codigoTipoReporte","arqueo","codigoReporte","anio","numeroSemana","nombreReporte","estado","fechaIngStr", "nombreControlador", "nombreAccion", "pdf", "excel", "web","tipo"],
+        cabeceras: ["codigoTipoReporte", "Arqueo", "Código Reporte", "Año", "Semana", "Nombre Reporte", "Estado", "Fecha Generación", "Nombre Controlador", "Nombre Accion", "PDF", "EXCEL", "WEB", "Tipo","deshabilitarCheck"],
+        propiedades: ["codigoTipoReporte", "arqueo", "codigoReporte", "anio", "numeroSemana", "nombreReporte", "estado", "fechaIngStr", "nombreControlador", "nombreAccion", "pdf", "excel", "web", "tipo","deshabilitarCheck"],
         divContenedorTabla: "divContenedorTabla",
         divPintado: "divTabla",
         reporte: true,
@@ -276,6 +278,11 @@ function ListarReportes(codigoTipoReporte) {
         web: true,
         webvalue: "web",
         paginar: true,
+        check: true,
+        funcioncheck: "ExcluirCeros",
+        checkheader: "Excluir Ceros",
+        checkid: "excluirCeros",
+        disablecheck: "deshabilitarCheck",
         ocultarColumnas: true,
         hideColumns: [
             {
@@ -315,6 +322,13 @@ function ListarReportes(codigoTipoReporte) {
                 "targets": [13],
                 "className": "dt-body-center",
                 "visible": true
+            }, {
+                "targets": [14],
+                "visible": false
+            }, {
+                "targets": [15],
+                "className": "dt-body-center",
+                "visible": true
             }],
         slug: "codigoReporte"
     }
@@ -333,8 +347,8 @@ function GenerarPdfReporte(obj) {
         let semanaOperacion = table.cell(rowIdx, 4).data();
         let nombreControlador = table.cell(rowIdx, 8).data();
         let nombreAccion = table.cell(rowIdx, 9).data();
-
-        fetchGet(nombreControlador + "/" + nombreAccion + "/?anioOperacion=" + anioOperacion + "&semanaOperacion=" + semanaOperacion + "&codigoReporte=" + codigoReporte + "&arqueo=" + arqueo, "pdf", function (data) {
+        let excluirCeros = table.cell(rowIdx, 15).nodes().to$().find('input:checkbox').prop('checked') == true ? "1" : "0";
+        fetchGet(nombreControlador + "/" + nombreAccion + "/?anioOperacion=" + anioOperacion + "&semanaOperacion=" + semanaOperacion + "&codigoReporte=" + codigoReporte + "&arqueo=" + arqueo + "&excluirCeros=" + excluirCeros, "pdf", function (data) {
             var file = new Blob([data], { type: 'application/pdf' });
             var fileURL = URL.createObjectURL(file);
             window.open(fileURL, "reporte" + codigoTipoReporte + codigoReporte);
@@ -351,10 +365,16 @@ function GenerarExcelReporte(obj) {
         let codigoReporte = table.cell(rowIdx, 2).data();
         let anioReporte = table.cell(rowIdx, 3).data();
         let semanaReporte = table.cell(rowIdx, 4).data();
+        let excluirCeros = table.cell(rowIdx, 15).nodes().to$().find('input:checkbox').prop('checked') == true ? "1" : "0";
 
-        document.getElementById("uiExportarExcel").href = "/Reportes/ExportarExcel/?codigoTipoReporte=" + codigoTipoReporte + "&anioReporte=" + anioReporte + "&semanaReporte=" + semanaReporte + "&codigoReporte=" + codigoReporte + "&arqueo=" + arqueo;
+        document.getElementById("uiExportarExcel").href = "/Reportes/ExportarExcel/?codigoTipoReporte=" + codigoTipoReporte + "&anioReporte=" + anioReporte + "&semanaReporte=" + semanaReporte + "&codigoReporte=" + codigoReporte + "&arqueo=" + arqueo + "&excluirCeros=" + excluirCeros;
         document.getElementById("uiExportarExcel").click();
     });
+}
+
+function clickCheckExcluirCeros(obj) {
+
+
 }
 
 function buscarReporteCortesCajaChica() {

@@ -36,6 +36,7 @@ namespace CapaEntidad.Tesoreria
         public byte Pdf { get; set; }
         public byte Excel { get; set; }
         public byte Web { get; set; }
+        public byte DeshabilitarCheck{ get; set; }
 
 
     }

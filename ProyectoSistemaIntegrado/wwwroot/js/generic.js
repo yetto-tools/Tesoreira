@@ -46,6 +46,22 @@ function setCheckedValueOfRadioButtonGroup(pName, pValue) {
     }
 }
 
+function FillComboAddFirstOption(data, idcontrol, propiedadid, propiedadnombre, textoprimeraopcion = "--Seleccione--", valueprimeraopcion = "-1") {
+    try {
+        let contenido = "";
+        let objActual;
+        contenido += "<option value = '" + valueprimeraopcion + "'>" + textoprimeraopcion + "</option>"
+        for (let i = 0; i < data.length; i++) {
+            objActual = data[i];
+            contenido += "<option value = '" + objActual[propiedadid] + "'>" + objActual[propiedadnombre] + "</option>"
+        }
+        document.getElementById(idcontrol).innerHTML = contenido;
+    }
+    catch (e) {
+        alert("Ocurrió un error GET (" + idcontrol + ")-" + e.MensajeError);
+    }
+}
+
 function FillCombo(data, idcontrol, propiedadid, propiedadnombre, textoprimeraopcion = "--Seleccione--", valueprimeraopcion = "-1") {
     try {
         let contenido = "";
@@ -265,6 +281,8 @@ function pintar(objConfiguracion) {
         objConfiguracionGlobal.datesWithoutTime = [];
     if (objConfiguracionGlobal.displaydecimals == undefined)
         objConfiguracionGlobal.displaydecimals = [];
+    if (objConfiguracionGlobal.classColumn == undefined)
+        objConfiguracionGlobal.classColumn = [];
     if (objConfiguracionGlobal.sortFieldDate == undefined)
         objConfiguracionGlobal.sortFieldDate = [];
     if (objConfiguracionGlobal.ocultarColumnas == undefined)
@@ -517,6 +535,7 @@ function generarTabla(res, objConfiguracionGlobal) {
         let valor = "";
         let nombrePropiedadActual;
         let disableCheck = "";
+        let bandera = 0;
         for (let i = 0; i < nregistros; i++) {
             obj = res[i]
             if (objConfiguracionGlobal.checkid == "default") {
@@ -547,14 +566,30 @@ function generarTabla(res, objConfiguracionGlobal) {
                             let codigo = (ukDatea[2] + ukDatea[1] + ukDatea[0]) * 1;
                             contenido += "<td class='chkSelected'><span hidden> " + codigo.toString() + "</span>" + obj[nombrePropiedadActual] + "</td>";
                         } else {
-                            contenido += "<td class='chkSelected'>" + obj[nombrePropiedadActual] + "</td>";
+
+
+                            contenido += "<td class='chkSelected1'>" + obj[nombrePropiedadActual] + "</td>";
+
+
+
                         }
                     } else {
                         // formato a los montos
                         if (displaydecimals.find(el => el === nombrePropiedadActual) != undefined) {
                             contenido += "<td class='chkSelected'>" + obj[nombrePropiedadActual].toFixed(2) + "</td>";
                         } else {
-                            contenido += "<td class='chkSelected'>" + obj[nombrePropiedadActual] + "</td>";
+
+                            bandera = 0;
+                            objConfiguracionGlobal.classColumn.map(({ propiedadname, classname }) => {
+                                if (propiedadname == nombrePropiedadActual) {
+                                    contenido += "<td class='" + classname + "'>" + obj[nombrePropiedadActual] + "</td>";
+                                    bandera = 1;
+                                }
+                            })
+
+                            if (bandera == 0) {
+                                contenido += "<td class='chkSelected2'>" + obj[nombrePropiedadActual] + "</td>";
+                            }
                         }
                     }
                 }
@@ -584,7 +619,7 @@ function generarTabla(res, objConfiguracionGlobal) {
                 let webvalue = objConfiguracionGlobal.webvalue;
                 if (objConfiguracionGlobal.addTextBox == true) {
                     objConfiguracionGlobal.propertiesColumnTextBox.map(({ value, name, align, validate }) => {
-                        contenido += "<td style='padding: 2px;'>";
+                        contenido += `<td style='padding: 2px;'>`;
                         contenido += `<input type='text' class="form-control ${align} ${validate}" id="ui${name}${i}" name='${name}' maxlength="20" multiline="false" type="text"  value ='${obj[value]}' autocomplete = "off" onclick="clickMontoPorDevolver(this)" />`;
                         contenido += "</td>";
                     });

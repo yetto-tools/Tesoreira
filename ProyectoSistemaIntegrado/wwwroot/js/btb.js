@@ -28,7 +28,7 @@
                 case "EdicionDepositosBTB":
                     fillAniosReporte("uiFiltroAnioPlanilla", false);
                     fillAniosReporte("uiFiltroAnioOperacion", true);
-                    MostrarBTBDepositosEdicion(-1, -1, -1);
+                    MostrarBTBDepositosEdicion(-1, -1, -1, -1);
                     break;
                 default:
                         break;
@@ -99,6 +99,19 @@ function fillCuentasBancarias(obj) {
         }
     })
 }
+
+//function fillCuentasBancariasDataTable(codigoBanco) {
+//    let valor = parseInt(obj.value);
+//    fetchGet("CuentaBancaria/GetCuentasBancariasTesoreria/?codigoBanco=" + valor.toString(), "json", function (rpta) {
+//        if (rpta.length > 0) {
+//            //FillCombo(rpta, "uiNumeroCuenta", "numeroCuenta", "numeroCuentaDescriptivo", "- seleccione cuenta -", "-1");
+//        } else {
+//            //FillComboUnicaOpcion("uiNumeroCuenta", "-1", "-- No existe cuenta -- ");
+//        }
+//    })
+//}
+
+
 
 function fillEditCuentasBancarias(obj) {
     let valor = parseInt(obj.value);
@@ -301,8 +314,8 @@ function CalcularMontosDepositosBTB() {
 function MostrarEmpleadosBackToBackDepositos(codigoTipoPlanilla, anioPlanilla, mesPlanilla) {
     objConfiguracion = {
         url: "PlanillaTemporal/GetEmpleadosBackToBackBoletaDeposito/?codigoTipoPlanilla=" + codigoTipoPlanilla.toString() + "&anioPlanilla=" + anioPlanilla.toString() + "&mesPlanilla=" + mesPlanilla.toString(),
-        cabeceras: ["Código Empresa", "Empresa", "Código Empleado", "Nombre Empleado", "Código Operación", "Operación", "Codigo Frecuencia Pago", "Frecuencia de Pago", "Tipo BTB", "Bono Decreto 37-2001", "Salario Diario","Monto Depósito"],
-        propiedades: ["codigoEmpresa", "nombreEmpresa", "codigoEmpleado", "nombreCompleto", "codigoOperacion", "operacion", "codigoFrecuenciaPago", "frecuenciaPago", "codigoTipoBTB", "bonoDecreto372001", "salarioDiario","montoDevolucionBTB"],
+        cabeceras: ["Código Empresa", "Empresa", "Código Empleado", "Nombre Empleado", "Código Operación", "Operación", "Codigo Frecuencia Pago", "Frecuencia de Pago", "Tipo BTB", "Bono Decreto 37-2001", "Salario Diario", "Banco","Cuenta", "Monto Depósito"],
+        propiedades: ["codigoEmpresa", "nombreEmpresa", "codigoEmpleado", "nombreCompleto", "codigoOperacion", "operacion", "codigoFrecuenciaPago", "frecuenciaPago", "codigoTipoBTB", "bonoDecreto372001", "salarioDiario", "comboBancos","comboCuentas", "montoDevolucionBTB"],
         divContenedorTabla: "divContenedorTabla",
         displaydecimals: ["monto"],
         divPintado: "divTabla",
@@ -335,14 +348,39 @@ function MostrarEmpleadosBackToBackDepositos(codigoTipoPlanilla, anioPlanilla, m
                 "visible": false
             }, {
                 "targets": [8],
-                "visible": true,
+                "visible": false,
                 "className": "dt-body-right"
+            }],
+        classColumn: [
+            {
+                "propiedadname": "comboBancos",
+                "classname": "option-banco",
             }],
         slug: "codigoEmpresa",
         sumarcolumna: true,
-        columnasumalist: [13]
+        columnasumalist: [15]
     }
     pintar(objConfiguracion);
+}
+
+//$('#tabla tbody').on('click', '.option-editar', function () {
+function FillComboCuentasBancarias(obj) {
+    let opcionInicio = "<select name=NumeroCuenta id=uiNumeroCuenta class=select-cuenta-bancaria><option value=-1>-- Error--</option></select>";
+    let table = $('#tabla').DataTable();
+    //$("#tabla td").on('click', '.option-banco', function () {
+    $("#tabla tbody").on('click','.option-banco', function () {
+        //let $tdCurrent = $(this).parent();
+        let $tdNumeroCuenta = $(this).closest('td').next('td');
+        table.cell($tdNumeroCuenta).data(opcionInicio);
+        fetchGet("CuentaBancaria/GetComboCuentasBancarias/?codigoBanco=" + obj.value.toString(), "text", function (data) {
+            if (data == null ||  data == undefined || data == "") {
+                data = "<select name=NumeroCuenta id=uiNumeroCuenta class=select-cuenta-bancaria><option value=-1>-- Error--</option></select>";
+                table.cell($tdNumeroCuenta).data(data);
+            } else {
+                table.cell($tdNumeroCuenta).data(data);
+            }
+        })
+    });
 }
 
 function CargarBoletasDepositadas() {
@@ -359,13 +397,11 @@ function CargarBoletasDepositadas() {
     set("uiTipoPlanilla", tipoPlanilla);
     set("uiMesPlanilla", mesPlanilla);
     set("uiNombreMesPlanilla", nombreMesPlanilla);
-    FillComboUnicaOpcion("uiNumeroCuenta", "-1", "-- No Existen Cuentas -- ");
+    //FillComboUnicaOpcion("uiNumeroCuenta", "-1", "-- No Existen Cuentas -- ");
     FillComboUnicaOpcion("uiFiltroReporteCaja", "-1", "-- No existen reportes -- ");
     fillAniosReporte("uiFiltroAnioOperacion",true);
     document.getElementById("ShowPopupSemanaBoletasDeposito").click();
 }
-
-
 
 function GuardarBoletasDepositoBTB() {
     let errores = ValidarDatos("frmDepositosBTB")
@@ -380,8 +416,11 @@ function GuardarBoletasDepositoBTB() {
     let anioOperacion = parseInt(document.getElementById("uiFiltroAnioOperacion").value);
     let semanaOperacion = parseInt(document.getElementById("uiFiltroSemanaOperacion").value);
     let codigoReporte = parseInt(document.getElementById("uiFiltroReporteCaja").value);
-    let codigoBancoDeposito = parseInt(document.getElementById("uiCodigoBancoDeposito").value);
-    let numeroCuenta = document.getElementById("uiNumeroCuenta").value
+
+    //let codigoBancoDeposito = parseInt(document.getElementById("uiCodigoBancoDeposito").value);
+    //let numeroCuenta = document.getElementById("uiNumeroCuenta").value
+
+
     let codigoFrecuenciaPago = 1; // 1. Mensual
     let codigoOperacion = 20; // 20. Depósito Bancario
     let table = $('#tabla').DataTable();
@@ -391,9 +430,13 @@ function GuardarBoletasDepositoBTB() {
     let numeroBoleta = "";
     let monto = "";
     let boletasCompletas = true;
+    //let codigoBancoDeposito = 0;
+    //let numeroCuenta = "";
     data.each(function (value, index) {
-        numeroBoleta = table.cell(index, 12).nodes().to$().find('input').val();
-        monto = table.cell(index, 13).nodes().to$().find('input').val();
+        numeroBoleta = table.cell(index, 14).nodes().to$().find('input').val();
+        monto = table.cell(index, 15).nodes().to$().find('input').val();
+        //codigoBancoDeposito = table.cell(index, 11).nodes().to$().find('option:selected').val();
+        //numeroCuenta = table.cell(index, 12).nodes().to$().find('option:selected').val();
         if (/^[0-9]+$/.test(numeroBoleta) && (/^\d*(\.\d{1})?\d{0,1}$/.test(monto))) {
             obj = {
                 CodigoTipoPlanilla: codigoTipoPlanilla,
@@ -406,10 +449,10 @@ function GuardarBoletasDepositoBTB() {
                 AnioOperacion: anioOperacion,
                 CodigoReporte: codigoReporte,
                 SemanaOperacion: semanaOperacion,
-                CodigoBancoDeposito: codigoBancoDeposito,
-                NumeroCuenta: numeroCuenta,
+                CodigoBancoDeposito: table.cell(index, 11).nodes().to$().find('option:selected').val(),
+                NumeroCuenta: table.cell(index, 12).nodes().to$().find('option:selected').val(),
                 NumeroBoleta: numeroBoleta,
-                Monto: table.cell(index, 13).nodes().to$().find('input').val()
+                Monto: table.cell(index, 15).nodes().to$().find('input').val()
             };
             arrayProperties.push(obj);
         } else {
@@ -492,7 +535,7 @@ function MostrarBTBDepositosEdicion(anioPlanilla, anioOperacion, semanaOperacion
         hideColumns: [
             {
                 "targets": [1],
-                "visible": false
+                "visible": true
             }, {
                 "targets": [13],
                 "visible": true,
@@ -515,24 +558,30 @@ function EditarDepositoBTB(obj) {
         let codigoEmpleado = table.cell(rowIdx, 7).data();
         let nombreEmpleado = table.cell(rowIdx, 8).data();
         let numeroBoleta = table.cell(rowIdx, 12).data();
-        
         let monto = table.cell(rowIdx, 13).data();
 
         setI("uiTitlePopupEditDepositosBTB", "Edición de Depósitos BTB");
         document.getElementById("ShowPopupEditDepositoBTB").click();
-        document.getElementById("uiEditCodigoBancoDeposito").value = codigoBancoDeposito;
-        set("uiEditCodigoDepositosBTB", codigoDepositoBTB);
-        set("uiEditCodigoEmpleado", codigoEmpleado);
-        set("uiEditNombreEmpleado", nombreEmpleado);
-        set("uiEditNumeroBoleta", numeroBoleta);
-        set("uiEditMonto", monto);
-        fetchGet("CuentaBancaria/GetCuentasBancariasTesoreria/?codigoBanco=" + codigoBancoDeposito, "json", function (rpta) {
+        fetchGet("Banco/GetAllBancos", "json", function (rpta) {
             if (rpta.length > 0) {
-                FillCombo(rpta, "uiEditNumeroCuenta", "numeroCuenta", "numeroCuentaDescriptivo", "- seleccione cuenta -", "-1");
-                document.getElementById("uiEditNumeroCuenta").value = numeroCuenta;
+                FillCombo(rpta, "uiEditCodigoBancoDeposito", "codigoBanco", "nombre", "- seleccione -", "-1");
+                document.getElementById("uiEditCodigoBancoDeposito").value = codigoBancoDeposito;
+                fetchGet("CuentaBancaria/GetCuentasBancarias/?codigoBanco=" + codigoBancoDeposito, "json", function (rpta1) {
+                    if (rpta1.length > 0) {
+                        FillComboAddFirstOption(rpta1, "uiEditNumeroCuenta", "numeroCuenta", "numeroCuenta", "- seleccione cuenta -", "-1");
+                        document.getElementById("uiEditNumeroCuenta").value = numeroCuenta;
+                    } else {
+                        FillComboUnicaOpcion("uiEditNumeroCuenta", "-1", "-- No existe cuenta -- ");
+                    }
+                })
             } else {
-                FillComboUnicaOpcion("uiEditNumeroCuenta", "-1", "-- No existe cuenta -- ");
+                FillComboUnicaOpcion("uiEditCodigoBancoDeposito", "-1", "-- No existe cuenta -- ");
             }
+            set("uiEditCodigoDepositosBTB", codigoDepositoBTB);
+            set("uiEditCodigoEmpleado", codigoEmpleado);
+            set("uiEditNombreEmpleado", nombreEmpleado);
+            set("uiEditNumeroBoleta", numeroBoleta);
+            set("uiEditMonto", monto);
         })
     });
 

@@ -131,7 +131,10 @@ namespace CapaDatos.Planilla
                            x.bono_decreto_37_2001,
                            x.codigo_tipo_btb,
                            db_contabilidad.GetMontoDepositoBTB(@CodigoTipoPlanilla, @AnioPlanilla, @MesPlanilla, x.salario_diario, x.bono_decreto_37_2001, x.codigo_tipo_btb) AS monto_devolucion_btb,
-                           '' AS numero_boleta 
+                           '' AS numero_boleta,
+                           db_admon.GetComboBancos() AS combo_bancos,
+                           CONCAT('<select name=NumeroCuenta id=uiNumeroCuenta class=select-cuenta-bancaria>','<option value=-1>--Sin cuentas--</option>','</select>') AS combo_cuentas
+
                     FROM db_rrhh.empleado x
                     INNER JOIN db_admon.empresa y
                     ON x.codigo_empresa = y.codigo_empresa
@@ -171,6 +174,8 @@ namespace CapaDatos.Planilla
                             int postMontoDevolucionBTB = dr.GetOrdinal("monto_devolucion_btb");
                             int postCodigoTipoBTB = dr.GetOrdinal("codigo_tipo_btb");
                             int postNumeroBoleta = dr.GetOrdinal("numero_boleta");
+                            int postComboBancos = dr.GetOrdinal("combo_bancos");
+                            int postComboCuentas = dr.GetOrdinal("combo_cuentas");
                             while (dr.Read())
                             {
                                 objPagoDescuentoCLS = new PagoDescuentoCLS();
@@ -187,13 +192,15 @@ namespace CapaDatos.Planilla
                                 objPagoDescuentoCLS.SalarioDiario = dr.GetDecimal(postSalarioDiario);
                                 objPagoDescuentoCLS.CodigoTipoBTB = dr.GetByte(postCodigoTipoBTB);
                                 objPagoDescuentoCLS.NumeroBoleta = dr.GetString(postNumeroBoleta);
+                                objPagoDescuentoCLS.ComboBancos = dr.GetString(postComboBancos);
+                                objPagoDescuentoCLS.ComboCuentas = dr.GetString(postComboCuentas);
                                 lista.Add(objPagoDescuentoCLS);
                             }//fin while
                         }// fin if
                     }// fin using
                     conexion.Close();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     conexion.Close();
                     lista = null;

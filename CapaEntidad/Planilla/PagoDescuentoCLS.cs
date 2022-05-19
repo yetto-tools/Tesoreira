@@ -41,6 +41,8 @@ namespace CapaEntidad.Planilla
         public decimal MontoCalculado { get; set; }
         public decimal MontoPlanillaExcel { get; set; }
         public byte ExistePagoBTB { get; set; }
-       
+        public string ComboBancos { get; set; }
+        public string ComboCuentas { get; set; }
+
     }
 }

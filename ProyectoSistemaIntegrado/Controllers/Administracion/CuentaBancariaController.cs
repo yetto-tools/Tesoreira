@@ -15,11 +15,23 @@ namespace ProyectoSistemaIntegrado.Controllers.Administracion
             return View();
         }
 
+        public List<CuentaBancariaCLS> GetCuentasBancarias(int codigoBanco)
+        {
+            CuentaBancariaBL obj = new CuentaBancariaBL();
+            return obj.GetCuentasBancarias(codigoBanco);
+        }
 
         public List<CuentaBancariaCLS> GetCuentasBancariasTesoreria(int codigoBanco)
         {
             CuentaBancariaBL obj = new CuentaBancariaBL();
             return obj.GetCuentasBancariasTesoreria(codigoBanco);
         }
+
+        public string GetComboCuentasBancarias(int codigoBanco)
+        {
+            CuentaBancariaBL obj = new CuentaBancariaBL();
+            return obj.GetComboCuentasBancarias(codigoBanco);
+        }
+
     }
 }

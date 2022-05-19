@@ -6,6 +6,8 @@
         public const int CIERRE = 7;
         public const int CORTE_CAJA_CHICA = 9;
         public const int COMPROMISO_FISCAL = 10;
+        public const int DEPOSITOS_BANCARIOS_Y_BTB = 3;
+
 
 
         /*RESUMEN DE OPERACIONES EN CAJA 1

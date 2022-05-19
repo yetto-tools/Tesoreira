@@ -219,16 +219,27 @@ namespace ProyectoSistemaIntegrado.Controllers.Reportes
         {
             string[] cabeceras = new string[] { };
             string[] nombrePropiedades = new string[] { };
-            List<CuentaPorCobrarReporteDetalleCLS> lista = null;
-            ReporteOperacionesCajaListCLS reporte = null;
+            byte[] buffer = new byte[] { };
             switch (codigoTipoReporte)
             {
                 case Constantes.Reporte.CUENTAS_POR_COBRAR:
+                    ReporteOperacionesCajaListCLS reporte = null;
                     CuentaPorCobrarReporteBL obj = new CuentaPorCobrarReporteBL();
+                    List<CuentaPorCobrarReporteDetalleCLS> lista = null;
                     reporte = obj.GetDetalleCorteCuentasPorCobrar(anioReporte, semanaReporte, codigoReporte, arqueo, excluirCeros);
                     lista = reporte.listaDetalleCuentasPorCobrar;
                     cabeceras = new string[10]{ "Código Entidad", "Entidad", "Código Operación", "Operación", "Código Categoría", "Categoría", "Saldo Inicial","Monto Solicitado", "Monto Devoluciones", "Saldo Final" };
                     nombrePropiedades = new string[10]{ "CodigoEntidad", "NombreEntidad", "CodigoOperacion", "Operacion", "CodigoCategoria", "Categoria", "SaldoInicial","MontoSolicitado", "MontoDevolucion", "SaldoFinal" };
+                    buffer = ExportarExcelDatos(cabeceras, nombrePropiedades, lista);
+                    break;
+                case Constantes.Reporte.DEPOSITOS_BANCARIOS_Y_BTB:
+
+                    List<DepositoBancarioCLS> listaDepositos = null;
+                    DepositoBancarioBL objDepositos = new DepositoBancarioBL();
+                    listaDepositos = objDepositos.GetDepositos(anioReporte, semanaReporte, codigoReporte);
+                    cabeceras = new string[6] { "Banco", "Cuenta", "Boleta", "Monto", "Día", "Origen"};
+                    nombrePropiedades = new string[6] { "NombreBanco","NumeroCuenta", "NumeroBoleta", "Monto", "NombreDiaOperacion", "OrigenDeposito"};
+                    buffer = ExportarExcelDatos(cabeceras, nombrePropiedades, listaDepositos);
                     break;
                 default:
                     
@@ -236,7 +247,7 @@ namespace ProyectoSistemaIntegrado.Controllers.Reportes
 
             }//fin switch
 
-            byte[] buffer = ExportarExcelDatos(cabeceras, nombrePropiedades, lista);
+            //byte[] buffer = ExportarExcelDatos(cabeceras, nombrePropiedades, lista);
             return File(buffer, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
 

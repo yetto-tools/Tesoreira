@@ -43,6 +43,8 @@ namespace CapaEntidad.Planilla
         public byte ExistePagoBTB { get; set; }
         public string ComboBancos { get; set; }
         public string ComboCuentas { get; set; }
+        public string ComboDias { get; set; }
+        public byte HabilitarCheck { get; set; }
 
     }
 }

@@ -57,9 +57,10 @@ namespace CapaDatos.Contabilidad
                             cmd.Parameters.Add("@FechaIng", SqlDbType.DateTime);
                             cmd.Parameters.Add("@UsuarioAct", SqlDbType.VarChar);
                             cmd.Parameters.Add("@FechaAct", SqlDbType.DateTime);
+                            cmd.Parameters.Add("@DiaOperacion", SqlDbType.TinyInt);
                         }
                         sentenciaInsertDepositos = @"
-                        INSERT INTO db_contabilidad.deposito_btb(codigo_deposito_btb,codigo_tipo_planilla,anio_planilla,mes_planilla,codigo_empresa,codigo_empleado,codigo_frecuencia_pago,codigo_operacion,anio_operacion,semana_operacion,codigo_reporte,codigo_banco_deposito,numero_cuenta,numero_boleta,monto,observaciones,estado,usuario_ing,fecha_ing,usuario_act,fecha_act)
+                        INSERT INTO db_contabilidad.deposito_btb(codigo_deposito_btb,codigo_tipo_planilla,anio_planilla,mes_planilla,codigo_empresa,codigo_empleado,codigo_frecuencia_pago,codigo_operacion,anio_operacion,semana_operacion,codigo_reporte,codigo_banco_deposito,numero_cuenta,numero_boleta,monto,observaciones,estado,usuario_ing,fecha_ing,usuario_act,fecha_act, dia_operacion)
                         VALUES( NEXT VALUE FOR db_contabilidad.SQ_CODIGO_DEPOSITO_BTB,
                                 @CodigoTipoPlanilla,
                                 @AnioPlanilla,
@@ -80,7 +81,8 @@ namespace CapaDatos.Contabilidad
                                 @UsuarioIng,
                                 @FechaIng,
                                 @UsuarioAct,
-                                @FechaAct)";
+                                @FechaAct,
+                                @DiaOperacion)";
 
                         cmd.CommandType = CommandType.Text;
                         cmd.CommandText = sentenciaInsertDepositos;
@@ -104,6 +106,7 @@ namespace CapaDatos.Contabilidad
                         cmd.Parameters["@FechaIng"].Value = DateTime.Now;
                         cmd.Parameters["@UsuarioAct"].Value = DBNull.Value;
                         cmd.Parameters["@FechaAct"].Value = DBNull.Value;
+                        cmd.Parameters["@DiaOperacion"].Value = objDeposito.DiaOperacion;
                         cmd.ExecuteNonQuery();
                         contador++;
                     }

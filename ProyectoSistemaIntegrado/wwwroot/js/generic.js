@@ -402,6 +402,7 @@ function pintar(objConfiguracion) {
     })
 }
 
+
 function generarTabla(res, objConfiguracionGlobal) {
     let contenido = "";
     //console.log(JSON.stringify(objConfiguracionGlobal));
@@ -464,7 +465,7 @@ function generarTabla(res, objConfiguracionGlobal) {
             }
 
             if (objConfiguracionGlobal.excluir == true) {
-                contenido += "<td>Excluir</td>"
+                contenido += `<td style='text-align: center;'>Excluir<input type="checkbox" id="uiExcluirCheck" disabled value="0" onclick="selectAllCheckBox('${objConfiguracionGlobal.idtabla}',this)"></td>`
                 countColumns++;
             }
             if (objConfiguracionGlobal.editar == true) {
@@ -618,9 +619,13 @@ function generarTabla(res, objConfiguracionGlobal) {
                 let excelvalue = objConfiguracionGlobal.excelvalue;
                 let webvalue = objConfiguracionGlobal.webvalue;
                 if (objConfiguracionGlobal.addTextBox == true) {
-                    objConfiguracionGlobal.propertiesColumnTextBox.map(({ value, name, align, validate }) => {
+                    objConfiguracionGlobal.propertiesColumnTextBox.map(({ value, name, align, validate, onclick, nameclick}) => {
                         contenido += `<td style='padding: 2px;'>`;
-                        contenido += `<input type='text' class="form-control ${align} ${validate}" id="ui${name}${i}" name='${name}' maxlength="20" multiline="false" type="text"  value ='${obj[value]}' autocomplete = "off" onclick="clickMontoPorDevolver(this)" />`;
+                        if (onclick == true) {
+                            contenido += `<input type='text' class="form-control ${align} ${validate}" id="ui${name}${i}" name='${name}' maxlength="20" multiline="false" type="text"  value ='${obj[value]}' autocomplete = "off" onclick="${nameclick}(this)" />`;
+                        } else {
+                            contenido += `<input type='text' class="form-control ${align} ${validate}" id="ui${name}${i}" name='${name}' maxlength="20" multiline="false" type="text"  value ='${obj[value]}' autocomplete = "off" />`;
+                        }
                         contenido += "</td>";
                     });
                 }
@@ -670,11 +675,13 @@ function generarTabla(res, objConfiguracionGlobal) {
 
                 if (objConfiguracionGlobal.excluir == true) {
                     let fieldNameExcluir = objConfiguracionGlobal.fieldNameExcluir;
-                    contenido += "<td style='padding: 2px; text-align:center' class='option-check'>";
+                    contenido += `<td style='padding: 2px; text-align:center' class='option-check' id="idColumnaCheck${+ obj[slug]}" >`;
                     if (obj[fieldNameExcluir] == 1) { //  1=Excluir (set checked)
-                        contenido += `<input class="form-check-input" type="checkbox" value="${obj[fieldNameExcluir]}" id="flexCheckDefault" onClick="Excluir(this)" checked ${objConfiguracionGlobal.ExcluirEnabled}>`;
+                        //contenido += `<input class="form-check-input row-excluir" type="checkbox" value="${obj[fieldNameExcluir]}" id="flexCheckDefault" onclick="Excluir(this)" checked ${objConfiguracionGlobal.ExcluirEnabled}>`;
+                        contenido += `<input id="idCheckExcluir${+ obj[slug]}" class="row-excluir" type="checkbox" value="${obj[fieldNameExcluir]}" onclick="Excluir(this)" checked ${objConfiguracionGlobal.ExcluirEnabled}>`;
                     } else {
-                        contenido += `<input class="form-check-input" type="checkbox" value="${obj[fieldNameExcluir]}" id="flexCheckDefault" onClick="Excluir(this)">`;
+                        //contenido += `<input class="form-check-input row-excluir" type="checkbox" value="${obj[fieldNameExcluir]}" id="flexCheckDefault" onclick="Excluir(this)">`;
+                        contenido += `<input id="idCheckExcluir${+ obj[slug]}" class="row-excluir" type="checkbox" value="${obj[fieldNameExcluir]}" onclick="Excluir(this)">`;
                     }
                     contenido += "</td>";
                 }

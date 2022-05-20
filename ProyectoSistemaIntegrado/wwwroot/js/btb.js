@@ -150,13 +150,17 @@ function MostrarEmpleadosBackToBack(codigoTipoPlanilla, anioPlanilla, mesPlanill
                 "value": "montoDevolucionBTB",
                 "name": "MontoDevolucionBTB",
                 "align": "text-right",
-                "validate": "decimal-2"
+                "validate": "decimal-2",
+                "onclick": true,
+                "nameclick": "clickMontoPorDevolver"
             }, {
                 "header": "Monto Descuento",
                 "value": "montoDescuento",
                 "name": "MontoDescuento",
                 "align": "text-right",
-                "validate": "decimal-2"
+                "validate": "decimal-2",
+                "onclick": true,
+                "nameclick": "clickMontoPorDevolver"
             }],
         ocultarColumnas: true,
         hideColumns: [
@@ -308,14 +312,15 @@ function CalcularMontosDepositosBTB() {
     let anioPlanilla = parseInt(document.getElementById("uiFiltroAnioPlanilla").value);
     let mesPlanilla = parseInt(document.getElementById("uiFiltroMes").value);
     MostrarEmpleadosBackToBackDepositos(codigoTipoPlanilla, anioPlanilla, mesPlanilla);
-
 }
 
+//sumarcolumna: true,
+//columnasumalist: [14, 17]
 function MostrarEmpleadosBackToBackDepositos(codigoTipoPlanilla, anioPlanilla, mesPlanilla) {
     objConfiguracion = {
         url: "PlanillaTemporal/GetEmpleadosBackToBackBoletaDeposito/?codigoTipoPlanilla=" + codigoTipoPlanilla.toString() + "&anioPlanilla=" + anioPlanilla.toString() + "&mesPlanilla=" + mesPlanilla.toString(),
-        cabeceras: ["Código Empresa", "Empresa", "Código Empleado", "Nombre Empleado", "Código Operación", "Operación", "Codigo Frecuencia Pago", "Frecuencia de Pago", "Tipo BTB", "Bono Decreto 37-2001", "Salario Diario", "Banco","Cuenta", "Monto Depósito"],
-        propiedades: ["codigoEmpresa", "nombreEmpresa", "codigoEmpleado", "nombreCompleto", "codigoOperacion", "operacion", "codigoFrecuenciaPago", "frecuenciaPago", "codigoTipoBTB", "bonoDecreto372001", "salarioDiario", "comboBancos","comboCuentas", "montoDevolucionBTB"],
+        cabeceras: ["Código Empresa", "Empresa", "Código Empleado", "Nombre Empleado", "Código Operación", "Operación", "Codigo Frecuencia Pago", "Frecuencia de Pago", "Tipo BTB", "Bono Decreto 37-2001", "Salario Diario", "Banco", "Cuenta", "Día", "Monto Depósito", "habilitarCheck"],
+        propiedades: ["codigoEmpresa", "nombreEmpresa", "codigoEmpleado", "nombreCompleto", "codigoOperacion", "operacion", "codigoFrecuenciaPago", "frecuenciaPago", "codigoTipoBTB", "bonoDecreto372001", "salarioDiario", "comboBancos", "comboCuentas", "comboDias", "montoDevolucionBTB","habilitarCheck"],
         divContenedorTabla: "divContenedorTabla",
         displaydecimals: ["monto"],
         divPintado: "divTabla",
@@ -327,13 +332,15 @@ function MostrarEmpleadosBackToBackDepositos(codigoTipoPlanilla, anioPlanilla, m
                 "value": "numeroBoleta",
                 "name": "NumeroBoleta",
                 "align": "text-center",
-                "validate": "solonumeros"
+                "validate": "solonumeros",
+                "onclick" : false
             }, {
                 "header": "Monto Depósito",
                 "value": "montoDevolucionBTB",
                 "name": "MontoDevolucionBTB",
                 "align": "text-right",
-                "validate": "decimal-2"
+                "validate": "decimal-2",
+                "onclick": false
             }],
         ocultarColumnas: true,
         hideColumns: [
@@ -350,6 +357,9 @@ function MostrarEmpleadosBackToBackDepositos(codigoTipoPlanilla, anioPlanilla, m
                 "targets": [8],
                 "visible": false,
                 "className": "dt-body-right"
+            }, {
+                "targets": [15],
+                "visible": false
             }],
         classColumn: [
             {
@@ -357,11 +367,13 @@ function MostrarEmpleadosBackToBackDepositos(codigoTipoPlanilla, anioPlanilla, m
                 "classname": "option-banco",
             }],
         slug: "codigoEmpresa",
-        sumarcolumna: true,
-        columnasumalist: [15]
+        excluir: true,
+        fieldNameExcluir: "habilitarCheck"
     }
     pintar(objConfiguracion);
 }
+
+
 
 //$('#tabla tbody').on('click', '.option-editar', function () {
 function FillComboCuentasBancarias(obj) {
@@ -383,6 +395,186 @@ function FillComboCuentasBancarias(obj) {
     });
 }
 
+function Excluir(obj) {
+
+
+}
+
+function Excluir2(obj) {
+    let table = $('#tabla').DataTable();
+    $("#tabla").on('click', 'tr', function () {
+        //var $td = $(this).parent();
+        var data = table.row(this).data();
+        if (typeof data != 'undefined') {
+            if ($(this).find('.option-check').prop('checked')) {  //update the cell data with the checkbox state
+                data.check = 1;
+            } else {
+                data.check = 0;
+            }
+        }
+        //table.cell($td).invalidate().draw();
+        //var $td = $(this).parent();
+        //$td.find('input').attr('value', this.value);
+        //table.cell($td).invalidate().draw();
+        /*$td.find('checkbox').each(function (i) {
+            let isSelected = $(this).is(':checked');
+            if (isSelected) {
+                $(this).prop("checked", false);
+            } else {
+                $(this).prop("checked", true);
+            }
+        });**/
+    });
+    
+}
+
+function Excluir1(obj) {
+    //alert(obj);
+    let table = $('#tabla').DataTable();
+    //$("#tabla").on('click', function () {
+    $("#tabla tr td input[type='checkbox']").on('click', function () {
+        //var $td = $(this).children().find("td").prop("id");
+        //let id = $td.find('checkbox').attr('id');
+        let id = $(this).attr("id");
+        //$('#' + id).checked = obj.checked == true ? true : false;
+        //let jj = $('#' + id); //.attr('checked', obj.checked == true ? false : true);
+
+        //$('#' + id).attr('checked', false);
+
+        //let rows = table.rows().nodes;
+        $('#' + id).prop('checked');
+        //$('input[type="checkbox"]', rows).prop('checked', obj.checked == true ? false : true);
+        //let test = $('input[id="' + id + '"]').prop('checked', obj.checked == true ? false : true);
+        //let test = $('input[id="' + id + '"]').prop('checked');
+        //$td.find('input')('input:checkbox').prop("checked", obj.checked == true ? false : true);
+
+        //alert($('#' + id).checked);
+        //let id = $(this).parent().attr("id");
+        
+        //console.log("test");
+        //let rowIdx = table.row(this).index();
+        //let rows = table.cell(rowIdx, 18).node();
+        //let element = table.cell(rowIdx, 18).data();
+
+        //let id = table.cell(rowIdx, 18).attr("id");
+
+
+        //var tr = $(this).closest('td');
+
+        //var $td = $(this).parent();
+        //$td.find('input').attr('value', this.value);
+        //table.cell($td).invalidate().draw();
+
+        //var $td = $(this).parent();
+        //table.cell($td).invalidate().draw();
+        //let rows = $(this);
+        //var tr = $(this).closest('tr');
+        //var rows = table.row(this).node;
+        //let rows = table.rows().nodes()[0];
+
+
+        
+
+        //let rows = table.rows({ selected: true }).nodes();
+
+        //let rows = table.row($td).node();
+
+
+        
+
+        //alert(table.row(this).data());
+        //table.clear().draw();
+        //table.draw();
+
+        //var $td = $(this).parent();
+        //table.cell($td).invalidate().draw();
+
+
+        //$td.find('input')('input:checkbox').prop("checked", obj.checked == true ? false : true);
+        //$td.find('input').prop('checked')
+        // desabilita el checkbox
+        //$td.find('input').prop("disabled", true);
+
+        //$td.find('input').prop("checked", true);
+
+
+        //$td.find('input').Attr('Checked');
+        //$td.find('input').removeAttr('Checked');
+
+        //checked
+
+
+        //$td.find('input').prop("checked", obj.checked == true ? true : false);
+        //$(this.node()).find('input:checkbox').prop("checked", obj.checked == true ? false : true);
+        //var $td = $(this).parent();
+        //$td.find('input').attr('Checked', obj.checked == true ? false : true);
+        //$(this).change();
+        
+        //$td.find('input').removeAttr('Checked');
+    });
+
+}
+
+function selectAllCheckBox(obj, elemento) {
+    let table = $('#tabla').DataTable();
+    $('#tabla').on('click', function () {
+        // Get all rows with search applied
+        let rows = table.rows().nodes();
+        // Check/uncheck checkboxes for all rows in the table
+        $('input[type="checkbox"]', rows).prop('checked', elemento.checked);
+    });
+
+    // Listen for click on toggle checkbox
+/*    $('#' + obj).click(function (event) {
+        if (this.checked) {
+            // Iterate each checkbox
+            $('.row-excluir:checkbox').each(function () {
+                this.checked = false;
+            });
+        } else {
+            $('.row-excluir:checkbox').each(function () {
+                this.checked = true;
+            });
+        }*/
+
+
+
+        //$('.row-excluir:checkbox').each(function () {
+        //    this.removeAttr('Checked');
+        //});
+
+    //});
+
+    /*$(document).ready(function () {
+        $('input[name="all"],input[name="title"]').bind('click', function () {
+            var status = $(this).is(':checked');
+            $('input[type="checkbox"]', $(this).parent('li')).attr('checked', status);
+        });
+    });*/
+
+    /*$('#' + obj).click(function (event) {
+        var $td = $(this).parent();
+        //$td.find('input').attr('value', this.value);
+        $td.find('input').attr('value', this.value);
+        table.cell($td).invalidate().draw();
+
+        var checkBoxes = $("input[name=check]");
+        checkBoxes.prop("checked", !checkBoxes.prop("checked"));
+    });*/
+
+    
+
+    /*let status = false;
+    $('#' + obj).click(function (event) {
+        $('.row-excluir:checkbox').each(function () {
+            status = $(this).is(':checked');
+            this.checked = status;
+            //$('input[type="checkbox"]', $(this).parent('td')).attr('checked', status);
+        });
+    });*/
+
+}
+
 function CargarBoletasDepositadas() {
     let anioPlanilla = document.getElementById("uiFiltroAnioPlanilla").value;
     let mesPlanilla = document.getElementById("uiFiltroMes").value;
@@ -397,7 +589,6 @@ function CargarBoletasDepositadas() {
     set("uiTipoPlanilla", tipoPlanilla);
     set("uiMesPlanilla", mesPlanilla);
     set("uiNombreMesPlanilla", nombreMesPlanilla);
-    //FillComboUnicaOpcion("uiNumeroCuenta", "-1", "-- No Existen Cuentas -- ");
     FillComboUnicaOpcion("uiFiltroReporteCaja", "-1", "-- No existen reportes -- ");
     fillAniosReporte("uiFiltroAnioOperacion",true);
     document.getElementById("ShowPopupSemanaBoletasDeposito").click();
@@ -417,10 +608,6 @@ function GuardarBoletasDepositoBTB() {
     let semanaOperacion = parseInt(document.getElementById("uiFiltroSemanaOperacion").value);
     let codigoReporte = parseInt(document.getElementById("uiFiltroReporteCaja").value);
 
-    //let codigoBancoDeposito = parseInt(document.getElementById("uiCodigoBancoDeposito").value);
-    //let numeroCuenta = document.getElementById("uiNumeroCuenta").value
-
-
     let codigoFrecuenciaPago = 1; // 1. Mensual
     let codigoOperacion = 20; // 20. Depósito Bancario
     let table = $('#tabla').DataTable();
@@ -429,34 +616,42 @@ function GuardarBoletasDepositoBTB() {
     let obj = null;
     let numeroBoleta = "";
     let monto = "";
+    let codigoBanco = "";
+    let numeroCuenta = "";
+    let diaOperacion = "";
     let boletasCompletas = true;
-    //let codigoBancoDeposito = 0;
-    //let numeroCuenta = "";
+    let excluir = 0;
     data.each(function (value, index) {
-        numeroBoleta = table.cell(index, 14).nodes().to$().find('input').val();
-        monto = table.cell(index, 15).nodes().to$().find('input').val();
-        //codigoBancoDeposito = table.cell(index, 11).nodes().to$().find('option:selected').val();
-        //numeroCuenta = table.cell(index, 12).nodes().to$().find('option:selected').val();
-        if (/^[0-9]+$/.test(numeroBoleta) && (/^\d*(\.\d{1})?\d{0,1}$/.test(monto))) {
-            obj = {
-                CodigoTipoPlanilla: codigoTipoPlanilla,
-                AnioPlanilla: anioPlanilla,
-                MesPlanilla: mesPlanilla,
-                CodigoEmpresa: table.cell(index, 0).data(),
-                CodigoEmpleado: table.cell(index, 2).data(),
-                CodigoFrecuenciaPago: codigoFrecuenciaPago,
-                CodigoOperacion: codigoOperacion,
-                AnioOperacion: anioOperacion,
-                CodigoReporte: codigoReporte,
-                SemanaOperacion: semanaOperacion,
-                CodigoBancoDeposito: table.cell(index, 11).nodes().to$().find('option:selected').val(),
-                NumeroCuenta: table.cell(index, 12).nodes().to$().find('option:selected').val(),
-                NumeroBoleta: numeroBoleta,
-                Monto: table.cell(index, 15).nodes().to$().find('input').val()
-            };
-            arrayProperties.push(obj);
-        } else {
-            boletasCompletas = false;
+        excluir = table.cell(index, 18).nodes().to$().find('input').prop('checked') == true ? 1 : 0;
+        if (excluir == 1) {
+            numeroBoleta = table.cell(index, 16).nodes().to$().find('input').val();
+            monto = table.cell(index, 17).nodes().to$().find('input').val();
+            codigoBanco = table.cell(index, 11).nodes().to$().find('option:selected').val();
+            numeroCuenta = table.cell(index, 12).nodes().to$().find('option:selected').val();
+            diaOperacion = table.cell(index, 13).nodes().to$().find('option:selected').val();
+            if (/^[0-9]+$/.test(numeroBoleta) && (/^\d*(\.\d{1})?\d{0,1}$/.test(monto)) && codigoBanco != "-1" && numeroCuenta != "-1" && diaOperacion != "-1")
+            {
+                obj = {
+                    CodigoTipoPlanilla: codigoTipoPlanilla,
+                    AnioPlanilla: anioPlanilla,
+                    MesPlanilla: mesPlanilla,
+                    CodigoEmpresa: table.cell(index, 0).data(),
+                    CodigoEmpleado: table.cell(index, 2).data(),
+                    CodigoFrecuenciaPago: codigoFrecuenciaPago,
+                    CodigoOperacion: codigoOperacion,
+                    AnioOperacion: anioOperacion,
+                    CodigoReporte: codigoReporte,
+                    SemanaOperacion: semanaOperacion,
+                    CodigoBancoDeposito: table.cell(index, 11).nodes().to$().find('option:selected').val(),
+                    NumeroCuenta: table.cell(index, 12).nodes().to$().find('option:selected').val(),
+                    DiaOperacion: table.cell(index, 13).nodes().to$().find('option:selected').val(),
+                    NumeroBoleta: numeroBoleta,
+                    Monto: table.cell(index, 17).nodes().to$().find('input').val()
+                };
+                arrayProperties.push(obj);
+            } else {
+                boletasCompletas = false;
+            }
         }
     });
     if (Array.isArray(arrayProperties) && arrayProperties.length) {
@@ -465,9 +660,9 @@ function GuardarBoletasDepositoBTB() {
             fetchPostJson("DepositosBTB/GuardarDepositosBTB", "text", jsonData, function (data) {
                 if (data == "OK") {
                     if (boletasCompletas == true) {
-                        Exito("DepositosBTB", "RegistroDepositosBTB", true, "Registro de boletas de depósito completas")
+                        Exito("DepositosBTB", "RegistroDepositosBTB", true, "Boletas seleccionadas se registraron completamente")
                     } else {
-                        Exito("DepositosBTB", "RegistroDepositosBTB", true, "Algunas boletas no se registraron")
+                        Exito("DepositosBTB", "RegistroDepositosBTB", true, "Algunas boletas seleccionadas no se registraron")
                     }
                 } else {
                     MensajeError(data);

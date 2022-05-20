@@ -111,6 +111,7 @@ namespace CapaDatos.Planilla
             }
         }
 
+        //CONCAT('<select name=NumeroCuenta id=uiNumeroCuenta class=select-cuenta-bancaria>','<option value=-1>--Sin cuentas--</option>','</select>') AS combo_cuentas
         public List<PagoDescuentoCLS> GetEmpleadosBackToBackBoletaDeposito(int codigoTipoPlanilla, int anioPlanilla, int mesPlanilla)
         {
             List<PagoDescuentoCLS> lista = null;
@@ -133,8 +134,9 @@ namespace CapaDatos.Planilla
                            db_contabilidad.GetMontoDepositoBTB(@CodigoTipoPlanilla, @AnioPlanilla, @MesPlanilla, x.salario_diario, x.bono_decreto_37_2001, x.codigo_tipo_btb) AS monto_devolucion_btb,
                            '' AS numero_boleta,
                            db_admon.GetComboBancos() AS combo_bancos,
-                           CONCAT('<select name=NumeroCuenta id=uiNumeroCuenta class=select-cuenta-bancaria>','<option value=-1>--Sin cuentas--</option>','</select>') AS combo_cuentas
-
+                           db_admon.GetComboCuentas(-2) AS combo_cuentas,
+                           db_admon.GetComboDias() AS combo_dias,
+                           0 AS habilitar_check 
                     FROM db_rrhh.empleado x
                     INNER JOIN db_admon.empresa y
                     ON x.codigo_empresa = y.codigo_empresa
@@ -176,6 +178,8 @@ namespace CapaDatos.Planilla
                             int postNumeroBoleta = dr.GetOrdinal("numero_boleta");
                             int postComboBancos = dr.GetOrdinal("combo_bancos");
                             int postComboCuentas = dr.GetOrdinal("combo_cuentas");
+                            int postComboDias = dr.GetOrdinal("combo_dias");
+                            int postHabilitarCheck = dr.GetOrdinal("habilitar_check");
                             while (dr.Read())
                             {
                                 objPagoDescuentoCLS = new PagoDescuentoCLS();
@@ -194,6 +198,8 @@ namespace CapaDatos.Planilla
                                 objPagoDescuentoCLS.NumeroBoleta = dr.GetString(postNumeroBoleta);
                                 objPagoDescuentoCLS.ComboBancos = dr.GetString(postComboBancos);
                                 objPagoDescuentoCLS.ComboCuentas = dr.GetString(postComboCuentas);
+                                objPagoDescuentoCLS.ComboDias = dr.GetString(postComboDias);
+                                objPagoDescuentoCLS.HabilitarCheck = (byte)dr.GetInt32(postHabilitarCheck);
                                 lista.Add(objPagoDescuentoCLS);
                             }//fin while
                         }// fin if

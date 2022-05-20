@@ -36,6 +36,7 @@ namespace CapaEntidad.Contabilidad
         public string FechaIngStr { get; set; }
         public byte PermisoEditar { get; set; }
         public byte PermisoAnular { get; set; }
+        public byte DiaOperacion { get; set; }
 
     }
 }

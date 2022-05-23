@@ -16,6 +16,12 @@ namespace CapaNegocio.Tesoreria
             return obj.GetListOperaciones(codigoTipoOperacion);
         }
 
+        public OperacionComboCLS FillComboOperacionFiltroConsulta(int codigoTipoOperacion)
+        {
+            OperacionDAL obj = new OperacionDAL();
+            return obj.GetListOperacionesFiltroConsulta(codigoTipoOperacion);
+        }
+
         public List<OperacionCLS> GetOperacionesParaAsignacionAEntidadesGenericas()
         {
             OperacionDAL obj = new OperacionDAL();

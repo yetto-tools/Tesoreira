@@ -1,0 +1,210 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    ViewData["Title"] = "Index";
+    Context.Session.SetString("tituloPrincipal", "Consulta de Transacciones");
+}
+
+<a href="@Url.Content("~")" id="uiExportarExcel" style="display:none;">Exportar Excel</a>
+
+<button type="button" id="ShowPopupSolicitudCorreccion" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropSolicitudCorreccion" style="display:none">
+</button>
+
+<fieldset>
+    <form method="post" id="frmBusquedaTransacciones">
+        <table style="margin-left: auto; margin-right: auto;">
+            <tr>
+                <td>AÑO</td>
+                <td>TIPO OPERACIÓN</td>
+                <td>OPERACIÓN</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <select class="form-control obligatorio" id="uiFiltroAnio" name="AnioOperacion" onclick="fillSemanasTransacciones(this.value)">
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control" id="uiFiltroTipoOperacion" name="TipoOperacion" onclick="fillOperacionesTransacciones(this.value)">
+                        <option value="-1">-- Seleccione --</option>
+                        <option value="1">INGRESO</option>
+                        <option value="2">EGRESO</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control" id="uiFiltroOperaciones" name="CodigoOperacion">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>SEMANA</td>
+                <td>CATEGORIA ENTIDAD</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <select class="form-control obligatorio" id="uiFiltroSemana" name="SemanaOperacion">
+                    </select>
+                </td>
+                <td>
+                    <select class="form-control" id="uiFiltroCategorias" name="CodigoCategoriaEntidad">
+                    </select>
+                </td>
+                <td>
+                    <input type="text" class="form-control" id="uiFiltroNombreEntidad" />
+                </td>
+                <td>
+                    <input type="button" class="form-control btn btn-primary" value="BUSCAR" onclick="buscarTransaccionesConsultaContabilidad()" />
+                </td>
+                <td>
+                    <button type="button" onclick="GenerarExcelTransaccionesConsultaContabilidad()" class="btn btn-success">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-excel" viewBox="0 0 16 16">
+                            <path d="M5.18 4.616a.5.5 0 0 1 .704.064L8 7.219l2.116-2.54a.5.5 0 1 1 .768.641L8.651 8l2.233 2.68a.5.5 0 0 1-.768.64L8 8.781l-2.116 2.54a.5.5 0 0 1-.768-.641L7.349 8 5.116 5.32a.5.5 0 0 1 .064-.704z" />
+                            <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z" />
+                        </svg>
+                        EXCEL
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>FECHA INICIO</td>
+                <td>FECHA FIN</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" name="FechaInicio" class="form-control text-center" id="uiFiltroFechaInicio" placeholder="Fecha Inicio" />
+                </td>
+                <td>
+                    <input type="text" name="FechaFin" class="form-control text-center" id="uiFiltroFechaFin" placeholder="Fecha Fin" />
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+
+        </table>
+    </form>
+</fieldset>
+
+<div style="height: 25px; width:100%;">
+</div>
+
+<div id="divTabla">
+
+</div>
+
+<!-- Modal Solicitud de Correcciones -->
+<div class="modal fade" id="staticBackdropSolicitudCorreccion" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelSolicitudCorreccion" aria-hidden="true">
+    <div class="modal-dialog  modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupSolicitudCorreccion"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupSolicitudCorreccion">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="frmNewSolicitudCorreccion">
+                    <label class="col-sm-10 col-form-label" id="uiObservacionesEliminacion"></label>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Código Transacción (Con Error):</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio text-center" id="uiSolicitudCodigoTransaccion" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Tipo de Corrección:</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio text-center" id="uiSolicitudTipoCorreccion" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Observaciones Solicitud:</label>
+                        <div class="col-sm-10">
+                            <textarea name="Observaciones" class="form-control obligatorio" id="uiSolicitudObservacionesSolicitud" readonly></textarea>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Usuario Solicitud:</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio text-center" id="uiSolicitudUsuarioSolicitud" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Fecha Solicitud:</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio text-center" id="uiSolicitudFechaSolicitud" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Resultado:</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio text-center" id="uiSolicitudResultado" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Usuario Aprobación:</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio text-center" id="uiSolicitudUsuarioAprobacion" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Fecha Aprobación:</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio text-center" id="uiSolicitudFechaAprobacion" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Observaciones Aprobación:</label>
+                        <div class="col-sm-10">
+                            <textarea name="Observaciones" class="form-control obligatorio" id="uiSolicitudObservacionesAprobacion" readonly></textarea>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-2 col-form-label">Código Transacción (Corregido):</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control obligatorio text-center" id="uiSolicitudCodigoTransaccionCorregido" readonly />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="html-content-holder" style="display:block">
+
+</div>
+
+
+@section Scripts {
+    <script src="~/js/html2canvas.js"></script>
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/jqueryui.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/constancia.js"></script>
+    <script src="~/js/transaccion.js"></script>
+    <script>
+        $(function () {
+            $("#uiFiltroFechaInicio").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeYear: true
+            });
+        });
+
+        $(function () {
+            $("#uiFiltroFechaFin").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeYear: true
+            });
+        });
+    </script>
+}

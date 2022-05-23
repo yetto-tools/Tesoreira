@@ -129,6 +129,12 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
             return obj.BuscarTransaccionesConsulta(anioOperacion, semanaOperacion, codigoReporte, codigoOperacion, codigoCategoriaEntidad, diaOperacion);
         }
 
+        public List<TransaccionCLS> BuscarTransaccionesConsultaContabilidad(int anioOperacion, int semanaOperacion, int codigoTipoOperacion, int codigoOperacion, int codigoCategoriaEntidad, string nombreEntidad, string fechaInicioStr, string fechaFinStr)
+        {
+            TransaccionBL obj = new TransaccionBL();
+            return obj.BuscarTransaccionesConsultaContabilidad(anioOperacion, semanaOperacion, codigoTipoOperacion, codigoOperacion, codigoCategoriaEntidad, nombreEntidad, fechaInicioStr, fechaFinStr);
+        }
+
         public List<TransaccionCLS> BuscarTransaccionesParaCorreccion(int anioOperacion, int semanaOperacion, int codigoReporte, int codigoOperacion, int codigoCategoriaEntidad)
         {
             ViewBag.Message = HttpContext.Session.GetString("usuario");
@@ -406,6 +412,26 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
             byte[] buffer = ExportarExcelDatos(cabeceras, nombrePropiedades, lista);
             return File(buffer, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
+
+        public FileResult ExportarExcelTransaccionConsultaContabilidad(int anioOperacion, int semanaOperacion, int codigoTipoOperacion, int codigoOperacion, int codigoCategoriaEntidad, string nombreEntidad, string fechaInicioStr, string fechaFinStr)
+        {
+            ViewBag.Message = HttpContext.Session.GetString("usuario");
+            UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
+
+            TransaccionBL obj = new TransaccionBL();
+            lista = obj.BuscarTransaccionesConsultaContabilidad(anioOperacion, semanaOperacion, codigoTipoOperacion, codigoOperacion, codigoCategoriaEntidad, nombreEntidad, fechaInicioStr, fechaFinStr);
+
+            string[] cabeceras = { "CodigoTransaccion","CodigoTipoTransaccion","NumeroRecibo","FechaRecibo","CodigoEntidad","NombreEntidad","CodigoCategoriaEntidad",
+            "CategoriaEntidad","CodigoOperacion","Operacion","TipoCuentaPorCobrar","CodigoArea","Area","FechaOperacion","FechaStr","DiaOperacion","NombreDiaOperacion","Monto","CodigoEstado","Estado","FechaIng",
+            "UsuarioIng","Ruta","ComplementoConta","Revisado","CodigoTransaccionAnt","Correccion"};
+            string[] nombrePropiedades = { "CodigoTransaccion","CodigoTipoTransaccion","NumeroRecibo","FechaRecibo","CodigoEntidad","NombreEntidad","CodigoCategoriaEntidad",
+            "CategoriaEntidad","CodigoOperacion","Operacion","TipoCuentaPorCobrar","CodigoArea","Area","FechaOperacion","FechaStr","DiaOperacion","NombreDiaOperacion","Monto","CodigoEstado","Estado","FechaIng",
+            "UsuarioIng","Ruta","ComplementoConta","Revisado","CodigoTransaccionAnt","Correccion"};
+
+            byte[] buffer = ExportarExcelDatos(cabeceras, nombrePropiedades, lista);
+            return File(buffer, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        }
+
 
     }
 }

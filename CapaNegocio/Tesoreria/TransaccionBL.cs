@@ -37,6 +37,12 @@ namespace CapaNegocio.Tesoreria
             return obj.BuscarTransaccionesConsulta(anioOperacion, semanaOperacion, codigoReporte, codigoOperacion, codigoCategoriaEntidad, diaOperacion);
         }
 
+        public List<TransaccionCLS> BuscarTransaccionesConsultaContabilidad(int anioOperacion, int semanaOperacion, int codigoTipoOperacion, int codigoOperacion, int codigoCategoriaEntidad, string nombreEntidad, string fechaInicioStr, string fechaFinStr)
+        {
+            TransaccionDAL obj = new TransaccionDAL();
+            return obj.BuscarTransaccionesConsultaContabilidad(anioOperacion, semanaOperacion, codigoTipoOperacion, codigoOperacion, codigoCategoriaEntidad, nombreEntidad, fechaInicioStr, fechaFinStr);
+        }
+
         public List<TransaccionCLS> BuscarTransaccionesParaCorreccion(int anioOperacion, int semanaOperacion, int codigoReporte, int codigoOperacion, int codigoCategoriaEntidad, int esSuperAdmin)
         {
             TransaccionDAL obj = new TransaccionDAL();

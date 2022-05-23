@@ -13,7 +13,7 @@
                 break;
             case "ConsultaTransacciones":
                 fillCombosBusquedaConsulta();
-                MostrarTransaccionesConsulta(-1,-1,-1, -1, -1, -1);
+                MostrarTransaccionesConsulta(-1, -1, -1, -1, -1, -1);
                 break;
             case "TrasladoSemanaOperacion":
                 MostrarTransaccionesParaCambioSemanaOperacion();
@@ -42,6 +42,30 @@
                 break;
         }// fin switch
     }// fin if
+    else {
+        if (nameController == "Consultas") {
+            switch (nameAction) {
+                case "ConsultaTransacciones":
+                    fillCombosBusquedaConsultaContabilidad();
+                    break;
+                default:
+                    break;
+            }// fin switch
+        }// fin if
+    }
+}
+
+function fillOperacionesTransacciones(obj) {
+    //ECMAScript 6 version
+    let valor = parseInt(obj);
+    fetchGet("Operacion/FillComboOperacionFiltroConsulta/?codigoTipoOperacion=" + valor.toString(), "json", function (rpta) {
+        let listaOperaciones = rpta.listaOperaciones;
+        if (rpta == null || rpta == undefined || rpta.length == 0) {
+            FillComboUnicaOpcion("uiFiltroOperaciones", "-1", "-- No existen operaciones -- ");
+        } else {
+            FillCombo(listaOperaciones, "uiFiltroOperaciones", "codigoOperacion", "nombreReporteCaja", "- Todas -", "-1");
+        }
+    })
 }
 
 function MostrarCompromisoFiscal() {
@@ -80,6 +104,24 @@ function fillCombosBusquedaConsulta() {
         }
         FillComboUnicaOpcion("uiFiltroSemana", "-1", "-- No Existen semanas -- ");
         FillComboUnicaOpcion("uiFiltroReporteCaja", "-1", "-- No Existen fechas -- ");
+    })
+}
+
+
+function fillCombosBusquedaConsultaContabilidad() {
+    fetchGet("Transaccion/FillCombosConsultaTransacciones", "json", function (rpta) {
+        var listaOperaciones = rpta.listaOperaciones;
+        let listaCategorias = rpta.listaCategoriasEntidades;
+        let listaAnios = rpta.listaAnios;
+        FillCombo(listaOperaciones, "uiFiltroOperaciones", "codigoOperacion", "nombre", "- seleccione -", "-1");
+        FillCombo(listaCategorias, "uiFiltroCategorias", "codigoCategoriaEntidad", "nombreCategoriaEntidad", "- seleccione -", "-1");
+        if (listaAnios.length == 1) {
+            let data = [{ "value": "-1", "text": "- seleccione -" }, { "value": listaAnios[0]["anio"], "text": listaAnios[0]["anio"] }]
+            FillComboSelectOption(data, "uiFiltroAnio", "value", "text", "- Todas -", "-1");
+        } else {
+            FillCombo(listaAnios, "uiFiltroAnio", "anio", "anio", "- seleccione -", "-1");
+        }
+        FillComboUnicaOpcion("uiFiltroSemana", "-1", "-- No Existen semanas -- ");
     })
 }
 
@@ -333,6 +375,76 @@ function MostrarTransaccionesConsulta(anioOperacion, semanaOperacion, codigoRepo
 }
 
 
+function MostrarTransaccionesConsultaContabilidad(anioOperacion, semanaOperacion, codigoTipoOperacion, codigoOperacion, codigoCategoriaEntidad, nombreEntidad, fechaInicio, fechaFin) {
+    if (fechaInicio != "" && fechaFin != "") {
+        if (dateIsValid(fechaInicio) == false || dateIsValid(fechaFin) == false) {
+            MensajeError("Error en rango de fechas");
+            return;
+        }
+    }
+
+    let objConfiguracion = {
+        url: "Transaccion/BuscarTransaccionesConsultaContabilidad/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString() + "&codigoTipoOperacion=" + codigoTipoOperacion.toString() + "&codigoOperacion=" + codigoOperacion.toString() + "&codigoCategoriaEntidad=" + codigoCategoriaEntidad.toString() + "&nombreEntidad=" + nombreEntidad + "&fechaInicioStr=" + fechaInicio + "&fechaFinStr=" + fechaFin,
+        cabeceras: ["Código", "codigoTransaccionAnt", "correccion", "Código Operación", "Operación", "Código Cuenta por Cobrar", "Año", "Semana", "Fecha Operación", "Día Operación", "Fecha Recibo", "Número Recibo", "Entidad", "Categoría", "Monto", "Estado", "Fecha Transacción", "Creado por", "Anular", "Editar", "Signo", "Número Recibo", "Ruta", "Fecha Impresión", "Recursos", "codigoSeguridad"],
+        propiedades: ["codigoTransaccion", "codigoTransaccionAnt", "correccion", "codigoOperacion", "operacion", "codigoCuentaPorCobrar", "anioOperacion", "semanaOperacion", "fechaStr", "nombreDiaOperacion", "fechaReciboStr", "numeroRecibo", "nombreEntidad", "categoriaEntidad", "monto", "estado", "fechaIngStr", "usuarioIng", "permisoAnular", "permisoEditar", "signo", "numeroReciboStr", "ruta", "fechaImpresionStr", "recursos", "codigoSeguridad"],
+        displaydecimals: ["monto"],
+        divContenedorTabla: "divContenedorTabla",
+        divPintado: "divTabla",
+        alerta: true,
+        funcionalerta: "CorreccionTransaccion",
+        imprimir: true,
+        sumarcolumna: true,
+        columnasumalist: [14],
+        paginar: true,
+        ocultarColumnas: true,
+        hideColumns: [
+            {
+                "targets": [1],
+                "visible": false
+            }, {
+                "targets": [2],
+                "visible": false
+            }, {
+                "targets": [3],
+                "visible": false
+            }, {
+                "targets": [5],
+                "visible": false
+            }, {
+                "targets": [14],
+                "className": "dt-body-right"
+            }, {
+                "targets": [18],
+                "visible": false
+            }, {
+                "targets": [19],
+                "visible": false
+            }, {
+                "targets": [20],
+                "visible": false
+            }, {
+                "targets": [21],
+                "visible": false
+            }, {
+                "targets": [22],
+                "visible": false
+            }, {
+                "targets": [23],
+                "visible": false
+            }, {
+                "targets": [24],
+                "visible": false
+            }, {
+                "targets": [25],
+                "visible": false
+            }],
+        slug: "codigoTransaccion"
+    }
+    pintar(objConfiguracion);
+}
+
+
+
 //function MostrarTransaccionesCorreccion(anioOperacion, semanaOperacion, codigoReporte, codigoOperacion, codigoCategoriaEntidad) {
 //    let errores = ValidarDatos("frmBusquedaTransacciones")
 //    if (errores != "") {
@@ -422,6 +534,20 @@ function buscarTransaccionesConsulta() {
     let codigoCategoriaEntidad = parseInt(objCategoriaEntidad.options[objCategoriaEntidad.selectedIndex].value);
     let diaOperacion = parseInt(objDiaOperacion.options[objDiaOperacion.selectedIndex].value);
     MostrarTransaccionesConsulta(anioOperacion, semanaOperacion, codigoReporte, codigoOperacion, codigoCategoriaEntidad, diaOperacion);
+}
+
+function buscarTransaccionesConsultaContabilidad() {
+    let anioOperacion = parseInt(document.getElementById("uiFiltroAnio").value);
+    let semanaOperacion = parseInt(document.getElementById("uiFiltroSemana").value);
+    let codigoTipoOperacion = parseInt(document.getElementById("uiFiltroTipoOperacion").value);
+    let objOperacion = document.getElementById("uiFiltroOperaciones");
+    let objCategoriaEntidad = document.getElementById("uiFiltroCategorias");
+    let codigoOperacion = parseInt(objOperacion.options[objOperacion.selectedIndex].value);
+    let codigoCategoriaEntidad = parseInt(objCategoriaEntidad.options[objCategoriaEntidad.selectedIndex].value);
+    let nombreEntidad = document.getElementById("uiFiltroNombreEntidad").value;
+    let fechaInicio = document.getElementById("uiFiltroFechaInicio").value;
+    let fechaFin = document.getElementById("uiFiltroFechaFin").value;
+    MostrarTransaccionesConsultaContabilidad(anioOperacion, semanaOperacion, codigoTipoOperacion, codigoOperacion, codigoCategoriaEntidad, nombreEntidad, fechaInicio.trim(), fechaFin.trim());
 }
 
 
@@ -1193,6 +1319,30 @@ function GenerarExcelTransaccionesConsulta() {
     let diaOperacion = parseInt(objDiaOperacion.options[objDiaOperacion.selectedIndex].value);
     document.getElementById("uiExportarExcel").href = "/Transaccion/ExportarExcelTransaccionConsulta/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString() + "&codigoReporte=" + codigoReporte.toString() + "&codigoOperacion=" + codigoOperacion.toString() + "&codigoCategoriaEntidad=" + codigoCategoriaEntidad.toString() + "&diaOperacion=" + diaOperacion.toString();
     document.getElementById("uiExportarExcel").click();
+}
+
+function GenerarExcelTransaccionesConsultaContabilidad() {
+    let anioOperacion = parseInt(document.getElementById("uiFiltroAnio").value);
+    let semanaOperacion = parseInt(document.getElementById("uiFiltroSemana").value);
+    let codigoTipoOperacion = parseInt(document.getElementById("uiFiltroTipoOperacion").value);
+    let objOperacion = document.getElementById("uiFiltroOperaciones");
+    let objCategoriaEntidad = document.getElementById("uiFiltroCategorias");
+    let codigoOperacion = parseInt(objOperacion.options[objOperacion.selectedIndex].value);
+    let codigoCategoriaEntidad = parseInt(objCategoriaEntidad.options[objCategoriaEntidad.selectedIndex].value);
+    let nombreEntidad = document.getElementById("uiFiltroNombreEntidad").value;
+    let fechaInicio = document.getElementById("uiFiltroFechaInicio").value;
+    let fechaFin = document.getElementById("uiFiltroFechaFin").value;
+
+    fetchGetDownload("Transaccion/ExportarExcelTransaccionConsultaContabilidad/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString() + "&codigoTipoOperacion=" + codigoTipoOperacion.toString() + "&codigoOperacion=" + codigoOperacion.toString() + "&codigoCategoriaEntidad=" + codigoCategoriaEntidad.toString() + "&nombreEntidad=" + nombreEntidad + "&fechaInicioStr=" + fechaInicio + "&fechaFinStr=" + fechaFin, function (data) {
+        var file = new Blob([data], { type: 'application/vnd.ms-excel' });
+        var fileURL = URL.createObjectURL(file);
+        window.open(fileURL, "EPrescription");
+    }).finally(() => {
+        document.getElementById('divLoading').style.display = 'none';
+    });
+
+    //document.getElementById("uiExportarExcel").href = "/Transaccion/ExportarExcelTransaccionConsultaContabilidad/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString() + "&codigoTipoOperacion=" + codigoTipoOperacion.toString() + "&codigoOperacion=" + codigoOperacion.toString() + "&codigoCategoriaEntidad=" + codigoCategoriaEntidad.toString() + "&nombreEntidad=" + nombreEntidad + "&fechaInicioStr=" + fechaInicio + "&fechaFinStr=" + fechaFin;
+    //document.getElementById("uiExportarExcel").click();
 }
 
 

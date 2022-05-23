@@ -21,6 +21,12 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
             return obj.FillComboOperacion(codigoTipoOperacion);
         }
 
+        public OperacionComboCLS FillComboOperacionFiltroConsulta(int codigoTipoOperacion)
+        {
+            OperacionBL obj = new OperacionBL();
+            return obj.FillComboOperacionFiltroConsulta(codigoTipoOperacion);
+        }
+
         public List<OperacionCLS> GetOperacionesParaAsignacionAEntidadesGenericas()
         {
             OperacionBL obj = new OperacionBL();

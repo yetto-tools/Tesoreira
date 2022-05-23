@@ -71,6 +71,78 @@ namespace CapaDatos.Tesoreria
             }
         }
 
+        public OperacionComboCLS GetListOperacionesFiltroConsulta(int codigoTipoOperacion)
+        {
+            OperacionComboCLS objOperacionComboCLS = new OperacionComboCLS();
+            using (SqlConnection conexion = new SqlConnection(cadenaTesoreria))
+            {
+                try
+                {
+                    string filterTipoOperacion = string.Empty;
+                    switch (codigoTipoOperacion)
+                    {
+                        case 1: // INGRESO
+                            filterTipoOperacion = "AND y.signo = 1";
+                                break;
+                        case 2: // EGRESO
+                            filterTipoOperacion = "AND y.signo = -1";
+                            break;
+                        default:
+                            break;
+                    }
+
+                    string sql = @"
+                    SELECT x.codigo_operacion, 
+	                       x.nombre_operacion AS nombre,
+                           x.nombre_reporte_caja 
+                    FROM db_tesoreria.operacion x
+                    INNER JOIN db_tesoreria.tipo_operacion y
+                    ON x.codigo_tipo_operacion = y.codigo_tipo_operacion
+                    WHERE x.estado = @EstadoRegistro
+                      AND x.habilitar_para_caja = @Habilitar  
+                      " + filterTipoOperacion + @"
+                      ORDER BY x.nombre_reporte_caja ASC";
+
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand(sql, conexion))
+                    {
+                        // CommandType, Gets or sets a value indicating how the CommandText property is to be interpreted.
+                        // The Text CommandType.Text is used when the command is raw SQL
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Parameters.AddWithValue("@EstadoRegistro", Constantes.EstadoRegistro.ACTIVO);
+                        cmd.Parameters.AddWithValue("@Habilitar", Constantes.EstadoRegistro.ACTIVO);
+                        SqlDataReader dr = cmd.ExecuteReader();
+                        if (dr != null)
+                        {
+                            List<OperacionCLS> listaOperaciones = new List<OperacionCLS>();
+                            int postCodigoOperacion = dr.GetOrdinal("codigo_operacion");
+                            int postNombre = dr.GetOrdinal("nombre");
+                            int postNombreReporteCaja = dr.GetOrdinal("nombre_reporte_caja");
+
+                            OperacionCLS objOperacionCLS;
+                            while (dr.Read())
+                            {
+                                objOperacionCLS = new OperacionCLS();
+                                objOperacionCLS.CodigoOperacion = dr.GetInt16(postCodigoOperacion);
+                                objOperacionCLS.Nombre = dr.GetString(postNombre);
+                                objOperacionCLS.NombreReporteCaja = dr.GetString(postNombreReporteCaja);
+                                listaOperaciones.Add(objOperacionCLS);
+                            }//fin while
+                            objOperacionComboCLS.listaOperaciones = listaOperaciones;
+                        }// fin if
+                    }// fin using
+                    conexion.Close();
+                }
+                catch (Exception)
+                {
+                    conexion.Close();
+                    objOperacionComboCLS = null;
+
+                }
+                return objOperacionComboCLS;
+            }
+        }
+
         public List<OperacionCLS> GetOperacionesParaAsignacionAEntidadesGenericas()
         {
             List<OperacionCLS> lista = null;

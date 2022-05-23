@@ -515,7 +515,6 @@ function GenerarPdfReporteDetalleCompromisoFiscal(obj) {
 
 
 /* Reporte de Ventas Facturadas */
-
 function fillComboEmpresasComercializadoras() {
     fetchGet("Empresa/GetAllEmpresasComercializadoras", "json", function (rpta) {
         if (rpta == null || rpta == undefined || rpta.length == 0) {
@@ -554,7 +553,7 @@ async function generarExcelVentasFacturadas() {
 
 
 // cookies
-function deleteCookie() {
+/*function deleteCookie() {
     var cook = getCookie('ExcelDownloadFlag');
     if (cook != "") {
         //document.cookie = "ExcelDownloadFlag=; Path = /; expires=Thu, 01 Jan 1970 00:00:00 UTC";
@@ -580,4 +579,4 @@ function getCookie(cname) {
         }
     }
     return "";
-}
+}*/

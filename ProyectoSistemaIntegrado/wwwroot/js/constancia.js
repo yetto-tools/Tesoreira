@@ -1,9 +1,9 @@
 ﻿function getHtmlConstanciaIngreso(codigoTransaccion, codigoOperacion, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion, codigoSeguridad) {
     let table = `<div style="width: 287px; max-width: 287px; text-align: center; align-content: center; margin-left: 25px;">
-                 <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">CAJA CENTRAL<br>
-                 <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">${codigoSeguridad}<br>
-                 <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif';">VALE DE INGRESOS<br>
-                 <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif';">${codigoTransaccion}<br>
+                 <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">TESORERÍA</p>
+                 <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">${codigoSeguridad}</p>
+                 <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif';">ING</p>
+                 <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif';">${codigoTransaccion}</p>
                  <table style="border-top: 1px solid black; border-collapse: collapse;">
                     <tr style="border-collapse: collapse;">
                         <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Recibo:</td>
@@ -44,10 +44,10 @@
 
 function getHtmlConstanciaEgreso(codigoTransaccion, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion, codigoSeguridad) {
     let table = `<div style="width: 287px; max-width: 287px; text-align: center; align-content: center; margin-left: 25px;">
-                 <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">CAJA CENTRAL<br>
-                 <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">${codigoSeguridad}<br>
-                 <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif';">COMPROBANTE DE EGRESO<br>
-                 <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif';">${codigoTransaccion}<br>
+                 <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">TESORERÍA</p>
+                 <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">${codigoSeguridad}</p>
+                 <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif';">EGR</p>
+                 <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif';">${codigoTransaccion}</p>
                  <table style="border-top: 1px solid black; border-collapse: collapse;">
                     <tr style="border-collapse: collapse;">
                         <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Recibo:</td>

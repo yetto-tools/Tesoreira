@@ -2139,8 +2139,15 @@ function listarRuteros() {
         idtabla: "tablaVendedores",
         radio: true,
         paginar: true,
+        ocultarColumnas: true,
+        hideColumns: [
+            {
+                "targets": [5],
+                "visible": false
+            }],
         eventoradio: "Vendedores",
-        slug: "ruta"
+        slug: "ruta",
+        autoWidth: false
     }
     pintar(objGlobalConfigTransaccion);
 }

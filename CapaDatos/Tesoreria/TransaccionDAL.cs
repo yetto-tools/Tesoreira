@@ -1585,7 +1585,12 @@ namespace CapaDatos.Tesoreria
                             CONCAT(CASE WHEN x.efectivo = 1 THEN 'Efectivo,' ELSE '' END,CASE WHEN x.deposito = 1 THEN 'Depósito,' ELSE '' END,CASE WHEN x.cheque = 1 THEN 'Cheque' ELSE '' END) AS recursos,
                             COALESCE(x.codigo_transaccion_ant,0) AS codigo_transaccion_ant,
                             x.correccion,
-                            x.codigo_seguridad
+                            x.codigo_seguridad,
+                            CASE
+                              WHEN e.signo = 1 THEN 'INGRESO'  
+                              WHEN e.signo = -1 THEN 'EGRESO'  
+                              ELSE 'NEUTRO'
+                            END AS tipo_operacion_contable 
 
                     FROM db_tesoreria.transaccion x
                     INNER JOIN db_tesoreria.operacion w
@@ -1658,6 +1663,7 @@ namespace CapaDatos.Tesoreria
                             int postCodigoTransaccionAnt = dr.GetOrdinal("codigo_transaccion_ant");
                             int postCorreccion = dr.GetOrdinal("correccion");
                             int postCodigoSeguridad = dr.GetOrdinal("codigo_seguridad");
+                            int postTipoOperacionContable = dr.GetOrdinal("tipo_operacion_contable");
 
                             while (dr.Read())
                             {
@@ -1702,6 +1708,7 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.CodigoTransaccionAnt = dr.GetInt64(postCodigoTransaccionAnt);
                                 objTransaccion.Correccion = dr.GetByte(postCorreccion);
                                 objTransaccion.CodigoSeguridad = dr.GetString(postCodigoSeguridad);
+                                objTransaccion.TipoOperacionContable = dr.GetString(postTipoOperacionContable);
 
                                 lista.Add(objTransaccion);
                             }
@@ -1719,211 +1726,6 @@ namespace CapaDatos.Tesoreria
                 return lista;
             }
         }
-
-        /// <summary>
-        /// Temporal, solo para realizar la edicion de las diferentes variantes de las operaciones
-        /// </summary>
-        /// <param name="idUsuario"></param>
-        /// <param name="codigoOperacion"></param>
-        /// <param name="codigoCategoriaEntidad"></param>
-        /// <returns></returns>
-        //public List<TransaccionCLS> BuscarTransaccionesEdicion(string idUsuario, int codigoOperacion, int codigoCategoriaEntidad)
-        //{
-        //    List<TransaccionCLS> lista = null;
-        //    using (SqlConnection conexion = new SqlConnection(cadenaTesoreria))
-        //    {
-        //        try
-        //        {
-        //            string filterOperaciones = string.Empty;
-        //            string filterCategoriaEntidad = string.Empty;
-        //            if (codigoOperacion != -1)
-        //            {
-        //                filterOperaciones = " AND x.codigo_operacion = " + codigoOperacion.ToString();
-        //            }
-        //            if (codigoCategoriaEntidad != -1)
-        //            {
-        //                filterCategoriaEntidad = " AND x.codigo_categoria_entidad = " + codigoCategoriaEntidad.ToString();
-        //            }
-        //            string sql = @"
-        //            SELECT  x.codigo_transaccion,
-        //                    x.anio_operacion,
-        //                    x.semana_operacion,
-		      //              x.codigo_tipo_transaccion,
-        //                    x.serie_factura,
-    	   //                 x.numero_documento,
-		      //              x.fecha_documento,
-		      //              x.numero_recibo,
-		      //              x.fecha_recibo,
-        //                    FORMAT(x.fecha_recibo,'dd/MM/yyyy') AS fecha_recibo_str,
-        //                    REPLACE(STR(CAST(x.numero_recibo AS varchar), 6),' ','0') AS numero_recibo_str,
-		      //              x.codigo_entidad,
-        //                    db_tesoreria.GetNombreEntidad(x.codigo_categoria_entidad, x.codigo_entidad) AS entidad,
-        //                    x.codigo_categoria_entidad,
-        //                    d.nombre AS categoria_entidad,
-		      //              x.codigo_operacion,
-		      //              w.nombre_operacion AS operacion,
-        //                    w.nombre_reporte_caja AS operacion_caja,
-		      //              x.codigo_tipo_cxc,
-		      //              a.nombre AS tipo_cxc,
-        //                    x.codigo_cxc,
-		      //              x.codigo_area,
-		      //              b.nombre AS area,
-		      //              x.fecha_operacion,
-        //                    FORMAT(x.fecha_operacion,'dd/MM/yyyy') AS fecha_operacion_str,
-        //                    CASE
-        //                      WHEN x.dia_operacion = 1 THEN 'LUNES'
-        //                      WHEN x.dia_operacion = 2 THEN 'MARTES'
-        //                      WHEN x.dia_operacion = 3 THEN 'MIERCOLES'
-        //                      WHEN x.dia_operacion = 4 THEN 'JUEVES'
-        //                      WHEN x.dia_operacion = 5 THEN 'VIERNES'
-        //                      WHEN x.dia_operacion = 6 THEN 'SABADO' 
-        //                      WHEN x.dia_operacion = 7 THEN 'DOMINGO' 
-        //                      ELSE 'NO DEFINIDO'
-        //                    END AS nombre_dia_operacion,
-		      //              x.monto,
-		      //              x.codigo_estado,
-		      //              c.nombre AS estado,
-        //                    x.fecha_ing,
-        //                    x.usuario_ing,
-        //                    FORMAT(x.fecha_ing, 'dd/MM/yyyy, hh:mm:ss') AS fecha_ing_str,
-        //                    CASE  
-        //                     WHEN x.codigo_estado = @CodigoEstadoTransaccion THEN 1
-        //                     ELSE 0
-        //                    END AS permiso_anular,
-        //                    CASE  
-        //                     WHEN x.codigo_estado = @CodigoEstadoTransaccion THEN 1
-        //                     ELSE 0
-        //                    END AS permiso_editar,
-        //                    e.signo,
-        //                    x.ruta,
-        //                    FORMAT(GETDATE(), 'dd/MM/yyyy, hh:mm:ss') AS fecha_impresion_str,
-        //                    CONCAT(CASE WHEN x.efectivo = 1 THEN 'Efectivo,' ELSE '' END,CASE WHEN x.deposito = 1 THEN 'Depósito,' ELSE '' END,CASE WHEN x.cheque = 1 THEN 'Cheque' ELSE '' END) AS recursos
-        //            FROM db_tesoreria.transaccion x
-        //            INNER JOIN db_tesoreria.operacion w
-        //            ON x.codigo_operacion = w.codigo_operacion
-        //            LEFT JOIN db_contabilidad.tipo_cxc a
-        //            ON x.codigo_tipo_cxc = a.codigo_tipo_cxc
-        //            LEFT JOIN db_rrhh.area b
-        //            ON x.codigo_area = b.codigo_area
-        //            INNER JOIN db_tesoreria.estado_transaccion c
-        //            ON x.codigo_estado = c.codigo_estado_transaccion
-        //            INNER JOIN db_tesoreria.entidad_categoria d
-        //            ON x.codigo_categoria_entidad = d.codigo_categoria_entidad
-        //            INNER JOIN db_tesoreria.tipo_operacion e
-        //            ON w.codigo_tipo_operacion = e.codigo_tipo_operacion
-        //            WHERE x.usuario_ing = @UsuarioIng
-        //              AND x.codigo_estado = @CodigoEstadoTransaccion
-        //              AND x.complemento_conta = 0
-        //            " + filterOperaciones + @"    
-        //            " + filterCategoriaEntidad + @"    
-        //            ORDER BY x.codigo_transaccion DESC";
-
-        //            conexion.Open();
-        //            using (SqlCommand cmd = new SqlCommand(sql, conexion))
-        //            {
-        //                cmd.CommandType = CommandType.Text;
-        //                cmd.Parameters.AddWithValue("@UsuarioIng", idUsuario);
-        //                cmd.Parameters.AddWithValue("@CodigoEstadoTransaccion", Constantes.EstadoTransacccion.INCLUIDO_EN_REPORTE);
-        //                SqlDataReader dr = cmd.ExecuteReader();
-        //                if (dr != null)
-        //                {
-        //                    TransaccionCLS objTransaccion;
-        //                    lista = new List<TransaccionCLS>();
-        //                    int postCodigoTransaccion = dr.GetOrdinal("codigo_transaccion");
-        //                    int postAnioOperacion = dr.GetOrdinal("anio_operacion");
-        //                    int postSemanaOperacion = dr.GetOrdinal("semana_operacion");
-        //                    int postCodigoTipoTransaccion = dr.GetOrdinal("codigo_tipo_transaccion");
-        //                    int postSerieFactura = dr.GetOrdinal("serie_factura");
-        //                    int postNumeroDocumento = dr.GetOrdinal("numero_documento");
-        //                    int postFechaDocumento = dr.GetOrdinal("fecha_documento");
-        //                    int postNumeroRecibo = dr.GetOrdinal("numero_recibo");
-        //                    int postNumeroReciboStr = dr.GetOrdinal("numero_recibo_str");
-        //                    int postFechaRecibo = dr.GetOrdinal("fecha_recibo");
-        //                    int postFechaReciboStr = dr.GetOrdinal("fecha_recibo_str");
-        //                    int postCodigoEntidad = dr.GetOrdinal("codigo_entidad");
-        //                    int postEntidad = dr.GetOrdinal("entidad");
-        //                    int postCodigoCategoriaEntidad = dr.GetOrdinal("codigo_categoria_entidad");
-        //                    int postCategoriaEntidad = dr.GetOrdinal("categoria_entidad");
-        //                    int postCodigoOperacion = dr.GetOrdinal("codigo_operacion");
-        //                    int postOperacion = dr.GetOrdinal("operacion");
-        //                    int postCodigoTipoCuentaPorCobrar = dr.GetOrdinal("codigo_tipo_cxc");
-        //                    int postTipoCuentaPorCobrar = dr.GetOrdinal("tipo_cxc");
-        //                    int postCodigoCuentaPorCobrar = dr.GetOrdinal("codigo_cxc");
-        //                    int postCodigoArea = dr.GetOrdinal("codigo_area");
-        //                    int postArea = dr.GetOrdinal("area");
-        //                    int postFechaOperacion = dr.GetOrdinal("fecha_operacion");
-        //                    int postFechaOperacionStr = dr.GetOrdinal("fecha_operacion_str");
-        //                    int postNombreDiaOperacion = dr.GetOrdinal("nombre_dia_operacion");
-        //                    int postMonto = dr.GetOrdinal("monto");
-        //                    int postCodigoEstado = dr.GetOrdinal("codigo_estado");
-        //                    int postEstado = dr.GetOrdinal("estado");
-        //                    int postFechaIng = dr.GetOrdinal("fecha_ing");
-        //                    int postUsuarioIng = dr.GetOrdinal("usuario_ing");
-        //                    int postFechaIngStr = dr.GetOrdinal("fecha_ing_str");
-        //                    int postPermisoAnular = dr.GetOrdinal("permiso_anular");
-        //                    int postPermisoEditar = dr.GetOrdinal("permiso_editar");
-        //                    int postSigno = dr.GetOrdinal("signo");
-        //                    int postRuta = dr.GetOrdinal("ruta");
-        //                    int postFechaImpresionStr = dr.GetOrdinal("fecha_impresion_str");
-        //                    int postRecursos = dr.GetOrdinal("recursos");
-
-        //                    while (dr.Read())
-        //                    {
-        //                        objTransaccion = new TransaccionCLS();
-        //                        objTransaccion.CodigoTransaccion = dr.GetInt64(postCodigoTransaccion);
-        //                        objTransaccion.AnioOperacion = dr.GetInt16(postAnioOperacion);
-        //                        objTransaccion.SemanaOperacion = dr.GetByte(postSemanaOperacion);
-        //                        objTransaccion.CodigoTipoTransaccion = dr.GetString(postCodigoTipoTransaccion);
-        //                        objTransaccion.SerieFactura = dr.IsDBNull(postSerieFactura) ? "" : dr.GetString(postSerieFactura);
-        //                        objTransaccion.NumeroDocumento = dr.IsDBNull(postNumeroDocumento) ? null : dr.GetInt32(postNumeroDocumento);
-        //                        objTransaccion.FechaDocumento = dr.IsDBNull(postFechaDocumento) ? null : dr.GetDateTime(postFechaDocumento);
-        //                        objTransaccion.NumeroRecibo = dr.GetInt64(postNumeroRecibo);
-        //                        objTransaccion.NumeroReciboStr = dr.GetString(postNumeroReciboStr);
-        //                        objTransaccion.FechaRecibo = dr.GetDateTime(postFechaRecibo);
-        //                        objTransaccion.FechaReciboStr = dr.GetString(postFechaReciboStr);
-        //                        objTransaccion.CodigoEntidad = dr.GetString(postCodigoEntidad);
-        //                        objTransaccion.NombreEntidad = dr.IsDBNull(postEntidad) ? "" : dr.GetString(postEntidad);
-        //                        objTransaccion.CodigoCategoriaEntidad = dr.GetInt16(postCodigoCategoriaEntidad);
-        //                        objTransaccion.CategoriaEntidad = dr.GetString(postCategoriaEntidad);
-        //                        objTransaccion.CodigoOperacion = dr.GetInt16(postCodigoOperacion);
-        //                        objTransaccion.Operacion = dr.GetString(postOperacion);
-        //                        objTransaccion.CodigoTipoCuentaPorCobrar = dr.GetByte(postCodigoTipoCuentaPorCobrar);
-        //                        objTransaccion.TipoCuentaPorCobrar = dr.GetString(postTipoCuentaPorCobrar);
-        //                        objTransaccion.CodigoCuentaPorCobrar = dr.IsDBNull(postCodigoCuentaPorCobrar) ? -1 : dr.GetInt64(postCodigoCuentaPorCobrar);
-        //                        objTransaccion.CodigoArea = dr.GetInt16(postCodigoArea);
-        //                        objTransaccion.Area = dr.GetString(postArea);
-        //                        objTransaccion.FechaOperacion = dr.GetDateTime(postFechaOperacion);
-        //                        objTransaccion.FechaStr = dr.GetString(postFechaOperacionStr);
-        //                        objTransaccion.NombreDiaOperacion = dr.GetString(postNombreDiaOperacion);
-        //                        objTransaccion.Monto = dr.GetDecimal(postMonto);
-        //                        objTransaccion.CodigoEstado = dr.GetInt16(postCodigoEstado);
-        //                        objTransaccion.Estado = dr.GetString(postEstado);
-        //                        objTransaccion.FechaIng = dr.GetDateTime(postFechaIng);
-        //                        objTransaccion.FechaIngStr = dr.GetString(postFechaIngStr);
-        //                        objTransaccion.UsuarioIng = dr.GetString(postUsuarioIng);
-        //                        objTransaccion.PermisoAnular = (Byte)dr.GetInt32(postPermisoAnular);
-        //                        objTransaccion.PermisoEditar = (Byte)dr.GetInt32(postPermisoEditar);
-        //                        objTransaccion.Signo = dr.GetInt16(postSigno);
-        //                        objTransaccion.Ruta = dr.GetInt16(postRuta);
-        //                        objTransaccion.FechaImpresionStr = dr.GetString(postFechaImpresionStr);
-        //                        objTransaccion.Recursos = dr.GetString(postRecursos);
-
-        //                        lista.Add(objTransaccion);
-        //                    }
-
-        //                }
-        //            }
-        //            conexion.Close();
-        //        }
-        //        catch (Exception)
-        //        {
-        //            conexion.Close();
-        //            lista = null;
-        //        }
-
-        //        return lista;
-        //    }
-        //}
 
         public List<TransaccionCLS> BuscarTransaccionesConsulta(int anioOperacion, int semanaOperacion, int codigoReporte, int codigoOperacion, int codigoCategoriaEntidad, int diaOperacion)
         {
@@ -2002,7 +1804,12 @@ namespace CapaDatos.Tesoreria
                             COALESCE(x.codigo_transaccion_ant,0) AS codigo_transaccion_ant,
                             x.revisado,
                             x.correccion,
-                            x.codigo_seguridad
+                            x.codigo_seguridad,
+                            CASE
+                              WHEN e.signo = 1 THEN 'INGRESO'  
+                              WHEN e.signo = -1 THEN 'EGRESO'  
+                              ELSE 'NEUTRO'
+                            END AS tipo_operacion_contable 
 
                     FROM db_tesoreria.transaccion x
                     INNER JOIN db_tesoreria.operacion w
@@ -2080,6 +1887,7 @@ namespace CapaDatos.Tesoreria
                             int postRevisado = dr.GetOrdinal("revisado");
                             int postCorreccion = dr.GetOrdinal("correccion");
                             int postCodigoSeguridad = dr.GetOrdinal("codigo_seguridad");
+                            int postTipoOperacionContable = dr.GetOrdinal("tipo_operacion_contable");
 
                             while (dr.Read())
                             {
@@ -2126,6 +1934,7 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.Revisado = dr.GetByte(postRevisado);
                                 objTransaccion.Correccion = dr.GetByte(postCorreccion);
                                 objTransaccion.CodigoSeguridad = dr.GetString(postCodigoSeguridad);
+                                objTransaccion.TipoOperacionContable = dr.GetString(postTipoOperacionContable);
 
                                 lista.Add(objTransaccion);
                             }
@@ -2265,7 +2074,12 @@ namespace CapaDatos.Tesoreria
                             COALESCE(x.codigo_transaccion_ant,0) AS codigo_transaccion_ant,
                             x.revisado,
                             x.correccion,
-                            x.codigo_seguridad
+                            x.codigo_seguridad,
+                            CASE
+                              WHEN e.signo = 1 THEN 'INGRESO'  
+                              WHEN e.signo = -1 THEN 'EGRESO'  
+                              ELSE 'NEUTRO'
+                            END AS tipo_operacion_contable 
 
                     FROM db_tesoreria.transaccion x
                     INNER JOIN db_tesoreria.operacion w
@@ -2341,6 +2155,7 @@ namespace CapaDatos.Tesoreria
                             int postRevisado = dr.GetOrdinal("revisado");
                             int postCorreccion = dr.GetOrdinal("correccion");
                             int postCodigoSeguridad = dr.GetOrdinal("codigo_seguridad");
+                            int postTipoOperacionContable = dr.GetOrdinal("tipo_operacion_contable");
 
                             while (dr.Read())
                             {
@@ -2387,6 +2202,7 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.Revisado = dr.GetByte(postRevisado);
                                 objTransaccion.Correccion = dr.GetByte(postCorreccion);
                                 objTransaccion.CodigoSeguridad = dr.GetString(postCodigoSeguridad);
+                                objTransaccion.TipoOperacionContable = dr.GetString(postTipoOperacionContable);
 
                                 lista.Add(objTransaccion);
                             }
@@ -2495,7 +2311,12 @@ namespace CapaDatos.Tesoreria
                               ELSE 0
                             END AS permiso_corregir,
                             x.correccion,
-                            x.codigo_seguridad
+                            x.codigo_seguridad,
+                            CASE
+                              WHEN e.signo = 1 THEN 'INGRESO'  
+                              WHEN e.signo = -1 THEN 'EGRESO'  
+                              ELSE 'NEUTRO'
+                            END AS tipo_operacion_contable 
 
                     FROM db_tesoreria.transaccion x
                     INNER JOIN db_tesoreria.operacion w
@@ -2588,6 +2409,7 @@ namespace CapaDatos.Tesoreria
                             int postCorreccion = dr.GetOrdinal("correccion");
                             int postPermisoAnular = dr.GetOrdinal("permiso_anular");
                             int postCodigoSeguridad = dr.GetOrdinal("codigo_seguridad");
+                            int postTipoOperacionContable = dr.GetOrdinal("tipo_operacion_contable");
 
                             while (dr.Read())
                             {
@@ -2639,6 +2461,7 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.Correccion = dr.GetByte(postCorreccion);
                                 objTransaccion.PermisoAnular = (byte)dr.GetInt32(postPermisoAnular);
                                 objTransaccion.CodigoSeguridad = dr.GetString(postCodigoSeguridad);
+                                objTransaccion.TipoOperacionContable = dr.GetString(postTipoOperacionContable);
 
                                 lista.Add(objTransaccion);
                             }

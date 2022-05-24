@@ -5,7 +5,7 @@
     let nameAction = url[2];
     let url1 = new URL(url_string);
     if (nameController == "Empleado") {
-        let codigoEmpleado = url1.searchParams.get("codigoEmpleado");
+
         switch (nameAction) {
             case "Index":
                 fillCombosFiltroEmpleados();
@@ -16,8 +16,9 @@
                 clearDataNewEmpleado();
                 break;
             case "Edit":
-                fillCombosEditEmpleado();
-                MostrarDataEmpleado(codigoEmpleado);
+                let codigoEmpleado = url1.searchParams.get("codigoEmpleado");
+                fillCombosEditEmpleado(codigoEmpleado);
+                //MostrarDataEmpleado(codigoEmpleado);
                 break;
             case "HabilitarEmpleadoRetirado":
                 fillCombosFiltroEmpleadosRetirados();
@@ -67,9 +68,11 @@ function clearDataNewEmpleado() {
     let elementJornadaDiurna = document.getElementById('uiDiurna');
     let elementJornadaNocturna = document.getElementById('uiNocturna');
     let elementJornadaMixta = document.getElementById('uiMixta');
+    let elementSinJornada = document.getElementById('uiSinJornada');
     elementJornadaDiurna.checked = false;
     elementJornadaNocturna.checked = false;
     elementJornadaMixta.checked = false;
+    elementSinJornada.checked = false;
     let elementPeriodicidadMensual = document.getElementById('uiPeriodicidadMensual');
     let elementPeriodicidadQuincenal = document.getElementById('uiPeriodicidadQuincenal');
     let elementPeriodicidadSemanal = document.getElementById('uiPeriodicidadSemanal');
@@ -101,7 +104,7 @@ function fillCombosNewEmpleado() {
     })
 }
 
-function fillCombosEditEmpleado() {
+function fillCombosEditEmpleado(codigoEmpleado) {
     fetchGet("Empleado/FillCombosNewEmpleado", "json", function (rpta) {
         let listaAreas = rpta.listaAreas;
         let listaSecciones = rpta.listaSecciones;
@@ -109,6 +112,7 @@ function fillCombosEditEmpleado() {
         FillCombo(listaAreas, "cboArea", "codigoArea", "nombre", "- seleccione -", "-1");
         FillCombo(listaSecciones, "cboSeccion", "codigoSeccion", "nombre", "- seleccione -", "0");
         FillCombo(listaPuestos, "cboPuesto", "codigoPuesto", "nombre", "- seleccione -", "-1");
+        MostrarDataEmpleado(codigoEmpleado);
     })
 }
 
@@ -373,6 +377,7 @@ function mostrarEmpleados(codigoEmpresa, codigoArea, codigoPuesto, codigoEstado,
         funcioneditar: "Empleado",
         eliminar: true,
         funcioneliminar: "Empleado",
+        sortFieldDate: ["fechaIngresoStr"],
         paginar: true,
         ocultarColumnas: true,
         hideColumns: [
@@ -398,7 +403,7 @@ function EditarEmpleado(obj) {
 function MostrarDataEmpleado(codigoEmpleado) {
     fetchGet("Empleado/GetDataEmpleado/?codigoEmpleado=" + codigoEmpleado, "json", function (rpta) {
         if (rpta == null || rpta == undefined) {
-            alert("vacion");
+            alert("vacio");
         } else {
             //document.querySelector('#cboEmpresa').value = rpta.codigoEmpresa;
             set("uiCodigoEmpresa", rpta.codigoEmpresa);
@@ -415,12 +420,12 @@ function MostrarDataEmpleado(codigoEmpleado) {
             document.querySelector('#uiGenero').value = rpta.codigoGenero;
             set("uiCorreoElectronico", rpta.correoElectronico);
             set("uiNumeroAfiliacion", rpta.numeroAfiliacion);
+
             document.querySelector('#cboArea').value = rpta.codigoArea;
-
             document.querySelector('#cboSeccion').value = rpta.codigoSeccion;
-
             document.querySelector('#cboPuesto').value = rpta.codigoPuesto;
             document.querySelector('#cboUbicacion').value = rpta.codigoUbicacion;
+
             setCheckedValueOfRadioButtonGroup('CodigoTipoCuenta', rpta.codigoTipoCuenta);
             set("uiNumeroCuenta", rpta.numeroCuenta);
             set("uiMontoDevengado", rpta.montoDevengado);

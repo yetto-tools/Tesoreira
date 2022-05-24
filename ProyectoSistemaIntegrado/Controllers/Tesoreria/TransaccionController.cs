@@ -422,10 +422,10 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
             lista = obj.BuscarTransaccionesConsultaContabilidad(anioOperacion, semanaOperacion, codigoTipoOperacion, codigoOperacion, codigoCategoriaEntidad, nombreEntidad, fechaInicioStr, fechaFinStr);
 
             string[] cabeceras = { "CodigoTransaccion","CodigoTipoTransaccion","NumeroRecibo","FechaRecibo","CodigoEntidad","NombreEntidad","CodigoCategoriaEntidad",
-            "CategoriaEntidad","CodigoOperacion","Operacion","TipoCuentaPorCobrar","CodigoArea","Area","FechaOperacion","FechaStr","DiaOperacion","NombreDiaOperacion","Monto","CodigoEstado","Estado","FechaIng",
+            "CategoriaEntidad","CodigoOperacion","Operacion","Tipo Operación","TipoCuentaPorCobrar","CodigoArea","Area","FechaOperacion","FechaStr","DiaOperacion","NombreDiaOperacion","Monto","CodigoEstado","Estado","FechaIng",
             "UsuarioIng","Ruta","ComplementoConta","Revisado","CodigoTransaccionAnt","Correccion"};
             string[] nombrePropiedades = { "CodigoTransaccion","CodigoTipoTransaccion","NumeroRecibo","FechaRecibo","CodigoEntidad","NombreEntidad","CodigoCategoriaEntidad",
-            "CategoriaEntidad","CodigoOperacion","Operacion","TipoCuentaPorCobrar","CodigoArea","Area","FechaOperacion","FechaStr","DiaOperacion","NombreDiaOperacion","Monto","CodigoEstado","Estado","FechaIng",
+            "CategoriaEntidad","CodigoOperacion","Operacion","TipoOperacionContable","TipoCuentaPorCobrar","CodigoArea","Area","FechaOperacion","FechaStr","DiaOperacion","NombreDiaOperacion","Monto","CodigoEstado","Estado","FechaIng",
             "UsuarioIng","Ruta","ComplementoConta","Revisado","CodigoTransaccionAnt","Correccion"};
 
             byte[] buffer = ExportarExcelDatos(cabeceras, nombrePropiedades, lista);

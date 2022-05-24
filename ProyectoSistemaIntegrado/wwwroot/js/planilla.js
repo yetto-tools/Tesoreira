@@ -44,8 +44,7 @@
                         break;
                     case "EditEmpleado":
                         let codigoEmpleado = url1.searchParams.get("codigoEmpleado");
-                        fillCombosEditEmpleado();
-                        MostrarDataEmpleado(codigoEmpleado);
+                        fillCombosEditEmpleado(codigoEmpleado);
                         break;
                     default:
                         break;
@@ -128,7 +127,7 @@ function EditarEmpleado(obj) {
     Redireccionar("Planilla", "EditEmpleado/?codigoEmpleado=" + obj);
 }
 
-function fillCombosEditEmpleado() {
+function fillCombosEditEmpleado(codigoEmpleado) {
     fetchGet("Empleado/FillCombosNewEmpleado", "json", function (rpta) {
         let listaAreas = rpta.listaAreas;
         let listaSecciones = rpta.listaSecciones;
@@ -138,13 +137,14 @@ function fillCombosEditEmpleado() {
         FillCombo(listaSecciones, "cboSeccion", "codigoSeccion", "nombre", "- seleccione -", "0");
         FillCombo(listaPuestos, "cboPuesto", "codigoPuesto", "nombre", "- seleccione -", "-1");
         FillRadioButtonListTipoBTB(listaTipoBTB);
+        MostrarDataEmpleado(codigoEmpleado)
     })
 }
 
 function MostrarDataEmpleado(codigoEmpleado) {
     fetchGet("Empleado/GetDataEmpleado/?codigoEmpleado=" + codigoEmpleado, "json", function (rpta) {
         if (rpta == null || rpta == undefined) {
-            alert("vacion");
+            alert("vacio");
         } else {
             set("uiCodigoEmpresa", rpta.codigoEmpresa);
             set("uiEmpresa", rpta.empresa);
@@ -160,10 +160,12 @@ function MostrarDataEmpleado(codigoEmpleado) {
             document.querySelector('#uiGenero').value = rpta.codigoGenero;
             set("uiCorreoElectronico", rpta.correoElectronico);
             set("uiNumeroAfiliacion", rpta.numeroAfiliacion);
+
             document.querySelector('#cboArea').value = rpta.codigoArea;
             document.querySelector('#cboSeccion').value = rpta.codigoSeccion;
             document.querySelector('#cboPuesto').value = rpta.codigoPuesto;
             document.querySelector('#cboUbicacion').value = rpta.codigoUbicacion;
+
             setCheckedValueOfRadioButtonGroup('CodigoTipoCuenta', rpta.codigoTipoCuenta);
             set("uiNumeroCuenta", rpta.numeroCuenta);
             set("uiMontoDevengado", rpta.montoDevengado);

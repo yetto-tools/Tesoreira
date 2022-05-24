@@ -567,12 +567,7 @@ function generarTabla(res, objConfiguracionGlobal) {
                             let codigo = (ukDatea[2] + ukDatea[1] + ukDatea[0]) * 1;
                             contenido += "<td class='chkSelected'><span hidden> " + codigo.toString() + "</span>" + obj[nombrePropiedadActual] + "</td>";
                         } else {
-
-
                             contenido += "<td class='chkSelected1'>" + obj[nombrePropiedadActual] + "</td>";
-
-
-
                         }
                     } else {
                         // formato a los montos

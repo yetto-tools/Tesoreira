@@ -161,6 +161,8 @@ namespace CapaEntidad.Tesoreria
 
         public short CodigoOtroIngreso { get; set; }
 
+        public string TipoOperacionContable { get; set; }
+
     }
 
 

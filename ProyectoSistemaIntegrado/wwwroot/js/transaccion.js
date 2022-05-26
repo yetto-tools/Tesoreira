@@ -162,8 +162,8 @@ function fillSemanasTransacciones(obj) {
 function MostrarTransacciones(codigoOperacion, codigoCategoriaEntidad, diaOperacion) {
     let objConfiguracion = {
         url: "Transaccion/BuscarTransacciones/?codigoOperacion=" + codigoOperacion.toString() + "&codigoCategoriaEntidad=" + codigoCategoriaEntidad.toString() + "&diaOperacion=" + diaOperacion.toString(),
-        cabeceras: ["Código", "codigoTransaccionAnt", "correccion", "Código Operación", "Operación", "Tipo Operación","Código Cuenta por Cobrar","Año","Semana", "Fecha Operación", "Día Operación", "Fecha Recibo", "Número Recibo", "Entidad", "Categoría", "Monto", "Estado", "Fecha Transacción", "Creado por", "Anular", "Editar", "Signo", "Número Recibo", "Ruta", "Fecha Impresión", "Recursos","codigoSeguridad"],
-        propiedades: ["codigoTransaccion", "codigoTransaccionAnt", "correccion","codigoOperacion", "operacion", "tipoOperacionContable","codigoCuentaPorCobrar","anioOperacion", "semanaOperacion", "fechaStr", "nombreDiaOperacion", "fechaReciboStr", "numeroRecibo", "nombreEntidad", "categoriaEntidad", "monto", "estado", "fechaIngStr", "usuarioIng", "permisoAnular", "permisoEditar", "signo", "numeroReciboStr", "ruta", "fechaImpresionStr", "recursos","codigoSeguridad"],
+        cabeceras: ["Código", "codigoTransaccionAnt", "correccion", "Código Operación", "Operación", "Tipo Operación","Código Cuenta por Cobrar","Año","Semana", "Fecha Operación", "Día Operación", "Fecha Recibo", "Número Recibo","codigoEntidad", "Entidad", "Categoría", "Monto", "Estado", "Fecha Transacción", "Creado por", "Anular", "Editar", "Signo", "Número Recibo", "Ruta", "Fecha Impresión", "Recursos","codigoSeguridad"],
+        propiedades: ["codigoTransaccion", "codigoTransaccionAnt", "correccion","codigoOperacion", "operacion", "tipoOperacionContable","codigoCuentaPorCobrar","anioOperacion", "semanaOperacion", "fechaStr", "nombreDiaOperacion", "fechaReciboStr", "numeroRecibo", "codigoEntidad","nombreEntidad", "categoriaEntidad", "monto", "estado", "fechaIngStr", "usuarioIng", "permisoAnular", "permisoEditar", "signo", "numeroReciboStr", "ruta", "fechaImpresionStr", "recursos","codigoSeguridad"],
         displaydecimals: ["monto"],
         divContenedorTabla: "divContenedorTabla",
         divPintado: "divTabla",
@@ -173,7 +173,7 @@ function MostrarTransacciones(codigoOperacion, codigoCategoriaEntidad, diaOperac
         imprimir: true,
         paginar: true,
         sumarcolumna: true,
-        columnasumalist: [15],
+        columnasumalist: [16],
         ocultarColumnas: true,
         hideColumns: [
             {
@@ -189,11 +189,11 @@ function MostrarTransacciones(codigoOperacion, codigoCategoriaEntidad, diaOperac
                 "targets": [6],
                 "visible": false
             }, {
-                "targets": [15],
-                "className": "dt-body-right"
-            }, {
-                "targets": [19],
+                "targets": [13],
                 "visible": false
+            }, {
+                "targets": [16],
+                "className": "dt-body-right"
             }, {
                 "targets": [20],
                 "visible": false
@@ -214,6 +214,9 @@ function MostrarTransacciones(codigoOperacion, codigoCategoriaEntidad, diaOperac
                 "visible": false
             }, {
                 "targets": [26],
+                "visible": false
+            }, {
+                "targets": [27],
                 "visible": false
             }],
         slug: "codigoTransaccion"
@@ -238,8 +241,8 @@ function Eliminar(obj) {
         let codigoOperacion = parseInt(table.cell(rowIdx, 3).data());
         let nombreOperacion = table.cell(rowIdx, 4).data();
         let codigoCuentaPorCobrar = parseInt(table.cell(rowIdx, 6).data());
-        let nombreEntidad = table.cell(rowIdx, 13).data();
-        let monto = table.cell(rowIdx, 15).data();
+        let nombreEntidad = table.cell(rowIdx, 14).data();
+        let monto = table.cell(rowIdx, 16).data();
         setI("uiTitlePopupAnulacion", "Anulación de Transacción");
         document.getElementById("ShowPopupAnulacion").click();
         set("uiCodigoTransaccion", obj.toString());
@@ -281,15 +284,16 @@ function Imprimir(obj) {
         let codigoOperacion = parseInt(table.cell(rowIdx, 3).data());
         let nombreOperacion = table.cell(rowIdx, 4).data();
         let fechaReciboStr = table.cell(rowIdx, 11).data();
-        let nombreEntidad = table.cell(rowIdx, 13).data();
-        let monto = table.cell(rowIdx, 15).data();
-        let usuarioCreacion = table.cell(rowIdx, 18).data();
-        let signo = parseInt(table.cell(rowIdx, 21).data());
-        let numeroReciboStr = table.cell(rowIdx, 22).data();
-        let ruta = table.cell(rowIdx, 23).data();
-        let fechaImpresion = table.cell(rowIdx, 24).data();
-        let recurso = table.cell(rowIdx, 25).data();
-        let codigoSeguridad = table.cell(rowIdx, 26).data();
+        let codigoEntidad = table.cell(rowIdx, 13).data();
+        let nombreEntidad = table.cell(rowIdx, 14).data();
+        let monto = table.cell(rowIdx, 16).data();
+        let usuarioCreacion = table.cell(rowIdx, 19).data();
+        let signo = parseInt(table.cell(rowIdx, 22).data());
+        let numeroReciboStr = table.cell(rowIdx, 23).data();
+        let ruta = table.cell(rowIdx, 24).data();
+        let fechaImpresion = table.cell(rowIdx, 25).data();
+        let recurso = table.cell(rowIdx, 26).data();
+        let codigoSeguridad = table.cell(rowIdx, 27).data();
         let recursos = "";
         if (recurso != "") {
             if (recurso.endsWith(',', recurso.length) == true) {
@@ -300,7 +304,7 @@ function Imprimir(obj) {
         }
 
         if (signo == 1) { // Ingreso
-            ImprimirConstanciaIngresos(codigoTransaccion, codigoOperacion, numeroReciboStr, fechaReciboStr, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion, codigoSeguridad);
+            ImprimirConstanciaIngresos(codigoTransaccion, codigoOperacion, numeroReciboStr, fechaReciboStr, codigoEntidad, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion, codigoSeguridad);
         } else { // Egreso
             ImprimirConstanciaEgresos(codigoTransaccion, numeroReciboStr, fechaReciboStr, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion, codigoSeguridad);
         }
@@ -316,8 +320,8 @@ function MostrarTransaccionesConsulta(anioOperacion, semanaOperacion, codigoRepo
 
     let objConfiguracion = {
         url: "Transaccion/BuscarTransaccionesConsulta/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString() + "&codigoReporte=" + codigoReporte.toString() + "&codigoOperacion=" + codigoOperacion.toString() + "&codigoCategoriaEntidad=" + codigoCategoriaEntidad.toString() + "&diaOperacion=" + diaOperacion.toString(),
-        cabeceras: ["Código", "codigoTransaccionAnt", "correccion","Código Operación", "Operación","Tipo Operación", "Código Cuenta por Cobrar", "Año", "Semana", "Fecha Operación", "Día Operación", "Fecha Recibo", "Número Recibo", "Entidad", "Categoría", "Monto", "Estado", "Fecha Transacción", "Creado por", "Anular", "Editar", "Signo", "Número Recibo", "Ruta", "Fecha Impresión", "Recursos","codigoSeguridad"],
-        propiedades: ["codigoTransaccion", "codigoTransaccionAnt", "correccion","codigoOperacion", "operacion", "tipoOperacionContable","codigoCuentaPorCobrar", "anioOperacion", "semanaOperacion", "fechaStr", "nombreDiaOperacion", "fechaReciboStr", "numeroRecibo", "nombreEntidad", "categoriaEntidad", "monto", "estado", "fechaIngStr", "usuarioIng", "permisoAnular", "permisoEditar", "signo", "numeroReciboStr", "ruta", "fechaImpresionStr", "recursos","codigoSeguridad"],
+        cabeceras: ["Código", "codigoTransaccionAnt", "correccion","Código Operación", "Operación","Tipo Operación", "Código Cuenta por Cobrar", "Año", "Semana", "Fecha Operación", "Día Operación", "Fecha Recibo", "Número Recibo","codigoEntidad", "Entidad", "Categoría", "Monto", "Estado", "Fecha Transacción", "Creado por", "Anular", "Editar", "Signo", "Número Recibo", "Ruta", "Fecha Impresión", "Recursos","codigoSeguridad"],
+        propiedades: ["codigoTransaccion", "codigoTransaccionAnt", "correccion","codigoOperacion", "operacion", "tipoOperacionContable","codigoCuentaPorCobrar", "anioOperacion", "semanaOperacion", "fechaStr", "nombreDiaOperacion", "fechaReciboStr", "numeroRecibo","codigoEntidad", "nombreEntidad", "categoriaEntidad", "monto", "estado", "fechaIngStr", "usuarioIng", "permisoAnular", "permisoEditar", "signo", "numeroReciboStr", "ruta", "fechaImpresionStr", "recursos","codigoSeguridad"],
         displaydecimals: ["monto"],
         divContenedorTabla: "divContenedorTabla",
         divPintado: "divTabla",
@@ -325,7 +329,7 @@ function MostrarTransaccionesConsulta(anioOperacion, semanaOperacion, codigoRepo
         funcionalerta: "CorreccionTransaccion",
         imprimir: true,
         sumarcolumna: true,
-        columnasumalist: [15],
+        columnasumalist: [16],
         paginar: true,
         ocultarColumnas: true,
         hideColumns: [
@@ -342,11 +346,11 @@ function MostrarTransaccionesConsulta(anioOperacion, semanaOperacion, codigoRepo
                 "targets": [6],
                 "visible": false
             }, {
-                "targets": [15],
-                "className": "dt-body-right"
-            }, {
-                "targets": [19],
+                "targets": [13],
                 "visible": false
+            }, {
+                "targets": [16],
+                "className": "dt-body-right"
             }, {
                 "targets": [20],
                 "visible": false
@@ -367,6 +371,9 @@ function MostrarTransaccionesConsulta(anioOperacion, semanaOperacion, codigoRepo
                 "visible": false
             }, {
                 "targets": [26],
+                "visible": false
+            }, {
+                "targets": [27],
                 "visible": false
             }],
         slug: "codigoTransaccion"
@@ -385,8 +392,8 @@ function MostrarTransaccionesConsultaContabilidad(anioOperacion, semanaOperacion
 
     let objConfiguracion = {
         url: "Transaccion/BuscarTransaccionesConsultaContabilidad/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString() + "&codigoTipoOperacion=" + codigoTipoOperacion.toString() + "&codigoOperacion=" + codigoOperacion.toString() + "&codigoCategoriaEntidad=" + codigoCategoriaEntidad.toString() + "&nombreEntidad=" + nombreEntidad + "&fechaInicioStr=" + fechaInicio + "&fechaFinStr=" + fechaFin,
-        cabeceras: ["Código", "codigoTransaccionAnt", "correccion", "Código Operación", "Operación", "Tipo Operación","Código Cuenta por Cobrar", "Año", "Semana", "Fecha Operación", "Día Operación", "Fecha Recibo", "Número Recibo", "Entidad", "Categoría", "Monto", "Estado", "Fecha Transacción", "Creado por", "Anular", "Editar", "Signo", "Número Recibo", "Ruta", "Fecha Impresión", "Recursos", "codigoSeguridad"],
-        propiedades: ["codigoTransaccion", "codigoTransaccionAnt", "correccion", "codigoOperacion", "operacion", "tipoOperacionContable","codigoCuentaPorCobrar", "anioOperacion", "semanaOperacion", "fechaStr", "nombreDiaOperacion", "fechaReciboStr", "numeroRecibo", "nombreEntidad", "categoriaEntidad", "monto", "estado", "fechaIngStr", "usuarioIng", "permisoAnular", "permisoEditar", "signo", "numeroReciboStr", "ruta", "fechaImpresionStr", "recursos", "codigoSeguridad"],
+        cabeceras: ["Código", "codigoTransaccionAnt", "correccion", "Código Operación", "Operación", "Tipo Operación","Código Cuenta por Cobrar", "Año", "Semana", "Fecha Operación", "Día Operación", "Fecha Recibo", "Número Recibo","codigoEntidad", "Entidad", "Categoría", "Monto", "Estado", "Fecha Transacción", "Creado por", "Anular", "Editar", "Signo", "Número Recibo", "Ruta", "Fecha Impresión", "Recursos", "codigoSeguridad"],
+        propiedades: ["codigoTransaccion", "codigoTransaccionAnt", "correccion", "codigoOperacion", "operacion", "tipoOperacionContable","codigoCuentaPorCobrar", "anioOperacion", "semanaOperacion", "fechaStr", "nombreDiaOperacion", "fechaReciboStr", "numeroRecibo","codigoEntidad", "nombreEntidad", "categoriaEntidad", "monto", "estado", "fechaIngStr", "usuarioIng", "permisoAnular", "permisoEditar", "signo", "numeroReciboStr", "ruta", "fechaImpresionStr", "recursos", "codigoSeguridad"],
         displaydecimals: ["monto"],
         divContenedorTabla: "divContenedorTabla",
         divPintado: "divTabla",
@@ -395,7 +402,7 @@ function MostrarTransaccionesConsultaContabilidad(anioOperacion, semanaOperacion
         imprimir: true,
         paginar: true,
         sumarcolumna: true,
-        columnasumalist: [15],
+        columnasumalist: [16],
         ocultarColumnas: true,
         hideColumns: [
             {
@@ -411,11 +418,11 @@ function MostrarTransaccionesConsultaContabilidad(anioOperacion, semanaOperacion
                 "targets": [6],
                 "visible": false
             }, {
-                "targets": [15],
-                "className": "dt-body-right"
-            }, {
-                "targets": [19],
+                "targets": [13],
                 "visible": false
+            }, {
+                "targets": [16],
+                "className": "dt-body-right"
             }, {
                 "targets": [20],
                 "visible": false
@@ -436,6 +443,9 @@ function MostrarTransaccionesConsultaContabilidad(anioOperacion, semanaOperacion
                 "visible": false
             }, {
                 "targets": [26],
+                "visible": false
+            }, {
+                "targets": [27],
                 "visible": false
             }],
         slug: "codigoTransaccion"
@@ -513,8 +523,8 @@ function MostrarTransaccionesRevision(anioOperacion, semanaOperacion, codigoRepo
 
     let objConfiguracion = {
         url: "Transaccion/BuscarTransaccionesParaCorreccion/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString() + "&codigoReporte=" + codigoReporte.toString() + "&codigoOperacion=" + codigoOperacion.toString() + "&codigoCategoriaEntidad=" + codigoCategoriaEntidad.toString(),
-        cabeceras: ["Código", "CodigoTransaccionAnt", "Corrección", "Código Operación", "Operación", "Tipo Operación","Código Cuenta por Cobrar", "Fecha Operación", "Día Operación", "Fecha Recibo", "Número Recibo", "Entidad", "Categoría", "Monto", "Estado", "Fecha Transacción", "Creado por", "Anular", "Editar", "Signo", "Número Recibo", "Ruta", "Fecha Impresión", "Recursos", "Revisado", "Corregir", "Anular", "codigoEstadoSolicitudCorreccion", "Estado Corrección", ],
-        propiedades: ["codigoTransaccion", "codigoTransaccionAnt", "correccion", "codigoOperacion", "operacion", "tipoOperacionContable","codigoCuentaPorCobrar", "fechaStr", "nombreDiaOperacion", "fechaReciboStr", "numeroReciboStr", "nombreEntidad", "categoriaEntidad", "monto", "estado", "fechaIngStr", "usuarioIng", "permisoAnular", "permisoEditar", "signo", "numeroReciboStr", "ruta", "fechaImpresionStr", "recursos", "revisado", "permisoCorregir", "permisoAnular","codigoEstadoSolicitudCorreccion", "estadoSolicitudCorreccion", ],
+        cabeceras: ["Código", "CodigoTransaccionAnt", "Corrección", "Código Operación", "Operación", "Tipo Operación","Código Cuenta por Cobrar", "Fecha Operación", "Día Operación", "Fecha Recibo", "Número Recibo","codigoEntidad", "Entidad", "Categoría", "Monto", "Estado", "Fecha Transacción", "Creado por", "Anular", "Editar", "Signo", "Número Recibo", "Ruta", "Fecha Impresión", "Recursos", "Revisado", "Corregir", "Anular", "codigoEstadoSolicitudCorreccion", "Estado Corrección", ],
+        propiedades: ["codigoTransaccion", "codigoTransaccionAnt", "correccion", "codigoOperacion", "operacion", "tipoOperacionContable","codigoCuentaPorCobrar", "fechaStr", "nombreDiaOperacion", "fechaReciboStr", "numeroReciboStr","codigoEntidad", "nombreEntidad", "categoriaEntidad", "monto", "estado", "fechaIngStr", "usuarioIng", "permisoAnular", "permisoEditar", "signo", "numeroReciboStr", "ruta", "fechaImpresionStr", "recursos", "revisado", "permisoCorregir", "permisoAnular","codigoEstadoSolicitudCorreccion", "estadoSolicitudCorreccion", ],
         displaydecimals: ["monto"],
         divContenedorTabla: "divContenedorTabla",
         divPintado: "divTabla",
@@ -547,11 +557,11 @@ function MostrarTransaccionesRevision(anioOperacion, semanaOperacion, codigoRepo
                 "targets": [6],
                 "visible": false
             }, {
-                "targets": [13],
-                "className": "dt-body-right"
-            }, {
-                "targets": [17],
+                "targets": [11],
                 "visible": false
+            }, {
+                "targets": [14],
+                "className": "dt-body-right"
             }, {
                 "targets": [18],
                 "visible": false
@@ -583,7 +593,10 @@ function MostrarTransaccionesRevision(anioOperacion, semanaOperacion, codigoRepo
                 "targets": [27],
                 "visible": false
             }, {
-                "targets": [30],
+                "targets": [28],
+                "visible": false
+            }, {
+                "targets": [31],
                 "className": "dt-body-center",
                 "visible": true
             }],
@@ -610,9 +623,9 @@ function SolicitaAprobacionCorreccion(obj) {
         let rowIdx = table.row(this).index();
         let codigoTransaccion = table.cell(rowIdx, 0).data();
         let operacion = table.cell(rowIdx, 4).data();
-        let nombreEntidad = table.cell(rowIdx, 11).data();
-        let categoriaEntidad = table.cell(rowIdx, 12).data();
-        let monto = table.cell(rowIdx, 13).data();
+        let nombreEntidad = table.cell(rowIdx, 12).data();
+        let categoriaEntidad = table.cell(rowIdx, 13).data();
+        let monto = table.cell(rowIdx, 14).data();
         setI("uiTitlePopupSolicitudAprobacion", "Solicitud de Aprobación de Corrección");
         document.getElementById("ShowPopupSolicitudAprobacion").click();
         set("uiCodigoTransaccion", codigoTransaccion);
@@ -661,8 +674,8 @@ function EliminarTransaccionPorCorreccion(obj) {
         let codigoOperacion = parseInt(table.cell(rowIdx, 3).data());
         let nombreOperacion = table.cell(rowIdx, 4).data();
         let codigoCuentaPorCobrar = parseInt(table.cell(rowIdx, 6).data());
-        let nombreEntidad = table.cell(rowIdx, 11).data();
-        let monto = table.cell(rowIdx, 13).data();
+        let nombreEntidad = table.cell(rowIdx, 12).data();
+        let monto = table.cell(rowIdx, 14).data();
         setI("uiTitlePopupAnulacion", "Anulación de Transacción");
         document.getElementById("ShowPopupAnulacion").click();
         set("uiCodigoTransaccionAnulacion", obj.toString());
@@ -961,8 +974,8 @@ function mostrarConsultaCorrecciones(anioOperacion, semanaOperacion, codigoRepor
 
 
 
-function ImprimirConstanciaIngresos(codigoTransaccion, codigoOperacion, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion, codigoSeguridad) {
-    let html = getHtmlConstanciaIngreso(codigoTransaccion, codigoOperacion, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion, codigoSeguridad);
+function ImprimirConstanciaIngresos(codigoTransaccion, codigoOperacion, numeroRecibo, fechaRecibo, codigoEntidad, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion, codigoSeguridad) {
+    let html = getHtmlConstanciaIngreso(codigoTransaccion, codigoOperacion, numeroRecibo, fechaRecibo, codigoEntidad, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion, codigoSeguridad);
     var ventana = window.open();
     ventana.document.write(html);
     ventana.print();

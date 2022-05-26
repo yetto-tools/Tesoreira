@@ -30,6 +30,13 @@
                 <td style="border-collapse: collapse;"><div style="text-align:left;">Fecha:</div></td>
                 <td><div style="text-align:left;">@objTransaccion.FechaReciboStr</div></td>
             </tr>
+            @if (objTransaccion.CodigoOperacion == Constantes.Operacion.Ingreso.VENTAS_EN_RUTA)
+            { 
+             <tr style="border-collapse: collapse;">
+                <td style="border-collapse: collapse;"><div style="text-align:left;">Código:</div></td>
+                <td><div style="text-align:left;">@objTransaccion.CodigoEntidad</div></td>
+             </tr>
+            }
             <tr style="border-collapse: collapse;">
                 <td style="border-collapse: collapse;"><div style="text-align:left;">Nombre:</div></td>
                 <td><div style="text-align:left;">@objTransaccion.NombreEntidad</div></td>

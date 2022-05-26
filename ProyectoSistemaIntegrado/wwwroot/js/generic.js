@@ -1290,3 +1290,19 @@ function dateIsValid(dateStr) {
     }
     return date.toISOString().startsWith(isoFormattedStr);
 }
+
+
+function myCalculadora() {
+    let elementCalculadora = document.getElementById("uiCalculadora");
+    let elementMonto = document.getElementById("uiMontoTransaccion");
+    document.onkeypress = function (event) {
+        if (event.key === "Enter") {
+            try {
+                elementMonto.value = parseFloat(eval(elementCalculadora.value)).toFixed(2);
+            } catch (e) {
+                elementMonto.value = "0";
+            }
+        }
+    }
+
+}

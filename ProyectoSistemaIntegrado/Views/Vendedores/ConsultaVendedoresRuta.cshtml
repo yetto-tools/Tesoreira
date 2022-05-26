@@ -1,0 +1,48 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    ViewData["Title"] = "Index";
+    Context.Session.SetString("tituloPrincipal", "Consulta de Vendedores Ruta");
+}
+
+<table style="margin-left: auto; margin-right: auto;">
+    <tr>
+        <td>CANAL DE VENTA</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>
+            <select class="form-control" id="uiCodigoCanalVenta" name="CodigoCanalVenta" onchange="ListarVendedoresRutaFiltroConsulta()">
+            </select>
+        </td>
+        <td>
+        </td>
+        <td>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="uiIncluirBloqueados" onclick="ListarVendedoresRutaFiltroConsulta()">
+                <label class="form-check-label" for="uiIncluirBloqueados">
+                    Incluir Bloqueados
+                </label>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div style="height: 25px; width:100%;"></div>
+<a href="@Url.Content("~")" id="uiExportarExcel">Exportar Excel</a>
+<div style="height: 25px; width:100%;"></div>
+
+<div id="divTabla">
+
+</div>
+
+
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/ventas.js"></script>
+}

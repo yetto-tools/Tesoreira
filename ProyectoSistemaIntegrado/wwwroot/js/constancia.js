@@ -1,4 +1,4 @@
-﻿function getHtmlConstanciaIngreso(codigoTransaccion, codigoOperacion, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion, codigoSeguridad) {
+﻿function getHtmlConstanciaIngreso(codigoTransaccion, codigoOperacion, numeroRecibo, fechaRecibo, codigoEntidad, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion, codigoSeguridad) {
     let table = `<div style="width: 287px; max-width: 287px; text-align: center; align-content: center; margin-left: 25px;">
                  <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">TESORERÍA</p>
                  <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">${codigoSeguridad}</p>
@@ -12,8 +12,14 @@
                     <tr style="border-collapse: collapse;">
                         <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Fecha:</td>
                         <td style="font-size: 18px; font-family: 'Arial, sans-serif';">${fechaRecibo}</td>
-                    </tr>
-                    <tr style="border-collapse: collapse;">
+                    </tr>`;
+                    if (codigoOperacion == VENTAS_EN_RUTA) {
+                        table += `<tr style="border-collapse: collapse;">
+                                    <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Código:</td>
+                                    <td style="font-size: 18px; font-family: 'Arial, sans-serif';">${codigoEntidad}</td>
+                                  </tr>`;
+                    }
+    table += `      <tr style="border-collapse: collapse;">
                         <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Nombre:</td>
                         <td style="font-size: 18px; font-family: 'Arial, sans-serif';">${nombreEntidad}</td>
                     </tr>`;

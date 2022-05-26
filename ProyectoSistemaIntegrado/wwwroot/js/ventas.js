@@ -19,6 +19,10 @@
                     FillComboCanalVenta("uiCodigoCanalVenta");
                     ListarVendedores(-1, 0);
                     break;
+                case "ConsultaVendedoresRuta":
+                    FillComboCanalVenta("uiCodigoCanalVenta");
+                    ListarVendedoresRutaConsulta(-1, 0);
+                    break;
                 default:
                     break;
             }// fin switch
@@ -355,5 +359,34 @@ function GuardarVendedor() {
             document.getElementById("uiClosePopupNewVendedor").click();
         });
     });
+}
 
+
+function ListarVendedoresRutaFiltroConsulta() {
+    let incluirBloqueados = 0;
+    let codigoCanalVenta = parseInt(document.getElementById("uiCodigoCanalVenta").value);
+    let checkIncluirBloqueados = document.getElementById("uiIncluirBloqueados").checked;
+    if (checkIncluirBloqueados == true) {
+        incluirBloqueados = 1;
+    }
+    ListarVendedoresRutaConsulta(codigoCanalVenta, incluirBloqueados);
+}
+
+function ListarVendedoresRutaConsulta(codigoCanalVenta, incluirBloqueados) {
+    let objConfiguracion = {
+        url: "Vendedores/GetListaVendedores/?codigoCanalVenta=" + codigoCanalVenta.toString() + "&incluirBloqueados=" + incluirBloqueados.toString(),
+        cabeceras: ["Código", "Nombre Vendedor", "Código Canal Venta", "Canal de Venta", "Ruta", "Estado"],
+        propiedades: ["codigoVendedor", "nombreVendedor", "codigoCanalVenta", "canalVenta", "ruta", "estadoRutaVendedor"],
+        divContenedorTabla: "divContenedorTabla",
+        divPintado: "divTabla",
+        paginar: true,
+        ocultarColumnas: true,
+        hideColumns: [
+            {
+                "targets": [2],
+                "visible": false
+            }],
+        slug: "codigoVendedor"
+    }
+    pintar(objConfiguracion);
 }

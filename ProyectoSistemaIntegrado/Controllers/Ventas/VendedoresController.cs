@@ -19,6 +19,11 @@ namespace ProyectoSistemaIntegrado.Controllers.Ventas
             return View();
         }
 
+        public IActionResult ConsultaVendedoresRuta()
+        {
+            return View();
+        }
+
         public string GuardarVendedor(VendedorRutaCLS objVendedor)
         {
             ViewBag.Message = HttpContext.Session.GetString("usuario");

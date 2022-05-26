@@ -251,8 +251,10 @@ function FillReportesDeCaja() {
     FillFechasDeCorte(anioOperacion, semanaOperacion);
 }
 
+// Cambiar para bloquer los reportes ya finalizados
 function FillFechasDeCorte(anioOperacion, semanaOperacion) {
-    fetchGet("CorteCajaSemanal/GetReportesCajaEnProceso/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString(), "json", function (rpta) {
+    //fetchGet("CorteCajaSemanal/GetReportesCajaEnProceso/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString(), "json", function (rpta) {
+    fetchGet("CorteCajaSemanal/GetReportesCajaConsulta/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString(), "json", function (rpta) {
         if (rpta == null || rpta == undefined || rpta.length == 0) {
             FillComboUnicaOpcion("uiFiltroReporteCaja", "-1", "-- No existe reportes -- ");
         } else {
@@ -623,7 +625,7 @@ function GuardarBoletasDepositoBTB() {
     let excluir = 0;
     data.each(function (value, index) {
         excluir = table.cell(index, 18).nodes().to$().find('input').prop('checked') == true ? 1 : 0;
-        if (excluir == 1) {
+        if (excluir == 0) {
             numeroBoleta = table.cell(index, 16).nodes().to$().find('input').val();
             monto = table.cell(index, 17).nodes().to$().find('input').val();
             codigoBanco = table.cell(index, 11).nodes().to$().find('option:selected').val();
@@ -654,7 +656,7 @@ function GuardarBoletasDepositoBTB() {
             }
         }
     });
-    if (Array.isArray(arrayProperties) && arrayProperties.length) {
+    if (Array.isArray(arrayProperties) && arrayProperties.length > 0) {
         let jsonData = JSON.stringify(arrayProperties);
         Confirmacion(undefined, undefined, function (rpta) {
             fetchPostJson("DepositosBTB/GuardarDepositosBTB", "text", jsonData, function (data) {

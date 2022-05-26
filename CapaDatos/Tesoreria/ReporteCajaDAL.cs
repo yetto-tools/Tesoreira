@@ -610,7 +610,7 @@ namespace CapaDatos.Tesoreria
                     }
                     conexion.Close();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     conexion.Close();
                     lista = null;

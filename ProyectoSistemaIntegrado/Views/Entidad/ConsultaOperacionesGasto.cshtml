@@ -1,0 +1,40 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using CapaEntidad.Administracion;
+@{
+    ViewData["Title"] = "Index";
+    string cadena = Context.Session.GetString("usuario");
+    UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(cadena);
+    string idUsuario = objUsuario.IdUsuario;
+    Context.Session.SetString("tituloPrincipal", "Asignación Contable de Operaciones Gasto");
+}
+
+<table style="margin-left: auto; margin-right: auto;">
+    <tr>
+        <td>CATEGORIA</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>
+            <select class="form-control" id="uiFiltroCodigoCategoriaEntidad" name="CodigoCategoriaEntidad">
+            </select>
+        </td>
+        <td>
+            <input type="button" class="form-control btn btn-primary" value="BUSCAR" onclick="FiltrarEntidadesConsulta()" />
+        </td>
+    </tr>
+</table>
+
+<div style="height: 15px; width:100%;"></div>
+
+<div id="divTabla">
+</div>
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/entidad.js"></script>
+}

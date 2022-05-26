@@ -28,6 +28,11 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
             return View();
         }
 
+        public IActionResult ConsultaOperacionesGasto()
+        {
+            return View();
+        }
+
         //public IActionResult Index()
         //{
         //    return View();

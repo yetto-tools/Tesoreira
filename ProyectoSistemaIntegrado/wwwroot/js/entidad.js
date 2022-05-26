@@ -10,6 +10,10 @@
                 FillComboCategoriaEntidad();
                 ListarEntidadesGenericasParaConfiguracion(-1);
                 break;
+            case "ConsultaOperacionesGasto":
+                FillComboCategoriaEntidad();
+                ListarEntidadesGenericasGastoConfiguradas(-1);
+                break;
             default:
                 break;
         }// fin switch
@@ -108,3 +112,32 @@ function ActualizarConfiguracionEntidad(){
     });
 }
 
+function FiltrarEntidadesConsulta() {
+    let codigoCategoriaEntidad = parseInt(document.getElementById("uiFiltroCodigoCategoriaEntidad").value);
+    ListarEntidadesGenericasGastoConfiguradas(codigoCategoriaEntidad);
+}
+
+function ListarEntidadesGenericasGastoConfiguradas(codigoCategoriaEntidad) {
+    let objConfigEntidad = {
+        url: "Entidad/GetEntidadesGenericasConfiguracion/?codigoCategoriaEntidad=" + codigoCategoriaEntidad.toString(),
+        cabeceras: ["Código", "Nombre Entidad", "codigoCategoriaEntidad", "Categoría", "codigoOperacion", "Operación", "Editar"],
+        propiedades: ["codigoEntidad", "nombre", "codigoCategoriaEntidad", "nombreCategoriaEntidad", "codigoOperacion", "operacion", "permisoEditar"],
+        divContenedorTabla: "divContenedorTabla",
+        divPintado: "divTabla",
+        paginar: true,
+        ocultarColumnas: true,
+        hideColumns: [
+            {
+                "targets": [2],
+                "visible": false
+            }, {
+                "targets": [4],
+                "visible": false
+            }, {
+                "targets": [6],
+                "visible": false
+            }],
+        slug: "codigoEntidad"
+    }
+    pintar(objConfigEntidad);
+}

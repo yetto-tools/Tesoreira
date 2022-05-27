@@ -546,6 +546,7 @@ namespace CapaDatos.Tesoreria
                                                           mes_sueldo_indirecto,
                                                           complemento_conta,
                                                           codigo_reporte,
+                                                          codigo_tipo_doc_deposito,
                                                           numero_voucher,  
                                                           nombre_proveedor,  
                                                           codigo_transaccion_ant, 
@@ -615,6 +616,7 @@ namespace CapaDatos.Tesoreria
                            @MesSueldoIndirecto,
                            @ComplementoConta,
                            @CodigoReporte,
+                           @CodigoTipoDocumentoDeposito,
                            @NumeroVoucher, 
                            @NombreProveedor, 
                            @CodigoTransaccionAnt,
@@ -686,6 +688,7 @@ namespace CapaDatos.Tesoreria
                     cmd.Parameters.AddWithValue("@MesSueldoIndirecto", objTransaccion.MesSueldoIndirecto);
                     cmd.Parameters.AddWithValue("@ComplementoConta", objTransaccion.ComplementoConta);
                     cmd.Parameters.AddWithValue("@CodigoReporte", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@CodigoTipoDocumentoDeposito", objTransaccion.CodigoTipoDocumentoDeposito);
                     cmd.Parameters.AddWithValue("@NumeroVoucher", objTransaccion.NumeroVoucher == null ? DBNull.Value : objTransaccion.NumeroVoucher);
                     cmd.Parameters.AddWithValue("@NombreProveedor", objTransaccion.NombreProveedor == null ? DBNull.Value : objTransaccion.NombreProveedor);
                     cmd.Parameters.AddWithValue("@CodigoTransaccionAnt", objTransaccion.CodigoTransaccion);
@@ -1143,6 +1146,7 @@ namespace CapaDatos.Tesoreria
                                                           mes_sueldo_indirecto,
                                                           complemento_conta,
                                                           codigo_reporte,
+                                                          codigo_tipo_doc_deposito,
                                                           numero_voucher,  
                                                           nombre_proveedor,  
                                                           codigo_transaccion_ant,
@@ -1212,6 +1216,7 @@ namespace CapaDatos.Tesoreria
                            @MesSueldoIndirecto,
                            @ComplementoConta,
                            @CodigoReporte,
+                           @CodigoTipoDocumentoDeposito,
                            @NumeroVaucher,
                            @NombreProveedor,
                            @CodigoTransaccionAnt,
@@ -1283,6 +1288,7 @@ namespace CapaDatos.Tesoreria
                     cmd.Parameters.AddWithValue("@MesSueldoIndirecto", objTransaccion.MesSueldoIndirecto);
                     cmd.Parameters.AddWithValue("@ComplementoConta", objTransaccion.ComplementoConta);
                     cmd.Parameters.AddWithValue("@CodigoReporte", objTransaccion.CodigoReporte);
+                    cmd.Parameters.AddWithValue("@CodigoTipoDocumentoDeposito", objTransaccion.CodigoTipoDocumentoDeposito);
                     cmd.Parameters.AddWithValue("@NumeroVaucher", objTransaccion.NumeroVoucher == null ? DBNull.Value : objTransaccion.NumeroVoucher);
                     cmd.Parameters.AddWithValue("@NombreProveedor", objTransaccion.NombreProveedor == null ? DBNull.Value : objTransaccion.NombreProveedor);
                     cmd.Parameters.AddWithValue("@CodigoTransaccionAnt", objTransaccion.CodigoTransaccion);
@@ -3570,6 +3576,10 @@ namespace CapaDatos.Tesoreria
                             x.serie_factura,
     	                    x.numero_documento,
 		                    x.fecha_documento,
+                            CASE
+                               WHEN x.fecha_documento IS NULL THEN ''
+                               ELSE FORMAT(x.fecha_documento, 'dd/MM/yyyy') 
+                            END AS fecha_documento_str,
 		                    x.numero_recibo,
                             x.numero_recibo_referencia,
 		                    x.fecha_recibo,
@@ -3658,6 +3668,7 @@ namespace CapaDatos.Tesoreria
                             int postSerieFactura = dr.GetOrdinal("serie_factura");
                             int postNumeroDocumento = dr.GetOrdinal("numero_documento");
                             int postFechaDocumento = dr.GetOrdinal("fecha_documento");
+                            int postFechaDocumentoStr = dr.GetOrdinal("fecha_documento_str");
                             int postNumeroRecibo = dr.GetOrdinal("numero_recibo");
                             int postNumeroReciboReferencia = dr.GetOrdinal("numero_recibo_referencia");
                             int postFechaRecibo = dr.GetOrdinal("fecha_recibo");
@@ -3726,6 +3737,7 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.SerieFactura = dr.IsDBNull(postSerieFactura) ? "" : dr.GetString(postSerieFactura);
                                 objTransaccion.NumeroDocumento = dr.IsDBNull(postNumeroDocumento) ? null : dr.GetInt32(postNumeroDocumento);
                                 objTransaccion.FechaDocumento = dr.IsDBNull(postFechaDocumento) ? null : dr.GetDateTime(postFechaDocumento);
+                                objTransaccion.FechaDocumentoStr = dr.GetString(postFechaDocumentoStr);
                                 objTransaccion.NumeroRecibo = dr.GetInt64(postNumeroRecibo);
                                 objTransaccion.NumeroReciboReferencia = dr.GetInt64(postNumeroReciboReferencia);
                                 objTransaccion.FechaRecibo = dr.GetDateTime(postFechaRecibo);

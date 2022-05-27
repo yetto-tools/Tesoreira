@@ -1299,6 +1299,7 @@ function myCalculadora() {
         if (event.key === "Enter") {
             try {
                 elementMonto.value = parseFloat(eval(elementCalculadora.value)).toFixed(2);
+                elementMonto.focus();
             } catch (e) {
                 elementMonto.value = "0";
             }

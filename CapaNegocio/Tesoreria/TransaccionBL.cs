@@ -276,6 +276,28 @@ namespace CapaNegocio.Tesoreria
                 }
             }
 
+            if (objTransaccion.CodigoOperacion == Constantes.Operacion.Egreso.DEPOSITOS_BANCARIOS)
+            {
+                switch (objTransaccion.CodigoTipoDocumentoDeposito)
+                {
+                    case Constantes.TipoDocumentoDeposito.NUMERO_BOLETA:
+                        objTransaccion.NumeroBoleta = objTransaccion.NumeroBoleta;
+                        objTransaccion.NumeroVoucher = String.Empty;
+                        break;
+                    case Constantes.TipoDocumentoDeposito.NUMERO_VOUCHER:
+                        objTransaccion.NumeroVoucher = objTransaccion.NumeroBoleta;
+                        objTransaccion.NumeroBoleta = String.Empty;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                objTransaccion.NumeroBoleta = String.Empty;
+                objTransaccion.NumeroVoucher = String.Empty;
+            }
+
             if (objTransaccion.NumeroCuenta == "-1")
                 objTransaccion.NumeroCuenta = null;
             if (objTransaccion.CodigoBancoDeposito == -1)

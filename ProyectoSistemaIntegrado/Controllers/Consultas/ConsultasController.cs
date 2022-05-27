@@ -17,8 +17,10 @@ namespace ProyectoSistemaIntegrado.Controllers.Consultas
         {
             return View();
         }
-
-
+        public IActionResult ConsultaTransaccionesVendedores()
+        {
+            return View();
+        }
 
     }
 }

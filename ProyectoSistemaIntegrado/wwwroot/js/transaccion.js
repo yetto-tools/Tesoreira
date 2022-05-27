@@ -48,6 +48,9 @@
                 case "ConsultaTransacciones":
                     fillCombosBusquedaConsultaContabilidad();
                     break;
+                case "ConsultaTransaccionesVendedores":
+                    fillCombosBusquedaConsultaTransaccionesVendedores();
+                    break;
                 default:
                     break;
             }// fin switch
@@ -1380,3 +1383,32 @@ function MostrarGastosParaAsignacionDeEmpresa(anioOperacion, semanaOperacion, co
     }
     pintar(objConfiguracion);
 }
+
+
+function fillCombosBusquedaConsultaTransaccionesVendedores() {
+    fetchGet("Transaccion/FillCombosConsultaTransacciones", "json", function (rpta) {
+        var listaOperaciones = rpta.listaOperaciones;
+        let listaAnios = rpta.listaAnios;
+        FillCombo(listaOperaciones, "uiFiltroOperaciones", "codigoOperacion", "nombre", "- seleccione -", "-1");
+        if (listaAnios.length == 1) {
+            let data = [{ "value": "-1", "text": "- seleccione -" }, { "value": listaAnios[0]["anio"], "text": listaAnios[0]["anio"] }]
+            FillComboSelectOption(data, "uiFiltroAnio", "value", "text", "- Todas -", "-1");
+        } else {
+            FillCombo(listaAnios, "uiFiltroAnio", "anio", "anio", "- seleccione -", "-1");
+        }
+        FillComboUnicaOpcion("uiFiltroSemana", "-1", "-- No Existen semanas -- ");
+    })
+}
+
+function buscarTransaccionesConsultaTransaccionesVendedores() {
+    let anioOperacion = parseInt(document.getElementById("uiFiltroAnio").value);
+    let semanaOperacion = parseInt(document.getElementById("uiFiltroSemana").value);
+    let objOperacion = document.getElementById("uiFiltroOperaciones");
+    let codigoOperacion = parseInt(objOperacion.options[objOperacion.selectedIndex].value);
+    let nombreEntidad = document.getElementById("uiFiltroNombreEntidad").value;
+    let fechaInicio = document.getElementById("uiFiltroFechaInicio").value;
+    let fechaFin = document.getElementById("uiFiltroFechaFin").value;
+    MostrarTransaccionesConsultaContabilidad(anioOperacion, semanaOperacion, -1, codigoOperacion, -1, nombreEntidad, fechaInicio.trim(), fechaFin.trim());
+}
+
+

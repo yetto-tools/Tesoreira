@@ -35,6 +35,10 @@ var ABONO_CAJA_CHICA = 70;
 var VALE = 1;
 var FACTURA = 2;
 var BOLETA_PAGO = 3;
+var TRANSFERENCIA = 4;
+var PROVAL = 5;
+
+
 // Categoria de Entidades
 var CLIENTES_ESPECIALES_1 = 12;
 var CLIENTES_ESPECIALES_2 = 13;

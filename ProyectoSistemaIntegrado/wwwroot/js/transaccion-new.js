@@ -59,6 +59,7 @@ function clearDataDepositosBancarios() {
     let elementBanco = document.getElementById("uiBanco");
     let elementNumeroCuenta = document.getElementById("uiNumeroCuenta");
     let elementNumeroBoleta = document.getElementById("uiNumeroBoleta");
+    let elementFechaDocumento = document.getElementById("uiFechaDocumento");
     let elementMontoEfectivo = document.getElementById("uiMontoEfectivo");
     let elementMontoCheques = document.getElementById("uiMontoCheques");
     
@@ -66,8 +67,15 @@ function clearDataDepositosBancarios() {
     elementBanco.classList.remove('obligatorio');
     elementNumeroCuenta.classList.remove('obligatorio');
     elementNumeroBoleta.classList.remove('obligatorio');
+    elementFechaDocumento.classList.remove('obligatorio');
     elementMontoEfectivo.classList.remove('obligatorio');
     elementMontoCheques.classList.remove('obligatorio');
+
+    FillComboUnicaOpcion("uiNumeroCuenta", "-1", "-- No existe cuenta -- ");
+    elementNumeroBoleta.value = "";
+    elementFechaDocumento.value = "";
+    elementMontoEfectivo.value = "";
+    elementMontoCheques.value = "";
 }
 
 function clearDataPlanilla() {
@@ -96,7 +104,7 @@ function clearDataFormulario() {
     set("uiCodigoOperacionCaja", "0");
     document.getElementById("uiTitleTipoDocumentoDeposito").innerHTML = "Número de Documento";
     document.getElementById("uiOptionTipoDocumentoNumeroVoucher").checked = false;
-    document.getElementById("uiNumeroBoleta").readOnly = true;
+    //document.getElementById("uiNumeroBoleta").readOnly = true;
     document.getElementById("uiOptionTipoTransaccionNF").checked = true;
 
     clearDataTransaccion();
@@ -136,11 +144,15 @@ function clearDataFormulario() {
     document.getElementById("uiVale").disabled = false;
     document.getElementById("uiFactura").disabled = false;
     document.getElementById("uiBoletaDeposito").disabled = false;
+    document.getElementById("uiTransferencia").disabled = false;
+    document.getElementById("uiBoletaProval").disabled = false;
     document.getElementById("uiNingunTipoDocumento").disabled = false;
 
     document.getElementById("uiVale").checked = false;
     document.getElementById("uiFactura").checked = false;
     document.getElementById("uiBoletaDeposito").checked = false;
+    document.getElementById("uiTransferencia").checked = false;
+    document.getElementById("uiBoletaProval").checked = false;
     document.getElementById("uiNingunTipoDocumento").checked = true;  // Default
     document.getElementById('uiNingunTipoDocumento').onClick = setDataAdicionaTipoDocumento("0");
     // Forma de Pago
@@ -192,7 +204,7 @@ function setValueNumeroDocumentoDeposito(obj) {
             document.getElementById("uiTitleTipoDocumentoDeposito").innerHTML = "Número de Boleta";
             break;
         case 2:
-            document.getElementById("uiTitleTipoDocumentoDeposito").innerHTML = "Número de Vaucher";
+            document.getElementById("uiTitleTipoDocumentoDeposito").innerHTML = "Número de Documento";
             break;
     }
 }
@@ -207,9 +219,13 @@ function sumarMontos() {
     let montoCheques = 0.00;
     if (montoEfectivoStr != "") {
         montoEfectivo = parseFloat(montoEfectivoStr);
+    } else {
+        document.getElementById("uiMontoEfectivo").value = "0";
     }
     if (montoChequesStr != "") {
         montoCheques = parseFloat(montoChequesStr);
+    } else {
+        document.getElementById("uiMontoCheques").value = "0";
     }
     if (montoEfectivo > 0 || montoCheques > 0) {
         let montoTotal = montoEfectivo + montoCheques;
@@ -314,10 +330,14 @@ function fillCombosEdit(codigoTransaccion) {
                 setCheckedValueOfRadioButtonGroup('CodigoTipoTransaccion', data.codigoTipoTransaccion);
                 setCheckedValueOfRadioButtonGroup('FechaStr', data.fechaOperacionStr);
                 document.querySelector('#cboOperacion').value = codigoOperacion.toString();
-                setCheckedValueOfRadioButtonGroup('CodigoTipoDocumento', data.codigoTipoDocumento);
+                setCheckedValueOfRadioButtonGroup('CodigoTipoDocumento', data.codigoTipoDocumento.toString());
+
+
                 document.querySelector('#uiEfectivo').checked = data.efectivo == 1 ? true : false;
                 document.querySelector('#uiDeposito').checked = data.deposito == 1 ? true : false;
                 document.querySelector('#uiCheque').checked = data.cheque == 1 ? true : false;
+
+
                 set("uiCodigoEntidad", data.codigoEntidad);
                 set("uiCodigoCategoriaEntidad", data.codigoCategoriaEntidad.toString());
                 set("uiCategoriaEntidad", data.categoriaEntidad);
@@ -513,11 +533,13 @@ function setCamposObligatoriosDepositosBancarios() {
     let elementBanco = document.getElementById("uiBanco");
     let elementNumeroCuenta = document.getElementById("uiNumeroCuenta");
     let elementNumeroBoleta = document.getElementById("uiNumeroBoleta");
+    let elementFechaDocumento = document.getElementById("uiFechaDocumento");
     let elementMontoEfectivo = document.getElementById("uiMontoEfectivo");
     let elementMontoCheques = document.getElementById("uiMontoCheques");
     elementBanco.classList.add('obligatorio');
     elementNumeroCuenta.classList.add('obligatorio');
     elementNumeroBoleta.classList.add('obligatorio');
+    elementFechaDocumento.classList.add('obligatorio');
     elementMontoEfectivo.classList.add('obligatorio');
     elementMontoCheques.classList.add('obligatorio');
 }
@@ -657,11 +679,15 @@ function showControls(obj) {
             document.getElementById("uiEfectivo").checked = true;
             break;
         case DEPOSITOS_BANCARIOS:
-            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('divTabla').style.display = 'none';
             document.getElementById('div-planilla-pago').style.display = 'none';
             document.getElementById('uiContainerTipoPago').style.display = 'none';
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
             document.getElementById('div-bonos-extra').style.display = 'none';
+
+            // Default
+            setCheckedValueOfRadioButtonGroup('CodigoTipoDocumentoDeposito', "2");
+
             // Seleccionar el tipo de documento BOLETA DE DEPOSITO
             document.getElementById('uiBoletaDeposito').checked = true;
             document.getElementById('uiBoletaDeposito').onClick = setDataAdicionaTipoDocumento("3");
@@ -997,15 +1023,32 @@ function setDataControls(codigoOperacion, data) {
             }
             break;
         case DEPOSITOS_BANCARIOS:
-            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('divTabla').style.display = 'none';
             document.getElementById('div-planilla-pago').style.display = 'none';
             document.getElementById('uiContainerTipoPago').style.display = 'none';
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
             document.getElementById('div-bonos-extra').style.display = 'none';
 
             // Seleccionar el tipo de documento BOLETA DE DEPOSITO
-            document.getElementById('uiBoletaDeposito').checked = true;
-            document.getElementById('uiBoletaDeposito').onClick = setDataAdicionaTipoDocumento("3");
+            switch (data.codigoTipoDocumento) {
+                case BOLETA_PAGO:
+                    document.getElementById('uiBoletaDeposito').checked = true;
+                    document.getElementById('uiBoletaDeposito').onClick = setDataAdicionaTipoDocumento("3");
+                    break;
+                case TRANSFERENCIA:
+                    document.getElementById('uiTransferencia').checked = true;
+                    document.getElementById('uiTransferencia').onClick = setDataAdicionaTipoDocumento("4");
+                    break;
+                case PROVAL:
+                    document.getElementById('uiBoletaProval').checked = true;
+                    document.getElementById('uiBoletaProval').onClick = setDataAdicionaTipoDocumento("5");
+                    break;
+                default:
+                    document.getElementById('uiNingunTipoDocumento').checked = true;
+                    document.getElementById('uiNingunTipoDocumento').onClick = setDataAdicionaTipoDocumento("0");
+                    break;
+            }
+
             // colocar como obligatorio los campos para esta opcion
             setCamposObligatoriosDepositosBancarios();
             document.getElementById('uiBanco').value = data.codigoBancoDeposito.toString();
@@ -1022,13 +1065,14 @@ function setDataControls(codigoOperacion, data) {
             document.getElementById('uiMontoCheques').value = data.montoCheques.toString();
             // SetData
             setCheckedValueOfRadioButtonGroup('CodigoTipoDocumentoDeposito', data.codigoTipoDocumentoDeposito.toString());
+            document.getElementById('uiFechaDocumento').value = data.fechaDocumentoStr;
             switch (data.codigoTipoDocumentoDeposito) {
                 case NUMERO_BOLETA:
-                    document.getElementById('uiTitleTipoDocumentoDeposito').innerHTML = "Número de boleta";
+                    document.getElementById('uiTitleTipoDocumentoDeposito').innerHTML = "Número de Boleta";
                     document.getElementById('uiNumeroBoleta').value = data.numeroBoleta;
                     break;
                 case NUMERO_VAUCHER:
-                    document.getElementById('uiTitleTipoDocumentoDeposito').innerHTML = "Número de vaucher";
+                    document.getElementById('uiTitleTipoDocumentoDeposito').innerHTML = "Número de Documento";
                     document.getElementById('uiNumeroBoleta').value = data.numeroVoucher;
                     break;
                 default:
@@ -2362,6 +2406,17 @@ function setDataAdicionaTipoDocumento(obj) {
             element.classList.add('obligatorio');
             break;
         case BOLETA_PAGO:
+            clearDataDepositosBancarios();
+            document.getElementById('div-forma-pago-deposito').style.display = 'block';
+            element.classList.remove('obligatorio');
+            break;
+        case TRANSFERENCIA:
+            clearDataDepositosBancarios();
+            document.getElementById('div-forma-pago-deposito').style.display = 'block';
+            element.classList.remove('obligatorio');
+            break;
+        case PROVAL:
+            clearDataDepositosBancarios();
             document.getElementById('div-forma-pago-deposito').style.display = 'block';
             element.classList.remove('obligatorio');
             break;

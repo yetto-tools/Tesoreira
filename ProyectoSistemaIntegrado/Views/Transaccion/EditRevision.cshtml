@@ -178,7 +178,7 @@
             </div>
         </div>
 
-        <div id="div-otros-ingresos" style="display:block">
+        <div id="div-otros-ingresos" style="display:none">
             <div class="mb-3 row">
                 <label class="col-sm-2 col-form-label"> </label>
                 <div class="col-sm-5">
@@ -336,6 +336,14 @@
                     <label class="form-check-label" for="uiBoletaDeposito">BOLETA DE DEPOSITO</label>
                 </div>
                 <div class="form-check form-check-inline">
+                    <input class='form-check-input' id="uiTransferencia" type="radio" value="4" name="CodigoTipoDocumento" onClick="setDataAdicionaTipoDocumento(this.value)">
+                    <label class="form-check-label" for="uiTransferencia">TRANSFERENCIA</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class='form-check-input' id="uiBoletaProval" type="radio" value="5" name="CodigoTipoDocumento" onClick="setDataAdicionaTipoDocumento(this.value)">
+                    <label class="form-check-label" for="uiBoletaProval">PROVAL</label>
+                </div>
+                <div class="form-check form-check-inline">
                     <input class='form-check-input' id="uiNingunTipoDocumento" type="radio" value="0" name="CodigoTipoDocumento" onClick="setDataAdicionaTipoDocumento(this.value)">
                     <label class="form-check-label" for="uiNingunTipoDocumento">NINGUNO</label>
                 </div>
@@ -410,7 +418,7 @@
                     </select>
                 </div>
             </div>
-            <div class="mb-3 row">
+            <div class="mb-3 row" style="display:none;">
                 <label class="col-sm-2 col-form-label"> </label>
                 <div class="col-sm-3">
                     <div class="form-check form-check-inline">
@@ -427,15 +435,19 @@
                 <label class="col-sm-2 col-form-label"> </label>
                 <div class="col-sm-3">
                     <label class="col-form-label" id="uiTitleTipoDocumentoDeposito">Número de Documento</label>
-                    <input type="text" name="NumeroBoleta" class="form-control obligatorio-forma-pago-banco text-center" id="uiNumeroBoleta" placeholder="Número de Documento" />
+                    <input type="text" name="NumeroBoleta" class="form-control obligatorio-forma-pago-banco text-center" id="uiNumeroBoleta" placeholder="Número de Documento" autocomplete="off" />
+                </div>
+                <div class="col-sm-2">
+                    <label class="col-form-label">Fecha Documento</label>
+                    <input type="text" name="FechaDocumento" class="form-control text-center" id="uiFechaDocumento" placeholder="Fecha Documento" autocomplete="off" />
                 </div>
                 <div class="col-sm-3">
-                    <label class="col-form-label">Monto Efectivo:</label>
-                    <input type="text" name="MontoEfectivo" class="form-control decimal-2 text-right" id="uiMontoEfectivo" placeholder="Monto en efectivo" />
+                    <label class="col-form-label">Monto Efectivo</label>
+                    <input type="text" name="MontoEfectivo" class="form-control decimal-2 text-right" id="uiMontoEfectivo" placeholder="Monto" autocomplete="off" />
                 </div>
-                <div class="col-sm-3">
-                    <label class="col-form-label">Monto en Cheques:</label>
-                    <input type="text" name="MontoCheques" class="form-control decimal-2 text-right" id="uiMontoCheques" placeholder="Monto en cheques" />
+                <div class="col-sm-2">
+                    <label class="col-form-label">Monto Cheques</label>
+                    <input type="text" name="MontoCheques" class="form-control decimal-2 text-right" id="uiMontoCheques" placeholder="Monto" autocomplete="off" />
                 </div>
             </div>
         </div>
@@ -444,7 +456,7 @@
         <div class="mb-3 row">
             <label class="col-sm-2 col-form-label">Monto:</label>
             <div class="col-sm-3">
-                <input type="text" name="monto" class="form-control obligatorio decimal-2 text-right" id="uiMontoTransaccion" onclick="sumarMontos()"
+                <input type="text" name="monto" class="form-control obligatorio decimal-2 text-right" id="uiMontoTransaccion" onclick="sumarMontos()" autocomplete="off"
                        placeholder="Monto" />
             </div>
         </div>
@@ -645,6 +657,13 @@
 
         $(function () {
             $("#uiFechaInicioPago").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeYear: true
+            });
+        });
+
+        $(function () {
+            $("#uiFechaDocumento").datepicker({
                 dateFormat: 'dd/mm/yy',
                 changeYear: true
             });

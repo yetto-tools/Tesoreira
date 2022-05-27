@@ -48,6 +48,8 @@ namespace CapaEntidad.Tesoreria
 
         public DateTime? FechaDocumento { get; set; }
 
+        public string FechaDocumentoStr { get; set; }
+
         public byte ConcederIva { get; set; }
 
         public string NitEmpresaConcedeIva { get; set; }

@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Http;
 @{
     ViewData["Title"] = "Index";
-    Context.Session.SetString("tituloPrincipal", "Consulta de Transacciones");
+    Context.Session.SetString("tituloPrincipal", "Consulta de Transacciones de Vendedores");
 }
 
 <a href="@Url.Content("~")" id="uiExportarExcel" style="display:none;">Exportar Excel</a>
@@ -14,7 +14,6 @@
         <table style="margin-left: auto; margin-right: auto;">
             <tr>
                 <td>AÑO</td>
-                <td>TIPO OPERACIÓN</td>
                 <td>OPERACIÓN</td>
             </tr>
             <tr>
@@ -23,20 +22,13 @@
                     </select>
                 </td>
                 <td>
-                    <select class="form-control" id="uiFiltroTipoOperacion" name="TipoOperacion" onclick="fillOperacionesTransacciones(this.value)">
-                        <option value="-1">-- Seleccione --</option>
-                        <option value="1">INGRESO</option>
-                        <option value="2">EGRESO</option>
-                    </select>
-                </td>
-                <td>
                     <select class="form-control" id="uiFiltroOperaciones" name="CodigoOperacion">
                     </select>
                 </td>
             </tr>
             <tr>
+                
                 <td>SEMANA</td>
-                <td>CATEGORIA ENTIDAD</td>
                 <td>ENTIDAD</td>
             </tr>
             <tr>
@@ -45,33 +37,34 @@
                     </select>
                 </td>
                 <td>
-                    <select class="form-control" id="uiFiltroCategorias" name="CodigoCategoriaEntidad">
-                    </select>
-                </td>
-                <td>
                     <input type="text" class="form-control" id="uiFiltroNombreEntidad" />
                 </td>
             </tr>
             <tr>
-                <td>FECHA INICIO</td>
-                <td>FECHA FIN</td>
-                <td></td>
-            </tr>
-            <tr>
                 <td>
-                    <input type="text" name="FechaInicio" class="form-control text-center" id="uiFiltroFechaInicio" placeholder="Fecha Inicio" />
-                </td>
-                <td>
-                    <input type="text" name="FechaFin" class="form-control text-center" id="uiFiltroFechaFin" placeholder="Fecha Fin" />
+                    <table>
+                        <tr>
+                            <td>FECHA INICIO</td>
+                            <td>FECHA FIN</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="text" name="FechaInicio" class="form-control text-center" id="uiFiltroFechaInicio" placeholder="Fecha Inicio" />
+                            </td>
+                            <td>
+                                <input type="text" name="FechaFin" class="form-control text-center" id="uiFiltroFechaFin" placeholder="Fecha Fin" />
+                            </td>
+                        </tr>
+                    </table>
                 </td>
                 <td>
                     <table>
                         <tr>
                             <td>
-                                <input type="button" class="form-control btn btn-primary" value="BUSCAR" onclick="buscarTransaccionesConsultaContabilidad()" />
+                                <input type="button" class="form-control btn btn-primary" value="BUSCAR" onclick="buscarTransaccionesConsultaTransaccionesVendedores()" />
                             </td>
                             <td>
-                                <button type="button" onclick="GenerarExcelTransaccionesConsultaContabilidad()" class="btn btn-success">
+                                <button type="button" onclick="GenerarExcelTransaccionesConsultaContabilidad()" class="form-control btn btn-success">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-excel" viewBox="0 0 16 16">
                                         <path d="M5.18 4.616a.5.5 0 0 1 .704.064L8 7.219l2.116-2.54a.5.5 0 1 1 .768.641L8.651 8l2.233 2.68a.5.5 0 0 1-.768.64L8 8.781l-2.116 2.54a.5.5 0 0 1-.768-.641L7.349 8 5.116 5.32a.5.5 0 0 1 .064-.704z" />
                                         <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z" />
@@ -81,7 +74,7 @@
                             </td>
                         </tr>
                     </table>
-                </td>                
+                <td>
             </tr>
         </table>
     </form>
@@ -180,7 +173,7 @@
 
 
 @section Scripts {
-    <script src="~/js/html2canvas.js"></script>
+    @*<script src="~/js/html2canvas.js"></script>*@
     <script src="~/js/datatable.js"></script>
     <script src="~/js/bootstrap.js"></script>
     <script src="~/js/jqueryui.js"></script>

@@ -841,7 +841,8 @@ namespace CapaDatos.Tesoreria
 
                     transaction.Commit();
                     conexion.Close();
-                    resultado = "OK";
+
+                    resultado = codigoTransaccion.ToString();
                 }
                 catch (Exception ex)
                 {

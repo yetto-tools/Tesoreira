@@ -36,6 +36,11 @@ namespace ProyectoSistemaIntegrado.Controllers
                 string objSiteMap = JsonConvert.SerializeObject(listaItems);
                 HttpContext.Session.SetString("menus", objSiteMap);
 
+                ParametroImpresionBL objParametroImpresion = new ParametroImpresionBL();
+                List<ParametroImpresionCLS> listConfigImpresion = objParametroImpresion.GetAllConfiguracionesImpresion();
+                string objImpresion = JsonConvert.SerializeObject(listConfigImpresion);
+                HttpContext.Session.SetString("impresion", objImpresion);
+
                 ProgramacionSemanalBL objProgramacionSemanal = new ProgramacionSemanalBL();
                 ProgramacionSemanalCLS objSemanaActual = objProgramacionSemanal.GetSemanaActual();
                 string objCadenaSemana = JsonConvert.SerializeObject(objSemanaActual);

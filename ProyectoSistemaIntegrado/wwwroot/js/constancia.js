@@ -84,7 +84,7 @@ function getHtmlConstanciaEgreso(codigoTransaccion, numeroRecibo, fechaRecibo, n
 }
 
 
-function PrintConstanciaIngresos(codigoTransaccion, codigoTipoOperacion) {
+function PrintConstanciaIngresos(codigoTransaccion, codigoTipoOperacion, nombreImpresora, numeroCopias) {
     let constancia = "";
     switch (codigoTipoOperacion) {
         case 1:
@@ -96,7 +96,7 @@ function PrintConstanciaIngresos(codigoTransaccion, codigoTipoOperacion) {
         default:
             break;
     }
-        //contentType: 'application/my-binary-type',
+    //contentType: 'application/my-binary-type',
     fetchGet("Reportes/" + constancia + "/?codigoTransaccion=" + codigoTransaccion, "pdf", function (data) {
         let blob = new Blob([data], { type: 'application/pdf' });
         /*var fileURL = URL.createObjectURL(blob);
@@ -104,7 +104,7 @@ function PrintConstanciaIngresos(codigoTransaccion, codigoTipoOperacion) {
         var formData = new FormData()
         formData.append('source', blob)
         $.ajax({
-            url: "http://127.0.0.1:8000/pdf",
+            url: "http://127.0.0.1:8000/pdf?" + "&printto=" + nombreImpresora + "&numbercopies=" + numeroCopias.toString(),
             type: "POST",
             data: formData,
             dataType: 'pdf',

@@ -7,10 +7,22 @@
     UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(cadena);
     string idUsuario = objUsuario.IdUsuario;
     byte setSemanaAnterior = objUsuario.SetSemanaAnterior;
+
+    string impresionStr = Context.Session.GetString("impresion");
+    List<ParametroImpresionCLS> listImpresoras = JsonConvert.DeserializeObject<List<ParametroImpresionCLS>>(impresionStr);
+    string nombreImpresora = "";
+    int numeroCopias = 0;
+    foreach (ParametroImpresionCLS impresora in listImpresoras)
+    {
+        if (impresora.CodigoConfiguracion == Constantes.ConfiguracionImpresora.IMPRESORA_TICKETS_CAJA_TESORERIA)
+        {
+            nombreImpresora = impresora.NombreImpresora;
+            numeroCopias = impresora.NumeroCopias;
+        }
+    }
+
     Context.Session.SetString("tituloPrincipal", "Registro de Ingresos y Egresos");
 }
-
-
 
 <button type="button" class="btn btn-outline-success" onclick="Redireccionar('Transaccion', 'Index')">
     <i class="bi bi-arrow-left-circle">
@@ -529,7 +541,7 @@
 </fieldset>
 
 <button class="btn btn-success" onclick="addEntidad()">Agregar Entidad</button>
-<button class="btn btn-primary" onclick="GuardarDatos()">Guardar</button>
+<button class="btn btn-primary" onclick="GuardarDatos('@nombreImpresora', '@numeroCopias')">Guardar</button>
 
 <!-- Modal Vendedores -->
 <div class="modal fade" id="staticBackdropVendedores" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelVendedores" aria-hidden="true">

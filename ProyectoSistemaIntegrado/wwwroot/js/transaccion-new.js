@@ -1539,7 +1539,7 @@ function LimpiarTransacciones()
 }
 
 
-function GuardarDatos() {
+function GuardarDatos(nombreImpresora, numeroCopias) {
     let errores = ValidarDatos("frmGuardaTransaccion")
     if (errores != "") {
         MensajeError(errores);
@@ -1599,10 +1599,12 @@ function GuardarDatos() {
             } else {
                 let setSemanaAnterior = parseInt(document.getElementById("uiSetSemanaAnterior").value);
                 if (setSemanaAnterior == 0) {
-                    PrintConstanciaIngresos(data, codigoTipoOperacion);
+                    PrintConstanciaIngresos(data, codigoTipoOperacion, nombreImpresora, numeroCopias);
                     setTimeout(() => {
                         Exito("Transaccion", "Index", true);
                     }, 1000);
+
+
                 } else {
                     Exito("Transaccion", "Index", true);
                 }
@@ -2527,6 +2529,8 @@ function RegistrarCorreccion() {
         frm.set("Cheque", "0");
     }
 
+
+
     Confirmacion("Corrección de Transacción", "¿Está Seguro(a) de realizar la corrección de esta transacción?", function (rpta) {
         fetchPost("Transaccion/RegistrarCorreccion", "text", frm, function (data) {
             if (data == "OK") {
@@ -2540,7 +2544,7 @@ function RegistrarCorreccion() {
 
 
 
-function ActualizarTransaccion(){
+function ActualizarTransaccion(nombreImpresora, numeroCopias){
     let errores = ValidarDatos("frmActualizarTransaccion")
     if (errores != "") {
         MensajeError(errores);
@@ -2592,15 +2596,20 @@ function ActualizarTransaccion(){
         frm.set("Cheque", "0");
     }
 
+    let codigoTipoOperacion = parseInt(frm.get("CodigoTipoOperacion"));
     Confirmacion("Corrección de Transacción", "¿Está Seguro(a) de realizar la corrección de esta transacción?", function (rpta) {
         fetchPost("Transaccion/ActualizarTransaccion", "text", frm, function (data) {
-            if (data == "OK") {
-                Exito("Transaccion", "Index", true);
-            } else {
+            if (!/^[0-9]+$/.test(data)) {
                 MensajeError(data);
+            } else {
+                PrintConstanciaIngresos(data, codigoTipoOperacion, nombreImpresora, numeroCopias);
+                setTimeout(() => {
+                    Exito("Transaccion", "Index", true);
+                }, 1000);
             }
         })
     })
 }
+
 
 

@@ -404,7 +404,9 @@ namespace CapaDatos.Tesoreria
                     string sql = @"
                     SELECT COUNT(*) AS cantidad 
                     FROM db_tesoreria.reporte_caja
-                    WHERE anio = @Anio AND numero_semana = @NumeroSemana";
+                    WHERE anio = @Anio 
+                      AND numero_semana = @NumeroSemana
+                      AND codigo_estado <> 0";
                     using (SqlCommand cmd = new SqlCommand(sql, conexion))
                     {
                         cmd.CommandType = CommandType.Text;

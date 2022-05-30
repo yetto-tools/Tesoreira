@@ -7,6 +7,20 @@
     UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(cadena);
     string idUsuario = objUsuario.IdUsuario;
     byte setSemanaAnterior = objUsuario.SetSemanaAnterior;
+
+    string impresionStr = Context.Session.GetString("impresion");
+    List<ParametroImpresionCLS> listImpresoras = JsonConvert.DeserializeObject<List<ParametroImpresionCLS>>(impresionStr);
+    string nombreImpresora = "";
+    int numeroCopias = 0;
+    foreach (ParametroImpresionCLS impresora in listImpresoras)
+    {
+        if (impresora.CodigoConfiguracion == Constantes.ConfiguracionImpresora.IMPRESORA_TICKETS_CAJA_TESORERIA)
+        {
+            nombreImpresora = impresora.NombreImpresora;
+            numeroCopias = impresora.NumeroCopias;
+        }
+    }
+
     Context.Session.SetString("tituloPrincipal", "Edición de Transacción (Tesorería)");
 }
 
@@ -545,7 +559,7 @@
 </fieldset>
 
 <button class="btn btn-success" onclick="addEntidad()">Agregar Entidad</button>
-<button class="btn btn-primary" onclick="ActualizarTransaccion()">Actualizar Transacción</button>
+<button class="btn btn-primary" onclick="ActualizarTransaccion('@nombreImpresora', '@numeroCopias')">Actualizar Transacción</button>
 
 <!-- Modal Vendedores -->
 <div class="modal fade" id="staticBackdropVendedores" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelVendedores" aria-hidden="true">
@@ -655,6 +669,7 @@
     <script src="~/js/jqueryui.js"></script>
     <script src="~/js/sweetalert.js"></script>
     <script src="~/js/generic.js"></script>
+    <script src="~/js/constancia.js"></script>
     <script src="~/js/transaccion-new.js"></script>
 
     <script>

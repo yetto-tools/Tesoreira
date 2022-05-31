@@ -42,6 +42,19 @@
     }// fin if
 }
 
+function setEmptyDataTransaccion() {
+    document.getElementById("uiNitEmpresaConcedeIva").checked = false;
+    setComboConsumidorConcedeIVA();
+    FillComboUnicaOpcion("uiNumeroCuenta", "-1", "-- No existe cuenta -- ");
+    clearDataFormulario();
+    let selectOption = document.getElementById("cboOperacion");
+    selectOption.selectedIndex = 0;
+    let setSemanaAnterior = parseInt(document.getElementById("uiSetSemanaAnterior").value);
+    if (setSemanaAnterior == 1) {
+        fillComboSemanaAnterior();
+    }
+}
+
 function clearDataTransaccion() {
     set("uiCodigoCanalVenta", "0");
     set("uiCodigoVendedor", "");
@@ -194,6 +207,18 @@ function clearDataFormulario() {
     let elementOtrosIngresos = document.getElementById("uiCodigoOtroIngreso");
     elementOtrosIngresos.classList.remove('obligatorio');
     document.getElementById('div-otros-ingresos').style.display = 'none';
+
+    // Montos
+    document.getElementById('uiCalculadora').value = "";
+    document.getElementById('uiMontoTransaccion').value = "";
+
+    // entidades
+    let table = $('#tabla').DataTable();
+    table.$("input[type=radio]").prop("checked", false);
+    //table.$('input[type=search]').val('').change();
+    table.$("input[type=search]").val('');
+    table.search('').draw();
+    //table.search(this.value).draw();
 }
 
 function setValueNumeroDocumentoDeposito(obj) {
@@ -1601,7 +1626,8 @@ function GuardarDatos(nombreImpresora, numeroCopias) {
                 if (setSemanaAnterior == 0) {
                     PrintConstanciaIngresos(data, codigoTipoOperacion, nombreImpresora, numeroCopias);
                     setTimeout(() => {
-                        Exito("Transaccion", "Index", true);
+                        setEmptyDataTransaccion();
+                        Exito("Transaccion", "Index", false);
                     }, 1000);
 
 

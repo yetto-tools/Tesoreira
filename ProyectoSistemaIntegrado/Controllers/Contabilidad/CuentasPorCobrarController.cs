@@ -101,6 +101,12 @@ namespace ProyectoSistemaIntegrado.Controllers.Contabilidad
             return obj.AnularCuentaPorCobrarTemporal(codigoCuentaPorCobrar, objUsuario.IdUsuario);
         }
 
+        public decimal GetMontoCuentaPorCobrar(int codigoTipoOperacion, int codigoOperacion, string codigoEntidad, int codigoCategoriaEntidad)
+        {
+            CuentaPorCobrarBL obj = new CuentaPorCobrarBL();
+            return obj.GetMontoCuentaPorCobrar(codigoTipoOperacion, codigoOperacion, codigoEntidad, codigoCategoriaEntidad);
+        }
+
 
     }
 

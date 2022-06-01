@@ -1,4 +1,4 @@
-﻿window.onload = function () {
+﻿ window.onload = function () {
     let url_string = window.location.href;
     let url = window.location.pathname.split('/');
     let nameController = url[1];
@@ -219,6 +219,11 @@ function clearDataFormulario() {
     table.$("input[type=search]").val('');
     table.search('').draw();
     //table.search(this.value).draw();
+
+    // Saldo Cuentas por Cobrar
+    document.getElementById('uiSaldoAnteriorCuentaPorCobrar').value = "0.00";
+    document.getElementById('uiMontoDevolucion').value = "0.00";
+    document.getElementById('uiSaldoActualCuentaPorCobrar').value = "0.00";
 }
 
 function setValueNumeroDocumentoDeposito(obj) {
@@ -239,15 +244,16 @@ function sumarMontos() {
     let montoEfectivoStr = document.getElementById("uiMontoEfectivo").value;
     let montoChequesStr = document.getElementById("uiMontoCheques").value;
     let monto = document.getElementById("uiMontoTransaccion").value;
+    let elementObservaciones = document.getElementById("uiObservaciones");
     
     let montoEfectivo = 0.00;
     let montoCheques = 0.00;
-    if (montoEfectivoStr != "") {
+    if (montoEfectivoStr !== "") {
         montoEfectivo = parseFloat(montoEfectivoStr);
     } else {
         document.getElementById("uiMontoEfectivo").value = "0";
     }
-    if (montoChequesStr != "") {
+    if (montoChequesStr !== "") {
         montoCheques = parseFloat(montoChequesStr);
     } else {
         document.getElementById("uiMontoCheques").value = "0";
@@ -255,6 +261,12 @@ function sumarMontos() {
     if (montoEfectivo > 0 || montoCheques > 0) {
         let montoTotal = montoEfectivo + montoCheques;
         document.getElementById("uiMontoTransaccion").value = montoTotal.toString();
+    }
+
+    document.onkeypress = function (event) {
+        if (event.key === "Enter") {
+            elementObservaciones.focus();
+        }
     }
 
 }
@@ -1705,6 +1717,7 @@ function intelligenceSearch() {
 
 
 function getDataRowRadioEntidades(obj) {
+    let codigoTipoOperacion = parseInt(Array.from(document.getElementsByName("CodigoTipoOperacion")).find(r => r.checked).value, 10);
     // Incluir el radioButton al inicio, por eso se comienza por la columna 1
     document.getElementById('div-captura-proveedor').style.display = 'none';
     let elementNombreProveedor = document.getElementById('uiNombreProveedor');
@@ -1945,6 +1958,20 @@ function getDataRowRadioEntidades(obj) {
                         set("uiCategoriaEntidad", table.cell(rowIdx, 4).data());
                         set("uiCodigoOperacionCaja", table.cell(rowIdx, 5).data());
                         set("uiCodigoArea", table.cell(rowIdx, 6).data());
+                    } else {
+                        table.$("input[type=radio]").prop("checked", false);
+                        MensajeError("Categoría de la entidad es incorrecta para esta operación");
+                    }
+                    break;
+                case DEVOLUCION_ANTICIPO_SALARIO:
+                    if (codigoCategoriaEntidad == CATEGORIA_EMPLEADO) {
+                        set("uiCodigoEntidad", table.cell(rowIdx, 1).data());
+                        set("uiNombreEntidad", table.cell(rowIdx, 2).data());
+                        set("uiCodigoCategoriaEntidad", table.cell(rowIdx, 3).data());
+                        set("uiCategoriaEntidad", table.cell(rowIdx, 4).data());
+                        set("uiCodigoOperacionCaja", table.cell(rowIdx, 5).data());
+                        set("uiCodigoArea", table.cell(rowIdx, 6).data());
+                        MostrarSaldoCuentaPorCobrar(codigoTipoOperacion, DEVOLUCION_ANTICIPO_SALARIO, codigoEntidad, codigoCategoriaEntidad);
                     } else {
                         table.$("input[type=radio]").prop("checked", false);
                         MensajeError("Categoría de la entidad es incorrecta para esta operación");
@@ -2637,5 +2664,65 @@ function ActualizarTransaccion(nombreImpresora, numeroCopias){
     })
 }
 
+function myCalculadora() {
+    let elementCalculadora = document.getElementById("uiCalculadora");
+    let elementMonto = document.getElementById("uiMontoTransaccion");
+    document.onkeypress = function (event) {
+        if (event.key === "Enter") {
+            try {
+                if (elementCalculadora.value !== "") {
+                    elementMonto.value = parseFloat(eval(elementCalculadora.value)).toFixed(2);
+                    elementMonto.focus();
+                }
+            } catch (e) {
+                elementMonto.value = "0.00";
+            }
+            // Si la operacion es de cuentas por cobrar, se debe de llamar a calcularSaldoCuentaPorCobrar
+            let codigoOperacion = parseInt(document.getElementById("cboOperacion").value);
+            if (codigoOperacion == DEVOLUCION_ANTICIPIO_LIQUIDABLE ||
+                codigoOperacion == DEVOLUCION_ANTICIPO_SALARIO ||
+                codigoOperacion == ABONO_A_PRESTAMO ||
+                codigoOperacion == ANTICIPO_LIQUIDABLE ||
+                codigoOperacion == ANTICIPO_SALARIO ||
+                codigoOperacion == PRESTAMO) {
+                calcularSaldoCuentaPorCobrar();
+            }// fin if
+        }
+    }
+}
 
+
+function MostrarSaldoCuentaPorCobrar(codigoTipoOperacion, codigoOperacion, codigoEntidad, codigoCategoriaEntidad) {
+    fetchGet("CuentasPorCobrar/GetMontoCuentaPorCobrar/?codigoTipoOperacion=" + codigoTipoOperacion.toString() + "&codigoOperacion=" + codigoOperacion.toString() + "&codigoEntidad=" + codigoEntidad + "&codigoCategoriaEntidad=" + codigoCategoriaEntidad.toString(), "json", function (data) {
+        document.getElementById("uiSaldoAnteriorCuentaPorCobrar").value = Number(data).toFixed(2);
+        calcularSaldoCuentaPorCobrar();
+    })
+}
+
+
+function calcularSaldoCuentaPorCobrar() {
+    let codigoTipoOperacion = parseInt(Array.from(document.getElementsByName("CodigoTipoOperacion")).find(r => r.checked).value, 10);
+    let valor = document.getElementById("uiMontoTransaccion").value;
+    if (valor !== "") {
+        document.getElementById("uiMontoDevolucion").value = valor;
+    } else {
+        document.getElementById("uiMontoDevolucion").value = "0.00";
+    }
+
+    let montoSaldoAnterior = parseFloat(document.getElementById("uiSaldoAnteriorCuentaPorCobrar").value).toFixed(2);
+    let montoDevolucion = parseFloat(document.getElementById("uiMontoDevolucion").value).toFixed(2);
+    let montoSaldoActual = 0.00;
+    switch (codigoTipoOperacion) {
+        case 1:
+            montoSaldoActual = montoSaldoAnterior - montoDevolucion;
+            break;
+        case -1:
+            montoSaldoActual = montoSaldoAnterior + montoDevolucion;
+            break;
+        default:
+            break
+    }
+    
+    document.getElementById("uiSaldoActualCuentaPorCobrar").value = Number(montoSaldoActual).toFixed(2);
+}
 

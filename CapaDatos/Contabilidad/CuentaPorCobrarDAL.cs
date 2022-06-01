@@ -487,5 +487,43 @@ namespace CapaDatos.Contabilidad
             }
         }
 
+        public decimal GetMontoCuentaPorCobrar(int codigoTipoOperacion, int codigoOperacion, string codigoEntidad, int codigoCategoriaEntidad)
+        {
+            decimal montoCuentaPorCobrar = 0;
+            using (SqlConnection conexion = new SqlConnection(cadenaContabilidad))
+            {
+                try
+                {
+                    string sql = "SELECT db_contabilidad.GetMontoCuentaPorCobrar(@CodigoTipoOperacion, @CodigoOperacion, @CodigoEntidad, @CodigoCategoriaEntidad) AS monto_saldo_anterior";
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand(sql, conexion))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Parameters.AddWithValue("@CodigoTipoOperacion", codigoTipoOperacion);
+                        cmd.Parameters.AddWithValue("@CodigoOperacion", codigoOperacion);
+                        cmd.Parameters.AddWithValue("@CodigoEntidad", codigoEntidad);
+                        cmd.Parameters.AddWithValue("@CodigoCategoriaEntidad", codigoCategoriaEntidad);
+                        SqlDataReader dr = cmd.ExecuteReader();
+                        if (dr != null)
+                        {
+                            int postMontoSaldoAnterior = dr.GetOrdinal("monto_saldo_anterior");
+                            while (dr.Read())
+                            {
+                                montoCuentaPorCobrar = dr.GetDecimal(postMontoSaldoAnterior);
+                            }
+                        }
+                    }
+                    conexion.Close();
+                }
+                catch (Exception)
+                {
+                    conexion.Close();
+                    montoCuentaPorCobrar = -1;
+
+                }
+                return montoCuentaPorCobrar;
+            }
+        }
+
     }
 }

@@ -78,5 +78,13 @@ namespace CapaNegocio.Contabilidad
             CuentaPorCobrarDAL obj = new CuentaPorCobrarDAL();
             return obj.AnularCuentaPorCobrarTemporal(codigoCuentaPorCobrar, usuarioAct);
         }
+
+        public decimal GetMontoCuentaPorCobrar(int codigoTipoOperacion, int codigoOperacion, string codigoEntidad, int codigoCategoriaEntidad)
+        {
+            CuentaPorCobrarDAL obj = new CuentaPorCobrarDAL();
+            return obj.GetMontoCuentaPorCobrar(codigoTipoOperacion, codigoOperacion, codigoEntidad, codigoCategoriaEntidad);
+        }
+
+
     }
 }

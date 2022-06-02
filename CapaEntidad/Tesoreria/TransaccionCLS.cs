@@ -165,6 +165,12 @@ namespace CapaEntidad.Tesoreria
 
         public string TipoOperacionContable { get; set; }
 
+        public int CodigoProveedor { get; set; }
+
+        public decimal MontoSaldoAnteriorCxC { get; set; }
+
+        public decimal MontoSaldoActualCxC { get; set; }
+
     }
 
 

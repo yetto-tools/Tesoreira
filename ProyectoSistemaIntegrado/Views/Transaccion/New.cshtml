@@ -453,11 +453,11 @@
                 </div>
                 <div class="col-sm-3">
                     <label class="col-form-label">Monto Efectivo</label>
-                    <input type="text" name="MontoEfectivo" class="form-control decimal-2 text-right" id="uiMontoEfectivo" placeholder="Monto" autocomplete="off" />
+                    <input type="text" name="MontoEfectivo" class="form-control decimal-2 text-right" id="uiMontoEfectivo" placeholder="Monto" autocomplete="off" onkeypress="focusMontoCheques()" />
                 </div>
                 <div class="col-sm-2">
                     <label class="col-form-label">Monto Cheques</label>
-                    <input type="text" name="MontoCheques" class="form-control decimal-2 text-right" id="uiMontoCheques" placeholder="Monto" autocomplete="off" />
+                    <input type="text" name="MontoCheques" class="form-control decimal-2 text-right" id="uiMontoCheques" placeholder="Monto" autocomplete="off" onkeypress="focusMontroTransaccion()" />
                 </div>
             </div>
         </div>
@@ -471,7 +471,7 @@
         <div class="mb-3 row">
             <label class="col-sm-2 col-form-label">Monto:</label>
             <div class="col-sm-3">
-                <input type="text" name="monto" class="form-control obligatorio decimal-2 text-right" id="uiMontoTransaccion" onclick="sumarMontos()" oninput="calcularSaldoCuentaPorCobrar()" autocomplete="off"
+                <input type="text" name="monto" class="form-control obligatorio decimal-2 text-right" id="uiMontoTransaccion" onclick="sumarMontos()" oninput = "calcularSaldoCuentaPorCobrar()" autocomplete="off" onkeypress="focusObservaciones()"
                        placeholder="Monto" />
             </div>
         </div>
@@ -497,20 +497,20 @@
             </div>
         </div>
 
-        <div style="display:block;" id="div-saldo-cuenta-por-cobrar">
+        <div style="display:none;" id="div-saldo-cuenta-por-cobrar">
             <div class="mb-3 row">
                 <label class="col-sm-2 col-form-label"> </label>
                 <div class="col-md-3">
                     <label class="col-form-label" id="uiTitleSaldoAnteriorCxC">Saldo Anterior</label>
-                    <input type="text" name="saldoAnteriorCuentaPorCobrar" class="form-control text-right" id="uiSaldoAnteriorCuentaPorCobrar" readonly />
+                    <input type="text" name="MontoSaldoAnteriorCxC" class="form-control text-right" id="uiSaldoAnteriorCuentaPorCobrar" readonly />
                 </div>
                 <div class="col-md-3">
                     <label class="col-form-label" id="uiTitleDevolucionCxC">Devolución</label>
-                    <input type="text" name="montoDevolucion" class="form-control text-right" id="uiMontoDevolucion" readonly />
+                    <input type="text" name="MontoDevolucion" class="form-control text-right" id="uiMontoDevolucion" readonly />
                 </div>
                 <div class="col-md-3">
                     <label class="col-form-label" id="uiTitleSaldoActualCxC">Saldo Actual</label>
-                    <input type="text" name="saldoActualCuentaPorCobrar" class="form-control text-right" id="uiSaldoActualCuentaPorCobrar" readonly />
+                    <input type="text" name="MontoSaldoActualCxC" class="form-control text-right" id="uiSaldoActualCuentaPorCobrar" readonly />
                 </div>
             </div>
         </div>

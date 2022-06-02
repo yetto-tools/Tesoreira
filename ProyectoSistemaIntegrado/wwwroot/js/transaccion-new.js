@@ -240,36 +240,7 @@ function setValueNumeroDocumentoDeposito(obj) {
 }
 
 
-function sumarMontos() {
-    let montoEfectivoStr = document.getElementById("uiMontoEfectivo").value;
-    let montoChequesStr = document.getElementById("uiMontoCheques").value;
-    let monto = document.getElementById("uiMontoTransaccion").value;
-    let elementObservaciones = document.getElementById("uiObservaciones");
-    
-    let montoEfectivo = 0.00;
-    let montoCheques = 0.00;
-    if (montoEfectivoStr !== "") {
-        montoEfectivo = parseFloat(montoEfectivoStr);
-    } else {
-        document.getElementById("uiMontoEfectivo").value = "0";
-    }
-    if (montoChequesStr !== "") {
-        montoCheques = parseFloat(montoChequesStr);
-    } else {
-        document.getElementById("uiMontoCheques").value = "0";
-    }
-    if (montoEfectivo > 0 || montoCheques > 0) {
-        let montoTotal = montoEfectivo + montoCheques;
-        document.getElementById("uiMontoTransaccion").value = montoTotal.toString();
-    }
 
-    document.onkeypress = function (event) {
-        if (event.key === "Enter") {
-            elementObservaciones.focus();
-        }
-    }
-
-}
 
 function fillAnioPlanilla() {
     let arrayDate = getFechaSistema();
@@ -381,6 +352,12 @@ function fillCombosEdit(codigoTransaccion) {
                 set("uiCodigoCanalVenta", data.codigoCanalVenta.toString());
                 set("uiNombreEntidad", data.nombreEntidad);
                 set("uiMontoTransaccion", Number(data.monto).toFixed(2).toString());
+
+                // Cuentas por Cobrar
+                set("uiSaldoAnteriorCuentaPorCobrar", Number(data.montoSaldoAnteriorCxC).toFixed(2).toString());
+                set("uiMontoDevolucion", Number(data.monto).toFixed(2).toString());
+                set("uiSaldoActualCuentaPorCobrar", Number(data.montoSaldoActualCxC).toFixed(2).toString());
+
                 set("uiObservaciones", data.observaciones);
                 set("uiCodigoReporte", data.codigoReporte.toString());
                 set("uiCodigoArea", data.codigoArea.toString());
@@ -389,6 +366,8 @@ function fillCombosEdit(codigoTransaccion) {
                 set("uiNumeroReciboReferencia", data.numeroReciboReferencia.toString());
                 set("uiFechaReciboStr", data.fechaReciboStr);
                 set("uiNombreProveedor", data.nombreProveedor);
+
+
                 setDataControls(codigoOperacion, data);
 
             })
@@ -866,20 +845,24 @@ function showControls(obj) {
             break;
         case PRESTAMO:
             document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('div-saldo-cuenta-por-cobrar').style.display = 'block';
             document.getElementById('div-planilla-pago').style.display = 'none';
             document.getElementById('uiContainerTipoPago').style.display = 'none';
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
             document.getElementById('div-tipo-especiales1').style.display = 'none';
             document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('uiTitleDevolucionCxC').innerHTML = 'Monto Préstamo';
             fillComboTipoCuentaPorCobrar();
             break;
         case ABONO_A_PRESTAMO:
             document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('div-saldo-cuenta-por-cobrar').style.display = 'block';
             document.getElementById('div-planilla-pago').style.display = 'none';
             document.getElementById('uiContainerTipoPago').style.display = 'none';
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
             document.getElementById('div-tipo-especiales1').style.display = 'none';
             document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('uiTitleDevolucionCxC').innerHTML = 'Monto Abono';
             // Tipo de Documento
             document.getElementById("uiNingunTipoDocumento").checked = true;
             document.getElementById('uiNingunTipoDocumento').onClick = setDataAdicionaTipoDocumento("0");
@@ -893,11 +876,73 @@ function showControls(obj) {
             break;
         case DEVOLUCION_ANTICIPIO_LIQUIDABLE:
             document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('div-saldo-cuenta-por-cobrar').style.display = 'block';
             document.getElementById('div-planilla-pago').style.display = 'none';
             document.getElementById('uiContainerTipoPago').style.display = 'none';
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
             document.getElementById('div-tipo-especiales1').style.display = 'none';
             document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('uiTitleDevolucionCxC').innerHTML = 'Monto Devolución';
+            // Tipo de Documento
+            document.getElementById("uiNingunTipoDocumento").checked = true;
+            document.getElementById('uiNingunTipoDocumento').onClick = setDataAdicionaTipoDocumento("0");
+            // Forma de Pago
+            document.getElementById("uiEfectivo").disabled = false;
+            document.getElementById("uiDeposito").disabled = true;
+            document.getElementById("uiCheque").disabled = true;
+            document.getElementById("uiEfectivo").checked = true;
+            document.getElementById("uiDeposito").checked = false;
+            document.getElementById("uiCheque").checked = false;
+            break;
+        case ANTICIPO_LIQUIDABLE:
+            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('div-saldo-cuenta-por-cobrar').style.display = 'block';
+            document.getElementById('div-planilla-pago').style.display = 'none';
+            document.getElementById('uiContainerTipoPago').style.display = 'none';
+            document.getElementById('div-tipo-bonos-extra').style.display = 'none';
+            document.getElementById('div-tipo-especiales1').style.display = 'none';
+            document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('uiTitleDevolucionCxC').innerHTML = 'Monto Anticipo';
+            // Tipo de Documento
+            document.getElementById("uiNingunTipoDocumento").checked = true;
+            document.getElementById('uiNingunTipoDocumento').onClick = setDataAdicionaTipoDocumento("0");
+            // Forma de Pago
+            document.getElementById("uiEfectivo").disabled = false;
+            document.getElementById("uiDeposito").disabled = true;
+            document.getElementById("uiCheque").disabled = true;
+            document.getElementById("uiEfectivo").checked = true;
+            document.getElementById("uiDeposito").checked = false;
+            document.getElementById("uiCheque").checked = false;
+            break;
+        case ANTICIPO_SALARIO:
+            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('div-saldo-cuenta-por-cobrar').style.display = 'block';
+            document.getElementById('div-planilla-pago').style.display = 'none';
+            document.getElementById('uiContainerTipoPago').style.display = 'none';
+            document.getElementById('div-tipo-bonos-extra').style.display = 'none';
+            document.getElementById('div-tipo-especiales1').style.display = 'none';
+            document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('uiTitleDevolucionCxC').innerHTML = 'Monto Anticipo';
+            // Tipo de Documento
+            document.getElementById("uiNingunTipoDocumento").checked = true;
+            document.getElementById('uiNingunTipoDocumento').onClick = setDataAdicionaTipoDocumento("0");
+            // Forma de Pago
+            document.getElementById("uiEfectivo").disabled = false;
+            document.getElementById("uiDeposito").disabled = true;
+            document.getElementById("uiCheque").disabled = true;
+            document.getElementById("uiEfectivo").checked = true;
+            document.getElementById("uiDeposito").checked = false;
+            document.getElementById("uiCheque").checked = false;
+            break;
+        case DEVOLUCION_ANTICIPO_SALARIO:
+            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('div-saldo-cuenta-por-cobrar').style.display = 'block';
+            document.getElementById('div-planilla-pago').style.display = 'none';
+            document.getElementById('uiContainerTipoPago').style.display = 'none';
+            document.getElementById('div-tipo-bonos-extra').style.display = 'none';
+            document.getElementById('div-tipo-especiales1').style.display = 'none';
+            document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('uiTitleDevolucionCxC').innerHTML = 'Monto Devolución';
             // Tipo de Documento
             document.getElementById("uiNingunTipoDocumento").checked = true;
             document.getElementById('uiNingunTipoDocumento').onClick = setDataAdicionaTipoDocumento("0");
@@ -957,6 +1002,7 @@ function showControls(obj) {
             break;
         default:
             document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('div-saldo-cuenta-por-cobrar').style.display = 'none';
             document.getElementById('div-planilla-pago').style.display = 'none';
             document.getElementById('uiContainerTipoPago').style.display = 'none';
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
@@ -1268,7 +1314,8 @@ function setDataControls(codigoOperacion, data) {
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
             document.getElementById('div-tipo-especiales1').style.display = 'none';
             document.getElementById('div-bonos-extra').style.display = 'none';
-            document.getElementById('div-tipo-cuenta-por-cobrar').style.display = 'block';
+            document.getElementById('div-saldo-cuenta-por-cobrar').style.display = 'block';
+            document.getElementById('uiTitleDevolucionCxC').innerHTML = 'Monto Préstamo';
 
             let elementTipoCuentaPorCobrar = document.getElementById("uiTipoCuentaPorCobrar");
             let elementFechaPrestamo = document.getElementById("uiFechaPrestamo");
@@ -1288,6 +1335,22 @@ function setDataControls(codigoOperacion, data) {
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
             document.getElementById('div-tipo-especiales1').style.display = 'none';
             document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('div-saldo-cuenta-por-cobrar').style.display = 'block';
+            document.getElementById('uiTitleDevolucionCxC').innerHTML = 'Monto Abono';
+            // Forma de Pago
+            document.getElementById("uiEfectivo").disabled = false;
+            document.getElementById("uiDeposito").disabled = true;
+            document.getElementById("uiCheque").disabled = true;
+            break;
+        case ANTICIPO_LIQUIDABLE:
+            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('div-planilla-pago').style.display = 'none';
+            document.getElementById('uiContainerTipoPago').style.display = 'none';
+            document.getElementById('div-tipo-bonos-extra').style.display = 'none';
+            document.getElementById('div-tipo-especiales1').style.display = 'none';
+            document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('div-saldo-cuenta-por-cobrar').style.display = 'block';
+            document.getElementById('uiTitleDevolucionCxC').innerHTML = 'Monto Anticipo';
             // Forma de Pago
             document.getElementById("uiEfectivo").disabled = false;
             document.getElementById("uiDeposito").disabled = true;
@@ -1300,11 +1363,42 @@ function setDataControls(codigoOperacion, data) {
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
             document.getElementById('div-tipo-especiales1').style.display = 'none';
             document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('div-saldo-cuenta-por-cobrar').style.display = 'block';
+            document.getElementById('uiTitleDevolucionCxC').innerHTML = 'Monto Devolución';
             // Forma de Pago
             document.getElementById("uiEfectivo").disabled = false;
             document.getElementById("uiDeposito").disabled = true;
             document.getElementById("uiCheque").disabled = true;
             break;
+        case ANTICIPO_SALARIO:
+            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('div-planilla-pago').style.display = 'none';
+            document.getElementById('uiContainerTipoPago').style.display = 'none';
+            document.getElementById('div-tipo-bonos-extra').style.display = 'none';
+            document.getElementById('div-tipo-especiales1').style.display = 'none';
+            document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('div-saldo-cuenta-por-cobrar').style.display = 'block';
+            document.getElementById('uiTitleDevolucionCxC').innerHTML = 'Monto Anticipo';
+            // Forma de Pago
+            document.getElementById("uiEfectivo").disabled = false;
+            document.getElementById("uiDeposito").disabled = true;
+            document.getElementById("uiCheque").disabled = true;
+            break;
+        case DEVOLUCION_ANTICIPO_SALARIO:
+            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('div-planilla-pago').style.display = 'none';
+            document.getElementById('uiContainerTipoPago').style.display = 'none';
+            document.getElementById('div-tipo-bonos-extra').style.display = 'none';
+            document.getElementById('div-tipo-especiales1').style.display = 'none';
+            document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('div-saldo-cuenta-por-cobrar').style.display = 'block';
+            document.getElementById('uiTitleDevolucionCxC').innerHTML = 'Monto Devolución';
+            // Forma de Pago
+            document.getElementById("uiEfectivo").disabled = false;
+            document.getElementById("uiDeposito").disabled = true;
+            document.getElementById("uiCheque").disabled = true;
+            break;
+
         case TRASLADO_DEPARTAMENTO_CREDITOS:
             document.getElementById('divTabla').style.display = 'none';
             document.getElementById('div-planilla-pago').style.display = 'none';
@@ -1336,6 +1430,7 @@ function setDataControls(codigoOperacion, data) {
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
             document.getElementById('div-tipo-especiales1').style.display = 'none';
             document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('div-tipo-cuenta-por-cobrar').style.display = 'none';
             break;
     }
 }
@@ -1628,7 +1723,11 @@ function GuardarDatos(nombreImpresora, numeroCopias) {
         frm.set("Cheque", "0");
     }
 
+    // Quitar las comas del valor del monto
+    frm.set("monto", frm.get("monto").replaceAll(',', ''));
+
     let codigoTipoOperacion = parseInt(frm.get("CodigoTipoOperacion"));
+
     Confirmacion(undefined, undefined, function (rpta) {
         fetchPost("Transaccion/GuardarDatos/?complemento=0", "text", frm, function (data) {
             if (!/^[0-9]+$/.test(data)) {
@@ -1875,6 +1974,7 @@ function getDataRowRadioEntidades(obj) {
                         set("uiCategoriaEntidad", table.cell(rowIdx, 4).data());
                         set("uiCodigoOperacionCaja", table.cell(rowIdx, 5).data());
                         set("uiCodigoArea", table.cell(rowIdx, 6).data());
+                        MostrarSaldoCuentaPorCobrar(codigoTipoOperacion, ANTICIPO_LIQUIDABLE, codigoEntidad, codigoCategoriaEntidad);
                     } else {
                         table.$("input[type=radio]").prop("checked", false);
                         MensajeError("Categoría de la entidad es incorrecta para esta operación");
@@ -1889,6 +1989,7 @@ function getDataRowRadioEntidades(obj) {
                         set("uiCategoriaEntidad", table.cell(rowIdx, 4).data());
                         set("uiCodigoOperacionCaja", table.cell(rowIdx, 5).data());
                         set("uiCodigoArea", table.cell(rowIdx, 6).data());
+                        MostrarSaldoCuentaPorCobrar(codigoTipoOperacion, DEVOLUCION_ANTICIPIO_LIQUIDABLE, codigoEntidad, codigoCategoriaEntidad);
                     } else {
                         table.$("input[type=radio]").prop("checked", false);
                         MensajeError("Categoría de la entidad es incorrecta para esta operación");
@@ -1904,6 +2005,7 @@ function getDataRowRadioEntidades(obj) {
                         set("uiCategoriaEntidad", table.cell(rowIdx, 4).data());
                         set("uiCodigoOperacionCaja", table.cell(rowIdx, 5).data());
                         set("uiCodigoArea", table.cell(rowIdx, 6).data());
+                        MostrarSaldoCuentaPorCobrar(codigoTipoOperacion, PRESTAMO, codigoEntidad, codigoCategoriaEntidad);
                     } else {
                         table.$("input[type=radio]").prop("checked", false);
                         MensajeError("Categoría de la entidad es incorrecta para esta operación");
@@ -1919,6 +2021,7 @@ function getDataRowRadioEntidades(obj) {
                         set("uiCategoriaEntidad", table.cell(rowIdx, 4).data());
                         set("uiCodigoOperacionCaja", table.cell(rowIdx, 5).data());
                         set("uiCodigoArea", table.cell(rowIdx, 6).data());
+                        MostrarSaldoCuentaPorCobrar(codigoTipoOperacion, ABONO_A_PRESTAMO, codigoEntidad, codigoCategoriaEntidad);
                     } else {
                         table.$("input[type=radio]").prop("checked", false);
                         MensajeError("Categoría de la entidad es incorrecta para esta operación");
@@ -1958,6 +2061,7 @@ function getDataRowRadioEntidades(obj) {
                         set("uiCategoriaEntidad", table.cell(rowIdx, 4).data());
                         set("uiCodigoOperacionCaja", table.cell(rowIdx, 5).data());
                         set("uiCodigoArea", table.cell(rowIdx, 6).data());
+                        MostrarSaldoCuentaPorCobrar(codigoTipoOperacion, ANTICIPO_SALARIO, codigoEntidad, codigoCategoriaEntidad);
                     } else {
                         table.$("input[type=radio]").prop("checked", false);
                         MensajeError("Categoría de la entidad es incorrecta para esta operación");
@@ -2582,7 +2686,8 @@ function RegistrarCorreccion() {
         frm.set("Cheque", "0");
     }
 
-
+    // Quitar las comas del valor del monto
+    frm.set("monto", frm.get("monto").replaceAll(',', ''));
 
     Confirmacion("Corrección de Transacción", "¿Está Seguro(a) de realizar la corrección de esta transacción?", function (rpta) {
         fetchPost("Transaccion/RegistrarCorreccion", "text", frm, function (data) {
@@ -2649,6 +2754,9 @@ function ActualizarTransaccion(nombreImpresora, numeroCopias){
         frm.set("Cheque", "0");
     }
 
+    // Quitar las comas del valor del monto
+    frm.set("monto", frm.get("monto").replaceAll(',', ''));
+
     let codigoTipoOperacion = parseInt(frm.get("CodigoTipoOperacion"));
     Confirmacion("Corrección de Transacción", "¿Está Seguro(a) de realizar la corrección de esta transacción?", function (rpta) {
         fetchPost("Transaccion/ActualizarTransaccion", "text", frm, function (data) {
@@ -2673,6 +2781,7 @@ function myCalculadora() {
                 if (elementCalculadora.value !== "") {
                     elementMonto.value = parseFloat(eval(elementCalculadora.value)).toFixed(2);
                     elementMonto.focus();
+                    elementMonto.click();
                 }
             } catch (e) {
                 elementMonto.value = "0.00";
@@ -2700,29 +2809,83 @@ function MostrarSaldoCuentaPorCobrar(codigoTipoOperacion, codigoOperacion, codig
 }
 
 
-function calcularSaldoCuentaPorCobrar() {
-    let codigoTipoOperacion = parseInt(Array.from(document.getElementsByName("CodigoTipoOperacion")).find(r => r.checked).value, 10);
-    let valor = document.getElementById("uiMontoTransaccion").value;
-    if (valor !== "") {
-        document.getElementById("uiMontoDevolucion").value = valor;
+function sumarMontos() {
+    let montoEfectivoStr = document.getElementById("uiMontoEfectivo").value;
+    let montoChequesStr = document.getElementById("uiMontoCheques").value;
+    let montoEfectivo = 0.00;
+    let montoCheques = 0.00;
+    if (montoEfectivoStr !== "") {
+        montoEfectivo = parseFloat(montoEfectivoStr);
     } else {
-        document.getElementById("uiMontoDevolucion").value = "0.00";
+        document.getElementById("uiMontoEfectivo").value = "0";
     }
-
-    let montoSaldoAnterior = parseFloat(document.getElementById("uiSaldoAnteriorCuentaPorCobrar").value).toFixed(2);
-    let montoDevolucion = parseFloat(document.getElementById("uiMontoDevolucion").value).toFixed(2);
-    let montoSaldoActual = 0.00;
-    switch (codigoTipoOperacion) {
-        case 1:
-            montoSaldoActual = montoSaldoAnterior - montoDevolucion;
-            break;
-        case -1:
-            montoSaldoActual = montoSaldoAnterior + montoDevolucion;
-            break;
-        default:
-            break
+    if (montoChequesStr !== "") {
+        montoCheques = parseFloat(montoChequesStr);
+    } else {
+        document.getElementById("uiMontoCheques").value = "0";
     }
-    
-    document.getElementById("uiSaldoActualCuentaPorCobrar").value = Number(montoSaldoActual).toFixed(2);
+    if (montoEfectivo > 0 || montoCheques > 0) {
+        let montoTotal = montoEfectivo + montoCheques;
+        document.getElementById("uiMontoTransaccion").value = formatRegional(Number(montoTotal).toFixed(2));
+    }
 }
 
+function calcularSaldoCuentaPorCobrar() {
+    let codigoOperacion = parseInt(document.getElementById('cboOperacion').value);
+    let valor = (document.getElementById("uiMontoTransaccion").value).replaceAll(',', '');
+    if (codigoOperacion == DEVOLUCION_ANTICIPIO_LIQUIDABLE ||
+        codigoOperacion == DEVOLUCION_ANTICIPO_SALARIO ||
+        codigoOperacion == ABONO_A_PRESTAMO ||
+        codigoOperacion == ANTICIPO_LIQUIDABLE ||
+        codigoOperacion == ANTICIPO_SALARIO ||
+        codigoOperacion == PRESTAMO) {
+
+        let codigoTipoOperacion = parseInt(Array.from(document.getElementsByName("CodigoTipoOperacion")).find(r => r.checked).value, 10);
+        if (valor !== "" && /^\d*(\.\d{1})?\d{0,1}$/.test(valor)) {
+            document.getElementById("uiMontoTransaccion").value = formatRegional(valor);
+            document.getElementById("uiMontoDevolucion").value = valor;
+        } else {
+            document.getElementById("uiMontoDevolucion").value = "0.00";
+        }
+
+        let montoSaldoAnterior = parseFloat(document.getElementById("uiSaldoAnteriorCuentaPorCobrar").value).toFixed(2);
+        let montoDevolucion = parseFloat(document.getElementById("uiMontoDevolucion").value).toFixed(2);
+        let montoSaldoActual = 0.00;
+        switch (codigoTipoOperacion) {
+            case 1:
+                montoSaldoActual = parseFloat(montoSaldoAnterior) - parseFloat(montoDevolucion);
+                break;
+            case -1:
+                montoSaldoActual = parseFloat(montoSaldoAnterior) + parseFloat(montoDevolucion);
+                break;
+            default:
+                break
+        }
+
+        document.getElementById("uiSaldoActualCuentaPorCobrar").value = Number(montoSaldoActual).toFixed(2);
+    } else {
+        if (valor !== "" && /^\d*(\.\d{1})?\d{0,1}$/.test(valor)) {
+            document.getElementById("uiMontoTransaccion").value = formatRegional(valor);
+        }
+    }
+}
+
+
+function focusMontoCheques() {
+    let elementMontoCheques = document.getElementById("uiMontoCheques");
+    elementMontoCheques.focus();
+}
+
+
+function focusMontroTransaccion() {
+    sumarMontos();
+    let elementMontoTransaccion = document.getElementById("uiMontoTransaccion");
+    elementMontoTransaccion.focus();
+    elementMontoTransaccion.click();
+}
+
+
+function focusObservaciones() {
+    let elementObservaciones = document.getElementById("uiObservaciones");
+    elementObservaciones.focus();
+}

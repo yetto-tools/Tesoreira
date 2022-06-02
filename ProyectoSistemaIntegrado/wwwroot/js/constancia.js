@@ -1,4 +1,4 @@
-﻿function getHtmlConstanciaIngreso(codigoTransaccion, codigoOperacion, numeroRecibo, fechaRecibo, codigoEntidad, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion, codigoSeguridad) {
+﻿function getHtmlConstanciaIngreso(codigoTransaccion, codigoOperacion, numeroRecibo, fechaRecibo, codigoEntidad, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC) {
     let table = `<div style="width: 287px; max-width: 287px; text-align: center; align-content: center; margin-left: 25px;">
                  <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">TESORERÍA</p>
                  <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">${codigoSeguridad}</p>
@@ -23,6 +23,7 @@
                         <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Nombre:</td>
                         <td style="font-size: 18px; font-family: 'Arial, sans-serif';">${nombreEntidad}</td>
                     </tr>`;
+
                     if (codigoOperacion == VENTAS_EN_RUTA) {
                         table += `<tr style="border-collapse: collapse;">
                                     <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Ruta:</td>
@@ -36,19 +37,46 @@
                     <tr style="border-collapse: collapse;">
                         <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Recurso:</td>
                         <td style="font-size: 18px; font-family: 'Arial, sans-serif';">${recursos}</td>
-                    </tr>
-                    <tr style="border-collapse: collapse;">
+                    </tr>`;
+
+
+                    if (codigoOperacion == DEVOLUCION_ANTICIPIO_LIQUIDABLE || codigoOperacion == DEVOLUCION_ANTICIPO_SALARIO || codigoOperacion == ABONO_A_PRESTAMO) {
+
+                        table += `<tr style="border-collapse: collapse;">
+                        <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Saldo Anterior:</td>
+                        <td style="font-size: 18px; font-family: 'Arial, sans-serif';">${formatRegional(montoSaldoAnteriorCxC)}</td>
+                        </tr>`;
+                    }
+
+
+    table +=        `<tr style="border-collapse: collapse;">
                         <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Monto:</td>
-                        <td style="font-size: 18px; font-family: 'Arial, sans-serif';">${monto}</td>
-                    </tr>
-                 </table>
+                        <td style="font-size: 18px; font-family: 'Arial, sans-serif';">`
+    if (codigoOperacion == DEVOLUCION_ANTICIPIO_LIQUIDABLE || codigoOperacion == DEVOLUCION_ANTICIPO_SALARIO || codigoOperacion == ABONO_A_PRESTAMO) {
+        table += `<div style="text-align:left">(-) ${formatRegional(monto)}</div>`;
+    } else {
+        table += `<div style="text-align:left">${formatRegional(monto)}</div>`;
+    }
+    table +=        ` </td>
+                    </tr>`;
+
+                    if (codigoOperacion == DEVOLUCION_ANTICIPIO_LIQUIDABLE || codigoOperacion == DEVOLUCION_ANTICIPO_SALARIO || codigoOperacion == ABONO_A_PRESTAMO) {
+
+                        table += `<tr style="border-collapse: collapse;">
+                        <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Saldo Actual:</td>
+                        <td style="font-size: 18px; font-family: 'Arial, sans-serif';">${formatRegional(montoSaldoActualCxC)}</td>
+                        </tr>`;
+                    }
+
+
+    table +=     `</table>
                  <p style="text-align: center; align-content: center; font-size: 16px; font-family: 'Arial, sans-serif';">${fechaImpresion}<br>
                  <p style="text-align: center; align-content: center; font-size: 16px; font-family: 'Arial, sans-serif';">${usuarioCreacion}<br>
                  </div>`;
     return table;
 }
 
-function getHtmlConstanciaEgreso(codigoTransaccion, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion, codigoSeguridad) {
+function getHtmlConstanciaEgreso(codigoTransaccion, codigoOperacion, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, numeroCuenta) {
     let table = `<div style="width: 287px; max-width: 287px; text-align: center; align-content: center; margin-left: 25px;">
                  <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">TESORERÍA</p>
                  <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">${codigoSeguridad}</p>
@@ -66,16 +94,50 @@ function getHtmlConstanciaEgreso(codigoTransaccion, numeroRecibo, fechaRecibo, n
                     <tr style="border-collapse: collapse;">
                         <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Nombre:</td>
                         <td style="font-size: 18px; font-family: 'Arial, sans-serif';">${nombreEntidad}</td>
-                    </tr>
-                    <tr style="border-collapse: collapse;">
+                    </tr>`
+                    if (codigoOperacion == DEPOSITOS_BANCARIOS)
+                    {
+                        table += `<tr style="border-collapse: collapse;">
+                            <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Cuenta:</td>
+                            <td style="font-size: 18px; font-family: 'Arial, sans-serif';">${numeroCuenta}</td>
+                        </tr>`
+                    }
+
+        table += `  <tr style="border-collapse: collapse;">
                         <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Concepto:</td>
                         <td style="font-size: 18px; font-family: 'Arial, sans-serif';">${nombreOperacion}</td>
-                    </tr>
-                    <tr style="border-collapse: collapse;">
+                    </tr>`;
+
+                    if (codigoOperacion == ANTICIPO_LIQUIDABLE || codigoOperacion == ANTICIPO_SALARIO || codigoOperacion == PRESTAMO) {
+
+                        table += `<tr style="border-collapse: collapse;">
+                        <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Saldo Anterior:</td>
+                        <td style="font-size: 18px; font-family: 'Arial, sans-serif';">${formatRegional(montoSaldoAnteriorCxC)}</td>
+                        </tr>`;
+                    }
+
+          table += `<tr style="border-collapse: collapse;">
                         <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Monto:</td>
-                        <td style="font-size: 18px; font-family: 'Arial, sans-serif';">${monto}</td>
-                    </tr>
-                 </table>
+                        <td style="font-size: 18px; font-family: 'Arial, sans-serif';">`
+                    if (codigoOperacion == ANTICIPO_LIQUIDABLE || codigoOperacion == ANTICIPO_SALARIO || codigoOperacion == PRESTAMO) {
+                        table += `<div style="text-align:left">(+) ${formatRegional(monto)}</div>`;
+                    } else {
+                        table += `<div style="text-align:left">${formatRegional(monto)}</div>`;
+                    }
+
+            table += ` </td>
+                    </tr>`
+
+                    if (codigoOperacion == ANTICIPO_LIQUIDABLE || codigoOperacion == ANTICIPO_SALARIO || codigoOperacion == PRESTAMO) {
+
+                        table += `<tr style="border-collapse: collapse;">
+                        <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Saldo Actual:</td>
+                        <td style="font-size: 18px; font-family: 'Arial, sans-serif';">${formatRegional(montoSaldoActualCxC)}</td>
+                        </tr>`;
+                    }
+
+
+    table += `     </table>
                  <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif';">${fechaImpresion}<br>
                  <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif';">${usuarioCreacion}<br>
                  </div>`;

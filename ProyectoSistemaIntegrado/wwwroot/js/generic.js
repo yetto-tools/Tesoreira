@@ -1129,7 +1129,7 @@ function validarKeyPress(idFormulario) {
             elementosNames[i].onkeypress = function (e) {
                 let cadena = e.target.value + String.fromCharCode(e.keycode)
                 //alert(cadena);
-                if (!/^\d*(\.\d{1})?\d{0,1}$/.test(cadena)) {
+                if (!/^\d*(\.\d{1})?\d{0,1}$/.test(cadena.replaceAll(',',''))) {
                     e.preventDefault();
                 }
             }
@@ -1195,7 +1195,7 @@ function ValidarDatos(idFormulario) {
         // solo numero decimal con 2 decimales
         resultado = clases.filter(p => p == "decimal-2")
         if (resultado.length > 0) {
-            if (!/^\d*(\.\d{1})?\d{0,1}$/.test(control.value)) {
+            if (!/^\d*(\.\d{1})?\d{0,1}$/.test(control.value.replaceAll(',',''))) {
                 error = "el campo " + control.name + " el cambo debe ser de 2 decimales";
             }
         }
@@ -1291,4 +1291,9 @@ function dateIsValid(dateStr) {
     return date.toISOString().startsWith(isoFormattedStr);
 }
 
+const formatRegional = (valor) => {
+    const expr = /(\d)(?=(\d\d\d)+(?!\d))/g; 
+    const rep = '$1,';
+    return valor.toString().replaceAll(expr, rep);
+}
 

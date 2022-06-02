@@ -19,6 +19,7 @@
             public const short VENTAS_EN_RUTA = 1;
             public const short VENTAS_ESTABLECIMIENTO = 2;
             public const short OTRAS_VENTAS = 3;
+            public const short DEVOLUCION_POR_ANTICIPO_SALARIO = 4;
             public const short ANTICIPO_LIQUIDABLE_REEMBOLSO = 39;
             public const short RUTERO_LOCAL = 52;
             public const short RUTERO_INTERIOR = 53;
@@ -49,6 +50,7 @@
             public const short GASTOS_ADMINISTRATIVOS = 35;
             public const short ANTICIPO_LIQUIDABLE_EGRESO = 38;
             public const short PRESTAMO_EGRESO = 41;
+            public const short ANTICIPO_SALARIO = 62;
 
             public static class TipoPlanilla
             {

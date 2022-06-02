@@ -6,6 +6,7 @@
     Layout = null;
     TransaccionBL obj = new TransaccionBL();
     TransaccionCLS objTransaccion = obj.GetDataTransaccion(Model.CodigoTransaccion);
+    string montoStr = "";
 }
 
 <!doctype html>
@@ -31,11 +32,11 @@
                 <td><div style="text-align:left;">@objTransaccion.FechaReciboStr</div></td>
             </tr>
             @if (objTransaccion.CodigoOperacion == Constantes.Operacion.Ingreso.VENTAS_EN_RUTA)
-            { 
-             <tr style="border-collapse: collapse;">
-                <td style="border-collapse: collapse;"><div style="text-align:left;">Código:</div></td>
-                <td><div style="text-align:left;">@objTransaccion.CodigoEntidad</div></td>
-             </tr>
+            {
+                <tr style="border-collapse: collapse;">
+                    <td style="border-collapse: collapse;"><div style="text-align:left;">Código:</div></td>
+                    <td><div style="text-align:left;">@objTransaccion.CodigoEntidad</div></td>
+                </tr>
             }
             <tr style="border-collapse: collapse;">
                 <td style="border-collapse: collapse;"><div style="text-align:left;">Nombre:</div></td>
@@ -56,10 +57,48 @@
                 <td style="border-collapse: collapse;"><div style="text-align:left;">Recurso:</div></td>
                 <td><div style="text-align:left;">@objTransaccion.Recursos.TrimEnd(',')</div></td>
             </tr>
+            @if (objTransaccion.CodigoOperacion == Constantes.Operacion.Ingreso.PRESTAMO_ABONO ||
+                 objTransaccion.CodigoOperacion == Constantes.Operacion.Ingreso.ANTICIPO_LIQUIDABLE_REEMBOLSO ||
+                 objTransaccion.CodigoOperacion == Constantes.Operacion.Ingreso.DEVOLUCION_POR_ANTICIPO_SALARIO)
+            {
+                <tr style="border-collapse: collapse;">
+                    <td style="width: 85px; border-collapse: collapse;"><div style="text-align:left">Saldo Anterior:</div></td>
+                    <td><div style="text-align:left">@objTransaccion.MontoSaldoAnteriorCxC.ToString("N2")</div>
+                    </td>
+                </tr>
+            }
             <tr style="border-collapse: collapse;">
                 <td style="border-collapse: collapse;"><div style="text-align:left;">Monto:</div></td>
-                <td><div style="text-align:left;">@objTransaccion.Monto.ToString("N2")</div></td>
+                <td>
+                    <div style="text-align:left;">
+                        @switch (objTransaccion.CodigoOperacion)
+                        {
+                            case Constantes.Operacion.Ingreso.PRESTAMO_ABONO:
+                                montoStr = "(-) " + objTransaccion.Monto.ToString("N2");
+                                break;
+                            case Constantes.Operacion.Ingreso.ANTICIPO_LIQUIDABLE_REEMBOLSO:
+                                montoStr = "(-) " + objTransaccion.Monto.ToString("N2");
+                                break;
+                            case Constantes.Operacion.Ingreso.DEVOLUCION_POR_ANTICIPO_SALARIO:
+                                montoStr = "(-) " + objTransaccion.Monto.ToString("N2");
+                                break;
+                            default:
+                                montoStr = objTransaccion.Monto.ToString("N2");
+                                break;
+}
+                        @montoStr
+                    </div>
+                </td>
             </tr>
+            @if (objTransaccion.CodigoOperacion == Constantes.Operacion.Ingreso.PRESTAMO_ABONO ||
+                 objTransaccion.CodigoOperacion == Constantes.Operacion.Ingreso.ANTICIPO_LIQUIDABLE_REEMBOLSO ||
+                 objTransaccion.CodigoOperacion == Constantes.Operacion.Ingreso.DEVOLUCION_POR_ANTICIPO_SALARIO)
+            {
+                <tr style="border-collapse: collapse;">
+                    <td style="width: 85px; border-collapse: collapse;"><div style="text-align:left">Saldo Actual:</div></td>
+                    <td><div style="text-align:left">@objTransaccion.MontoSaldoActualCxC.ToString("N2")</div></td>
+                </tr>
+            }
         </table>
         <p style="text-align: center; align-content: center;">@objTransaccion.FechaImpresionStr<br>
         <p style="text-align: center; align-content: center;">@objTransaccion.UsuarioIng<br>

@@ -6,6 +6,7 @@
     Layout = null;
     TransaccionBL obj = new TransaccionBL();
     TransaccionCLS objTransaccion = obj.GetDataTransaccion(Model.CodigoTransaccion);
+    string montoStr = "";
 }
 
 <!doctype html>
@@ -34,14 +35,60 @@
                 <td style="width: 85px; border-collapse: collapse;"><div style="text-align:left">Nombre:</div></td>
                 <td><div style="text-align:left">@objTransaccion.NombreEntidad</div></td>
             </tr>
+            @if (objTransaccion.CodigoOperacion == Constantes.Operacion.Egreso.DEPOSITOS_BANCARIOS)
+            { 
+                <tr style="border-collapse: collapse;">
+                    <td style="width: 85px; border-collapse: collapse;"><div style="text-align:left">Cuenta:</div></td>
+                    <td><div style="text-align:left">@objTransaccion.NumeroCuenta</div></td>
+                </tr>
+            }
             <tr style="border-collapse: collapse;">
                 <td style="width: 85px; border-collapse: collapse;"><div style="text-align:left">Concepto:</div></td>
                 <td><div style="text-align:left">@objTransaccion.Operacion</div></td>
             </tr>
+            @if ( objTransaccion.CodigoOperacion == Constantes.Operacion.Egreso.PRESTAMO_EGRESO ||
+                  objTransaccion.CodigoOperacion == Constantes.Operacion.Egreso.ANTICIPO_LIQUIDABLE_EGRESO ||
+                  objTransaccion.CodigoOperacion == Constantes.Operacion.Egreso.ANTICIPO_SALARIO)
+            {
+                <tr style="border-collapse: collapse;">
+                    <td style="width: 85px; border-collapse: collapse;"><div style="text-align:left">Saldo Anterior:</div></td>
+                    <td><div style="text-align:left">@objTransaccion.MontoSaldoAnteriorCxC.ToString("N2")</div></td>
+                </tr>
+
+            }
             <tr style="border-collapse: collapse;">
                 <td style="width: 85px; border-collapse: collapse;"><div style="text-align:left">Monto:</div></td>
-                <td><div style="text-align:left">@objTransaccion.Monto.ToString("N2")</div></td>
+                <td>
+                    <div style="text-align:left">
+                            @switch (objTransaccion.CodigoOperacion)
+                            {
+                                case Constantes.Operacion.Egreso.PRESTAMO_EGRESO:
+                                    montoStr = "(+) " + objTransaccion.Monto.ToString("N2");
+                                    break;
+                                case Constantes.Operacion.Egreso.ANTICIPO_LIQUIDABLE_EGRESO:
+                                    montoStr = "(+) " + objTransaccion.Monto.ToString("N2");
+                                    break;
+                                case Constantes.Operacion.Egreso.ANTICIPO_SALARIO:
+                                    montoStr = "(+) "+ objTransaccion.Monto.ToString("N2");
+                                    break;
+                                default:
+                                    montoStr = objTransaccion.Monto.ToString("N2");
+                                    break;
+                            }
+                        @montoStr
+                    </div>
+                </td>
             </tr>
+            @if ( objTransaccion.CodigoOperacion == Constantes.Operacion.Egreso.PRESTAMO_EGRESO ||
+                  objTransaccion.CodigoOperacion == Constantes.Operacion.Egreso.ANTICIPO_LIQUIDABLE_EGRESO ||
+                  objTransaccion.CodigoOperacion == Constantes.Operacion.Egreso.ANTICIPO_SALARIO)
+            {
+                <tr style="border-collapse: collapse;">
+                    <td style="width: 85px; border-collapse: collapse;"><div style="text-align:left">Saldo Actual:</div></td>
+                    <td><div style="text-align:left">@objTransaccion.MontoSaldoActualCxC.ToString("N2")</div></td>
+                </tr>
+            }
+
         </table>
         <p style="text-align: center; align-content: center;">@objTransaccion.FechaImpresionStr<br>
         <p style="text-align: center; align-content: center;">@objTransaccion.UsuarioIng<br>

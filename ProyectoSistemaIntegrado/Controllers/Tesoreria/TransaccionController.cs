@@ -404,10 +404,10 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
 
             string[] cabeceras = { "CodigoTransaccion","CodigoTipoTransaccion","NumeroRecibo","FechaRecibo","CodigoEntidad","NombreEntidad","CodigoCategoriaEntidad",
             "CategoriaEntidad","CodigoOperacion","Operacion","TipoCuentaPorCobrar","CodigoArea","Area","FechaOperacion","FechaStr","DiaOperacion","NombreDiaOperacion","Monto","CodigoEstado","Estado","FechaIng",
-            "UsuarioIng","Ruta","ComplementoConta","Revisado","CodigoTransaccionAnt","Correccion"};
+            "UsuarioIng","Ruta","ComplementoConta","Revisado","CodigoTransaccionAnt","Correccion","nombreProveedor"};
             string[] nombrePropiedades = { "CodigoTransaccion","CodigoTipoTransaccion","NumeroRecibo","FechaRecibo","CodigoEntidad","NombreEntidad","CodigoCategoriaEntidad",
             "CategoriaEntidad","CodigoOperacion","Operacion","TipoCuentaPorCobrar","CodigoArea","Area","FechaOperacion","FechaStr","DiaOperacion","NombreDiaOperacion","Monto","CodigoEstado","Estado","FechaIng",
-            "UsuarioIng","Ruta","ComplementoConta","Revisado","CodigoTransaccionAnt","Correccion"};
+            "UsuarioIng","Ruta","ComplementoConta","Revisado","CodigoTransaccionAnt","Correccion","NombreProveedor"};
 
             byte[] buffer = ExportarExcelDatos(cabeceras, nombrePropiedades, lista);
             return File(buffer, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
@@ -423,10 +423,10 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
 
             string[] cabeceras = { "CodigoTransaccion","CodigoTipoTransaccion","NumeroRecibo","FechaRecibo","CodigoEntidad","NombreEntidad","CodigoCategoriaEntidad",
             "CategoriaEntidad","CodigoOperacion","Operacion","Tipo Operación","TipoCuentaPorCobrar","CodigoArea","Area","FechaOperacion","FechaStr","DiaOperacion","NombreDiaOperacion","Monto","CodigoEstado","Estado","FechaIng",
-            "UsuarioIng","Ruta","ComplementoConta","Revisado","CodigoTransaccionAnt","Correccion"};
+            "UsuarioIng","Ruta","ComplementoConta","Revisado","CodigoTransaccionAnt","Correccion","nombreProveedor"};
             string[] nombrePropiedades = { "CodigoTransaccion","CodigoTipoTransaccion","NumeroRecibo","FechaRecibo","CodigoEntidad","NombreEntidad","CodigoCategoriaEntidad",
             "CategoriaEntidad","CodigoOperacion","Operacion","TipoOperacionContable","TipoCuentaPorCobrar","CodigoArea","Area","FechaOperacion","FechaStr","DiaOperacion","NombreDiaOperacion","Monto","CodigoEstado","Estado","FechaIng",
-            "UsuarioIng","Ruta","ComplementoConta","Revisado","CodigoTransaccionAnt","Correccion"};
+            "UsuarioIng","Ruta","ComplementoConta","Revisado","CodigoTransaccionAnt","Correccion","NombreProveedor"};
 
             byte[] buffer = ExportarExcelDatos(cabeceras, nombrePropiedades, lista);
             return File(buffer, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");

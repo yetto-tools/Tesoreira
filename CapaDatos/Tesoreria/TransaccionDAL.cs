@@ -149,7 +149,9 @@ namespace CapaDatos.Tesoreria
                                                           nombre_proveedor,
                                                           codigo_canal_venta,
                                                           codigo_otro_ingreso,
-                                                          numero_recibo_referencia)
+                                                          numero_recibo_referencia,
+                                                          monto_saldo_anterior_cxc,
+                                                          monto_saldo_actual_cxc)
                     VALUES(@CodigoTransaccion,
                            @CodigoSeguridad,
                            @CodigoEmpresa,
@@ -218,7 +220,9 @@ namespace CapaDatos.Tesoreria
                            @NombreProveedor,
                            @CodigoCanalVenta,
                            @CodigoOtroIngreso,
-                           @NumeroReciboReferencia)";
+                           @NumeroReciboReferencia,
+                           @MontoSaldoAnteriorCuentaPorCobrar,
+                           @MontoSaldoActualCuentaPorCobrar)";
 
                     cmd.CommandText = sentenciaSQL;
                     cmd.Parameters.AddWithValue("@CodigoTransaccion", codigoTransaccion);
@@ -290,6 +294,10 @@ namespace CapaDatos.Tesoreria
                     cmd.Parameters.AddWithValue("@CodigoCanalVenta", objTransaccion.CodigoCanalVenta);
                     cmd.Parameters.AddWithValue("@CodigoOtroIngreso", objTransaccion.CodigoOtroIngreso == -1 ? 0 : objTransaccion.CodigoOtroIngreso);
                     cmd.Parameters.AddWithValue("@NumeroReciboReferencia", correlativoReciboReferencia);
+                    cmd.Parameters.AddWithValue("@MontoSaldoAnteriorCuentaPorCobrar", objTransaccion.MontoSaldoAnteriorCxC);
+                    cmd.Parameters.AddWithValue("@MontoSaldoActualCuentaPorCobrar", objTransaccion.MontoSaldoActualCxC);
+
+
                     cmd.ExecuteNonQuery();
 
                     #region Registro en Cuenta Corriente
@@ -552,7 +560,9 @@ namespace CapaDatos.Tesoreria
                                                           codigo_transaccion_ant, 
                                                           codigo_canal_venta,
                                                           codigo_otro_ingreso,
-                                                          numero_recibo_referencia)
+                                                          numero_recibo_referencia,
+                                                          monto_saldo_anterior_cxc,
+                                                          monto_saldo_actual_cxc)
                     VALUES(@CodigoTransaccion,
                            @CodigoSeguridad,
                            @CodigoEmpresa,
@@ -622,7 +632,9 @@ namespace CapaDatos.Tesoreria
                            @CodigoTransaccionAnt,
                            @CodigoCanalVenta,
                            @CodigoOtroIngreso,
-                           @NumeroReciboReferencia)";
+                           @NumeroReciboReferencia,
+                           @MontoSaldoAnteriorCxC,
+                           @MontoSaldoActualCxC)";
 
                     cmd.CommandText = sentenciaSQL;
                     cmd.Parameters.AddWithValue("@CodigoTransaccion", codigoTransaccion);
@@ -695,6 +707,8 @@ namespace CapaDatos.Tesoreria
                     cmd.Parameters.AddWithValue("@CodigoCanalVenta", objTransaccion.CodigoCanalVenta);
                     cmd.Parameters.AddWithValue("@CodigoOtroIngreso", objTransaccion.CodigoOtroIngreso == -1 ? 0 : objTransaccion.CodigoOtroIngreso);
                     cmd.Parameters.AddWithValue("@NumeroReciboReferencia", objTransaccion.NumeroReciboReferencia);
+                    cmd.Parameters.AddWithValue("@MontoSaldoAnteriorCxC", objTransaccion.MontoSaldoAnteriorCxC);
+                    cmd.Parameters.AddWithValue("@MontoSaldoActualCxC", objTransaccion.MontoSaldoActualCxC);
 
                     cmd.ExecuteNonQuery();
 
@@ -1153,7 +1167,9 @@ namespace CapaDatos.Tesoreria
                                                           codigo_transaccion_ant,
                                                           codigo_canal_venta,
                                                           codigo_otro_ingreso,
-                                                          numero_recibo_referencia)
+                                                          numero_recibo_referencia,
+                                                          monto_saldo_anterior_cxc,
+                                                          monto_saldo_actual_cxc)
                     VALUES(@CodigoTransaccion,
                            @CodigoSeguridad,
                            @CodigoEmpresa,
@@ -1223,7 +1239,9 @@ namespace CapaDatos.Tesoreria
                            @CodigoTransaccionAnt,
                            @CodigoCanalVenta,
                            @CodigoOtroIngreso,
-                           @NumeroReciboReferencia)";
+                           @NumeroReciboReferencia,
+                           @MontoSaldoAnteriorCxC,
+                           @MontoSaldoActualCxC)";
 
                     cmd.CommandText = sentenciaSQL;
                     cmd.Parameters.AddWithValue("@CodigoTransaccion", codigoTransaccion);
@@ -1296,6 +1314,10 @@ namespace CapaDatos.Tesoreria
                     cmd.Parameters.AddWithValue("@CodigoCanalVenta", objTransaccion.CodigoCanalVenta);
                     cmd.Parameters.AddWithValue("@CodigoOtroIngreso", objTransaccion.CodigoOtroIngreso == -1 ? 0 : objTransaccion.CodigoOtroIngreso);
                     cmd.Parameters.AddWithValue("@NumeroReciboReferencia", objTransaccion.NumeroReciboReferencia);
+                    cmd.Parameters.AddWithValue("@MontoSaldoAnteriorCxC", objTransaccion.MontoSaldoAnteriorCxC);
+                    cmd.Parameters.AddWithValue("@MontoSaldoActualCxC", objTransaccion.MontoSaldoActualCxC);
+
+
                     cmd.ExecuteNonQuery();
 
                     #region Registro en Cuenta Corriente
@@ -1597,7 +1619,10 @@ namespace CapaDatos.Tesoreria
                               WHEN e.signo = 1 THEN 'INGRESO'  
                               WHEN e.signo = -1 THEN 'EGRESO'  
                               ELSE 'NEUTRO'
-                            END AS tipo_operacion_contable 
+                            END AS tipo_operacion_contable,
+                            x.monto_saldo_anterior_cxc,
+                            x.monto_saldo_actual_cxc,
+                            x.numero_cuenta
 
                     FROM db_tesoreria.transaccion x
                     INNER JOIN db_tesoreria.operacion w
@@ -1671,6 +1696,9 @@ namespace CapaDatos.Tesoreria
                             int postCorreccion = dr.GetOrdinal("correccion");
                             int postCodigoSeguridad = dr.GetOrdinal("codigo_seguridad");
                             int postTipoOperacionContable = dr.GetOrdinal("tipo_operacion_contable");
+                            int postMontoSaldoAnteriorCxC = dr.GetOrdinal("monto_saldo_anterior_cxc");
+                            int postMontoSaldoActualCxC = dr.GetOrdinal("monto_saldo_actual_cxc");
+                            int postNumeroCuenta = dr.GetOrdinal("numero_cuenta");
 
                             while (dr.Read())
                             {
@@ -1716,6 +1744,9 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.Correccion = dr.GetByte(postCorreccion);
                                 objTransaccion.CodigoSeguridad = dr.GetString(postCodigoSeguridad);
                                 objTransaccion.TipoOperacionContable = dr.GetString(postTipoOperacionContable);
+                                objTransaccion.MontoSaldoAnteriorCxC = dr.GetDecimal(postMontoSaldoAnteriorCxC);
+                                objTransaccion.MontoSaldoActualCxC = dr.GetDecimal(postMontoSaldoActualCxC);
+                                objTransaccion.NumeroCuenta = dr.IsDBNull(postNumeroCuenta) ? "" : dr.GetString(postNumeroCuenta);
 
                                 lista.Add(objTransaccion);
                             }
@@ -1816,7 +1847,11 @@ namespace CapaDatos.Tesoreria
                               WHEN e.signo = 1 THEN 'INGRESO'  
                               WHEN e.signo = -1 THEN 'EGRESO'  
                               ELSE 'NEUTRO'
-                            END AS tipo_operacion_contable 
+                            END AS tipo_operacion_contable,
+                            x.monto_saldo_anterior_cxc,
+                            x.monto_saldo_actual_cxc,
+                            x.numero_cuenta,
+                            x.nombre_proveedor
 
                     FROM db_tesoreria.transaccion x
                     INNER JOIN db_tesoreria.operacion w
@@ -1895,6 +1930,10 @@ namespace CapaDatos.Tesoreria
                             int postCorreccion = dr.GetOrdinal("correccion");
                             int postCodigoSeguridad = dr.GetOrdinal("codigo_seguridad");
                             int postTipoOperacionContable = dr.GetOrdinal("tipo_operacion_contable");
+                            int postMontoSaldoAnteriorCxC = dr.GetOrdinal("monto_saldo_anterior_cxc");
+                            int postMontoSaldoActualCxC = dr.GetOrdinal("monto_saldo_actual_cxc");
+                            int postNumeroCuenta = dr.GetOrdinal("numero_cuenta");
+                            int postNombreProveedor = dr.GetOrdinal("nombre_proveedor");
 
                             while (dr.Read())
                             {
@@ -1942,6 +1981,10 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.Correccion = dr.GetByte(postCorreccion);
                                 objTransaccion.CodigoSeguridad = dr.GetString(postCodigoSeguridad);
                                 objTransaccion.TipoOperacionContable = dr.GetString(postTipoOperacionContable);
+                                objTransaccion.MontoSaldoAnteriorCxC = dr.GetDecimal(postMontoSaldoAnteriorCxC);
+                                objTransaccion.MontoSaldoActualCxC = dr.GetDecimal(postMontoSaldoActualCxC);
+                                objTransaccion.NumeroCuenta = dr.IsDBNull(postNumeroCuenta) ? "" : dr.GetString(postNumeroCuenta);
+                                objTransaccion.NombreProveedor = dr.IsDBNull(postNombreProveedor) ? "" : dr.GetString(postNombreProveedor);
 
                                 lista.Add(objTransaccion);
                             }
@@ -2086,7 +2129,11 @@ namespace CapaDatos.Tesoreria
                               WHEN e.signo = 1 THEN 'INGRESO'  
                               WHEN e.signo = -1 THEN 'EGRESO'  
                               ELSE 'NEUTRO'
-                            END AS tipo_operacion_contable 
+                            END AS tipo_operacion_contable,
+                            x.monto_saldo_anterior_cxc,
+                            x.monto_saldo_actual_cxc,
+                            x.numero_cuenta,
+                            x.nombre_proveedor
 
                     FROM db_tesoreria.transaccion x
                     INNER JOIN db_tesoreria.operacion w
@@ -2163,6 +2210,10 @@ namespace CapaDatos.Tesoreria
                             int postCorreccion = dr.GetOrdinal("correccion");
                             int postCodigoSeguridad = dr.GetOrdinal("codigo_seguridad");
                             int postTipoOperacionContable = dr.GetOrdinal("tipo_operacion_contable");
+                            int postMontoSaldoAnteriorCxC = dr.GetOrdinal("monto_saldo_anterior_cxc");
+                            int postMontoSaldoActualCxC = dr.GetOrdinal("monto_saldo_actual_cxc");
+                            int postNumeroCuenta = dr.GetOrdinal("numero_cuenta");
+                            int postNombreProveedor = dr.GetOrdinal("nombre_proveedor");
 
                             while (dr.Read())
                             {
@@ -2210,6 +2261,10 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.Correccion = dr.GetByte(postCorreccion);
                                 objTransaccion.CodigoSeguridad = dr.GetString(postCodigoSeguridad);
                                 objTransaccion.TipoOperacionContable = dr.GetString(postTipoOperacionContable);
+                                objTransaccion.MontoSaldoAnteriorCxC = dr.GetDecimal(postMontoSaldoAnteriorCxC);
+                                objTransaccion.MontoSaldoActualCxC = dr.GetDecimal(postMontoSaldoActualCxC);
+                                objTransaccion.NumeroCuenta = dr.IsDBNull(postNumeroCuenta) ? "" : dr.GetString(postNumeroCuenta);
+                                objTransaccion.NombreProveedor = dr.IsDBNull(postNombreProveedor) ? "" : dr.GetString(postNombreProveedor);
 
                                 lista.Add(objTransaccion);
                             }
@@ -2323,7 +2378,10 @@ namespace CapaDatos.Tesoreria
                               WHEN e.signo = 1 THEN 'INGRESO'  
                               WHEN e.signo = -1 THEN 'EGRESO'  
                               ELSE 'NEUTRO'
-                            END AS tipo_operacion_contable 
+                            END AS tipo_operacion_contable,
+                            x.monto_saldo_anterior_cxc,
+                            x.monto_saldo_actual_cxc,
+                            x.numero_cuenta
 
                     FROM db_tesoreria.transaccion x
                     INNER JOIN db_tesoreria.operacion w
@@ -2417,6 +2475,9 @@ namespace CapaDatos.Tesoreria
                             int postPermisoAnular = dr.GetOrdinal("permiso_anular");
                             int postCodigoSeguridad = dr.GetOrdinal("codigo_seguridad");
                             int postTipoOperacionContable = dr.GetOrdinal("tipo_operacion_contable");
+                            int postMontoSaldoAnteriorCxC = dr.GetOrdinal("monto_saldo_anterior_cxc");
+                            int postMontoSaldoActualCxC = dr.GetOrdinal("monto_saldo_actual_cxc");
+                            int postNumeroCuenta = dr.GetOrdinal("numero_cuenta");
 
                             while (dr.Read())
                             {
@@ -2469,6 +2530,9 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.PermisoAnular = (byte)dr.GetInt32(postPermisoAnular);
                                 objTransaccion.CodigoSeguridad = dr.GetString(postCodigoSeguridad);
                                 objTransaccion.TipoOperacionContable = dr.GetString(postTipoOperacionContable);
+                                objTransaccion.MontoSaldoAnteriorCxC = dr.GetDecimal(postMontoSaldoAnteriorCxC);
+                                objTransaccion.MontoSaldoActualCxC = dr.GetDecimal(postMontoSaldoActualCxC);
+                                objTransaccion.NumeroCuenta = dr.IsDBNull(postNumeroCuenta) ? "" : dr.GetString(postNumeroCuenta);
 
                                 lista.Add(objTransaccion);
                             }
@@ -3638,7 +3702,9 @@ namespace CapaDatos.Tesoreria
                             CONCAT(CASE WHEN x.efectivo = 1 THEN 'Efectivo,' ELSE '' END,CASE WHEN x.deposito = 1 THEN 'Depósito,' ELSE '' END,CASE WHEN x.cheque = 1 THEN 'Cheque' ELSE '' END) AS recursos,
                             FORMAT(GETDATE(), 'dd/MM/yyyy, hh:mm:ss') AS fecha_impresion_str,
                             x.usuario_ing,
-                            x.codigo_otro_ingreso
+                            x.codigo_otro_ingreso,
+                            monto_saldo_anterior_cxc,
+                            monto_saldo_actual_cxc    
                             
                     FROM db_tesoreria.transaccion x
                     INNER JOIN db_tesoreria.operacion w
@@ -3728,6 +3794,8 @@ namespace CapaDatos.Tesoreria
                             int postFechaImpresionStr = dr.GetOrdinal("fecha_impresion_str");
                             int postUsuarioIng = dr.GetOrdinal("usuario_ing");
                             int postCodigoOtroIngreso = dr.GetOrdinal("codigo_otro_ingreso");
+                            int postMontoSaldoAnteriorCxC = dr.GetOrdinal("monto_saldo_anterior_cxc");
+                            int postMontoSaldoActualCxC = dr.GetOrdinal("monto_saldo_actual_cxc");
 
 
                             while (dr.Read())
@@ -3797,7 +3865,8 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.FechaImpresionStr = dr.GetString(postFechaImpresionStr);
                                 objTransaccion.UsuarioIng = dr.GetString(postUsuarioIng);
                                 objTransaccion.CodigoOtroIngreso = dr.GetInt16(postCodigoOtroIngreso);
-
+                                objTransaccion.MontoSaldoAnteriorCxC = dr.GetDecimal(postMontoSaldoAnteriorCxC);
+                                objTransaccion.MontoSaldoActualCxC = dr.GetDecimal(postMontoSaldoActualCxC);
                             }
                         }
                     }

@@ -104,13 +104,13 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
             return obj.GetMontoPlanillaParaDesglosar(anioOperacion, semanaOperacion, codigoReporte);
         }
 
-        public List<TransaccionCLS> BuscarTransacciones(int codigoOperacion, int codigoCategoriaEntidad, int diaOperacion)
+        public List<TransaccionCLS> BuscarTransacciones(int codigoTipoOperacion, int codigoOperacion, int codigoCategoriaEntidad, int diaOperacion)
         {
             ViewBag.Message = HttpContext.Session.GetString("usuario");
             UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
 
             TransaccionBL obj = new TransaccionBL();
-            return obj.BuscarTransacciones(objUsuario.IdUsuario, codigoOperacion, codigoCategoriaEntidad, diaOperacion, objUsuario.SuperAdmin, objUsuario.SetSemanaAnterior);
+            return obj.BuscarTransacciones(objUsuario.IdUsuario, codigoTipoOperacion, codigoOperacion, codigoCategoriaEntidad, diaOperacion, objUsuario.SuperAdmin, objUsuario.SetSemanaAnterior);
         }
 
 
@@ -355,13 +355,13 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
             return obj.ActualizarNumeroBoletaDeposito(codigoTransaccion, numeroBoletaDeposito, objUsuario.IdUsuario);
         }
 
-        public FileResult ExportarExcelTransaccionesEnProceso(int codigoOperacion, int codigoCategoriaEntidad, int diaOperacion)
+        public FileResult ExportarExcelTransaccionesEnProceso(int codigoTipoOperacion, int codigoOperacion, int codigoCategoriaEntidad, int diaOperacion)
         {
             ViewBag.Message = HttpContext.Session.GetString("usuario");
             UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
 
             TransaccionBL obj = new TransaccionBL();
-            lista = obj.BuscarTransacciones(objUsuario.IdUsuario, codigoOperacion, codigoCategoriaEntidad, diaOperacion, objUsuario.SuperAdmin, objUsuario.SetSemanaAnterior);
+            lista = obj.BuscarTransacciones(objUsuario.IdUsuario, codigoTipoOperacion, codigoOperacion, codigoCategoriaEntidad, diaOperacion, objUsuario.SuperAdmin, objUsuario.SetSemanaAnterior);
 
             string[] cabeceras = { "CodigoTransaccion","CodigoTipoTransaccion","NumeroRecibo","FechaRecibo","CodigoEntidad","NombreEntidad","CodigoCategoriaEntidad",
             "CategoriaEntidad","CodigoOperacion","Operacion","TipoCuentaPorCobrar","CodigoArea","Area","FechaOperacion","FechaStr","DiaOperacion","NombreDiaOperacion","Monto","CodigoEstado","Estado","FechaIng",

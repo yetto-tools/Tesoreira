@@ -9,7 +9,7 @@
             case "Index":
                 MostrarCompromisoFiscal();
                 fillCombosBusqueda();
-                MostrarTransacciones(-1, -1, -1);
+                MostrarTransacciones(-1, -1, -1, -1);
                 break;
             case "ConsultaTransacciones":
                 fillCombosBusquedaConsulta();
@@ -162,9 +162,9 @@ function fillSemanasTransacciones(obj) {
 }
 
 
-function MostrarTransacciones(codigoOperacion, codigoCategoriaEntidad, diaOperacion) {
+function MostrarTransacciones(codigoTipoOperacion, codigoOperacion, codigoCategoriaEntidad, diaOperacion) {
     let objConfiguracion = {
-        url: "Transaccion/BuscarTransacciones/?codigoOperacion=" + codigoOperacion.toString() + "&codigoCategoriaEntidad=" + codigoCategoriaEntidad.toString() + "&diaOperacion=" + diaOperacion.toString(),
+        url: "Transaccion/BuscarTransacciones/?codigoTipoOperacion=" + codigoTipoOperacion.toString() + "&codigoOperacion=" + codigoOperacion.toString() + "&codigoCategoriaEntidad=" + codigoCategoriaEntidad.toString() + "&diaOperacion=" + diaOperacion.toString(),
         cabeceras: ["Código", "codigoTransaccionAnt", "correccion", "Código Operación", "Operación", "Tipo Operación", "Código Cuenta por Cobrar", "Año", "Semana", "Fecha Operación", "Día Operación", "Fecha Recibo", "Número Recibo", "codigoEntidad", "Entidad", "Cuenta","Categoría", "Monto", "Estado", "Fecha Transacción", "Creado por", "Anular", "Editar", "Signo", "Número Recibo", "Ruta", "Fecha Impresión", "Recursos", "codigoSeguridad", "montoSaldoAnteriorCxC", "montoSaldoActualCxC"],
         propiedades: ["codigoTransaccion", "codigoTransaccionAnt", "correccion", "codigoOperacion", "operacion", "tipoOperacionContable", "codigoCuentaPorCobrar", "anioOperacion", "semanaOperacion", "fechaStr", "nombreDiaOperacion", "fechaReciboStr", "numeroRecibo", "codigoEntidad", "nombreEntidad", "numeroCuenta","categoriaEntidad", "monto", "estado", "fechaIngStr", "usuarioIng", "permisoAnular", "permisoEditar", "signo", "numeroReciboStr", "ruta", "fechaImpresionStr", "recursos", "codigoSeguridad", "montoSaldoAnteriorCxC","montoSaldoActualCxC"],
         displaydecimals: ["monto", "montoSaldoAnteriorCxC", "montoSaldoActualCxC"],
@@ -275,7 +275,7 @@ function AnularTransaccion() {
     Confirmacion(undefined, undefined, function (rpta) {
         fetchPost("Transaccion/AnularTransaccion", "text", frm, function (data) {
             if (data == "OK") {
-                MostrarTransacciones(-1, -1, -1);
+                MostrarTransacciones(-1, -1, -1, -1);
             } else {
                 MensajeError(data);
             }
@@ -479,13 +479,15 @@ function MostrarTransaccionesConsultaContabilidad(anioOperacion, semanaOperacion
 }
 
 function buscarTransacciones() {
+    let objTipoOperacion = document.getElementById("uiFiltroTipoOperacion");
     let objOperacion = document.getElementById("uiFiltroOperaciones");
     let objCategoriaEntidad = document.getElementById("uiFiltroCategorias");
     let objDiaOperacion = document.getElementById("uiFiltroDias");
+    let codigoTipoOperacion = parseInt(objTipoOperacion.options[objTipoOperacion.selectedIndex].value);
     let codigoOperacion = parseInt(objOperacion.options[objOperacion.selectedIndex].value);
     let codigoCategoriaEntidad = parseInt(objCategoriaEntidad.options[objCategoriaEntidad.selectedIndex].value);
     let diaOperacion = parseInt(objDiaOperacion.options[objDiaOperacion.selectedIndex].value);
-    MostrarTransacciones(codigoOperacion, codigoCategoriaEntidad, diaOperacion);
+    MostrarTransacciones(codigoTipoOperacion, codigoOperacion, codigoCategoriaEntidad, diaOperacion);
 }
 
 function buscarTransaccionesConsulta() {
@@ -1315,13 +1317,15 @@ function GenerarExcelTransaccionesConsultaContabilidad() {
 
 
 function GenerarExcelTransaccionesEnProceso() {
+    let objTipoOperacion = document.getElementById("uiFiltroTipoOperacion");
     let objOperacion = document.getElementById("uiFiltroOperaciones");
     let objCategoriaEntidad = document.getElementById("uiFiltroCategorias");
     let objDiaOperacion = document.getElementById("uiFiltroDias");
+    let codigoTipoOperacion = parseInt(objTipoOperacion.options[objTipoOperacion.selectedIndex].value);
     let codigoOperacion = parseInt(objOperacion.options[objOperacion.selectedIndex].value);
     let codigoCategoriaEntidad = parseInt(objCategoriaEntidad.options[objCategoriaEntidad.selectedIndex].value);
     let diaOperacion = parseInt(objDiaOperacion.options[objDiaOperacion.selectedIndex].value);
-    document.getElementById("uiExportarExcel").href = "/Transaccion/ExportarExcelTransaccionesEnProceso/?codigoOperacion=" + codigoOperacion.toString() + "&codigoCategoriaEntidad=" + codigoCategoriaEntidad.toString() + "&diaOperacion=" + diaOperacion.toString();
+    document.getElementById("uiExportarExcel").href = "/Transaccion/ExportarExcelTransaccionesEnProceso/?codigoTipoOperacion=" + codigoTipoOperacion.toString() + "&codigoOperacion=" + codigoOperacion.toString() + "&codigoCategoriaEntidad=" + codigoCategoriaEntidad.toString() + "&diaOperacion=" + diaOperacion.toString();
     document.getElementById("uiExportarExcel").click();
 
 }

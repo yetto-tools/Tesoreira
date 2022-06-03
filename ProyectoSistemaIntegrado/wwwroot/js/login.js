@@ -10,3 +10,12 @@
         }
     })
 }
+
+
+function IngresarKeyPress(){
+    document.onkeypress = function (event) {
+        if (event.key === "Enter") {
+            Ingresar();
+        }
+    }
+}

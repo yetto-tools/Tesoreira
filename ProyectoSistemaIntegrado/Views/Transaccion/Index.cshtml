@@ -16,13 +16,21 @@
     <form method="post" id="frmBusquedaTransacciones">
         <table style="margin-left: auto; margin-right: auto;">
             <tr>
-                <td>Operación</td>
-                <td>Tipo Entidad</td>
-                <td>Día Operación</td>
+                <td>TIPO OPERACIÓN</td>
+                <td>OPERACIÓN</td>
+                <td>TIPO ENTIDAD</td>
+                <td>DIA OPERACION</td>
                 <td></td>
                 <td></td>
             </tr>
             <tr>
+                <td>
+                    <select class="form-control" id="uiFiltroTipoOperacion" name="TipoOperacion" onclick="fillOperacionesTransacciones(this.value)">
+                        <option value="-1">-- Seleccione --</option>
+                        <option value="1">INGRESO</option>
+                        <option value="2">EGRESO</option>
+                    </select>
+                </td>
                 <td>
                     <select class="form-control" id="uiFiltroOperaciones" name="CodigoOperacion">
                     </select>
@@ -41,7 +49,8 @@
                         <option value="5">VIERNES</option>
                         <option value="6">SABADO</option>
                         <option value="7">DOMINGO</option>
-                    </select></td>
+                    </select>
+                </td>
                 <td>
                     <input type="button" class="form-control btn btn-primary" value="BUSCAR" onclick="buscarTransacciones()" />
                 </td>

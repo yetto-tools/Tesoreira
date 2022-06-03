@@ -12,10 +12,10 @@ namespace CapaNegocio.Tesoreria
     public class TransaccionBL
     {
 
-        public List<TransaccionCLS> BuscarTransacciones(string idUsuario, int codigoOperacion, int codigoCategoriaEntidad, int diaOperacion, int esSuperAdmin, int setSemanAnterior)
+        public List<TransaccionCLS> BuscarTransacciones(string idUsuario, int codigoTipoOperacion, int codigoOperacion, int codigoCategoriaEntidad, int diaOperacion, int esSuperAdmin, int setSemanAnterior)
         {
             TransaccionDAL obj = new TransaccionDAL();
-            return obj.BuscarTransacciones(idUsuario, codigoOperacion, codigoCategoriaEntidad, diaOperacion, esSuperAdmin, setSemanAnterior);
+            return obj.BuscarTransacciones(idUsuario, codigoTipoOperacion, codigoOperacion, codigoCategoriaEntidad, diaOperacion, esSuperAdmin, setSemanAnterior);
         }
 
         /// <summary>

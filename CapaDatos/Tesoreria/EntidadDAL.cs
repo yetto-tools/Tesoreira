@@ -37,6 +37,7 @@ namespace CapaDatos.Tesoreria
                     INNER JOIN db_tesoreria.operacion z
                     ON x.codigo_operacion = z.codigo_operacion
                     WHERE x.estado = @CodigoEstadoActivo
+                      AND y.incluir_config_operacion = 1
                     " + filterCategoriaEntidad;
 
                     conexion.Open();

@@ -1533,7 +1533,7 @@ namespace CapaDatos.Tesoreria
             return resultado;
         }
 
-        public List<TransaccionCLS> BuscarTransacciones(string idUsuario, int codigoOperacion, int codigoCategoriaEntidad, int diaOperacion, int esSuperAdmin, int setSemanaAnterior)
+        public List<TransaccionCLS> BuscarTransacciones(string idUsuario, int codigoTipoOperacion, int codigoOperacion, int codigoCategoriaEntidad, int diaOperacion, int esSuperAdmin, int setSemanaAnterior)
         {
             List<TransaccionCLS> lista = null;
             using (SqlConnection conexion = new SqlConnection(cadenaTesoreria))
@@ -1541,12 +1541,28 @@ namespace CapaDatos.Tesoreria
                 try
                 {
                     string filterUsuarioIngreso = String.Empty;
+                    string filterTipoOperacion = string.Empty;
                     string filterOperaciones = string.Empty;
                     string filterCategoriaEntidad = string.Empty;
                     string filterDiaOperacion = string.Empty;
                     if (codigoOperacion != -1) {
                         filterOperaciones = " AND x.codigo_operacion = " + codigoOperacion.ToString();
                     }
+                    if (codigoTipoOperacion != -1 && codigoOperacion == -1)
+                    {
+                        switch (codigoTipoOperacion)
+                        {
+                            case 1: // INGRESO
+                                filterTipoOperacion = " AND e.signo = 1";
+                                break;
+                            case 2: // EGRESO
+                                filterTipoOperacion = " AND e.signo = -1";
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
                     if (codigoCategoriaEntidad != -1) {
                         filterCategoriaEntidad = " AND x.codigo_categoria_entidad = " + codigoCategoriaEntidad.ToString();
                     }
@@ -1640,6 +1656,7 @@ namespace CapaDatos.Tesoreria
                     WHERE x.complemento_conta = 0
                       AND x.codigo_estado = @CodigoEstadoTransaccion
                     " + filterUsuarioIngreso + @"    
+                    " + filterTipoOperacion + @" 
                     " + filterOperaciones + @"    
                     " + filterCategoriaEntidad + @"    
                     " + filterDiaOperacion + @"    

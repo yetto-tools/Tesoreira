@@ -51,7 +51,7 @@
                placeholder="Usuario"
                name="Usuario"
                required
-               autofocus>
+               autofocus />
         <!-- 'sr-only' will hide the text : 'Password'. So, 'Password' will be invisible -->
         <label for="uiPassword" class="sr-only">Constraseña</label>
         <input type="password"
@@ -59,14 +59,16 @@
                class="form-control mb-2"
                placeholder="Contraseña"
                name="Contrasenia"
-               required>
+               required 
+               onkeypress="IngresarKeyPress()" />
+
         <div class="checkbox mb-3">
             <label>
                 <input type="checkbox" value="remember-me"> Remember me
             </label>
         </div>
         <!-- 'btn-block' will make the button wider -->
-        <input class="btn btn-lg btn-primary btn-block" type="button" onclick="Ingresar()" value="Login">
+        <input class="btn btn-lg btn-primary btn-block" type="button" onclick="Ingresar()" value="Login" />
     </form>
 
     <script src="~/js/sweetalert.js"></script>

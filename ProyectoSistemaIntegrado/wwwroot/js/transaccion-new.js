@@ -124,8 +124,10 @@ function clearDataFormulario() {
     // inicializa los datos de planilla
     document.getElementById('uiEsAjustePlanilla').value = "0";
     let elementTipoPlanillaPago = document.getElementById('div-tipo-planilla-pago');
+    let elementPlanillaPago = document.getElementById('div-planilla-pago');
     elementTipoPlanillaPago.style.display = 'none'
     elementTipoPlanillaPago.checked = false;
+    elementPlanillaPago.style.display = 'none';
     clearDataPlanilla();
     // Inicializa datos de comisión (Bonos Extras)
     let elementOptionBonoExtraComision = document.getElementById("uiOptionPorComisiones");

@@ -17,7 +17,8 @@ namespace ProyectoSistemaIntegrado.Controllers.Consultas
         {
             return View();
         }
-        public IActionResult ConsultaTransaccionesVendedores()
+
+        public IActionResult ConsultaTransaccionesLimitada()
         {
             return View();
         }

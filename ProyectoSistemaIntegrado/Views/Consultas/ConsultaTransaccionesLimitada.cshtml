@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Http;
 @{
     ViewData["Title"] = "Index";
-    Context.Session.SetString("tituloPrincipal", "Consulta de Transacciones de Vendedores");
+    Context.Session.SetString("tituloPrincipal", "Consulta de Transacciones (Limitada)");
 }
 
 <a href="@Url.Content("~")" id="uiExportarExcel" style="display:none;">Exportar Excel</a>
@@ -27,7 +27,7 @@
                 </td>
             </tr>
             <tr>
-                
+
                 <td>SEMANA</td>
                 <td>ENTIDAD</td>
             </tr>
@@ -61,7 +61,7 @@
                     <table>
                         <tr>
                             <td>
-                                <input type="button" class="form-control btn btn-primary" value="BUSCAR" onclick="buscarTransaccionesConsultaTransaccionesVendedores()" />
+                                <input type="button" class="form-control btn btn-primary" value="BUSCAR" onclick="buscarTransaccionesConsultaTransaccionesLimitada()" />
                             </td>
                             <td>
                                 <button type="button" onclick="GenerarExcelTransaccionesConsultaContabilidad()" class="form-control btn btn-success">

@@ -48,8 +48,8 @@
                 case "ConsultaTransacciones":
                     fillCombosBusquedaConsultaContabilidad();
                     break;
-                case "ConsultaTransaccionesVendedores":
-                    fillCombosBusquedaConsultaTransaccionesVendedores();
+                case "ConsultaTransaccionesLimitada":
+                    fillCombosBusquedaConsultaTransaccionesLimitada();
                     break;
                 default:
                     break;
@@ -1411,8 +1411,8 @@ function MostrarGastosParaAsignacionDeEmpresa(anioOperacion, semanaOperacion, co
 }
 
 
-function fillCombosBusquedaConsultaTransaccionesVendedores() {
-    fetchGet("Transaccion/FillCombosConsultaTransacciones", "json", function (rpta) {
+function fillCombosBusquedaConsultaTransaccionesLimitada() {
+    fetchGet("Transaccion/FillCombosConsultaTransaccionesLimitada", "json", function (rpta) {
         var listaOperaciones = rpta.listaOperaciones;
         let listaAnios = rpta.listaAnios;
         FillCombo(listaOperaciones, "uiFiltroOperaciones", "codigoOperacion", "nombre", "- seleccione -", "-1");
@@ -1426,7 +1426,7 @@ function fillCombosBusquedaConsultaTransaccionesVendedores() {
     })
 }
 
-function buscarTransaccionesConsultaTransaccionesVendedores() {
+function buscarTransaccionesConsultaTransaccionesLimitada() {
     let anioOperacion = parseInt(document.getElementById("uiFiltroAnio").value);
     let semanaOperacion = parseInt(document.getElementById("uiFiltroSemana").value);
     let objOperacion = document.getElementById("uiFiltroOperaciones");
@@ -1434,7 +1434,84 @@ function buscarTransaccionesConsultaTransaccionesVendedores() {
     let nombreEntidad = document.getElementById("uiFiltroNombreEntidad").value;
     let fechaInicio = document.getElementById("uiFiltroFechaInicio").value;
     let fechaFin = document.getElementById("uiFiltroFechaFin").value;
-    MostrarTransaccionesConsultaContabilidad(anioOperacion, semanaOperacion, -1, codigoOperacion, -1, nombreEntidad, fechaInicio.trim(), fechaFin.trim());
+    MostrarTransaccionesConsultaLimitada(anioOperacion, semanaOperacion, -1, codigoOperacion, -1, nombreEntidad, fechaInicio.trim(), fechaFin.trim());
 }
 
+
+function MostrarTransaccionesConsultaLimitada(anioOperacion, semanaOperacion, codigoTipoOperacion, codigoOperacion, codigoCategoriaEntidad, nombreEntidad, fechaInicio, fechaFin) {
+    if (fechaInicio != "" && fechaFin != "") {
+        if (dateIsValid(fechaInicio) == false || dateIsValid(fechaFin) == false) {
+            MensajeError("Error en rango de fechas");
+            return;
+        }
+    }
+
+    let objConfiguracion = {
+        url: "Transaccion/BuscarTransaccionesConsultaLimitada/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString() + "&codigoTipoOperacion=" + codigoTipoOperacion.toString() + "&codigoOperacion=" + codigoOperacion.toString() + "&codigoCategoriaEntidad=" + codigoCategoriaEntidad.toString() + "&nombreEntidad=" + nombreEntidad + "&fechaInicioStr=" + fechaInicio + "&fechaFinStr=" + fechaFin,
+        cabeceras: ["Código", "codigoTransaccionAnt", "correccion", "Código Operación", "Operación", "Tipo Operación", "Código Cuenta por Cobrar", "Año", "Semana", "Fecha Operación", "Día Operación", "Fecha Recibo", "Número Recibo", "codigoEntidad", "Entidad", "Cuenta", "Categoría", "Monto", "Estado", "Fecha Transacción", "Creado por", "Anular", "Editar", "Signo", "Número Recibo", "Ruta", "Fecha Impresión", "Recursos", "codigoSeguridad", "montoSaldoAnteriorCxC", "montoSaldoActualCxC"],
+        propiedades: ["codigoTransaccion", "codigoTransaccionAnt", "correccion", "codigoOperacion", "operacion", "tipoOperacionContable", "codigoCuentaPorCobrar", "anioOperacion", "semanaOperacion", "fechaStr", "nombreDiaOperacion", "fechaReciboStr", "numeroRecibo", "codigoEntidad", "nombreEntidad", "numeroCuenta", "categoriaEntidad", "monto", "estado", "fechaIngStr", "usuarioIng", "permisoAnular", "permisoEditar", "signo", "numeroReciboStr", "ruta", "fechaImpresionStr", "recursos", "codigoSeguridad", "montoSaldoAnteriorCxC", "montoSaldoActualCxC"],
+        displaydecimals: ["monto", "montoSaldoAnteriorCxC", "montoSaldoActualCxC"],
+        divContenedorTabla: "divContenedorTabla",
+        divPintado: "divTabla",
+        alerta: true,
+        funcionalerta: "CorreccionTransaccion",
+        imprimir: true,
+        paginar: true,
+        sumarcolumna: true,
+        columnasumalist: [17],
+        ocultarColumnas: true,
+        hideColumns: [
+            {
+                "targets": [1],
+                "visible": false
+            }, {
+                "targets": [2],
+                "visible": false
+            }, {
+                "targets": [3],
+                "visible": false
+            }, {
+                "targets": [6],
+                "visible": false
+            }, {
+                "targets": [13],
+                "visible": false
+            }, {
+                "targets": [17],
+                "className": "dt-body-right"
+            }, {
+                "targets": [21],
+                "visible": false
+            }, {
+                "targets": [22],
+                "visible": false
+            }, {
+                "targets": [23],
+                "visible": false
+            }, {
+                "targets": [24],
+                "visible": false
+            }, {
+                "targets": [25],
+                "visible": false
+            }, {
+                "targets": [26],
+                "visible": false
+            }, {
+                "targets": [27],
+                "visible": false
+            }, {
+                "targets": [28],
+                "visible": false
+            }, {
+                "targets": [29],
+                "visible": false
+            }, {
+                "targets": [30],
+                "visible": false
+            }],
+        slug: "codigoTransaccion"
+    }
+    pintar(objConfiguracion);
+}
 

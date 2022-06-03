@@ -135,6 +135,16 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
             return obj.BuscarTransaccionesConsultaContabilidad(anioOperacion, semanaOperacion, codigoTipoOperacion, codigoOperacion, codigoCategoriaEntidad, nombreEntidad, fechaInicioStr, fechaFinStr);
         }
 
+        public List<TransaccionCLS> BuscarTransaccionesConsultaLimitada(int anioOperacion, int semanaOperacion, int codigoTipoOperacion, int codigoOperacion, int codigoCategoriaEntidad, string nombreEntidad, string fechaInicioStr, string fechaFinStr)
+        {
+            ViewBag.Message = HttpContext.Session.GetString("usuario");
+            UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
+
+            TransaccionBL obj = new TransaccionBL();
+            return obj.BuscarTransaccionesConsultaLimitada(anioOperacion, semanaOperacion, codigoTipoOperacion, codigoOperacion, codigoCategoriaEntidad, nombreEntidad, fechaInicioStr, fechaFinStr, objUsuario.IdUsuario, objUsuario.SuperAdmin);
+        }
+
+
         public List<TransaccionCLS> BuscarTransaccionesParaCorreccion(int anioOperacion, int semanaOperacion, int codigoReporte, int codigoOperacion, int codigoCategoriaEntidad)
         {
             ViewBag.Message = HttpContext.Session.GetString("usuario");
@@ -209,6 +219,15 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
         {
             TransaccionBL obj = new TransaccionBL();
             return obj.FillCombosConsultaTransacciones();
+        }
+
+        public TransaccionComboCLS FillCombosConsultaTransaccionesLimitada()
+        {
+            ViewBag.Message = HttpContext.Session.GetString("usuario");
+            UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
+
+            TransaccionBL obj = new TransaccionBL();
+            return obj.FillCombosConsultaTransaccionesLimitada(objUsuario.IdUsuario, objUsuario.SuperAdmin);
         }
 
         public TransaccionComboCLS FillComboSemana(int habilitarSemanaAnterior)

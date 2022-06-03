@@ -43,6 +43,12 @@ namespace CapaNegocio.Tesoreria
             return obj.BuscarTransaccionesConsultaContabilidad(anioOperacion, semanaOperacion, codigoTipoOperacion, codigoOperacion, codigoCategoriaEntidad, nombreEntidad, fechaInicioStr, fechaFinStr);
         }
 
+        public List<TransaccionCLS> BuscarTransaccionesConsultaLimitada(int anioOperacion, int semanaOperacion, int codigoTipoOperacion, int codigoOperacion, int codigoCategoriaEntidad, string nombreEntidad, string fechaInicioStr, string fechaFinStr, string idUsuario, int esSuperAdmin)
+        {
+            TransaccionDAL obj = new TransaccionDAL();
+            return obj.BuscarTransaccionesConsultaLimitada(anioOperacion, semanaOperacion, codigoTipoOperacion, codigoOperacion, codigoCategoriaEntidad, nombreEntidad, fechaInicioStr, fechaFinStr, idUsuario, esSuperAdmin);
+        }
+
         public List<TransaccionCLS> BuscarTransaccionesParaCorreccion(int anioOperacion, int semanaOperacion, int codigoReporte, int codigoOperacion, int codigoCategoriaEntidad, int esSuperAdmin)
         {
             TransaccionDAL obj = new TransaccionDAL();
@@ -113,6 +119,12 @@ namespace CapaNegocio.Tesoreria
         {
             TransaccionDAL obj = new TransaccionDAL();
             return obj.FillCombosConsultaTransacciones();
+        }
+
+        public TransaccionComboCLS FillCombosConsultaTransaccionesLimitada(string idUsuario, int esSuperAdmin)
+        {
+            TransaccionDAL obj = new TransaccionDAL();
+            return obj.FillCombosConsultaTransaccionesLimitada(idUsuario, esSuperAdmin);
         }
 
         public TransaccionComboCLS FillComboSemana(int habilitarSemanaAnterior)

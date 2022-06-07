@@ -122,6 +122,8 @@ function listarReportesConsulta(anio) {
         divContenedorTabla: "divContenedorTabla",
         divPintado: "divTabla",
         reporte: true,
+        pdf: true,
+        funcionpdf: "ResumenVentasRutaParaPagoNF",
         slug: "codigoReporte",
         paginar: true,
         ocultarColumnas: true,
@@ -142,6 +144,7 @@ function listarReportesConsulta(anio) {
     }
     pintar(objConfiguracion);
 }
+
 
 function BuscarReportesSemanales() {
     let errores = ValidarDatos("frmBusquedaReportes")
@@ -182,6 +185,21 @@ function GenerarPdf(obj) {
         let anioOperacion = parseInt(table.cell(rowIdx, 1).data());
         let semanaOperacion = parseInt(table.cell(rowIdx, 2).data());
         fetchGet("CorteCajaSemanal/ViewReporteSemanalCajaPDF/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString() + "&codigoReporte=" + codigoReporte.toString(), "pdf", function (data) {
+            var file = new Blob([data], { type: 'application/pdf' });
+            var fileURL = URL.createObjectURL(file);
+            window.open(fileURL, "EPrescription");
+        })
+    });
+}
+
+function VisualizarPdfResumenVentasRutaParaPagoNF() {
+    let table = $('#tabla').DataTable();
+    $('#tabla tbody').on('click', '.option-pdf', function () {
+        let rowIdx = table.row(this).index();
+        let codigoReporte = parseInt(table.cell(rowIdx, 0).data());
+        let anioOperacion = parseInt(table.cell(rowIdx, 1).data());
+        let semanaOperacion = parseInt(table.cell(rowIdx, 2).data());
+        fetchGet("CorteCajaSemanal/ViewReporteResumenPagoVentasRutaCajaTesoreria/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString() + "&codigoReporte=" + codigoReporte.toString(), "pdf", function (data) {
             var file = new Blob([data], { type: 'application/pdf' });
             var fileURL = URL.createObjectURL(file);
             window.open(fileURL, "EPrescription");

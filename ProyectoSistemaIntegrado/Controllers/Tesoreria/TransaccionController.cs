@@ -452,5 +452,25 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
         }
 
 
+        public FileResult ExportarExcelTransaccionConsultaLimitada(int anioOperacion, int semanaOperacion, int codigoTipoOperacion, int codigoOperacion, int codigoCategoriaEntidad, string nombreEntidad, string fechaInicioStr, string fechaFinStr)
+        {
+            ViewBag.Message = HttpContext.Session.GetString("usuario");
+            UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
+
+            TransaccionBL obj = new TransaccionBL();
+            lista = obj.BuscarTransaccionesConsultaLimitada(anioOperacion, semanaOperacion, codigoTipoOperacion, codigoOperacion, codigoCategoriaEntidad, nombreEntidad, fechaInicioStr, fechaFinStr, objUsuario.IdUsuario, objUsuario.SuperAdmin);
+
+            string[] cabeceras = { "CodigoTransaccion","CodigoTipoTransaccion","NumeroRecibo","FechaRecibo","CodigoEntidad","NombreEntidad","CodigoCategoriaEntidad",
+            "CategoriaEntidad","CodigoOperacion","Operacion","Tipo Operación","TipoCuentaPorCobrar","CodigoArea","Area","FechaOperacion","FechaStr","DiaOperacion","NombreDiaOperacion","Monto","CodigoEstado","Estado","FechaIng",
+            "UsuarioIng","Ruta","ComplementoConta","Revisado","CodigoTransaccionAnt","Correccion","nombreProveedor"};
+            string[] nombrePropiedades = { "CodigoTransaccion","CodigoTipoTransaccion","NumeroRecibo","FechaRecibo","CodigoEntidad","NombreEntidad","CodigoCategoriaEntidad",
+            "CategoriaEntidad","CodigoOperacion","Operacion","TipoOperacionContable","TipoCuentaPorCobrar","CodigoArea","Area","FechaOperacion","FechaStr","DiaOperacion","NombreDiaOperacion","Monto","CodigoEstado","Estado","FechaIng",
+            "UsuarioIng","Ruta","ComplementoConta","Revisado","CodigoTransaccionAnt","Correccion","NombreProveedor"};
+
+            byte[] buffer = ExportarExcelDatos(cabeceras, nombrePropiedades, lista);
+            return File(buffer, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        }
+
+
     }
 }

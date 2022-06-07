@@ -1028,5 +1028,166 @@ namespace CapaDatos.Tesoreria
             }
         }
 
+        public ReporteCajaDetalleListCLS GetDetalleResumenVentasPagoPlanilaNF(int anioOperacion, int semanaOperacion, int codigoReporte)
+        {
+            int postCodigoConcepto = 0;
+            int postConcepto = 0;
+            int postCodigoOperacion = 0;
+            int postCodigoCategoriaEntidad = 0;
+            int postCodigoEntidad = 0;
+            int postNombreEntidad = 0;
+            int postSaldoAnterior = 0;
+            int postMontoLunes = 0;
+            int postMontoMartes = 0;
+            int postMontoMiercoles = 0;
+            int postMontoJueves = 0;
+            int postMontoViernes = 0;
+            int postMontoSabado = 0;
+            int postMontoDomingo = 0;
+            int postDevoluciones = 0;
+            int postObservaciones = 0;
+            ReporteCajaDetalleListCLS objReporteCaja = new ReporteCajaDetalleListCLS();
+            using (SqlConnection conexion = new SqlConnection(cadenaTesoreria))
+            {
+                try
+                {
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand("db_tesoreria.uspGetReporteResumenPagoPlanillaNF", conexion))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@Anio", anioOperacion);
+                        cmd.Parameters.AddWithValue("@NumeroSemana", semanaOperacion);
+                        cmd.Parameters.AddWithValue("@CodigoReporte", codigoReporte);
+                        SqlDataReader dr = cmd.ExecuteReader();
+
+                        if (dr != null)
+                        {// Encabezado de las fechas de la semana indicada
+                            int postFechaStr = dr.GetOrdinal("fecha_str");
+                            List<ProgramacionSemanalCLS> listaEncabezadoFechas = new List<ProgramacionSemanalCLS>();
+                            ProgramacionSemanalCLS objEncabezadoFechas;
+                            while (dr.Read())
+                            {
+                                objEncabezadoFechas = new ProgramacionSemanalCLS();
+                                objEncabezadoFechas.FechaStr = dr.GetString(postFechaStr);
+                                listaEncabezadoFechas.Add(objEncabezadoFechas);
+                            }
+                            objReporteCaja.listaEncabezadoFechas = listaEncabezadoFechas;
+                        }
+
+                        if (dr.NextResult())
+                        {// Concepto: Vendedores
+                            postCodigoConcepto = dr.GetOrdinal("codigo_concepto");
+                            postConcepto = dr.GetOrdinal("concepto");
+                            postCodigoOperacion = dr.GetOrdinal("codigo_operacion");
+                            postCodigoCategoriaEntidad = dr.GetOrdinal("codigo_categoria_entidad");
+                            postCodigoEntidad = dr.GetOrdinal("codigo_entidad");
+                            postNombreEntidad = dr.GetOrdinal("nombre_entidad");
+                            postSaldoAnterior = dr.GetOrdinal("saldo_anterior");
+                            postMontoLunes = dr.GetOrdinal("monto_lunes");
+                            postMontoMartes = dr.GetOrdinal("monto_martes");
+                            postMontoMiercoles = dr.GetOrdinal("monto_miercoles");
+                            postMontoJueves = dr.GetOrdinal("monto_jueves");
+                            postMontoViernes = dr.GetOrdinal("monto_viernes");
+                            postMontoSabado = dr.GetOrdinal("monto_sabado");
+                            postMontoDomingo = dr.GetOrdinal("monto_domingo");
+                            postDevoluciones = dr.GetOrdinal("monto_devoluciones");
+                            postObservaciones = dr.GetOrdinal("observaciones");
+
+                            List<ReporteCajaDetalleCLS> listaVendedores = new List<ReporteCajaDetalleCLS>();
+                            List<ReporteCajaDetalleCLS> listaEspeciales1 = new List<ReporteCajaDetalleCLS>();
+                            List<ReporteCajaDetalleCLS> listaEspeciales2 = new List<ReporteCajaDetalleCLS>();
+                            List<ReporteCajaDetalleCLS> listaCajas = new List<ReporteCajaDetalleCLS>();
+                            List<ReporteCajaDetalleCLS> listaCombustibleCarros = new List<ReporteCajaDetalleCLS>();
+                            List<ReporteCajaDetalleCLS> listaPlanillas = new List<ReporteCajaDetalleCLS>();
+                            List<ReporteCajaDetalleCLS> listaSueldosIndirectos = new List<ReporteCajaDetalleCLS>();
+                            List<ReporteCajaDetalleCLS> listaLiquidaciones = new List<ReporteCajaDetalleCLS>();
+                            List<ReporteCajaDetalleCLS> listaVacaciones = new List<ReporteCajaDetalleCLS>();
+                            List<ReporteCajaDetalleCLS> listaBonoFinDeMes = new List<ReporteCajaDetalleCLS>();
+                            List<ReporteCajaDetalleCLS> listaBonosExtras = new List<ReporteCajaDetalleCLS>();
+                            List<ReporteCajaDetalleCLS> listaBono14 = new List<ReporteCajaDetalleCLS>();
+                            List<ReporteCajaDetalleCLS> listaAguinaldos = new List<ReporteCajaDetalleCLS>();
+                            List<ReporteCajaDetalleCLS> listaPrestamos = new List<ReporteCajaDetalleCLS>();
+                            List<ReporteCajaDetalleCLS> listaAnticipos = new List<ReporteCajaDetalleCLS>();
+                            List<ReporteCajaDetalleCLS> listaMateriaPrima = new List<ReporteCajaDetalleCLS>();
+                            List<ReporteCajaDetalleCLS> listaGastosIndirectos = new List<ReporteCajaDetalleCLS>();
+                            List<ReporteCajaDetalleCLS> listaGastosAdministrativos = new List<ReporteCajaDetalleCLS>();
+                            List<ReporteCajaDetalleCLS> listaMantenimientoVehiculos = new List<ReporteCajaDetalleCLS>();
+                            List<ReporteCajaDetalleCLS> listaDepositosBancarios = new List<ReporteCajaDetalleCLS>();
+
+                            ReporteCajaDetalleCLS objReporteCajaDetalle;
+                            while (dr.Read())
+                            {
+                                objReporteCajaDetalle = new ReporteCajaDetalleCLS();
+                                objReporteCajaDetalle.CodigoConcepto = (short)dr.GetInt32(postCodigoConcepto);
+                                objReporteCajaDetalle.Concepto = dr.GetString(postConcepto);
+                                objReporteCajaDetalle.CodigoOperacion = (short)dr.GetInt32(postCodigoOperacion);
+                                objReporteCajaDetalle.CodigoCategoriaEntidad = (short)dr.GetInt32(postCodigoCategoriaEntidad);
+                                objReporteCajaDetalle.CodigoEntidad = dr.GetString(postCodigoEntidad);
+                                objReporteCajaDetalle.NombreEntidad = dr.IsDBNull(postNombreEntidad) ? "Sin Nombre" : dr.GetString(postNombreEntidad);
+                                objReporteCajaDetalle.SaldoAnterior = dr.GetDecimal(postSaldoAnterior);
+                                objReporteCajaDetalle.MontoLunes = dr.GetDecimal(postMontoLunes);
+                                objReporteCajaDetalle.MontoMartes = dr.GetDecimal(postMontoMartes);
+                                objReporteCajaDetalle.MontoMiercoles = dr.GetDecimal(postMontoMiercoles);
+                                objReporteCajaDetalle.MontoJueves = dr.GetDecimal(postMontoJueves);
+                                objReporteCajaDetalle.MontoViernes = dr.GetDecimal(postMontoViernes);
+                                objReporteCajaDetalle.MontoSabado = dr.GetDecimal(postMontoSabado);
+                                objReporteCajaDetalle.MontoDomingo = dr.GetDecimal(postMontoDomingo);
+                                objReporteCajaDetalle.TotalSemana = dr.GetDecimal(postMontoLunes) + dr.GetDecimal(postMontoMartes) + dr.GetDecimal(postMontoMiercoles) + dr.GetDecimal(postMontoJueves) + dr.GetDecimal(postMontoViernes) + dr.GetDecimal(postMontoSabado) + dr.GetDecimal(postMontoDomingo) + dr.GetDecimal(postDevoluciones);
+                                objReporteCajaDetalle.Devoluciones = dr.GetDecimal(postDevoluciones);
+                                objReporteCajaDetalle.Acumulado = dr.GetDecimal(postSaldoAnterior) + dr.GetDecimal(postMontoLunes) + dr.GetDecimal(postMontoMartes) + dr.GetDecimal(postMontoMiercoles) + dr.GetDecimal(postMontoJueves) + dr.GetDecimal(postMontoViernes) + dr.GetDecimal(postMontoSabado) + dr.GetDecimal(postMontoDomingo);
+                                objReporteCajaDetalle.Observaciones = dr.IsDBNull(postObservaciones) ? "" : dr.GetString(postObservaciones);
+
+                                switch (objReporteCajaDetalle.CodigoConcepto)
+                                {
+                                    case Constantes.Concepto.RUTEROS:
+                                        listaVendedores.Add(objReporteCajaDetalle);
+                                        break;
+                                    case Constantes.Concepto.RUTEROS_INTERIOR:
+                                        listaVendedores.Add(objReporteCajaDetalle);
+                                        break;
+                                    case Constantes.Concepto.VENDEDORES:
+                                        listaVendedores.Add(objReporteCajaDetalle);
+                                        break;
+                                    case Constantes.Concepto.CAFETERIAS:
+                                        listaVendedores.Add(objReporteCajaDetalle);
+                                        break;
+                                    case Constantes.Concepto.SUPERMERCADOS:
+                                        listaVendedores.Add(objReporteCajaDetalle);
+                                        break;
+                                    case Constantes.Concepto.ESPECIALES_1:
+                                        listaEspeciales1.Add(objReporteCajaDetalle);
+                                        break;
+                                    case Constantes.Concepto.ESPECIALES_2:
+                                        listaEspeciales2.Add(objReporteCajaDetalle);
+                                        break;
+                                    case Constantes.Concepto.CAJAS:
+                                        listaCajas.Add(objReporteCajaDetalle);
+                                        break;
+                                    default:
+                                        break;
+
+                                }
+
+                            }// fin while
+
+                            objReporteCaja.listaVendedores = listaVendedores;
+                            objReporteCaja.listaEspecial1 = listaEspeciales1;
+                            objReporteCaja.listaEspecial2 = listaEspeciales2;
+                            objReporteCaja.listaCajas = listaCajas;
+                        }
+
+                    }
+                    conexion.Close();
+                }
+                catch (Exception e)
+                {
+                    conexion.Close();
+                    objReporteCaja = null;
+                }
+
+                return objReporteCaja;
+            }
+        }
+
     }
 }

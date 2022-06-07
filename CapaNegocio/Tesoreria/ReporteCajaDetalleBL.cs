@@ -22,6 +22,12 @@ namespace CapaNegocio.Tesoreria
             return obj.GetDetalleReporteCaja(anioOperacion, semanaOperacion, codigoReporte);
         }
 
+        public ReporteCajaDetalleListCLS GetDetalleResumenVentasPagoPlanilaNF(int anioOperacion, int semanaOperacion, int codigoReporte)
+        {
+            ReporteCajaDetalleDAL obj = new ReporteCajaDetalleDAL();
+            return obj.GetDetalleResumenVentasPagoPlanilaNF(anioOperacion, semanaOperacion, codigoReporte);
+        }
+
     }
 
 

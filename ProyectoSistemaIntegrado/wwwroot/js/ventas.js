@@ -17,7 +17,7 @@
             switch (nameAction) {
                 case "Index":
                     FillComboCanalVenta("uiCodigoCanalVenta");
-                    ListarVendedores(-1, 0);
+                    ListarVendedores(-1);
                     break;
                 case "ConsultaVendedoresRuta":
                     FillComboCanalVenta("uiCodigoCanalVenta");
@@ -28,17 +28,6 @@
             }// fin switch
         }// fin if
     }// fin if
-  
-}
-
-function FillComboCanalVenta(idcontrol) {
-    fetchGet("CanalesVentas/GetCanalesDeVentas", "json", function (rpta) {
-        if (rpta != null) {
-            FillCombo(rpta, idcontrol, "codigoCanalVenta", "canalVenta", "- seleccione -", "-1");
-        } else {
-            FillComboUnicaOpcion(idcontrol, "-1", "-- No existen canales de venta -- ");
-        }
-    })
 }
 
 function FillComboVendedores(idcontrol) {
@@ -47,6 +36,27 @@ function FillComboVendedores(idcontrol) {
             FillCombo(rpta, idcontrol, "codigoVendedor", "nombreVendedor", "- seleccione -", "-1");
         } else {
             FillComboUnicaOpcion(idcontrol, "-1", "-- No existen vendedores -- ");
+        }
+    })
+}
+
+//function SetComboVendedores(idcontrol, value) {
+//    fetchGet("Vendedores/GetVendedores", "json", function (rpta) {
+//        if (rpta != null) {
+//            FillCombo(rpta, idcontrol, "codigoVendedor", "nombreVendedor", "- seleccione -", "-1");
+//            document.querySelector('#' + idcontrol).value = value;
+//        } else {
+//            FillComboUnicaOpcion(idcontrol, "-1", "-- No existen vendedores -- ");
+//        }
+//    })
+//}
+
+function FillComboCanalVenta(idcontrol) {
+    fetchGet("CanalesVentas/GetCanalesDeVentas", "json", function (rpta) {
+        if (rpta != null) {
+            FillCombo(rpta, idcontrol, "codigoCanalVenta", "canalVenta", "- seleccione -", "-1");
+        } else {
+            FillComboUnicaOpcion(idcontrol, "-1", "-- No existen canales de venta -- ");
         }
     })
 }
@@ -61,8 +71,6 @@ function SetComboCanalVenta(idcontrol, value) {
         }
     })
 }
-
-
 
 function setCanalVenta(obj) {
     let ruta = parseInt(obj.value);
@@ -81,13 +89,8 @@ function setCanalVenta(obj) {
 
 
 function ListarVendedoresFiltro() {
-    let incluirBloqueados = 0;
     let codigoCanalVenta = parseInt(document.getElementById("uiCodigoCanalVenta").value);
-    let checkIncluirBloqueados = document.getElementById("uiIncluirBloqueados").checked;
-    if (checkIncluirBloqueados == true) {
-        incluirBloqueados = 1;
-    }
-    ListarVendedores(codigoCanalVenta, incluirBloqueados);
+    ListarVendedores(codigoCanalVenta);
 }
 
 function FillComboRutas(idcontrol) {
@@ -100,28 +103,49 @@ function FillComboRutas(idcontrol) {
     })
 }
 
-function ListarVendedores(codigoCanalVenta, incluirBloqueados) {
+
+function SetComboRutas(idcontrol, value) {
+    fetchGet("Rutas/GetRutas", "json", function (rpta) {
+        if (rpta != null) {
+            FillCombo(rpta, idcontrol, "ruta", "ruta", "- seleccione -", "-1");
+            document.querySelector('#' + idcontrol).value = value;
+        } else {
+            FillComboUnicaOpcion(idcontrol, "-1", "-- No existen rutas -- ");
+        }
+    })
+}
+
+
+
+function ListarVendedores(codigoCanalVenta) {
     let objConfiguracion = {
-        url: "Vendedores/GetListaVendedores/?codigoCanalVenta=" + codigoCanalVenta.toString() + "&incluirBloqueados=" + incluirBloqueados.toString(),
-        cabeceras: ["Código", "Nombre Vendedor", "Código Canal Venta", "Canal de Venta","Ruta","Estado","Anular","Editar"],
-        propiedades: ["codigoVendedor", "nombreVendedor", "codigoCanalVenta", "canalVenta", "ruta","estadoRutaVendedor","permisoAnular","permisoEditar"],
+        url: "Vendedores/GetListaVendedores/?codigoCanalVenta=" + codigoCanalVenta.toString(),
+        cabeceras: ["codigoConfiguracion","Código Vendedor", "Nombre Vendedor", "Código Canal Venta", "Canal de Venta","Ruta","Estado","Anular","Editar"],
+        propiedades: ["codigoConfiguracion","codigoVendedor", "nombreVendedor", "codigoCanalVenta", "canalVenta", "ruta","estadoRutaVendedor","permisoAnular","permisoEditar"],
         divContenedorTabla: "divContenedorTabla",
         divPintado: "divTabla",
         paginar: true,
         editar: true,
-        funcioneditar: "EstadoVendedorRuta",
+        funcioneditar: "ConfiguracionVendedorRuta",
         eliminar: true,
         funcioneliminar: "RutaVendedor",
         ocultarColumnas: true,
         hideColumns: [
             {
-                "targets": [2],
+                "targets": [0],
                 "visible": false
             }, {
-                "targets": [6],
+                "targets": [1],
+                "className": "dt-body-center",
+                "visible": true
+            }, {
+                "targets": [3],
                 "visible": false
             }, {
                 "targets": [7],
+                "visible": false
+            }, {
+                "targets": [8],
                 "visible": false
             }],
         slug: "codigoVendedor"
@@ -132,17 +156,18 @@ function ListarVendedores(codigoCanalVenta, incluirBloqueados) {
 
 function EliminarRutaVendedor(obj) {
     let table = $('#tabla').DataTable();
-    $('#tabla tbody').on('click', 'tr', 'input:button', function () {
+    $('#tabla tbody').on('click', '.option-eliminar', function () {
         let rowIdx = table.row(this).index();
-        let codigoVendedor = table.cell(rowIdx, 0).data();
-        let nombreVendedor = table.cell(rowIdx, 1).data();
-        let codigoCanalVenta = parseInt(table.cell(rowIdx, 2).data());
-        let canalVenta = table.cell(rowIdx, 3).data();
-        let ruta = parseInt(table.cell(rowIdx, 4).data());
-        Confirmacion("Bloqueo de Ruta de Vendedor", "¿Desea bloquear el canal de venta " + canalVenta + " de la ruta " + ruta + " del vendedor " + nombreVendedor + "?", function (rpta) {
-            fetchGet("Vendedores/BloquearVendedorRuta/?codigoVendedor=" + codigoVendedor + "&codigoCanalVenta=" + codigoCanalVenta.toString() + "&ruta=" + ruta.toString(), "text", function (data) {
+        let codigoConfiguracion = table.cell(rowIdx, 0).data();
+        let codigoVendedor = table.cell(rowIdx, 1).data();
+        let nombreVendedor = table.cell(rowIdx, 2).data();
+        let codigoCanalVenta = parseInt(table.cell(rowIdx,3).data());
+        let canalVenta = table.cell(rowIdx, 4).data();
+        let ruta = parseInt(table.cell(rowIdx, 5).data());
+        Confirmacion("Anulación de Configuración", "¿Desea Anular la configuración de la ruta " + ruta + " del vendedor " + nombreVendedor + " con canal de venta " + canalVenta + "?", function (rpta) {
+            fetchGet("Vendedores/AnularConfiguracionVendedorRuta/?codigoConfiguracion=" + codigoConfiguracion, "text", function (data) {
                 if (data == "OK") {
-                    ListarVendedores(-1, 0);
+                    ListarVendedores(-1);
                 } else {
                     MensajeError(data);
                 }
@@ -151,24 +176,22 @@ function EliminarRutaVendedor(obj) {
     });
 }
 
-function EditarEstadoVendedorRuta(obj) {
+function EditarConfiguracionVendedorRuta(obj) {
     let table = $('#tabla').DataTable();
-    $('#tabla tbody').on('click', 'tr', 'input:button', function () {
+    $('#tabla tbody').on('click', '.option-editar', function () {
         let rowIdx = table.row(this).index();
-        let codigoVendedor = table.cell(rowIdx, 0).data();
-        let nombreVendedor = table.cell(rowIdx, 1).data();
-        let codigoCanalVenta = parseInt(table.cell(rowIdx, 2).data());
-        let canalVenta = table.cell(rowIdx, 3).data();
-        let ruta = parseInt(table.cell(rowIdx, 4).data());
-        Confirmacion("Estado de Ruta de Vendedor", "¿Desea desbloquear el canal de venta " + canalVenta + " de la ruta " + ruta + " del vendedor " + nombreVendedor + "?", function (rpta) {
-            fetchGet("Vendedores/DesbloquearVendedorRuta/?codigoVendedor=" + codigoVendedor + "&codigoCanalVenta=" + codigoCanalVenta.toString() + "&ruta=" + ruta.toString(), "text", function (data) {
-                if (data == "OK") {
-                    ListarVendedores(-1, 0);
-                } else {
-                    MensajeError(data);
-                }
-            })
-        })
+        let codigoConfiguracion = table.cell(rowIdx, 0).data();
+        let codigoVendedor = table.cell(rowIdx, 1).data();
+        let nombreVendedor = table.cell(rowIdx, 2).data();
+        let codigoCanalVenta = parseInt(table.cell(rowIdx, 3).data());
+        let ruta = parseInt(table.cell(rowIdx, 5).data());
+        setI("uiTitlePopupEditRutaVendedor", "Edición de Configuración Ruta Vendedor");
+        set("uiEditCodigoConfiguracion", codigoConfiguracion);
+        set("uiEditCodigoVendedor", codigoVendedor);
+        set("uiEditNombreVendedor", nombreVendedor);
+        SetComboRutas("uiEditRuta", ruta.toString());
+        SetComboCanalVenta("uiEditCodigoCanalVenta", codigoCanalVenta.toString());
+        document.getElementById("ShowPopupEditRutaVendedor").click();
     });
 }
 
@@ -177,7 +200,46 @@ function setDataNuevoVendedor() {
     setI("uiTitlePopupNewVendedor", "Nueva Vendedor");
     set("uiNewCodigoVendedor", "");
     set("uiNewNombreVendedor", "");
+    document.getElementById('div-tabla-clientes').style.display = 'block';
+    intelligenceSearchCliente();
+
 }
+
+
+function intelligenceSearchCliente() {
+    // Incluir el radioButton al inicio, por eso se comienza por la columna 1
+    let objGlobalConfigTransaccion = {
+        url: "Cliente/GetListAllClientes",
+        cabeceras: ["Código", "Nombre Cliente"],
+        propiedades: ["codigoCliente", "nombreCompleto"],
+        divContenedorTabla: "divContenedorTablaClientes",
+        paginar: true,
+        ocultarColumnas: true,
+        hideColumns: [
+            {
+                "targets": [1],
+                "visible": true,
+                "className": "dt-body-center"
+            }],
+        divPintado: "divTablaClientes",
+        idtabla: "tablaClientes",
+        slug: "codigoCliente",
+        radio: true,
+        eventoradio: "Vendedores",
+        autoWidth: false
+    }
+    pintar(objGlobalConfigTransaccion);
+}
+
+function getDataRowRadioVendedores(obj) {
+    let table = $('#tablaClientes').DataTable();
+    $('#tablaClientes tbody').on('change', 'tr', 'input:radio', function () {
+        let rowIdx = table.row(this).index();
+        set("uiNewCodigoVendedor", table.cell(rowIdx, 1).data());
+        set("uiNewNombreVendedor", table.cell(rowIdx, 2).data());
+    });
+}
+
 
 function GuardarVendedorRuta() {
     let errores = ValidarDatos("frmAsignacionRutaVendedor")
@@ -187,14 +249,67 @@ function GuardarVendedorRuta() {
     }
     let frmGuardar = document.getElementById("frmAsignacionRutaVendedor");
     let frm = new FormData(frmGuardar);
+
+    let codigoVendedor = frm.get("CodigoVendedor");
+    let codigoCanalVenta = frm.get("CodigoCanalVenta");
+    let ruta = frm.get("Ruta");
+
     Confirmacion(undefined, undefined, function (rpta) {
-        fetchPost("Vendedores/GuardarVendedorRuta", "text", frm, function (data) {
-            if (data == "OK") {
-                ListarVendedores(-1, 0);
+        fetchGet("Vendedores/ExisteConfiguracionVendedorRuta/?codigoVendedor=" + codigoVendedor + "&codigoCanalVenta=" + codigoCanalVenta + "&ruta=" + ruta, "text", function (rpta) {
+            let resultado = parseInt(rpta);
+            if (resultado == 0) {// No existe configuración de vendedor ruta
+                fetchPost("Vendedores/GuardarVendedorRuta", "text", frm, function (data) {
+                    if (data == "OK") {
+                        ListarVendedores(-1);
+                    } else {
+                        MensajeError(data);
+                    }
+                    document.getElementById("uiClosePopupRutaVendedor").click();
+                });
             } else {
-                MensajeError(data);
+                if (resultado == -1) {
+                    MensajeError("Error en búsqueda de configuración");
+                } else {
+                    MensajeError("Configuración ya existente");
+                }
             }
-            document.getElementById("uiClosePopupRutaVendedor").click();
+        });
+    });
+}
+
+function ActualizarVendedorRuta() {
+    let errores = ValidarDatos("frmEditRutaVendedor")
+    if (errores != "") {
+        MensajeError(errores);
+        return;
+    }
+    let frmGuardar = document.getElementById("frmEditRutaVendedor");
+    let frm = new FormData(frmGuardar);
+
+    let codigoVendedor = frm.get("CodigoVendedor");
+    let codigoCanalVenta = frm.get("CodigoCanalVenta");
+    let ruta = frm.get("Ruta");
+
+    Confirmacion("Actualización de Configuración", "¿Está seguro(a) de esta actualización?", function (rpta) {
+        fetchGet("Vendedores/ExisteConfiguracionVendedorRuta/?codigoVendedor=" + codigoVendedor + "&codigoCanalVenta=" + codigoCanalVenta + "&ruta=" + ruta, "text", function (rpta) {
+            let resultado = parseInt(rpta);
+            if (resultado == 0)
+            {// No existe configuración de vendedor ruta
+                fetchPost("Vendedores/ActualizarConfiguracionVendedorRuta", "text", frm, function (data) {
+                    if (data == "OK") {
+                        ListarVendedores(-1);
+                    } else {
+                        MensajeError(data);
+                    }
+                    document.getElementById("uiClosePopupEditRutaVendedor").click();
+                });
+            } else {
+                if (resultado == -1) {
+                    MensajeError("Error en búsqueda de configuración");
+                } else {
+                    MensajeError("Configuración ya existente");
+                }
+            }
         });
     });
 }
@@ -264,6 +379,7 @@ function EditarRuta(obj) {
         document.querySelector('#uiEditCodigoEstado').value = codigoEstado;
     });
 }
+
 
 
 function ActualizarRuta() {
@@ -363,18 +479,13 @@ function GuardarVendedor() {
 
 
 function ListarVendedoresRutaFiltroConsulta() {
-    let incluirBloqueados = 0;
     let codigoCanalVenta = parseInt(document.getElementById("uiCodigoCanalVenta").value);
-    let checkIncluirBloqueados = document.getElementById("uiIncluirBloqueados").checked;
-    if (checkIncluirBloqueados == true) {
-        incluirBloqueados = 1;
-    }
-    ListarVendedoresRutaConsulta(codigoCanalVenta, incluirBloqueados);
+    ListarVendedoresRutaConsulta(codigoCanalVenta);
 }
 
-function ListarVendedoresRutaConsulta(codigoCanalVenta, incluirBloqueados) {
+function ListarVendedoresRutaConsulta(codigoCanalVenta) {
     let objConfiguracion = {
-        url: "Vendedores/GetListaVendedores/?codigoCanalVenta=" + codigoCanalVenta.toString() + "&incluirBloqueados=" + incluirBloqueados.toString(),
+        url: "Vendedores/GetListaVendedores/?codigoCanalVenta=" + codigoCanalVenta.toString(),
         cabeceras: ["Código", "Nombre Vendedor", "Código Canal Venta", "Canal de Venta", "Ruta", "Estado"],
         propiedades: ["codigoVendedor", "nombreVendedor", "codigoCanalVenta", "canalVenta", "ruta", "estadoRutaVendedor"],
         divContenedorTabla: "divContenedorTabla",

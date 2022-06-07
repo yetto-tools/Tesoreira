@@ -1316,6 +1316,27 @@ function GenerarExcelTransaccionesConsultaContabilidad() {
 }
 
 
+function GenerarExcelTransaccionesConsultaLimitada() {
+    let anioOperacion = parseInt(document.getElementById("uiFiltroAnio").value);
+    let semanaOperacion = parseInt(document.getElementById("uiFiltroSemana").value);
+    let codigoTipoOperacion = -1;
+    let objOperacion = document.getElementById("uiFiltroOperaciones");
+    let codigoOperacion = parseInt(objOperacion.options[objOperacion.selectedIndex].value);
+    let codigoCategoriaEntidad = -1;
+    let nombreEntidad = document.getElementById("uiFiltroNombreEntidad").value;
+    let fechaInicio = document.getElementById("uiFiltroFechaInicio").value;
+    let fechaFin = document.getElementById("uiFiltroFechaFin").value;
+
+    fetchGetDownload("Transaccion/ExportarExcelTransaccionConsultaLimitada/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString() + "&codigoTipoOperacion=" + codigoTipoOperacion.toString() + "&codigoOperacion=" + codigoOperacion.toString() + "&codigoCategoriaEntidad=" + codigoCategoriaEntidad.toString() + "&nombreEntidad=" + nombreEntidad + "&fechaInicioStr=" + fechaInicio + "&fechaFinStr=" + fechaFin, function (data) {
+        var file = new Blob([data], { type: 'application/vnd.ms-excel' });
+        var fileURL = URL.createObjectURL(file);
+        window.open(fileURL, "EPrescription");
+    }).finally(() => {
+        document.getElementById('divLoading').style.display = 'none';
+    });
+}
+
+
 function GenerarExcelTransaccionesEnProceso() {
     let objTipoOperacion = document.getElementById("uiFiltroTipoOperacion");
     let objOperacion = document.getElementById("uiFiltroOperaciones");
@@ -1453,9 +1474,6 @@ function MostrarTransaccionesConsultaLimitada(anioOperacion, semanaOperacion, co
         displaydecimals: ["monto", "montoSaldoAnteriorCxC", "montoSaldoActualCxC"],
         divContenedorTabla: "divContenedorTabla",
         divPintado: "divTabla",
-        alerta: true,
-        funcionalerta: "CorreccionTransaccion",
-        imprimir: true,
         paginar: true,
         sumarcolumna: true,
         columnasumalist: [17],

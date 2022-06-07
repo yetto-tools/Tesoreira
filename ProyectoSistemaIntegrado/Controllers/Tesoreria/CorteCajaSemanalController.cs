@@ -50,6 +50,25 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
             return demoViewPortrait;
         }
 
+        /// <summary>
+        /// Resumen de ventas en rutas de Supermercados y Cafetería para el Pago de Planillas NF 
+        /// </summary>
+        /// <param name="anioOperacion"></param>
+        /// <param name="semanaOperacion"></param>
+        /// <param name="codigoReporte"></param>
+        /// <returns></returns>
+        public IActionResult ViewReporteResumenPagoVentasRutaCajaTesoreria(int anioOperacion, int semanaOperacion, int codigoReporte)
+        {
+            ReportViewModel obj = new ReportViewModel();
+            obj.CodigoReporte = codigoReporte;
+            obj.AnioOperacion = anioOperacion;
+            obj.SemanaOperacion = semanaOperacion;
+            var demoViewPortrait = new ViewAsPdf("ViewReporteResumenPagoVentasRutaCajaTesoreria", String.Empty, obj);
+            demoViewPortrait.PageMargins = new Margins { Bottom = 5, Left = 5, Right = 5, Top = 5 };
+            demoViewPortrait.PageSize = Size.Letter;
+            return demoViewPortrait;
+        }
+
         public string GenerarReporteSemanal(int anio, int numeroSemana)
         {
             ReporteCajaBL obj = new ReporteCajaBL();

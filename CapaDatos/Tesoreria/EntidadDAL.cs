@@ -150,7 +150,7 @@ namespace CapaDatos.Tesoreria
                            0 AS codigo_area,
                            0 AS codigo_operacion_entidad,
                            x.codigo_canal_venta
-                    FROM db_ventas.vendedor_ruta x
+                    FROM db_ventas.config_vendedor_ruta x
                     INNER JOIN db_ventas.vendedor y
                     ON x.codigo_vendedor = y.codigo_vendedor
                     INNER JOIN db_ventas.canal_venta z
@@ -326,7 +326,7 @@ namespace CapaDatos.Tesoreria
 		                    ELSE 0
                            END AS codigo_operacion_caja,
                            0 AS codigo_area 
-                    FROM db_ventas.vendedor_ruta x
+                    FROM db_ventas.config_vendedor_ruta x
                     INNER JOIN db_ventas.vendedor y
                     ON x.codigo_vendedor = y.codigo_vendedor
                     INNER JOIN db_ventas.canal_venta z
@@ -456,7 +456,7 @@ namespace CapaDatos.Tesoreria
 		                    ELSE 0
                            END AS codigo_operacion_caja,
                            0 AS codigo_area 
-                    FROM db_ventas.vendedor_ruta x
+                    FROM db_ventas.config_vendedor_ruta x
                     INNER JOIN db_ventas.vendedor y
                     ON x.codigo_vendedor = y.codigo_vendedor
                     INNER JOIN db_ventas.canal_venta z
@@ -605,6 +605,9 @@ namespace CapaDatos.Tesoreria
 
             return resultado;
         }
+
+
+
 
 
     }

@@ -8,11 +8,13 @@ namespace CapaEntidad.Ventas
 {
     public class VendedorRutaCLS
     {
+        public int CodigoConfiguracion { get; set; }
         public string CodigoVendedor { get; set; }
         public string NombreVendedor { get; set; }
         public short CodigoCanalVenta { get; set; }
         public string CanalVenta { get; set; }
         public short Ruta { get; set; }
+        public string Descripcion { get; set; }
         public short CodigoCategoriaEntidad { get; set; }
         public byte CodigoEstadoRutaVendedor { get; set; }
         public string EstadoRutaVendedor { get; set; }

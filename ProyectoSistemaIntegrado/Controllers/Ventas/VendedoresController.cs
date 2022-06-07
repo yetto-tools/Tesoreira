@@ -39,23 +39,32 @@ namespace ProyectoSistemaIntegrado.Controllers.Ventas
             return obj.GetVendedores();
         }
 
-        public List<VendedorRutaCLS> GetListaVendedores(int codigoCanalVenta, int incluirBloqueados)
+        public List<VendedorRutaCLS> GetListaVendedores(int codigoCanalVenta)
         {
             VendedorRutaBL obj = new VendedorRutaBL();
-            return obj.GetListaVendedores(codigoCanalVenta, incluirBloqueados == 1 ? true : false);
+            return obj.GetListaVendedores(codigoCanalVenta);
         }
 
-        public string BloquearVendedorRuta(string codigoVendedor, int codigoCanalVenta, int ruta)
+        public string AnularConfiguracionVendedorRuta(int codigoConfiguracion)
         {
-            VendedorRutaDAL obj = new VendedorRutaDAL();
-            return obj.BloquearVendedorRuta(codigoVendedor, codigoCanalVenta, ruta);
-        }
+            ViewBag.Message = HttpContext.Session.GetString("usuario");
+            UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
 
-        public string DesbloquearVendedorRuta(string codigoVendedor, int codigoCanalVenta, int ruta)
-        {
             VendedorRutaBL obj = new VendedorRutaBL();
-            return obj.DesbloquearVendedorRuta(codigoVendedor, codigoCanalVenta, ruta);
+            return obj.AnularConfiguracionVendedorRuta(codigoConfiguracion, objUsuario.IdUsuario);
         }
+
+        //public string BloquearVendedorRuta(string codigoVendedor, int codigoCanalVenta, int ruta)
+        //{
+        //    VendedorRutaDAL obj = new VendedorRutaDAL();
+        //    return obj.BloquearVendedorRuta(codigoVendedor, codigoCanalVenta, ruta);
+        //}
+
+        //public string DesbloquearVendedorRuta(string codigoVendedor, int codigoCanalVenta, int ruta)
+        //{
+        //    VendedorRutaBL obj = new VendedorRutaBL();
+        //    return obj.DesbloquearVendedorRuta(codigoVendedor, codigoCanalVenta, ruta);
+        //}
 
         public string GuardarVendedorRuta(VendedorRutaCLS objVendedorRuta)
         {
@@ -66,12 +75,30 @@ namespace ProyectoSistemaIntegrado.Controllers.Ventas
             return obj.GuardarVendedorRuta(objVendedorRuta, objUsuario.IdUsuario);
         }
 
+        public string ActualizarConfiguracionVendedorRuta(VendedorRutaCLS objVendedorRuta)
+        {
+            ViewBag.Message = HttpContext.Session.GetString("usuario");
+            UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
+
+            VendedorRutaBL obj = new VendedorRutaBL();
+            return obj.ActualizarConfiguracionVendedorRuta(objVendedorRuta, objUsuario.IdUsuario);
+        }
+
         public List<VendedorRutaCLS> GetRutasDelVendedor(int codigoCategoriaEntidad, string codigoVendedor)
         {
             VendedorRutaBL obj = new VendedorRutaBL();
             return obj.GetRutasDelVendedor(codigoCategoriaEntidad, codigoVendedor);
         }
 
+        public int ExisteConfiguracionVendedorRuta(string codigoVendedor, int codigoCanalVenta, int ruta)
+        {
+            VendedorRutaBL obj = new VendedorRutaBL();
+            return obj.ExisteConfiguracionVendedorRuta(codigoVendedor, codigoCanalVenta, ruta);
+        }
+
+
 
     }
+
+
 }

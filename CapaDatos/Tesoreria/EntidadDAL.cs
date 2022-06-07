@@ -11,6 +11,60 @@ namespace CapaDatos.Tesoreria
 {
     public class EntidadDAL:CadenaConexion
     {
+
+        public List<EntidadCLS> GetEntidadesGasto(int codigoOperacion)
+        {
+            List<EntidadCLS> lista = null;
+            using (SqlConnection conexion = new SqlConnection(cadenaTesoreria))
+            {
+                try
+                {
+                    string sql = @"
+                    SELECT codigo_entidad, 
+	                       nombre_completo,
+                           codigo_categoria_entidad
+                    FROM db_tesoreria.entidad 
+                    WHERE codigo_operacion = @CodigoOperacion
+                      AND estado = @CodigoEstadoEntidad
+                    ORDER BY nombre_completo ASC";
+
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand(sql, conexion))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Parameters.AddWithValue("@CodigoOperacion", codigoOperacion);
+                        cmd.Parameters.AddWithValue("@CodigoEstadoEntidad", Constantes.EstadoRegistro.ACTIVO);
+                        SqlDataReader dr = cmd.ExecuteReader();
+                        if (dr != null)
+                        {
+                            EntidadCLS objEntidad;
+                            lista = new List<EntidadCLS>();
+                            int postCodigoEntidad = dr.GetOrdinal("codigo_entidad");
+                            int postNombreEntidad = dr.GetOrdinal("nombre_completo");
+                            int postCodigoCategoriaEntidad = dr.GetOrdinal("codigo_categoria_entidad");
+                            while (dr.Read())
+                            {
+                                objEntidad = new EntidadCLS();
+                                objEntidad.CodigoEntidad = dr.GetInt32(postCodigoEntidad);
+                                objEntidad.Nombre = dr.GetString(postNombreEntidad);
+                                objEntidad.CodigoCategoriaEntidad = dr.GetInt16(postCodigoCategoriaEntidad);
+                                lista.Add(objEntidad);
+                            }
+                        }
+                    }
+                    conexion.Close();
+                }
+                catch (Exception e)
+                {
+                    conexion.Close();
+                    lista = null;
+                }
+
+                return lista;
+            }
+        }
+
+
         public List<EntidadCLS> GetEntidadesGenericasConfiguracion(int codigoCategoriaEntidad)
         {
             List<EntidadCLS> lista = null;

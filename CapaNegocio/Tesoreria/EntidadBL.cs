@@ -10,6 +10,11 @@ namespace CapaNegocio.Tesoreria
 {
     public class EntidadBL
     {
+        public List<EntidadCLS> GetEntidadesGasto(int codigoOperacion)
+        {
+            EntidadDAL obj = new EntidadDAL();
+            return obj.GetEntidadesGasto(codigoOperacion);
+        }
 
         public string GuardarEntidad(EntidadGenericaCLS objEntidad, string usuarioIng)
         {

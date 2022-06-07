@@ -44,6 +44,13 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
         //    return obj.ListarEntidades();
         //}
 
+
+        public List<EntidadCLS> GetEntidadesGasto(int codigoOperacion)
+        {
+            EntidadBL obj = new EntidadBL();
+            return obj.GetEntidadesGasto(codigoOperacion);
+        }
+
         public List<EntidadCLS> GetEntidadesGenericasConfiguracion(int codigoCategoriaEntidad)
         {
             EntidadBL obj = new EntidadBL();

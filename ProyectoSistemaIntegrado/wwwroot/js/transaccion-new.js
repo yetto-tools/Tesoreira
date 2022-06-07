@@ -114,6 +114,7 @@ function clearDataPlanilla() {
 }
 
 function clearDataFormulario() {
+    FillComboUnicaOpcion("uiProveedorEntidad", "-1", "-- No existe proveedor -- ");
     set("uiCodigoOperacionCaja", "0");
     document.getElementById("uiTitleTipoDocumentoDeposito").innerHTML = "Número de Documento";
     document.getElementById("uiOptionTipoDocumentoNumeroVoucher").checked = false;
@@ -226,6 +227,12 @@ function clearDataFormulario() {
     document.getElementById('uiSaldoAnteriorCuentaPorCobrar').value = "0.00";
     document.getElementById('uiMontoDevolucion').value = "0.00";
     document.getElementById('uiSaldoActualCuentaPorCobrar').value = "0.00";
+
+    // Gastos Generales
+    document.getElementById('div-operacion-gasto').style.display = 'none';
+    FillComboUnicaOpcion("uiEntidadGasto", "-1", "-- No existe entidad gasto -- ");
+    FillComboUnicaOpcion("uiProveedorEntidad", "-1", "-- No existe proveedor gasto -- ");
+    FillComboUnicaOpcion("uiCategoriaEntidadGastos", "-1", "-- No existe categoria gasto -- ");
 }
 
 function setValueNumeroDocumentoDeposito(obj) {
@@ -739,6 +746,45 @@ function showControls(obj) {
             document.getElementById("uiCheque").checked = false;
             set("uiObservaciones", "Back to Back");
             break;
+        case COMPRAS_MATERIA_PRIMA:
+            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('div-planilla-pago').style.display = 'none';
+            document.getElementById('uiContainerTipoPago').style.display = 'none';
+            document.getElementById('div-tipo-bonos-extra').style.display = 'none';
+            document.getElementById('div-tipo-especiales1').style.display = 'none';
+            document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('div-operacion-gasto').style.display = 'block';
+            document.getElementById('uiVale').checked = true;
+            document.getElementById('uiVale').onClick = setDataAdicionaTipoDocumento("1");
+            document.getElementById("uiEfectivo").checked = true;
+            fillEntidadesGasto(COMPRAS_MATERIA_PRIMA);
+            break;
+        case COMPRAS_MATERIAL_EMPAQUE:
+            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('div-planilla-pago').style.display = 'none';
+            document.getElementById('uiContainerTipoPago').style.display = 'none';
+            document.getElementById('div-tipo-bonos-extra').style.display = 'none';
+            document.getElementById('div-tipo-especiales1').style.display = 'none';
+            document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('div-operacion-gasto').style.display = 'block';
+            document.getElementById('uiVale').checked = true;
+            document.getElementById('uiVale').onClick = setDataAdicionaTipoDocumento("1");
+            document.getElementById("uiEfectivo").checked = true;
+            fillEntidadesGasto(COMPRAS_MATERIAL_EMPAQUE);
+            break;
+        case GASTOS_EN_COMBUSTIBLES:
+            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('div-planilla-pago').style.display = 'none';
+            document.getElementById('uiContainerTipoPago').style.display = 'none';
+            document.getElementById('div-tipo-bonos-extra').style.display = 'none';
+            document.getElementById('div-tipo-especiales1').style.display = 'none';
+            document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('div-operacion-gasto').style.display = 'block';
+            document.getElementById('uiVale').checked = true;
+            document.getElementById('uiVale').onClick = setDataAdicionaTipoDocumento("1");
+            document.getElementById("uiEfectivo").checked = true;
+            fillEntidadesGasto(GASTOS_EN_COMBUSTIBLES);
+            break;
         case GASTOS_INDIRECTOS:
             document.getElementById('divTabla').style.display = 'block';
             document.getElementById('div-tipo-gasto-indirecto').style.display = 'block';
@@ -747,9 +793,11 @@ function showControls(obj) {
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
             document.getElementById('div-tipo-especiales1').style.display = 'none';
             document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('div-operacion-gasto').style.display = 'block';
             document.getElementById('uiVale').checked = true;
             document.getElementById('uiVale').onClick = setDataAdicionaTipoDocumento("1");
             document.getElementById("uiEfectivo").checked = true;
+            fillEntidadesGasto(GASTOS_INDIRECTOS);
             break;
         case GASTOS_ADMINISTRATIVOS:
             document.getElementById('divTabla').style.display = 'block';
@@ -758,9 +806,50 @@ function showControls(obj) {
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
             document.getElementById('div-tipo-especiales1').style.display = 'none';
             document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('div-operacion-gasto').style.display = 'block';
             document.getElementById('uiVale').checked = true;
             document.getElementById('uiVale').onClick = setDataAdicionaTipoDocumento("1");
             document.getElementById("uiEfectivo").checked = true;
+            fillEntidadesGasto(GASTOS_ADMINISTRATIVOS);
+            break;
+        case GASTOS_MANTENIMIENTO_VEHICULOS:
+            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('div-planilla-pago').style.display = 'none';
+            document.getElementById('uiContainerTipoPago').style.display = 'none';
+            document.getElementById('div-tipo-bonos-extra').style.display = 'none';
+            document.getElementById('div-tipo-especiales1').style.display = 'none';
+            document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('div-operacion-gasto').style.display = 'block';
+            document.getElementById('uiVale').checked = true;
+            document.getElementById('uiVale').onClick = setDataAdicionaTipoDocumento("1");
+            document.getElementById("uiEfectivo").checked = true;
+            fillEntidadesGasto(GASTOS_MANTENIMIENTO_VEHICULOS);
+            break;
+        case VIATICO_DEFINITIVO:
+            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('div-planilla-pago').style.display = 'none';
+            document.getElementById('uiContainerTipoPago').style.display = 'none';
+            document.getElementById('div-tipo-bonos-extra').style.display = 'none';
+            document.getElementById('div-tipo-especiales1').style.display = 'none';
+            document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('div-operacion-gasto').style.display = 'block';
+            document.getElementById('uiVale').checked = true;
+            document.getElementById('uiVale').onClick = setDataAdicionaTipoDocumento("1");
+            document.getElementById("uiEfectivo").checked = true;
+            fillEntidadesGasto(VIATICO_DEFINITIVO);
+            break;
+        case GASTOS_MANTENIMIENTO_MAQUINARIA:
+            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('div-planilla-pago').style.display = 'none';
+            document.getElementById('uiContainerTipoPago').style.display = 'none';
+            document.getElementById('div-tipo-bonos-extra').style.display = 'none';
+            document.getElementById('div-tipo-especiales1').style.display = 'none';
+            document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('div-operacion-gasto').style.display = 'block';
+            document.getElementById('uiVale').checked = true;
+            document.getElementById('uiVale').onClick = setDataAdicionaTipoDocumento("1");
+            document.getElementById("uiEfectivo").checked = true;
+            fillEntidadesGasto(GASTOS_MANTENIMIENTO_MAQUINARIA);
             break;
         case PLANILLA_PAGO:
             document.getElementById('divTabla').style.display = 'none';
@@ -1010,6 +1099,7 @@ function showControls(obj) {
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
             document.getElementById('div-tipo-especiales1').style.display = 'none';
             document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('div-operacion-gasto').style.display = 'none';
             document.getElementById('uiVale').checked = true;
             document.getElementById('uiVale').onClick = setDataAdicionaTipoDocumento("1");
             document.getElementById("uiEfectivo").checked = true;
@@ -2891,3 +2981,34 @@ function focusObservaciones() {
     let elementObservaciones = document.getElementById("uiObservaciones");
     elementObservaciones.focus();
 }
+
+function fillEntidadesGasto(codigoOperacion) {
+    fetchGet("Entidad/GetEntidadesGasto/?codigoOperacion=" + codigoOperacion.toString(), "json", function (rpta) {
+        if (rpta == null || rpta == undefined || rpta.length == 0) {
+            FillComboUnicaOpcion("uiEntidadGasto", "-1", "-- No existe entidad -- ");
+        } else {
+            FillCombo(rpta, "uiEntidadGasto", "codigoEntidad", "nombre", "- seleccione -", "-1");
+            FillCombo(rpta, "uiCategoriaEntidadGastos", "codigoEntidad", "codigoCategoriaEntidad", "- seleccione -", "-1");
+        }
+    })
+}
+
+function fillProveedoresEntidad() {
+    let objEntidadGasto = document.getElementById("uiEntidadGasto");
+    let codigoEntidad = parseInt(document.getElementById("uiEntidadGasto").value);
+    let objCategoriaEntidadGasto = document.getElementById("uiCategoriaEntidadGastos");
+    objCategoriaEntidadGasto.value = codigoEntidad;
+
+    set("uiCodigoEntidad", codigoEntidad.toString());
+    set("uiNombreEntidad", objEntidadGasto.options[objEntidadGasto.selectedIndex].text);
+    set("uiCodigoCategoriaEntidad", objCategoriaEntidadGasto[objCategoriaEntidadGasto.selectedIndex].text);
+
+    fetchGet("EntidadProveedores/GetProveedores/?codigoEntidad=" + codigoEntidad.toString(), "json", function (rpta) {
+        if (rpta == null || rpta == undefined || rpta.length == 0) {
+            FillComboUnicaOpcion("uiProveedorEntidad", "-1", "-- No existe proveedor -- ");
+        } else {
+            FillCombo(rpta, "uiProveedorEntidad", "codigoProveedor", "nombreProveedor", "- seleccione -", "-1");
+        }
+    })
+}
+

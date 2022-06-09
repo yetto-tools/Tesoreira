@@ -478,15 +478,15 @@
 
         @if (setSemanaAnterior == 1)
         {
-            <div style="display:block;" id="div-captura-recibo">
-                <div class="mb-3 row">
-                    <label class="col-sm-2 col-form-label">Referencia:</label>
-                    <div class="col-sm-3">
-                        <input type="text" name="NumeroReciboReferencia" class="form-control solonumeros obligatorio text-center" id="uiNumeroReciboReferencia"
-                               placeholder="Número de Recibo" />
-                    </div>
+        <div style="display:block;" id="div-captura-recibo">
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label">Referencia:</label>
+                <div class="col-sm-3">
+                    <input type="text" name="NumeroReciboReferencia" class="form-control solonumeros obligatorio text-center" id="uiNumeroReciboReferencia"
+                           placeholder="Número de Recibo" />
                 </div>
             </div>
+        </div>
         }
 
         <div class="mb-3 row">
@@ -525,7 +525,7 @@
                 </div>
                 <div class="col-sm-4">
                     <label class="col-form-label">Proveedor</label>
-                    <select class="form-control" id="uiProveedorEntidad" name="ProveedorEntidad">
+                    <select class="form-control" id="uiProveedorEntidad" name="ProveedorEntidad" onchange="setNombreProveedorEntidad()">
                     </select>
                 </div>
                 <div style="display:none;">
@@ -548,8 +548,12 @@
 
         <div id="div-ventas-en-ruta" style="display:none;">
             <div class="mb-3 row">
-                <label class="col-sm-2 col-form-label"></label>
+                <label class="col-sm-2 col-form-label"> </label>
                 <div class="col-sm-3">
+                    <input class="form-check-input" value="0" id="uiEsEspeciales2" type="checkbox" name="EsEspeciales2" onclick="showTablaEspeciales2(this.checked)">
+                    <label class="form-check-label" for="uiEsEspeciales2">Especiales 2</label>
+                </div>
+                <div class="col-sm-2">
                     <label class="col-form-label">Ruta</label>
                     <select class="form-control" id="uiRutaVendedor" name="RutaVendedor">
                     </select>
@@ -572,10 +576,10 @@
     </div>
 
     <div id="divTabla" style="display:block">
-
     </div>
 
-
+    <div id="divTablaEspeciales2"  style="display:block">
+    </div>
 
 </fieldset>
 
@@ -680,12 +684,12 @@
     </div>
 </div>
 
-<div id="html-content-holder" style="display:block">
+@*<div id="html-content-holder" style="display:block">
 
-</div>
+</div>*@
 
 @section Scripts {
-    <script src="~/js/html2canvas.js"></script>
+    @*<script src="~/js/html2canvas.js"></script>*@
     <script src="~/js/datatable.js"></script>
     <script src="~/js/bootstrap.js"></script>
     <script src="~/js/jqueryui.js"></script>

@@ -20,7 +20,7 @@ namespace CapaDatos.QSystems
                 {
                     conexion.Open();
                     string sql = @"
-                    SELECT convert(char,convert(datetime, convert(int,a.veh_fecha)),103) as fecha_factura,
+                    SELECT convert(char,convert(datetime, convert(int,a.veh_fecha)),103) as fecha_factura_str,
 	                       DATENAME(weekday, convert(datetime, convert(int,a.veh_fecha))) AS dia_semana,
 	                       a.veh_tienda as codigo_tienda,
                            a.veh_terminal as codigo_caja,
@@ -83,7 +83,7 @@ namespace CapaDatos.QSystems
                         {
                             FacturaVentasCLS objFacturaVentas;
                             lista = new List<FacturaVentasCLS>();
-                            int postFechaFactura = dr.GetOrdinal("fecha_factura");
+                            int postFechaFacturaStr = dr.GetOrdinal("fecha_factura_str");
                             int postDiaSemana = dr.GetOrdinal("dia_semana");
                             int postCodigoTienda = dr.GetOrdinal("codigo_tienda");
                             int postCodigoCaja = dr.GetOrdinal("codigo_caja");
@@ -111,11 +111,12 @@ namespace CapaDatos.QSystems
                             while (dr.Read())
                             {
                                 objFacturaVentas = new FacturaVentasCLS();
-                                objFacturaVentas.FechaFactura = dr.GetString(postFechaFactura);
+                                objFacturaVentas.FechaFacturaStr = dr.GetString(postFechaFacturaStr);
                                 objFacturaVentas.DiaSemana = dr.GetString(postDiaSemana);
                                 objFacturaVentas.CodigoTienda = dr.GetString(postCodigoTienda);
                                 objFacturaVentas.CodigoCaja = dr.GetInt32(postCodigoCaja);
                                 objFacturaVentas.SerieFactura = dr.GetString(postSerieFactura);
+                                objFacturaVentas.NumeroFactura = dr.GetInt32(postNumeroFactura);
                                 objFacturaVentas.SerieFacturaFEL = dr.IsDBNull(postSerieFacturaFel) ? "" : dr.GetString(postSerieFacturaFel);
                                 objFacturaVentas.NumeroFacturaFEL = dr.IsDBNull(postNumeroFacturaFel) ? "" : dr.GetString(postNumeroFacturaFel);
                                 objFacturaVentas.CodigoCliente = dr.GetString(postCodigoCliente);
@@ -150,5 +151,87 @@ namespace CapaDatos.QSystems
                 return lista;
             }
         }
+
+        public List<ValeSalidaCLS> GetListaValesDeSalida(string codigoEmpresa, string fechaInicio, string fechaFin)
+        {
+            List<ValeSalidaCLS> lista = null;
+            using (SqlConnection conexion = new SqlConnection(cadenaQSystems))
+            {
+                try
+                {
+                    string sql = @"
+                    SELECT convert(char,convert(datetime, convert(int,a.dvh_fecha)),103) AS fecha_emision_str,
+	                       DATENAME(weekday, convert(datetime, convert(int,dvh_fecha))) AS dia_semana,
+                           a.dvh_vendedor AS ruta,
+	                       c.ven_nombre AS nombre_vendedor,
+	                       a.dvh_numero AS numero_vale,
+	                       b.dvl_linea AS linea,
+	                       b.dvl_inventario AS codigo_inventario,
+	                       d.inv_nombre AS descripcion,
+	                       convert(decimal(18, 3), b.dvl_preciou) AS precio_unitario,
+	                       convert(int, b.dvl_cantidad) AS cantidad
+
+                    FROM qsystems.dbo.dist_liqvalesl b
+                    INNER JOIN qsystems.dbo.dist_liqvalesh a
+                    ON b.dvl_empresa = a.dvh_empresa AND b.dvl_numero = a.dvh_numero
+                    INNER JOIN qsystems.dbo.vendedor c
+                    ON a.dvh_empresa = c.ven_empresa AND a.dvh_vendedor = c.ven_codigo
+                    INNER JOIN qsystems.dbo.mastinvpos d
+                    ON b.dvl_empresa = d.inv_empresa AND b.dvl_inventario = d.inv_inventario
+                    WHERE a.dvh_status <> 'A'
+                      AND a.dvh_empresa = '" + codigoEmpresa + @"'
+                      AND convert(int, a.dvh_fecha) between CONVERT(INT,CONVERT(DATETIME,'" + fechaInicio + @"',103)) AND CONVERT(INT,CONVERT(DATETIME,'" + fechaFin + @"',103))
+                    ORDER BY a.dvh_fecha,a.dvh_vendedor,c.ven_nombre,a.dvh_numero,b.dvl_linea,b.dvl_inventario";
+
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand(sql, conexion))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        SqlDataReader dr = cmd.ExecuteReader();
+                        if (dr != null)
+                        {
+                            ValeSalidaCLS objVale;
+                            lista = new List<ValeSalidaCLS>();
+                            int postFechaEmisionStr = dr.GetOrdinal("fecha_emision_str");
+                            int postDiaSemana = dr.GetOrdinal("dia_semana");
+                            int postRuta = dr.GetOrdinal("ruta");
+                            int postNombreVendedor = dr.GetOrdinal("nombre_vendedor");
+                            int postNumeroVale = dr.GetOrdinal("numero_vale");
+                            int postLinea = dr.GetOrdinal("linea");
+                            int postCodigoInventario = dr.GetOrdinal("codigo_inventario");
+                            int postDescripcion = dr.GetOrdinal("descripcion");
+                            int postPrecioUnitario = dr.GetOrdinal("precio_unitario");
+                            int postCantidad = dr.GetOrdinal("cantidad");
+
+                            while (dr.Read())
+                            {
+                                objVale = new ValeSalidaCLS();
+                                objVale.FechaEmisionStr = dr.GetString(postFechaEmisionStr);
+                                objVale.DiaSemana = dr.GetString(postDiaSemana);
+                                objVale.Ruta = dr.GetInt32(postRuta);
+                                objVale.NombreVendedor = dr.GetString(postNombreVendedor);
+                                objVale.NumeroVale = dr.GetInt32(postNumeroVale);
+                                objVale.NumeroLinea = dr.GetInt32(postLinea);
+                                objVale.CodigoInventario = dr.GetString(postCodigoInventario);
+                                objVale.Descripcion = dr.GetString(postDescripcion);
+                                objVale.PrecioUnitario = dr.GetDecimal(postPrecioUnitario);
+                                objVale.Cantidad = dr.GetInt32(postCantidad);
+                                lista.Add(objVale);
+                            }
+                        }
+                    }
+                    conexion.Close();
+                }
+                catch (Exception ex)
+                {
+                    conexion.Close();
+                    lista = null;
+                }
+
+                return lista;
+            }
+        }
+
+
     }
 }

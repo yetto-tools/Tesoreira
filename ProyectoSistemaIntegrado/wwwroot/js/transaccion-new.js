@@ -42,7 +42,7 @@
     }// fin if
 }
 
-function setEmptyDataTransaccion() {
+function setEmptyDataTransaccion(checkEspeciales2) {
     document.getElementById("uiNitEmpresaConcedeIva").checked = false;
     setComboConsumidorConcedeIVA();
     FillComboUnicaOpcion("uiNumeroCuenta", "-1", "-- No existe cuenta -- ");
@@ -52,6 +52,14 @@ function setEmptyDataTransaccion() {
     let setSemanaAnterior = parseInt(document.getElementById("uiSetSemanaAnterior").value);
     if (setSemanaAnterior == 1) {
         fillComboSemanaAnterior();
+    }
+    if (checkEspeciales2 == true) {
+        document.querySelector('#cboOperacion').value = VENTAS_EN_RUTA.toString();
+        showControls(VENTAS_EN_RUTA.toString());
+        document.querySelector('#uiEsEspeciales2').checked = true;
+        document.getElementById("uiEsEspeciales2").onClick = showTablaEspeciales2(true);
+        //document.getElementById('divTablaEspeciales2').style.display = 'block';
+        //document.getElementById('divTabla').style.display = 'none';
     }
 }
 
@@ -211,6 +219,14 @@ function clearDataFormulario() {
     elementOtrosIngresos.classList.remove('obligatorio');
     document.getElementById('div-otros-ingresos').style.display = 'none';
 
+    // Especiales 2
+    document.getElementById("uiEsEspeciales2").checked = false;
+    document.getElementById('divTablaEspeciales2').style.display = 'none';
+    let tableEspeciales2 = $('#tablaEspeciales2').DataTable();
+    tableEspeciales2.$("input[type=radio]").prop("checked", false);
+    tableEspeciales2.$("input[type=search]").val('');
+    tableEspeciales2.search('').draw();
+
     // Montos
     document.getElementById('uiCalculadora').value = "";
     document.getElementById('uiMontoTransaccion').value = "";
@@ -218,10 +234,9 @@ function clearDataFormulario() {
     // entidades
     let table = $('#tabla').DataTable();
     table.$("input[type=radio]").prop("checked", false);
-    //table.$('input[type=search]').val('').change();
     table.$("input[type=search]").val('');
     table.search('').draw();
-    //table.search(this.value).draw();
+    document.getElementById('divTabla').style.display = 'block';
 
     // Saldo Cuentas por Cobrar
     document.getElementById('uiSaldoAnteriorCuentaPorCobrar').value = "0.00";
@@ -247,9 +262,6 @@ function setValueNumeroDocumentoDeposito(obj) {
             break;
     }
 }
-
-
-
 
 function fillAnioPlanilla() {
     let arrayDate = getFechaSistema();
@@ -375,10 +387,7 @@ function fillCombosEdit(codigoTransaccion) {
                 set("uiNumeroReciboReferencia", data.numeroReciboReferencia.toString());
                 set("uiFechaReciboStr", data.fechaReciboStr);
                 set("uiNombreProveedor", data.nombreProveedor);
-
-
                 setDataControls(codigoOperacion, data);
-
             })
         }
     });
@@ -1263,6 +1272,45 @@ function setDataControls(codigoOperacion, data) {
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
             document.getElementById('div-bonos-extra').style.display = 'none';
             break;
+        case COMPRAS_MATERIA_PRIMA:
+            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('div-planilla-pago').style.display = 'none';
+            document.getElementById('uiContainerTipoPago').style.display = 'none';
+            document.getElementById('div-tipo-bonos-extra').style.display = 'none';
+            document.getElementById('div-tipo-especiales1').style.display = 'none';
+            document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('div-operacion-gasto').style.display = 'block';
+            document.getElementById('uiVale').checked = true;
+            document.getElementById('uiVale').onClick = setDataAdicionaTipoDocumento("1");
+            document.getElementById("uiEfectivo").checked = true;
+            fillEntidadesGasto(COMPRAS_MATERIA_PRIMA);
+            break;
+        case COMPRAS_MATERIAL_EMPAQUE:
+            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('div-planilla-pago').style.display = 'none';
+            document.getElementById('uiContainerTipoPago').style.display = 'none';
+            document.getElementById('div-tipo-bonos-extra').style.display = 'none';
+            document.getElementById('div-tipo-especiales1').style.display = 'none';
+            document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('div-operacion-gasto').style.display = 'block';
+            document.getElementById('uiVale').checked = true;
+            document.getElementById('uiVale').onClick = setDataAdicionaTipoDocumento("1");
+            document.getElementById("uiEfectivo").checked = true;
+            fillEntidadesGasto(COMPRAS_MATERIAL_EMPAQUE);
+            break;
+        case GASTOS_EN_COMBUSTIBLES:
+            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('div-planilla-pago').style.display = 'none';
+            document.getElementById('uiContainerTipoPago').style.display = 'none';
+            document.getElementById('div-tipo-bonos-extra').style.display = 'none';
+            document.getElementById('div-tipo-especiales1').style.display = 'none';
+            document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('div-operacion-gasto').style.display = 'block';
+            document.getElementById('uiVale').checked = true;
+            document.getElementById('uiVale').onClick = setDataAdicionaTipoDocumento("1");
+            document.getElementById("uiEfectivo").checked = true;
+            fillEntidadesGasto(GASTOS_EN_COMBUSTIBLES);
+            break;
         case GASTOS_INDIRECTOS:
             document.getElementById('divTabla').style.display = 'block';
             document.getElementById('div-tipo-gasto-indirecto').style.display = 'block';
@@ -1271,6 +1319,7 @@ function setDataControls(codigoOperacion, data) {
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
             document.getElementById('div-tipo-especiales1').style.display = 'none';
             document.getElementById('div-bonos-extra').style.display = 'none';
+            fillEntidadesGasto(GASTOS_INDIRECTOS);
             break;
         case GASTOS_ADMINISTRATIVOS:
             document.getElementById('divTabla').style.display = 'block';
@@ -1279,6 +1328,37 @@ function setDataControls(codigoOperacion, data) {
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
             document.getElementById('div-tipo-especiales1').style.display = 'none';
             document.getElementById('div-bonos-extra').style.display = 'none';
+            fillEntidadesGasto(GASTOS_ADMINISTRATIVOS);
+            break;
+        case GASTOS_MANTENIMIENTO_VEHICULOS:
+            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('div-planilla-pago').style.display = 'none';
+            document.getElementById('uiContainerTipoPago').style.display = 'none';
+            document.getElementById('div-tipo-bonos-extra').style.display = 'none';
+            document.getElementById('div-tipo-especiales1').style.display = 'none';
+            document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('div-operacion-gasto').style.display = 'block';
+            fillEntidadesGasto(GASTOS_MANTENIMIENTO_VEHICULOS);
+            break;
+        case VIATICO_DEFINITIVO:
+            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('div-planilla-pago').style.display = 'none';
+            document.getElementById('uiContainerTipoPago').style.display = 'none';
+            document.getElementById('div-tipo-bonos-extra').style.display = 'none';
+            document.getElementById('div-tipo-especiales1').style.display = 'none';
+            document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('div-operacion-gasto').style.display = 'block';
+            fillEntidadesGasto(VIATICO_DEFINITIVO);
+            break;
+        case GASTOS_MANTENIMIENTO_MAQUINARIA:
+            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('div-planilla-pago').style.display = 'none';
+            document.getElementById('uiContainerTipoPago').style.display = 'none';
+            document.getElementById('div-tipo-bonos-extra').style.display = 'none';
+            document.getElementById('div-tipo-especiales1').style.display = 'none';
+            document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('div-operacion-gasto').style.display = 'block';
+            fillEntidadesGasto(GASTOS_MANTENIMIENTO_MAQUINARIA);
             break;
         case PLANILLA_PAGO:
             document.getElementById('divTabla').style.display = 'none';
@@ -1789,6 +1869,8 @@ function GuardarDatos(nombreImpresora, numeroCopias) {
         MensajeError("Debe seleccionar un tipo de documento");
         return;
     }
+
+    let checkEspeciales2 = document.getElementById("uiEsEspeciales2");
     let checkEfectivo = document.getElementById("uiEfectivo");
     let checkDeposito = document.getElementById("uiDeposito");
     let checkCheque = document.getElementById("uiCheque");
@@ -1829,7 +1911,7 @@ function GuardarDatos(nombreImpresora, numeroCopias) {
                 if (setSemanaAnterior == 0) {
                     PrintConstanciaIngresos(data, codigoTipoOperacion, nombreImpresora, numeroCopias);
                     setTimeout(() => {
-                        setEmptyDataTransaccion();
+                        setEmptyDataTransaccion(checkEspeciales2.checked);
                         Exito("Transaccion", "Index", false);
                     }, 1000);
 
@@ -1871,8 +1953,8 @@ function GuardarDatos(nombreImpresora, numeroCopias) {
     });
 }**/
 
-
-function intelligenceSearch() {
+/* Temporalmente obsoleto */
+function intelligenceSearch10() {
     // Incluir el radioButton al inicio, por eso se comienza por la columna 1
     let objGlobalConfigTransaccion = {
         url: "Transaccion/ListarEntidadesGenericas",
@@ -1904,6 +1986,89 @@ function intelligenceSearch() {
 
     }
     pintar(objGlobalConfigTransaccion);
+}
+
+
+//"className": "dt-body-right"
+function intelligenceSearch() {
+    fetchGet("Entidad/GetAllEntidadesGenericas", "json", function (rpta) {
+        if (rpta != null) {
+            let listaEntidadesGenericas = rpta.listaEntidadesGenericas;
+            let listaEntidadesEspeciales2 = rpta.listaEntidadesEspeciales2;
+            let objConfigEntidadesGenericas = {
+                cabeceras: ["codigo", "nombre entidad", "codigo categoria", "categoria", "codigo operacion", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta"],
+                propiedades: ["codigoEntidad", "nombreEntidad", "codigoCategoriaEntidad", "nombreCategoria", "codigoOperacionCaja", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta"],
+                divContenedorTabla: "divContenedorTabla",
+                divPintado: "divTabla",
+                ocultarColumnas: true,
+                hideColumns: [
+                    {
+                        "targets": [0],
+                        "className": "dt-body-center"
+                    }, {
+                        "targets": [3],
+                        "visible": false
+                    }, {
+                        "targets": [5],
+                        "visible": false
+                    }, {
+                        "targets": [6],
+                        "visible": false
+                    }, {
+                        "targets": [7],
+                        "visible": false
+                    }, {
+                        "targets": [8],
+                        "visible": false
+                    }],
+                radio: true,
+                paginar: true,
+                eventoradio: "Entidades",
+                slug: "codigoEntidad"
+            }
+            pintarEntidades(objConfigEntidadesGenericas, listaEntidadesGenericas);
+
+            let objConfigEspeciales2 = {
+                cabeceras: ["codigo", "nombre entidad", "codigo categoria", "categoria", "codigo operacion", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta"],
+                propiedades: ["codigoEntidad", "nombreEntidad", "codigoCategoriaEntidad", "nombreCategoria", "codigoOperacionCaja", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta"],
+                divContenedorTabla: "divContenedorTablaEspeciales2",
+                divPintado: "divTablaEspeciales2",
+                idtabla: "tablaEspeciales2",
+                ocultarColumnas: true,
+                hideColumns: [
+                    {
+                        "targets": [0],
+                        "className": "dt-body-center"
+                    }, {
+                        "targets": [3],
+                        "visible": false
+                    }, {
+                        "targets": [4],
+                        "visible": false
+                    }, {
+                        "targets": [5],
+                        "visible": false
+                    }, {
+                        "targets": [6],
+                        "visible": false
+                    }, {
+                        "targets": [7],
+                        "visible": false
+                    }, {
+                        "targets": [8],
+                        "visible": false
+                    }],
+                radio: true,
+                paginar: true,
+                eventoradio: "EntidadesEspeciales2",
+                slug: "codigoEntidad",
+                autoWidth: false
+            }
+            pintarEntidades(objConfigEspeciales2, listaEntidadesEspeciales2);
+        } else {
+            Warning("Error en la obtención de entidades");
+        }
+    });
 }
 
 
@@ -2232,6 +2397,40 @@ function getDataRowRadioEntidades(obj) {
             } // fin switch
         }// fin else
     });
+}
+
+
+function getDataRowRadioEntidadesEspeciales2(obj) {
+    // Incluir el radioButton al inicio, por eso se comienza por la columna 1
+    document.getElementById('div-captura-proveedor').style.display = 'none';
+    let elementNombreProveedor = document.getElementById('uiNombreProveedor');
+    elementNombreProveedor.value = "";
+    let table = $('#tablaEspeciales2').DataTable();
+    $('#tablaEspeciales2 tbody').on('change', 'tr', 'input:radio', function () {
+        let rowIdx = table.row(this).index();
+        set("uiCodigoEntidad", table.cell(rowIdx, 1).data());
+        set("uiNombreEntidad", table.cell(rowIdx, 2).data());
+        set("uiCodigoCategoriaEntidad", table.cell(rowIdx, 3).data());
+        set("uiCategoriaEntidad", table.cell(rowIdx, 4).data());
+        set("uiCodigoOperacionCaja", table.cell(rowIdx, 5).data());
+        set("uiCodigoArea", table.cell(rowIdx, 6).data());
+        set("uiCodigoCanalVenta", table.cell(rowIdx, 8).data());
+        //document.getElementById('div-ventas-en-ruta').style.display = 'none';
+        let elementRutaVendedor = document.getElementById("uiRutaVendedor");
+        elementRutaVendedor.classList.remove('obligatorio');
+        FillComboUnicaOpcion("uiRutaVendedor", "332", "332");
+    });
+}
+
+function showTablaEspeciales2(obj) {
+    if (obj == true) {
+        document.getElementById('divTabla').style.display = 'none';
+        document.getElementById('divTablaEspeciales2').style.display = 'block';
+
+    } else {
+        document.getElementById('divTabla').style.display = 'block';
+        document.getElementById('divTablaEspeciales2').style.display = 'none';
+    }
 }
 
 
@@ -2994,6 +3193,7 @@ function fillEntidadesGasto(codigoOperacion) {
 }
 
 function fillProveedoresEntidad() {
+    let elementNombreProveedor = document.getElementById('uiNombreProveedor');
     let objEntidadGasto = document.getElementById("uiEntidadGasto");
     let codigoEntidad = parseInt(document.getElementById("uiEntidadGasto").value);
     let objCategoriaEntidadGasto = document.getElementById("uiCategoriaEntidadGastos");
@@ -3006,9 +3206,24 @@ function fillProveedoresEntidad() {
     fetchGet("EntidadProveedores/GetProveedores/?codigoEntidad=" + codigoEntidad.toString(), "json", function (rpta) {
         if (rpta == null || rpta == undefined || rpta.length == 0) {
             FillComboUnicaOpcion("uiProveedorEntidad", "-1", "-- No existe proveedor -- ");
+            elementNombreProveedor.classList.remove('obligatorio');
         } else {
             FillCombo(rpta, "uiProveedorEntidad", "codigoProveedor", "nombreProveedor", "- seleccione -", "-1");
+            elementNombreProveedor.classList.add('obligatorio');
         }
     })
 }
+
+function setNombreProveedorEntidad() {
+    let objProveedorEntidad = document.getElementById('uiProveedorEntidad');
+    if (objProveedorEntidad.value != "-1") {
+        let elementNombreProveedor = document.getElementById('uiNombreProveedor');
+        elementNombreProveedor.value = objProveedorEntidad.options[objProveedorEntidad.selectedIndex].text;
+    } else {
+        elementNombreProveedor.value = "";
+    }
+}
+
+
+
 

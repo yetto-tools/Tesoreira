@@ -60,13 +60,13 @@
 
 .input-valor {
     margin: 8px auto;
-    width: 95 %;
+    width: 95%;
     height: 30px;
-    font - size: 16px;
+    font-size: 16px;
     overflow: hidden;
-    text - align: right;
+    text-align: right;
     color: #48484D;
     padding: 4px;
-    background - color:#fff;
-    box - shadow: inset - 1px - 1px 4px 1px #eee;
+    background-color:#fff;
+    box-shadow: inset -1px -1px 4px 1px #eee;
 }

@@ -44,6 +44,11 @@ namespace ProyectoSistemaIntegrado.Controllers.Reportes
             return View();
         }
 
+        public IActionResult MostrarReporteValesSalida()
+        {
+            return View();
+        }
+
         public List<TipoReporteCLS> GetTiposDeReportesAsignados()
         {
             ViewBag.Message = HttpContext.Session.GetString("usuario");
@@ -70,13 +75,6 @@ namespace ProyectoSistemaIntegrado.Controllers.Reportes
             CompromisoFiscalBL obj = new CompromisoFiscalBL();
             return obj.GetReportesCompromisoFiscal(anioOperacion);
         }
-
-        /*public List<CompromisoFiscalDetalleCLS> GetReportesCompromisoFiscal()
-        {
-            ReportesTesoreriaBL obj = new ReportesTesoreriaBL();
-            public List<CompromisoFiscalDetalleCLS> GetDetalleReporteCompromisoFiscalSemanal(int anioOperacion, int semanaOperacion)
-            return obj.GetDetalleReporteCompromisoFiscalSemanal();
-        }*/
 
         public IActionResult ViewReporteResumenOperacionesCaja(int anioOperacion, int semanaOperacion, int codigoReporte, int arqueo)
         {

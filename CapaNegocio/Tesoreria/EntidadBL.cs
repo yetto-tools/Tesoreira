@@ -35,6 +35,12 @@ namespace CapaNegocio.Tesoreria
             return obj.ListarEntidadesGenericas();
         }
 
+        public EntidadGenericaListCLS GetAllEntidadesGenericas()
+        {
+            EntidadDAL obj = new EntidadDAL();
+            return obj.GetAllEntidadesGenericas();
+        }
+
         public List<EntidadGenericaCLS> ListarEntidadesGenericasCxC()
         {
             EntidadDAL obj = new EntidadDAL();

@@ -34,6 +34,9 @@
                 case "MostrarReporteVentasFacturadas":
                     fillComboEmpresasComercializadoras();
                     break;
+                case "MostrarReporteValesSalida":
+                    fillComboEmpresasComercializadoras();
+                    break;
                 default:
                     break;
             }// fin switch
@@ -252,6 +255,9 @@ function VerDetalleReporte(obj) {
                 break;
             case REPORTE_VENTAS_FACTURADAS:
                 Redireccionar("Reportes", "MostrarReporteVentasFacturadas");
+                break;
+            case REPORTE_VALES_SALIDA:
+                Redireccionar("Reportes", "MostrarReporteValesSalida");
                 break;
             default:
                 Redireccionar("Reportes", "MostrarReporte/?codigoTipoReporte=" + codigoTipoReporte.toString());
@@ -514,7 +520,7 @@ function GenerarPdfReporteDetalleCompromisoFiscal(obj) {
 }
 
 
-/* Reporte de Ventas Facturadas */
+/* Filtro para los Reportes de Ventas Facturadas, Vales de Salida */
 function fillComboEmpresasComercializadoras() {
     fetchGet("Empresa/GetAllEmpresasComercializadoras", "json", function (rpta) {
         if (rpta == null || rpta == undefined || rpta.length == 0) {
@@ -531,6 +537,11 @@ function mostrarVentasFacturadas() {
 
 }
 
+function mostrarValesDeSalida() {
+
+
+}
+
 async function generarExcelVentasFacturadas() {
     let errores = ValidarDatos("frmBusqueda")
     if (errores != "") {
@@ -543,7 +554,27 @@ async function generarExcelVentasFacturadas() {
     let fechaFin = document.getElementById("uiFechaFin").value;
 
     fetchGetDownload("ReportesQSystems/ExportarExcelVentaPorRangoFechaDetallado/?codigoEmpresa=" + codigoEmpresa + "&fechaInicio=" + fechaInicio + "&fechaFin=" + fechaFin, function (data) {
-        var file = new Blob([data], { type: 'application/vnd.ms-excel' });
+        var file = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        var fileURL = URL.createObjectURL(file);
+        window.open(fileURL, "EPrescription");
+    }).finally(() => {
+        document.getElementById('divLoading').style.display = 'none';
+    });
+}
+
+async function generarExcelValesSalida() {
+    let errores = ValidarDatos("frmBusqueda")
+    if (errores != "") {
+        MensajeError(errores);
+        return;
+    }
+
+    let codigoEmpresa = document.getElementById("uiFiltroEmpresa").value;
+    let fechaInicio = document.getElementById("uiFechaInicio").value;
+    let fechaFin = document.getElementById("uiFechaFin").value;
+
+    fetchGetDownload("ReportesQSystems/ExportarExcelValesSalidaPorRangoFechaDetallado/?codigoEmpresa=" + codigoEmpresa + "&fechaInicio=" + fechaInicio + "&fechaFin=" + fechaFin, function (data) {
+        var file = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         var fileURL = URL.createObjectURL(file);
         window.open(fileURL, "EPrescription");
     }).finally(() => {

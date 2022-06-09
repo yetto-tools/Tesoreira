@@ -297,7 +297,7 @@ function ActualizarVendedorRuta() {
             {// No existe configuración de vendedor ruta
                 fetchPost("Vendedores/ActualizarConfiguracionVendedorRuta", "text", frm, function (data) {
                     if (data == "OK") {
-                        ListarVendedores(-1);
+                        ListarVendedoresFiltro();
                     } else {
                         MensajeError(data);
                     }

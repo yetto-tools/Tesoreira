@@ -8,7 +8,8 @@ namespace CapaEntidad.QSystems
 {
     public class FacturaVentasCLS
     {
-        public string FechaFactura { get; set; }
+        public DateTime FechaFactura { get; set; }
+        public string FechaFacturaStr { get; set; }
         public string DiaSemana { get; set; }
         public string CodigoTienda { get; set; }
         public int CodigoCaja { get; set; }

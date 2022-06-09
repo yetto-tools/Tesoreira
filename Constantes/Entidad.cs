@@ -21,6 +21,7 @@ namespace Constantes
             public const short CAFETERIA = 11;
             public const short CLIENTES_ESPECIALES_1 = 12;
             public const short CLIENTES_ESPECIALES_2 = 13;
+            public const short OTROS_CLIENTES = 22;
             public const short PLANILLA_FABRICA = 14;
             public const short PLANILLA_VENTAS = 15;
             public const short PLANILLA_OTROS = 16;

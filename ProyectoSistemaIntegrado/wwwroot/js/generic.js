@@ -405,6 +405,9 @@ function pintar(objConfiguracion) {
 }
 
 
+
+
+
 function generarTabla(res, objConfiguracionGlobal) {
     let contenido = "";
     //console.log(JSON.stringify(objConfiguracionGlobal));
@@ -989,6 +992,111 @@ function generarTabla(res, objConfiguracionGlobal) {
     return contenido;
 
 }
+
+
+function pintarEntidades(objConfiguracion, res) {
+    let objConfiguracionGlobal = objConfiguracion;
+    if (objConfiguracionGlobal.divContenedorTabla == undefined)
+        objConfiguracionGlobal.divContenedorTabla == "divContenedorTabla";
+    if (objConfiguracionGlobal.divPintado == undefined)
+        objConfiguracionGlobal.divPintado == "divTabla";
+    if (objConfiguracionGlobal.slug == undefined)
+        objConfiguracionGlobal.slug = ""
+    if (objConfiguracionGlobal.radio == undefined)
+        objConfiguracionGlobal.radio = false;
+    if (objConfiguracionGlobal.eventoradio == undefined)
+        objConfiguracionGlobal.eventoradio = "Generico";
+    if (objConfiguracionGlobal.idtabla == undefined)
+        objConfiguracionGlobal.idtabla = "tabla"
+    if (objConfiguracionGlobal.paginar == undefined)
+        objConfiguracionGlobal.paginar = false;
+    if (objConfiguracionGlobal.ocultarColumnas == undefined)
+        objConfiguracionGlobal.ocultarColumnas = false;
+    if (objConfiguracionGlobal.hideColumns == undefined)
+        objConfiguracionGlobal.hideColumns = [];
+    if (objConfiguracionGlobal.autoWidth == undefined)
+        objConfiguracionGlobal.autoWidth = true;
+    var contenido = "";
+    contenido += "<div id='" + objConfiguracionGlobal.divContenedorTabla + "'>";
+    contenido += generarTablaEntidades(res, objConfiguracionGlobal);
+    contenido += "</div>";
+    setI(objConfiguracionGlobal.divPintado, contenido);
+    if (objConfiguracion.paginar == true) {
+        if (objConfiguracionGlobal.ocultarColumnas == false) {
+            $("#" + objConfiguracion.idtabla).DataTable();
+        } else {
+            $("#" + objConfiguracion.idtabla).DataTable({
+                "autoWidth": objConfiguracionGlobal.autoWidth,
+                "columnDefs": objConfiguracionGlobal.hideColumns, "order": [[0, "desc"]]
+            });
+        }
+    }
+}
+
+
+function generarTablaEntidades(res, objConfiguracionGlobal) {
+    let contenido = "";
+    let cabeceras = objConfiguracionGlobal.cabeceras;
+    let nombrePropiedades = objConfiguracionGlobal.propiedades;
+    let countColumns = 0;
+    let nregistros = res.length;
+    if (nregistros > 0) {
+        contenido += "<table id='" + objConfiguracionGlobal.idtabla + "' class='table'>";
+        contenido += "<thead class='table-dark'>"
+        contenido += "<tr>";
+        if (objConfiguracionGlobal.radio == true) {
+            contenido += "<td>  </td>";
+            countColumns++;
+        }
+
+        for (let i = 0; i < cabeceras.length; i++) {
+            contenido += "<td>" + cabeceras[i] + "</td>";
+            countColumns++;
+        }
+        contenido += "</tr>";
+        contenido += "</thead>";
+
+        contenido += "<tbody id='tbody" + objConfiguracionGlobal.idtabla + "'>";
+        let obj;
+        let valor = "";
+        let nombrePropiedadActual;
+        for (let i = 0; i < nregistros; i++) {
+            obj = res[i]
+            if (objConfiguracionGlobal.checkid == "default") {
+                contenido += `<tr>`;
+            } else {
+                if (obj[objConfiguracionGlobal.checkid] == 1) {
+                    contenido += `<tr style="background-color:#f0f8ff;">`;
+                } else {
+                    contenido += `<tr>`;
+                }
+            }
+            if (objConfiguracionGlobal.radio == true) {
+                if (typeof (obj[objConfiguracionGlobal.slug]) === 'number')
+                    valor = obj[objConfiguracionGlobal.slug].toString();
+                else
+                    valor = obj[objConfiguracionGlobal.slug];
+                contenido += "<td> <input type='radio' name='radio' class='table-row-selected chkSelected' value='" + valor + "' onclick='getDataRowRadio" + objConfiguracionGlobal.eventoradio + "(this)'> </td>";
+            }
+            for (let j = 0; j < nombrePropiedades.length; j++) {
+                nombrePropiedadActual = nombrePropiedades[j]
+                contenido += "<td class='chkSelected2'>" + obj[nombrePropiedadActual] + "</td>";
+            }
+            contenido += "</tr>";
+        }
+
+        contenido += "</tbody>";
+        contenido += "</tfoot>"
+        contenido += "</table>";
+    }
+
+    return contenido;
+
+}
+
+
+
+
 
 function pintarRadioButtonList(objConfiguracion, res) {
     if (objConfiguracion.divContenedorTabla == undefined)

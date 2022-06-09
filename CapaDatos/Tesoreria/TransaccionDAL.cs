@@ -2452,6 +2452,7 @@ namespace CapaDatos.Tesoreria
                     INNER JOIN db_tesoreria.tipo_operacion e
                     ON w.codigo_tipo_operacion = e.codigo_tipo_operacion
                     WHERE x.codigo_estado <> 0
+                      AND x.codigo_operacion_caja <> @CodigoOperacionEspeciales2
                     " + filterOperacionesConfiguradas + @" 
                     " + filterAnioOperacion + @"    
                     " + filterSemanaOperacion + @"    
@@ -2466,6 +2467,7 @@ namespace CapaDatos.Tesoreria
                     using (SqlCommand cmd = new SqlCommand(sql, conexion))
                     {
                         cmd.CommandType = CommandType.Text;
+                        cmd.Parameters.AddWithValue("@CodigoOperacionEspeciales2", Constantes.Operacion.Ingreso.ESPECIALES_2);
                         SqlDataReader dr = cmd.ExecuteReader();
                         if (dr != null)
                         {

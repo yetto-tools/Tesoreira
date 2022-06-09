@@ -15,5 +15,13 @@ namespace CapaNegocio.QSystems
             ReportesDAL obj = new ReportesDAL();
             return obj.GetListaVentaPorRangoFechaDetallado(codigoEmpresa, fechaInicio, fechaFin);
         }
+
+        public List<ValeSalidaCLS> GetListaValesDeSalida(string codigoEmpresa, string fechaInicio, string fechaFin)
+        {
+            ReportesDAL obj = new ReportesDAL();
+            return obj.GetListaValesDeSalida(codigoEmpresa, fechaInicio, fechaFin);
+        }
+
+
     }
 }

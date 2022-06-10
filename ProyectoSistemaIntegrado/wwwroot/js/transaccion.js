@@ -1304,15 +1304,12 @@ function GenerarExcelTransaccionesConsultaContabilidad() {
     let fechaFin = document.getElementById("uiFiltroFechaFin").value;
 
     fetchGetDownload("Transaccion/ExportarExcelTransaccionConsultaContabilidad/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString() + "&codigoTipoOperacion=" + codigoTipoOperacion.toString() + "&codigoOperacion=" + codigoOperacion.toString() + "&codigoCategoriaEntidad=" + codigoCategoriaEntidad.toString() + "&nombreEntidad=" + nombreEntidad + "&fechaInicioStr=" + fechaInicio + "&fechaFinStr=" + fechaFin, function (data) {
-        var file = new Blob([data], { type: 'application/vnd.ms-excel' });
+        var file = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         var fileURL = URL.createObjectURL(file);
         window.open(fileURL, "EPrescription");
     }).finally(() => {
         document.getElementById('divLoading').style.display = 'none';
     });
-
-    //document.getElementById("uiExportarExcel").href = "/Transaccion/ExportarExcelTransaccionConsultaContabilidad/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString() + "&codigoTipoOperacion=" + codigoTipoOperacion.toString() + "&codigoOperacion=" + codigoOperacion.toString() + "&codigoCategoriaEntidad=" + codigoCategoriaEntidad.toString() + "&nombreEntidad=" + nombreEntidad + "&fechaInicioStr=" + fechaInicio + "&fechaFinStr=" + fechaFin;
-    //document.getElementById("uiExportarExcel").click();
 }
 
 
@@ -1328,7 +1325,7 @@ function GenerarExcelTransaccionesConsultaLimitada() {
     let fechaFin = document.getElementById("uiFiltroFechaFin").value;
 
     fetchGetDownload("Transaccion/ExportarExcelTransaccionConsultaLimitada/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString() + "&codigoTipoOperacion=" + codigoTipoOperacion.toString() + "&codigoOperacion=" + codigoOperacion.toString() + "&codigoCategoriaEntidad=" + codigoCategoriaEntidad.toString() + "&nombreEntidad=" + nombreEntidad + "&fechaInicioStr=" + fechaInicio + "&fechaFinStr=" + fechaFin, function (data) {
-        var file = new Blob([data], { type: 'application/vnd.ms-excel' });
+        var file = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         var fileURL = URL.createObjectURL(file);
         window.open(fileURL, "EPrescription");
     }).finally(() => {

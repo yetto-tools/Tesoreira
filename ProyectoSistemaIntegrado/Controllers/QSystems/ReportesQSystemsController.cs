@@ -34,7 +34,6 @@ namespace ProyectoSistemaIntegrado.Controllers.QSystems
 
             byte[] buffer = ExportarExcelDatos(cabeceras, nombrePropiedades, lista);
             return File(buffer, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            //return File(buffer, "application/vnd.ms-excel");
         }
 
         public List<ValeSalidaCLS> GetListaValesDeSalida(string codigoEmpresa, string fechaInicio, string fechaFin)
@@ -56,7 +55,6 @@ namespace ProyectoSistemaIntegrado.Controllers.QSystems
             nombrePropiedades = new string[10] { "FechaEmisionStr", "DiaSemana", "Ruta", "NombreVendedor", "NumeroVale", "NumeroLinea", "CodigoInventario", "Descripcion", "PrecioUnitario", "Cantidad"};
 
             byte[] buffer = ExportarExcelDatos(cabeceras, nombrePropiedades, lista);
-            //return File(buffer, "application/vnd.ms-excel");
             return File(buffer, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
 

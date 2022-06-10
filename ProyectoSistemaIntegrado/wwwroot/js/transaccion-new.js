@@ -42,7 +42,7 @@
     }// fin if
 }
 
-function setEmptyDataTransaccion(checkEspeciales2) {
+function setEmptyDataTransaccion(checkEspeciales2, fechaOperacionStr) {
     document.getElementById("uiNitEmpresaConcedeIva").checked = false;
     setComboConsumidorConcedeIVA();
     FillComboUnicaOpcion("uiNumeroCuenta", "-1", "-- No existe cuenta -- ");
@@ -56,10 +56,9 @@ function setEmptyDataTransaccion(checkEspeciales2) {
     if (checkEspeciales2 == true) {
         document.querySelector('#cboOperacion').value = VENTAS_EN_RUTA.toString();
         showControls(VENTAS_EN_RUTA.toString());
+        setCheckedValueOfRadioButtonGroup('FechaStr', fechaOperacionStr);
         document.querySelector('#uiEsEspeciales2').checked = true;
         document.getElementById("uiEsEspeciales2").onClick = showTablaEspeciales2(true);
-        //document.getElementById('divTablaEspeciales2').style.display = 'block';
-        //document.getElementById('divTabla').style.display = 'none';
     }
 }
 
@@ -1897,6 +1896,7 @@ function GuardarDatos(nombreImpresora, numeroCopias) {
         frm.set("Cheque", "0");
     }
 
+    let fechaOperacionStr = frm.get("FechaStr");
     // Quitar las comas del valor del monto
     frm.set("monto", frm.get("monto").replaceAll(',', ''));
 
@@ -1911,13 +1911,13 @@ function GuardarDatos(nombreImpresora, numeroCopias) {
                 if (setSemanaAnterior == 0) {
                     PrintConstanciaIngresos(data, codigoTipoOperacion, nombreImpresora, numeroCopias);
                     setTimeout(() => {
-                        setEmptyDataTransaccion(checkEspeciales2.checked);
+                        setEmptyDataTransaccion(checkEspeciales2.checked, fechaOperacionStr);
                         Exito("Transaccion", "Index", false);
                     }, 1000);
 
-
                 } else {
-                    Exito("Transaccion", "Index", true);
+                    setEmptyDataTransaccion(checkEspeciales2.checked, fechaOperacionStr);
+                    Exito("Transaccion", "Index", false);
                 }
             }
         })
@@ -2120,20 +2120,21 @@ function getDataRowRadioEntidades(obj) {
 
             switch (codigoOperacion) {
                 case PLANILLA_BONOS_EXTRAS:
-                    if ((esBonoExtrasPorComisiones == true) && (codigoCategoriaEntidad == CATEGORIA_VENDEDOR || codigoCategoriaEntidad == CATEGORIA_RUTERO_LOCAL || codigoCategoriaEntidad == CATEGORIA_RUTERO_INTERIOR || codigoCategoriaEntidad == CATEGORIA_CAFETERIA || codigoCategoriaEntidad == CATEGORIA_SUPERMERCADOS) || codigoCategoriaEntidad == CATEGORIA_EMPLEADO) {
-                        set("uiCodigoEntidad", table.cell(rowIdx, 1).data());
-                        set("uiNombreEntidad", table.cell(rowIdx, 2).data());
-                        set("uiCodigoCategoriaEntidad", table.cell(rowIdx, 3).data());
-                        set("uiCategoriaEntidad", table.cell(rowIdx, 4).data());
-                        set("uiCodigoOperacionCaja", table.cell(rowIdx, 5).data());
-                        set("uiCodigoArea", table.cell(rowIdx, 6).data());
-                        set("uiCodigoCanalVenta", table.cell(rowIdx, 8).data());
+                    if (esBonoExtrasPorComisiones == false && esBonoExtrasOtros == false && esBonoQuintalaje == false && esBonoFeriadosODomingos == false) {
+                        table.$("input[type=radio]").prop("checked", false);
+                        MensajeError("Seleccione el tipo de bonos extras");
                     } else {
-                        if (esBonoExtrasPorComisiones == false && esBonoExtrasOtros == false && esBonoQuintalaje == false && esBonoFeriadosODomingos == false) {
-                            table.$("input[type=radio]").prop("checked", false);
-                            MensajeError("Seleccione el tipo de bonos extras");
-                            
+                        //if ((esBonoExtrasPorComisiones == true) && (codigoCategoriaEntidad == CATEGORIA_VENDEDOR || codigoCategoriaEntidad == CATEGORIA_RUTERO_LOCAL || codigoCategoriaEntidad == CATEGORIA_RUTERO_INTERIOR || codigoCategoriaEntidad == CATEGORIA_CAFETERIA || codigoCategoriaEntidad == CATEGORIA_SUPERMERCADOS) || codigoCategoriaEntidad == CATEGORIA_EMPLEADO) {
+                        if ((esBonoExtrasPorComisiones == true) && (codigoCategoriaEntidad == CATEGORIA_VENDEDOR || codigoCategoriaEntidad == CATEGORIA_RUTERO_LOCAL || codigoCategoriaEntidad == CATEGORIA_RUTERO_INTERIOR || codigoCategoriaEntidad == CATEGORIA_CAFETERIA || codigoCategoriaEntidad == CATEGORIA_SUPERMERCADOS)) {
+                            set("uiCodigoEntidad", table.cell(rowIdx, 1).data());
+                            set("uiNombreEntidad", table.cell(rowIdx, 2).data());
+                            set("uiCodigoCategoriaEntidad", table.cell(rowIdx, 3).data());
+                            set("uiCategoriaEntidad", table.cell(rowIdx, 4).data());
+                            set("uiCodigoOperacionCaja", table.cell(rowIdx, 5).data());
+                            set("uiCodigoArea", table.cell(rowIdx, 6).data());
+                            set("uiCodigoCanalVenta", table.cell(rowIdx, 8).data());
                         } else {
+
                             if (esBonoExtrasOtros == true || esBonoQuintalaje == true || esBonoFeriadosODomingos == true) {
                                 set("uiCodigoEntidad", table.cell(rowIdx, 1).data());
                                 set("uiNombreEntidad", table.cell(rowIdx, 2).data());
@@ -2563,6 +2564,9 @@ function GuardarEntidad(obj) {
             if (/^[0-9]+$/.test(data)) {
                 document.getElementById("uiClosePopupEntidad").click();
                 let table = $('#tabla').DataTable();
+                if (codigoCategoriaEntidad == CLIENTES_ESPECIALES_2) {
+                    table = $('#tablaEspeciales2').DataTable();
+                }
                 table.row.add([
                     "<input type='radio' name='radio' class='table-row-selected chkSelected' value='" + data + "' onclick = 'getDataRowRadioEntidades(this)'></input>",
                     data,

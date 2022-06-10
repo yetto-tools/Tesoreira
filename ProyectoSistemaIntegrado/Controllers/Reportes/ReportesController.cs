@@ -278,6 +278,8 @@ namespace ProyectoSistemaIntegrado.Controllers.Reportes
             return demoViewPortrait;
         }
 
+
+
         public IActionResult ViewReporteCompromisoFiscal(int anioOperacion, int semanaOperacion)
         {
             ReportContabilidadViewModel obj = new ReportContabilidadViewModel();

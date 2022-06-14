@@ -111,7 +111,6 @@ namespace CapaDatos.Planilla
             }
         }
 
-        //CONCAT('<select name=NumeroCuenta id=uiNumeroCuenta class=select-cuenta-bancaria>','<option value=-1>--Sin cuentas--</option>','</select>') AS combo_cuentas
         public List<PagoDescuentoCLS> GetEmpleadosBackToBackBoletaDeposito(int codigoTipoPlanilla, int anioPlanilla, int mesPlanilla)
         {
             List<PagoDescuentoCLS> lista = null;
@@ -206,7 +205,7 @@ namespace CapaDatos.Planilla
                     }// fin using
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     lista = null;
@@ -362,6 +361,137 @@ namespace CapaDatos.Planilla
             return resultado;
         }
 
+        public List<PagoDescuentoCLS> GetPagosBackToBackRealizadosEnPlanilla(int anio, int mes, int codigoEmpresa)
+        {
+            List<PagoDescuentoCLS> lista = null;
+            using (SqlConnection conexion = new SqlConnection(cadenaContabilidad))
+            {
+                try
+                {
+                    string filterMes = string.Empty;
+                    string filterEmpresa = string.Empty;
+                    if (mes != -1)
+                    {
+                        filterMes = " AND x.mes = " + mes.ToString();
+                    }
+
+                    if (codigoEmpresa != -1)
+                    {
+                        filterEmpresa = " AND x.codigo_empresa = " + codigoEmpresa.ToString();
+                    }
+
+                    string sql = @"
+                    SELECT x.codigo_pago,
+	                       x.codigo_tipo_planilla,
+	                       y.nombre AS tipo_planilla,
+	                       x.codigo_empresa,
+	                       z.nombre_comercial AS nombre_empresa,
+	                       x.codigo_empleado,
+                           m.nombre_completo,
+	                       x.codigo_frecuencia_pago,
+	                       a.nombre AS frecuencia_pago,
+                           x.codigo_operacion, 
+                           b.nombre_operacion AS operacion,
+	                       x.anio,
+	                       x.mes,
+	                       CASE
+	                         WHEN x.mes = 1 THEN 'ENERO'
+		                     WHEN x.mes = 2 THEN 'FEBRERO'
+		                     WHEN x.mes = 3 THEN 'MARZO'
+		                     WHEN x.mes = 4 THEN 'ABRIL'
+		                     WHEN x.mes = 5 THEN 'MAYO'
+		                     WHEN x.mes = 6 THEN 'JUNIO'
+		                     WHEN x.mes = 7 THEN 'JULIO'
+		                     WHEN x.mes = 8 THEN 'AGOSTO'
+		                     WHEN x.mes = 9 THEN 'SEPTIEMBRE'
+		                     WHEN x.mes = 10 THEN 'OCTUBRE'
+		                     WHEN x.mes = 11 THEN 'NOVIEMBRE'
+		                     WHEN x.mes = 12 THEN 'DICIEMBRE'
+		                   ELSE 'NO DEFINIDO' 
+	                       END AS nombre_mes,
+	                       x.monto, 
+	                       x.codigo_estado
+
+                    FROM db_contabilidad.pagos_y_descuentos x
+                    INNER JOIN db_contabilidad.tipo_planilla y
+                    ON x.codigo_tipo_planilla = y.codigo_tipo_planilla
+                    INNER JOIN db_admon.empresa z
+                    ON x.codigo_empresa = z.codigo_empresa
+                    INNER JOIN db_rrhh.empleado w
+                    ON x.codigo_empleado = w.codigo_empleado
+                    INNER JOIN db_rrhh.persona m
+                    ON w.cui = m.cui
+                    INNER JOIN db_rrhh.frecuencia_pago a
+                    ON x.codigo_frecuencia_pago = a.codigo_frecuencia_pago
+                    INNER JOIN db_tesoreria.operacion b
+                    ON x.codigo_operacion = b.codigo_operacion
+                    WHERE x.codigo_operacion = @CodigoOperacion
+                     AND  x.anio = @Anio  
+                    " + filterEmpresa + @"
+                    " + filterMes + @"
+                    ORDER BY x.codigo_empresa, m.nombre_completo, y.nombre";
+
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand(sql, conexion))
+                    {
+                        // CommandType, Gets or sets a value indicating how the CommandText property is to be interpreted.
+                        // The Text CommandType.Text is used when the command is raw SQL
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Parameters.AddWithValue("@CodigoOperacion", Constantes.Operacion.Egreso.BACK_TO_BACK_PAGO_PLANILLA);
+                        cmd.Parameters.AddWithValue("@Anio", anio);
+                        SqlDataReader dr = cmd.ExecuteReader();
+                        if (dr != null)
+                        {
+                            PagoDescuentoCLS objPagoDescuentoCLS;
+                            lista = new List<PagoDescuentoCLS>();
+                            int postCodigoPago = dr.GetOrdinal("codigo_pago");
+                            int postCodigoTipoPlanilla = dr.GetOrdinal("codigo_tipo_planilla");
+                            int postTipoPlanilla = dr.GetOrdinal("tipo_planilla");
+                            int postCodigoEmpresa = dr.GetOrdinal("codigo_empresa");
+                            int postNombreEmpresa = dr.GetOrdinal("nombre_empresa");
+                            int postCodigoEmpleado = dr.GetOrdinal("codigo_empleado");
+                            int postNombreCompleto = dr.GetOrdinal("nombre_completo");
+                            int postCodigoFrecuenciaPago = dr.GetOrdinal("codigo_frecuencia_pago");
+                            int postCodigoOperacion = dr.GetOrdinal("codigo_operacion");
+                            int postOperacion = dr.GetOrdinal("operacion");
+                            int postFrecuenciaPago = dr.GetOrdinal("frecuencia_pago");
+                            int postAnio = dr.GetOrdinal("anio");
+                            int postMes = dr.GetOrdinal("mes");
+                            int postNombreMes = dr.GetOrdinal("nombre_mes");
+                            int postMonto = dr.GetOrdinal("monto");
+                            while (dr.Read())
+                            {
+                                objPagoDescuentoCLS = new PagoDescuentoCLS();
+                                objPagoDescuentoCLS.CodigoPago = dr.GetInt32(postCodigoPago);
+                                objPagoDescuentoCLS.CodigoTipoPlanilla = dr.GetInt16(postCodigoTipoPlanilla);
+                                objPagoDescuentoCLS.TipoPlanilla = dr.GetString(postTipoPlanilla);
+                                objPagoDescuentoCLS.CodigoEmpresa = dr.GetInt16(postCodigoEmpresa);
+                                objPagoDescuentoCLS.NombreEmpresa = dr.GetString(postNombreEmpresa);
+                                objPagoDescuentoCLS.CodigoEmpleado = dr.GetString(postCodigoEmpleado);
+                                objPagoDescuentoCLS.NombreCompleto = dr.GetString(postNombreCompleto);
+                                objPagoDescuentoCLS.CodigoFrecuenciaPago = dr.GetByte(postCodigoFrecuenciaPago);
+                                objPagoDescuentoCLS.FrecuenciaPago = dr.GetString(postFrecuenciaPago);
+                                objPagoDescuentoCLS.CodigoOperacion = dr.GetInt16(postCodigoOperacion);
+                                objPagoDescuentoCLS.Operacion = dr.GetString(postOperacion);
+                                objPagoDescuentoCLS.Anio = dr.GetInt16(postAnio);
+                                objPagoDescuentoCLS.Mes = dr.GetByte(postMes);
+                                objPagoDescuentoCLS.NombreMes = dr.GetString(postNombreMes);
+                                objPagoDescuentoCLS.Monto = dr.GetDecimal(postMonto);
+                                lista.Add(objPagoDescuentoCLS);
+                            }//fin while
+                        }// fin if
+                    }// fin using
+                    conexion.Close();
+                }
+                catch (Exception)
+                {
+                    conexion.Close();
+                    lista = null;
+
+                }
+                return lista;
+            }
+        }
 
     }
 }

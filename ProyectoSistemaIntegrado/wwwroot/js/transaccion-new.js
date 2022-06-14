@@ -1099,6 +1099,42 @@ function showControls(obj) {
             document.getElementById('uiNingunTipoDocumento').onClick = setDataAdicionaTipoDocumento("0");
             document.getElementById("uiEfectivo").checked = true;
             break;
+        case RESERVA_EGRESO_FORMACION:
+            document.getElementById('divTabla').style.display = 'none';
+            document.getElementById('div-saldo-cuenta-por-cobrar').style.display = 'none';
+            document.getElementById('div-planilla-pago').style.display = 'none';
+            document.getElementById('uiContainerTipoPago').style.display = 'none';
+            document.getElementById('div-tipo-bonos-extra').style.display = 'none';
+            document.getElementById('div-tipo-especiales1').style.display = 'none';
+            document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('div-operacion-gasto').style.display = 'none';
+            set("uiCodigoCategoriaEntidad", CATEGORIA_EMPRESA.toString());
+            set("uiCodigoEntidad", EMPRESA_PANIFICADORA_AMERICANA_INDIVIDUAL.toString());
+            set("uiCodigoArea", "0");
+            set("uiNombreEntidad", "Panificadora Americana Individual");
+            set("uiObservaciones", "");
+            document.getElementById("uiNingunTipoDocumento").checked = true;
+            document.getElementById('uiNingunTipoDocumento').onClick = setDataAdicionaTipoDocumento("0");
+            document.getElementById("uiEfectivo").checked = true;
+            break;
+        case RESERVA_INGRESO_EJECUCION:
+            document.getElementById('divTabla').style.display = 'none';
+            document.getElementById('div-saldo-cuenta-por-cobrar').style.display = 'none';
+            document.getElementById('div-planilla-pago').style.display = 'none';
+            document.getElementById('uiContainerTipoPago').style.display = 'none';
+            document.getElementById('div-tipo-bonos-extra').style.display = 'none';
+            document.getElementById('div-tipo-especiales1').style.display = 'none';
+            document.getElementById('div-bonos-extra').style.display = 'none';
+            document.getElementById('div-operacion-gasto').style.display = 'none';
+            set("uiCodigoCategoriaEntidad", CATEGORIA_EMPRESA.toString());
+            set("uiCodigoEntidad", EMPRESA_PANIFICADORA_AMERICANA_INDIVIDUAL.toString());
+            set("uiCodigoArea", "0");
+            set("uiNombreEntidad", "Panificadora Americana Individual");
+            set("uiObservaciones", "");
+            document.getElementById("uiNingunTipoDocumento").checked = true;
+            document.getElementById('uiNingunTipoDocumento').onClick = setDataAdicionaTipoDocumento("0");
+            document.getElementById("uiEfectivo").checked = true;
+            break;
         default:
             document.getElementById('divTabla').style.display = 'block';
             document.getElementById('div-saldo-cuenta-por-cobrar').style.display = 'none';
@@ -2124,8 +2160,8 @@ function getDataRowRadioEntidades(obj) {
                         table.$("input[type=radio]").prop("checked", false);
                         MensajeError("Seleccione el tipo de bonos extras");
                     } else {
-                        //if ((esBonoExtrasPorComisiones == true) && (codigoCategoriaEntidad == CATEGORIA_VENDEDOR || codigoCategoriaEntidad == CATEGORIA_RUTERO_LOCAL || codigoCategoriaEntidad == CATEGORIA_RUTERO_INTERIOR || codigoCategoriaEntidad == CATEGORIA_CAFETERIA || codigoCategoriaEntidad == CATEGORIA_SUPERMERCADOS) || codigoCategoriaEntidad == CATEGORIA_EMPLEADO) {
-                        if ((esBonoExtrasPorComisiones == true) && (codigoCategoriaEntidad == CATEGORIA_VENDEDOR || codigoCategoriaEntidad == CATEGORIA_RUTERO_LOCAL || codigoCategoriaEntidad == CATEGORIA_RUTERO_INTERIOR || codigoCategoriaEntidad == CATEGORIA_CAFETERIA || codigoCategoriaEntidad == CATEGORIA_SUPERMERCADOS)) {
+                        //if ((esBonoExtrasPorComisiones == true) && (codigoCategoriaEntidad == CATEGORIA_VENDEDOR || codigoCategoriaEntidad == CATEGORIA_RUTERO_LOCAL || codigoCategoriaEntidad == CATEGORIA_RUTERO_INTERIOR || codigoCategoriaEntidad == CATEGORIA_CAFETERIA || codigoCategoriaEntidad == CATEGORIA_SUPERMERCADOS)) {
+                        if ((esBonoExtrasPorComisiones == true) && (codigoCategoriaEntidad == CATEGORIA_VENDEDOR || codigoCategoriaEntidad == CATEGORIA_RUTERO_LOCAL || codigoCategoriaEntidad == CATEGORIA_RUTERO_INTERIOR || codigoCategoriaEntidad == CATEGORIA_CAFETERIA || codigoCategoriaEntidad == CATEGORIA_SUPERMERCADOS) || codigoCategoriaEntidad == CATEGORIA_EMPLEADO) {
                             set("uiCodigoEntidad", table.cell(rowIdx, 1).data());
                             set("uiNombreEntidad", table.cell(rowIdx, 2).data());
                             set("uiCodigoCategoriaEntidad", table.cell(rowIdx, 3).data());

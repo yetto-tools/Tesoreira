@@ -1,0 +1,53 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    ViewData["Title"] = "Index";
+    Context.Session.SetString("tituloPrincipal", "Consulta de Devoluciones BTB");
+}
+
+<div class="row">
+    <table>
+        <tr>
+            <td>AÑO</td>
+            <td>MES</td>
+            <td>EMPRESA</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><input type="text" name="Anio" class="form-control obligatorio solonumeros text-center" id="uiFiltroAnio" placeholder="Año" /></td>
+            <td>
+                <select class="form-control obligatorio" id="uiFiltroMes" name="Mes">
+                    <option value='-1'>-- Seleccione -- </option>
+                    <option value='1'>ENERO</option>
+                    <option value='2'>FEBRERO</option>
+                    <option value='3'>MARZO</option>
+                    <option value='4'>ABRIL</option>
+                    <option value='5'>MAYO</option>
+                    <option value='6'>JUNIO</option>
+                    <option value='7'>JULIO</option>
+                    <option value='8'>AGOSTO</option>
+                    <option value='9'>SEPTIEMBRE</option>
+                    <option value='10'>OCTUBRE</option>
+                    <option value='11'>NOVIEMBRE</option>
+                    <option value='12'>DICIEMBRE</option>
+                </select>
+            </td>
+            <td>
+                <select class="form-control obligatorio" id="uiFiltroEmpresa" name="CodigoEmpresa"></select>
+            </td>
+            <td><input type="button" class="form-control btn btn-primary" value="BUSCAR" onclick="BuscarPagosBTBDevolucionTesoreria()" /></td>
+        </tr>
+    </table>
+</div>
+
+
+<div id="divTabla">
+
+</div>
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/planilla.js"></script>
+}

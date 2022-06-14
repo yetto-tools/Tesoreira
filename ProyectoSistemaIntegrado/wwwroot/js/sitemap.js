@@ -145,26 +145,26 @@ function EditarItemMenu(obj) {
             FillComboUnicaOpcion("uiEditCodigoSistema", "-1", "-- No Existen sistemas -- ");
         } else {
             FillCombo(data, "uiEditCodigoSistema", "codigoSistema", "nombreSistema", "- seleccione -", "-1");
-            fetchGet("SiteMap/GetSiteMapsPadre/?codigoSistema=-1&nivel=2", "json", function (data) {
-                if (data == null || data == undefined) {
-                    FillComboUnicaOpcion("uiEditCodigoSitemapPadre", "-1", "-- No Existen datos -- ");
-                } else {
-                    FillCombo(data, "uiEditCodigoSitemapPadre", "codigoSitemap", "titulo", "- seleccione -", "-1");
-                    fetchGet("SiteMap/GetDataItemMenu/?codigoSiteMap=" + codigoSiteMap.toString(), "json", function (data) {
-                        if (data != null) {
-                            set("uiEditCodigoSiteMap", data.codigoSitemap);
-                            document.querySelector('#uiEditCodigoSistema').value = data.codigoSistema;
-                            set("uiEditTitulo", data.titulo);
-                            set("uiEditDescripcion", data.descripcion);
-                            set("uiEditNombreController", data.nombreController);
-                            set("uiEditNombreAction", data.nombreAction);
-                            document.querySelector('#uiEditNivel').value = data.nivel;
-                            document.querySelector('#uiEditCodigoSitemapPadre').value = data.codigoSitemapPadre;
+            fetchGet("SiteMap/GetDataItemMenu/?codigoSiteMap=" + codigoSiteMap.toString(), "json", function (data) {
+                if (data != null) {
+                    set("uiEditCodigoSiteMap", data.codigoSitemap);
+                    document.querySelector('#uiEditCodigoSistema').value = data.codigoSistema;
+                    set("uiEditTitulo", data.titulo);
+                    set("uiEditDescripcion", data.descripcion);
+                    set("uiEditNombreController", data.nombreController);
+                    set("uiEditNombreAction", data.nombreAction);
+                    document.querySelector('#uiEditNivel').value = data.nivel;
 
+                    fetchGet("SiteMap/GetSiteMapsPadre/?codigoSistema=-1&nivel=" + data.nivel.toString(), "json", function (rpta) {
+                        if (rpta == null || rpta == undefined || rpta.length == 0) {
+                            FillComboUnicaOpcion("uiEditCodigoSitemapPadre", "-1", "-- No Existen datos -- ");
                         } else {
-                            MensajeError("Error en la búsqueda de información");
+                            FillCombo(rpta, "uiEditCodigoSitemapPadre", "codigoSitemap", "titulo", "- seleccione -", "-1");
+                            document.querySelector('#uiEditCodigoSitemapPadre').value = data.codigoSitemapPadre;
                         }
-                    })
+                    });
+                } else {
+                    MensajeError("Error en la búsqueda de información");
                 }
             })
         }

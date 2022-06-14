@@ -17,6 +17,11 @@
                 set("uiFiltroAnio", anio.toString());
                 MostrarCuentasPorCobrarEnTesoreriaConsulta(anio, -1, -1);
                 break;
+            case "ConsultaDevolucionesBTB":
+                FillComboEmpresa();
+                set("uiFiltroAnio", anio.toString());
+                MostrarDevolucionesBTBEnTesoreriaConsulta(anio, -1, -1);
+                break;
             default:
                 break;
         }// fin switch
@@ -895,3 +900,39 @@ function MostrarMontoParaDesgloce() {
 }*/
 
 
+function BuscarPagosBTBDevolucionTesoreria() {
+    let anio = parseInt(document.getElementById("uiFiltroAnio").value);
+    let objMes = document.getElementById("uiFiltroMes");
+    let objEmpresa = document.getElementById("uiFiltroEmpresa");
+    let numeroMes = parseInt(objMes.options[objMes.selectedIndex].value);
+    let codigoEmpresa = parseInt(objEmpresa.options[objEmpresa.selectedIndex].value);
+    MostrarDevolucionesBTBEnTesoreriaConsulta(anio, numeroMes, codigoEmpresa);
+}
+
+function MostrarDevolucionesBTBEnTesoreriaConsulta(anio, numeroMes, codigoEmpresa) {
+    objConfiguracion = {
+        url: "PlanillaTemporal/GetPagosBackToBackRealizadosEnPlanilla/?anio=" + anio.toString() + "&mes=" + numeroMes.toString() + "&codigoEmpresa=" + codigoEmpresa.toString(),
+        cabeceras: ["Código", "Tipo Planilla", "Empresa", "Código Empleado", "Nombre Empleado", "CodigoOperacion", "Operación", "Frecuencia Pago", "Año", "Mes", "Monto a Devolver"],
+        propiedades: ["codigoPago", "tipoPlanilla", "nombreEmpresa", "codigoEmpleado", "nombreCompleto", "codigoOperacion", "operacion", "frecuenciaPago", "anio", "nombreMes", "monto"],
+        divContenedorTabla: "divContenedorTabla",
+        displaydecimals: ["monto"],
+        divPintado: "divTabla",
+        paginar: true,
+        ocultarColumnas: true,
+        hideColumns: [
+            {
+                "targets": [0],
+                "className": "dt-body-center",
+                "visible": true
+            }, {
+                "targets": [5],
+                "visible": false
+            }, {
+                "targets": [10],
+                "visible": true,
+                "className": "dt-body-right"
+            }],
+        slug: "codigoPago"
+    }
+    pintar(objConfiguracion);
+}

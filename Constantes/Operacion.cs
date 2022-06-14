@@ -51,6 +51,7 @@
             public const short ANTICIPO_LIQUIDABLE_EGRESO = 38;
             public const short PRESTAMO_EGRESO = 41;
             public const short ANTICIPO_SALARIO = 62;
+            public const short BACK_TO_BACK_PAGO_PLANILLA = 65;
 
             public static class TipoPlanilla
             {

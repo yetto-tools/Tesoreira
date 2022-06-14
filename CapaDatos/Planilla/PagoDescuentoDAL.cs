@@ -363,10 +363,10 @@ namespace CapaDatos.Planilla
                     ON x.codigo_frecuencia_pago = a.codigo_frecuencia_pago
                     INNER JOIN db_tesoreria.operacion b
                     ON x.codigo_operacion = b.codigo_operacion
-                    WHERE x.codigo_estado = @CodigoEstadoPorCobrar AND 
-                          x.anio = @Anio  
-                          " + filterEmpresa + @"
-                          " + filterMes + @"
+                    WHERE x.codigo_estado = @CodigoEstadoPorCobrar 
+                     AND  x.anio = @Anio  
+                    " + filterEmpresa + @"
+                    " + filterMes + @"
                     ORDER BY x.codigo_empresa, m.nombre_completo, y.nombre";
 
                     conexion.Open();

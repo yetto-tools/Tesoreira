@@ -19,6 +19,11 @@ namespace ProyectoSistemaIntegrado.Controllers.Planilla
             return View();
         }
 
+        public IActionResult ConsultaDevolucionesBTB()
+        {
+            return View();
+        }
+
         public IActionResult PagosDescuentos()
         {
             return View();
@@ -29,16 +34,16 @@ namespace ProyectoSistemaIntegrado.Controllers.Planilla
             return View();
         }
 
-        //public FechaReporteCxCCLS GetFechaReporteCxCPagoBTBYDescuento()
-        //{
-        //    FechaReporteCxCBL obj = new FechaReporteCxCBL();
-        //    return obj.GetFechaReporteCxCPagoBTBYDescuento();
-        //}
-
         public List<PagoDescuentoCLS> GetEmpleadosBackToBackPlanilla(int codigoTipoPlanilla, int anioPlanilla, int mesPlanilla)
         {
             PagoBackToBackPlanillaBL obj = new PagoBackToBackPlanillaBL();
             return obj.GetEmpleadosBackToBackPlanilla(codigoTipoPlanilla, anioPlanilla, mesPlanilla);
+        }
+
+        public List<PagoDescuentoCLS> GetPagosBackToBackRealizadosEnPlanilla(int anio, int mes, int codigoEmpresa)
+        {
+            PagoBackToBackPlanillaBL obj = new PagoBackToBackPlanillaBL();
+            return obj.GetPagosBackToBackRealizadosEnPlanilla(anio, mes, codigoEmpresa);
         }
 
         public List<PagoDescuentoCLS> GetEmpleadosBackToBackBoletaDeposito(int codigoTipoPlanilla, int anioPlanilla, int mesPlanilla)
@@ -61,15 +66,6 @@ namespace ProyectoSistemaIntegrado.Controllers.Planilla
             PagoDescuentoBL obj = new PagoDescuentoBL();
             return obj.GuardarDescuentoDevolucion(codigoEmpresa, codigoEmpleado, codigoOperacion, monto, objUsuario.IdUsuario);
         }
-
-        //public string GuardarDevolucionesBTB([FromBody] List<PagoDescuentoCLS> objPagoDescuento, int anioOperacion, int semanaOperacion)
-        //{
-        //    ViewBag.Message = HttpContext.Session.GetString("usuario");
-        //    UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
-
-        //    PagoBackToBackPlanillaBL obj = new PagoBackToBackPlanillaBL();
-        //    return obj.GuardarDevolucionesBTB(objPagoDescuento, anioOperacion, semanaOperacion,  objUsuario.IdUsuario);
-        //}
 
         public string GuardarDevolucionesBTB([FromBody] List<PagoDescuentoCLS> objPagoDescuento)
         {
@@ -95,27 +91,12 @@ namespace ProyectoSistemaIntegrado.Controllers.Planilla
             return obj.AnularPagoDescuento(codigoPago, objUsuario.IdUsuario);
         }
 
-        /*[HttpPost]
-        public string CargarDevolucionesDescuentosCxC([FromBody] List<PagoDescuentoCLS> objPagoDescuento)
-        {
-            ViewBag.Message = HttpContext.Session.GetString("usuario");
-            UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
-
-            PagoDescuentoBL obj = new PagoDescuentoBL();
-            return obj.CargarDevolucionesDescuentosCxC(objPagoDescuento, objUsuario.IdUsuario);
-        }*/
-
         public List<PagoDescuentoCLS> GetPagosDescuentosConsulta(int anio, int mes, int codigoEmpresa)
         {
             PagoDescuentoBL obj = new PagoDescuentoBL();
             return obj.GetPagosDescuentosConsulta(anio, mes, codigoEmpresa);
         }
 
-
-
-
     }
-
-
 
 }

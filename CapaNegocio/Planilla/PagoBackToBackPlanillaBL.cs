@@ -16,12 +16,6 @@ namespace CapaNegocio.Planilla
             return obj.GetEmpleadosBackToBackPlanilla(codigoTipoPlanilla, anioPlanilla, mesPlanilla);
         }
 
-        //public string GuardarDevolucionesBTB(List<PagoDescuentoCLS> objPagoDescuento, int anioOperacion, int semanaOperacion, string usuarioIng)
-        //{
-        //    PagoBackToBackPlanillaDAL obj = new PagoBackToBackPlanillaDAL();
-        //    return obj.GuardarDevolucionesBTB(objPagoDescuento, anioOperacion, semanaOperacion, usuarioIng);
-        //}
-
         public string GuardarDevolucionesBTB(List<PagoDescuentoCLS> objPagoDescuento, string usuarioIng)
         {
             PagoBackToBackPlanillaDAL obj = new PagoBackToBackPlanillaDAL();
@@ -32,6 +26,12 @@ namespace CapaNegocio.Planilla
         {
             PagoBackToBackPlanillaDAL obj = new PagoBackToBackPlanillaDAL();
             return obj.GetEmpleadosBackToBackBoletaDeposito(codigoTipoPlanilla, anioPlanilla, mesPlanilla);
+        }
+
+        public List<PagoDescuentoCLS> GetPagosBackToBackRealizadosEnPlanilla(int anio, int mes, int codigoEmpresa)
+        {
+            PagoBackToBackPlanillaDAL obj = new PagoBackToBackPlanillaDAL();
+            return obj.GetPagosBackToBackRealizadosEnPlanilla(anio, mes, codigoEmpresa);
         }
 
     }

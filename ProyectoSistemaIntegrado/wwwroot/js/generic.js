@@ -260,7 +260,6 @@ function pintar(objConfiguracion) {
         objConfiguracionGlobal.web = false;
     if (objConfiguracionGlobal.webvalue == undefined)
         objConfiguracionGlobal.webvalue = "none"
-
     if (objConfiguracionGlobal.slug == undefined)
         objConfiguracionGlobal.slug = ""
     if (objConfiguracionGlobal.radio == undefined)
@@ -295,6 +294,8 @@ function pintar(objConfiguracion) {
         objConfiguracionGlobal.autoWidth = true;
     if (objConfiguracionGlobal.generar == undefined)
         objConfiguracionGlobal.generar = false;
+    if (objConfiguracionGlobal.import == undefined)
+        objConfiguracionGlobal.import = false;
     if (objConfiguracionGlobal.arqueo == undefined)
         objConfiguracionGlobal.arqueo = false;
     if (objConfiguracionGlobal.revision == undefined)
@@ -331,6 +332,7 @@ function pintar(objConfiguracion) {
         objConfiguracionGlobal.aceptarmultiplesparametros = false;
     if (objConfiguracionGlobal.sumarcolumna == undefined)
         objConfiguracionGlobal.sumarcolumna = false;
+
     let parser = new DOMParser();
     let xmlDoc = "";
     let abstracts = "";
@@ -399,18 +401,13 @@ function pintar(objConfiguracion) {
                     });
                 }
             }
-
         }
     })
 }
 
 
-
-
-
 function generarTabla(res, objConfiguracionGlobal) {
     let contenido = "";
-    //console.log(JSON.stringify(objConfiguracionGlobal));
     let cabeceras = objConfiguracionGlobal.cabeceras;
     let nombrePropiedades = objConfiguracionGlobal.propiedades;
     let datesWithoutTime = objConfiguracionGlobal.datesWithoutTime;
@@ -432,7 +429,7 @@ function generarTabla(res, objConfiguracionGlobal) {
             contenido += "<td>" + cabeceras[i] + "</td>";
             countColumns++;
         }
-        if (objConfiguracionGlobal.editar == true ||
+        /*if (objConfiguracionGlobal.editar == true ||
             objConfiguracionGlobal.eliminar == true ||
             objConfiguracionGlobal.autorizar == true ||
             objConfiguracionGlobal.imprimir == true ||
@@ -449,7 +446,7 @@ function generarTabla(res, objConfiguracionGlobal) {
             objConfiguracionGlobal.alerta == true ||
             objConfiguracionGlobal.excel == true ||
             objConfiguracionGlobal.web == true ||
-            objConfiguracionGlobal.check == true) {
+            objConfiguracionGlobal.check == true) {*/
 
             if (objConfiguracionGlobal.addTextBox == true) {
                 objConfiguracionGlobal.propertiesColumnTextBox.map(({ header }) => {
@@ -462,14 +459,9 @@ function generarTabla(res, objConfiguracionGlobal) {
                 countColumns++;
             }
             if (objConfiguracionGlobal.check == true) {
-                //objConfiguracionGlobal.propertiesColumnTextBox.map(({ header }) => {
-                //    contenido += `<td>${header}</td>`
-                //    countColumns++;
-                //})
                 contenido += "<td>" + objConfiguracionGlobal.checkheader + "</td>";
                 countColumns++;
             }
-
             if (objConfiguracionGlobal.excluir == true) {
                 contenido += `<td style='text-align: center;'>Excluir<input type="checkbox" id="uiExcluirCheck" disabled value="0" onclick="selectAllCheckBox('${objConfiguracionGlobal.idtabla}',this)"></td>`
                 countColumns++;
@@ -502,27 +494,26 @@ function generarTabla(res, objConfiguracionGlobal) {
                 contenido += "<td></td>"
                 countColumns++;
             }
-
+            if (objConfiguracionGlobal.import == true) {
+                contenido += "<td></td>"
+                countColumns++;
+            }
             if (objConfiguracionGlobal.arqueo == true) {
                 contenido += "<td>Arqueo</td>"
                 countColumns++;
             }
-
             if (objConfiguracionGlobal.revision == true) {
                 contenido += "<td></td>"
                 countColumns++;
             }
-
             if (objConfiguracionGlobal.aceptar == true) {
                 contenido += "<td></td>"
                 countColumns++;
             }
-
             if (objConfiguracionGlobal.actualizar == true) {
                 contenido += "<td></td>"
                 countColumns++;
             }
-
             if (objConfiguracionGlobal.verdetalle == true) {
                 contenido += "<td></td>"
                 countColumns++;
@@ -535,7 +526,7 @@ function generarTabla(res, objConfiguracionGlobal) {
                 contenido += "<td></td>"
                 countColumns++;
             }
-        }
+        //}
 
         contenido += "</tr>";
         contenido += "</thead>";
@@ -599,6 +590,8 @@ function generarTabla(res, objConfiguracionGlobal) {
                     }
                 }
             }
+
+
             if (objConfiguracionGlobal.editar == true ||
                 objConfiguracionGlobal.check == true ||
                 objConfiguracionGlobal.eliminar == true ||
@@ -607,6 +600,7 @@ function generarTabla(res, objConfiguracionGlobal) {
                 objConfiguracionGlobal.reporte == true ||
                 objConfiguracionGlobal.pdf == true ||
                 objConfiguracionGlobal.generar == true ||
+                objConfiguracionGlobal.import == true ||
                 objConfiguracionGlobal.arqueo == true ||
                 objConfiguracionGlobal.revision == true ||
                 objConfiguracionGlobal.excluir == true ||
@@ -852,6 +846,16 @@ function generarTabla(res, objConfiguracionGlobal) {
                     contenido += "</td>";
                 }
 
+                if (objConfiguracionGlobal.import == true) {
+                    contenido += "<td style='padding: 2px;' class='option-import'>";
+                    if (obj["permisoImportar"] == 1) {
+                        contenido += `<button type="button" class="btn btn-primary" onclick="Importar${objConfiguracionGlobal.funcionimport}(${obj[slug]})">Importar</button>`;
+                    } else {
+                        contenido += `<button type="button" class="btn btn-primary disabled">Importar</button>`;
+                    }
+                    contenido += "</td>";
+                }
+
                 if (objConfiguracionGlobal.arqueo == true) {
                     contenido += "<td style='padding: 2px;' class='option-arqueo'>";
                     if (obj["permisoArqueo"] == 0) {
@@ -895,7 +899,6 @@ function generarTabla(res, objConfiguracionGlobal) {
                     }
                     contenido += "</td>";
                 }
-
 
                 if (objConfiguracionGlobal.actualizar == true) {
                     contenido += "<td style='padding: 2px;' class='option-aceptar'>";
@@ -970,7 +973,6 @@ function generarTabla(res, objConfiguracionGlobal) {
                     }
                     contenido += "</td>";
                 }
-
             }
             contenido += "</tr>";
         }
@@ -990,7 +992,6 @@ function generarTabla(res, objConfiguracionGlobal) {
     }
 
     return contenido;
-
 }
 
 
@@ -1016,6 +1017,8 @@ function pintarEntidades(objConfiguracion, res) {
         objConfiguracionGlobal.hideColumns = [];
     if (objConfiguracionGlobal.autoWidth == undefined)
         objConfiguracionGlobal.autoWidth = true;
+    if (objConfiguracionGlobal.imprimir == undefined)
+        objConfiguracionGlobal.imprimir == false;
     var contenido = "";
     contenido += "<div id='" + objConfiguracionGlobal.divContenedorTabla + "'>";
     contenido += generarTablaEntidades(res, objConfiguracionGlobal);
@@ -1032,7 +1035,6 @@ function pintarEntidades(objConfiguracion, res) {
         }
     }
 }
-
 
 function generarTablaEntidades(res, objConfiguracionGlobal) {
     let contenido = "";
@@ -1053,6 +1055,12 @@ function generarTablaEntidades(res, objConfiguracionGlobal) {
             contenido += "<td>" + cabeceras[i] + "</td>";
             countColumns++;
         }
+
+        if (objConfiguracionGlobal.imprimir == true) {
+                contenido += "<td></td>"
+                countColumns++;
+        }
+
         contenido += "</tr>";
         contenido += "</thead>";
 
@@ -1078,10 +1086,26 @@ function generarTablaEntidades(res, objConfiguracionGlobal) {
                     valor = obj[objConfiguracionGlobal.slug];
                 contenido += "<td> <input type='radio' name='radio' class='table-row-selected chkSelected' value='" + valor + "' onclick='getDataRowRadio" + objConfiguracionGlobal.eventoradio + "(this)'> </td>";
             }
+
             for (let j = 0; j < nombrePropiedades.length; j++) {
                 nombrePropiedadActual = nombrePropiedades[j]
                 contenido += "<td class='chkSelected2'>" + obj[nombrePropiedadActual] + "</td>";
             }
+
+            let slug = objConfiguracionGlobal.slug;
+
+            /* Operaciones (Edit, Delete, Print, etc... */
+            if (objConfiguracionGlobal.imprimir == true) {
+                contenido += "<td style='padding: 2px;' class='option-imprimir'>";
+                contenido += `<button class="btn">`;
+                contenido += `<i onclick="Imprimir(${obj[slug]},this)" id="id${+ obj[slug]}" class="btn btn-success"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer-fill" viewBox="0 0 16 16">
+                            <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z"/>
+                            <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
+                            </svg></i>`;
+                contenido += `</button>`;
+                contenido += "</td>";
+            }
+
             contenido += "</tr>";
         }
 
@@ -1428,6 +1452,18 @@ function dateIsValid(dateStr) {
         return false;
     }
     return date.toISOString().startsWith(isoFormattedStr);
+}
+
+function convertFormatDate(dateStr) {
+    const regex = /^\d{2}\/\d{2}\/\d{4}$/;
+    if (dateStr.match(regex) === null) {
+        return false;
+    }
+    const [day, month, year] = dateStr.split('/');
+    // format Date string as `yyyy-mm-dd`
+    const isoFormattedStr = `${year}-${month}-${day}`;
+    
+    return isoFormattedStr;
 }
 
 const formatRegional = (valor) => {

@@ -23,6 +23,7 @@ namespace CapaEntidad.CROM
         public string UsuarioIngreso { get; set; }
         public int PermisoImprimir { get; set; }
         public int PermisoImportar { get; set; }
+        public int PermisoDepurar { get; set; }
 
     }
 

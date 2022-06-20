@@ -296,6 +296,8 @@ function pintar(objConfiguracion) {
         objConfiguracionGlobal.generar = false;
     if (objConfiguracionGlobal.import == undefined)
         objConfiguracionGlobal.import = false;
+    if (objConfiguracionGlobal.depurar == undefined)
+        objConfiguracionGlobal.depurar = false;
     if (objConfiguracionGlobal.arqueo == undefined)
         objConfiguracionGlobal.arqueo = false;
     if (objConfiguracionGlobal.revision == undefined)
@@ -498,6 +500,10 @@ function generarTabla(res, objConfiguracionGlobal) {
                 contenido += "<td></td>"
                 countColumns++;
             }
+            if (objConfiguracionGlobal.depurar == true) {
+                contenido += "<td></td>"
+                countColumns++;
+            }
             if (objConfiguracionGlobal.arqueo == true) {
                 contenido += "<td>Arqueo</td>"
                 countColumns++;
@@ -528,9 +534,9 @@ function generarTabla(res, objConfiguracionGlobal) {
             }
         //}
 
+
         contenido += "</tr>";
         contenido += "</thead>";
-
         contenido += "<tbody id='tbody" + objConfiguracionGlobal.idtabla + "'>";
         let obj;
         let valor = "";
@@ -601,6 +607,7 @@ function generarTabla(res, objConfiguracionGlobal) {
                 objConfiguracionGlobal.pdf == true ||
                 objConfiguracionGlobal.generar == true ||
                 objConfiguracionGlobal.import == true ||
+                objConfiguracionGlobal.depurar == true ||
                 objConfiguracionGlobal.arqueo == true ||
                 objConfiguracionGlobal.revision == true ||
                 objConfiguracionGlobal.excluir == true ||
@@ -852,6 +859,16 @@ function generarTabla(res, objConfiguracionGlobal) {
                         contenido += `<button type="button" class="btn btn-primary" onclick="Importar${objConfiguracionGlobal.funcionimport}(${obj[slug]})">Importar</button>`;
                     } else {
                         contenido += `<button type="button" class="btn btn-primary disabled">Importar</button>`;
+                    }
+                    contenido += "</td>";
+                }
+
+                if (objConfiguracionGlobal.depurar == true) {
+                    contenido += "<td style='padding: 2px;' class='option-depurar'>";
+                    if (obj["permisoDepurar"] == 1) {
+                        contenido += `<button type="button" class="btn btn-primary" onclick="Depurar${objConfiguracionGlobal.funciondepurar}(${obj[slug]})">Depurar</button>`;
+                    } else {
+                        contenido += `<button type="button" class="btn btn-primary disabled">Depurar</button>`;
                     }
                     contenido += "</td>";
                 }

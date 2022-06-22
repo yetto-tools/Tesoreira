@@ -111,7 +111,7 @@ namespace CapaDatos.CROM
                         cmd.Parameters["@CodigoCliente"].Value = objDetalle.CodigoCliente;
                         cmd.Parameters["@NombreCliente"].Value = objDetalle.NombreCliente;
                         cmd.Parameters["@CodigoEntidad"].Value = objDetalle.CodigoCliente;
-                        cmd.Parameters["@NombreEntidad"].Value = objDetalle.NombreCliente;
+                        cmd.Parameters["@NombreEntidad"].Value = objDetalle.NombreClienteDepurado;
                         cmd.Parameters["@Monto"].Value = objDetalle.Monto;
                         cmd.Parameters["@FechaGrabado"].Value = objDetalle.FechaGrabadoStr;
                         cmd.Parameters["@Modificacion"].Value = 0;

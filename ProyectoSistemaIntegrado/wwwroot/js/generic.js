@@ -298,6 +298,8 @@ function pintar(objConfiguracion) {
         objConfiguracionGlobal.import = false;
     if (objConfiguracionGlobal.depurar == undefined)
         objConfiguracionGlobal.depurar = false;
+    if (objConfiguracionGlobal.registrar == undefined)
+        objConfiguracionGlobal.registrar = false;
     if (objConfiguracionGlobal.arqueo == undefined)
         objConfiguracionGlobal.arqueo = false;
     if (objConfiguracionGlobal.revision == undefined)
@@ -504,6 +506,10 @@ function generarTabla(res, objConfiguracionGlobal) {
                 contenido += "<td></td>"
                 countColumns++;
             }
+            if (objConfiguracionGlobal.registrar == true) {
+                contenido += "<td></td>"
+                countColumns++;
+            }
             if (objConfiguracionGlobal.arqueo == true) {
                 contenido += "<td>Arqueo</td>"
                 countColumns++;
@@ -608,6 +614,7 @@ function generarTabla(res, objConfiguracionGlobal) {
                 objConfiguracionGlobal.generar == true ||
                 objConfiguracionGlobal.import == true ||
                 objConfiguracionGlobal.depurar == true ||
+                objConfiguracionGlobal.registrar == true ||
                 objConfiguracionGlobal.arqueo == true ||
                 objConfiguracionGlobal.revision == true ||
                 objConfiguracionGlobal.excluir == true ||
@@ -786,12 +793,24 @@ function generarTabla(res, objConfiguracionGlobal) {
 
                 if (objConfiguracionGlobal.imprimir == true) {
                     contenido += "<td style='padding: 2px;' class='option-imprimir'>";
-                    contenido += `<button class="btn">`;
-                    contenido += `<i onclick="Imprimir(${obj[slug]},this)" id="id${+ obj[slug]}" class="btn btn-success"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer-fill" viewBox="0 0 16 16">
+                    if (obj["permisoImprimir"] == 1) {
+                        contenido += `<button class="btn">`;
+                        contenido += `<i onclick="Imprimir(${obj[slug]},this)" id="id${+ obj[slug]}" class="btn btn-success"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer-fill" viewBox="0 0 16 16">
                             <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z"/>
                             <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
                             </svg></i>`;
-                    contenido += `</button>`;
+                        contenido += `</button>`;
+                    }
+                    else {
+                        contenido += `<button class="btn" disabled>`;
+                        contenido += `<i onclick="Imprimir(${obj[slug]},this)" id="id${+ obj[slug]}" class="btn btn-secondary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer-fill" viewBox="0 0 16 16">
+                            <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z"/>
+                            <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
+                            </svg></i>`;
+                        contenido += `</button>`;
+
+                    }
+
                     contenido += "</td>";
                 }
                 if (objConfiguracionGlobal.reporte == true) {
@@ -858,7 +877,7 @@ function generarTabla(res, objConfiguracionGlobal) {
                     if (obj["permisoImportar"] == 1) {
                         contenido += `<button type="button" class="btn btn-primary" onclick="Importar${objConfiguracionGlobal.funcionimport}(${obj[slug]})">Importar</button>`;
                     } else {
-                        contenido += `<button type="button" class="btn btn-primary disabled">Importar</button>`;
+                        contenido += `<button type="button" class="btn btn-secondary disabled">Importar</button>`;
                     }
                     contenido += "</td>";
                 }
@@ -866,9 +885,19 @@ function generarTabla(res, objConfiguracionGlobal) {
                 if (objConfiguracionGlobal.depurar == true) {
                     contenido += "<td style='padding: 2px;' class='option-depurar'>";
                     if (obj["permisoDepurar"] == 1) {
-                        contenido += `<button type="button" class="btn btn-primary" onclick="Depurar${objConfiguracionGlobal.funciondepurar}(${obj[slug]})">Depurar</button>`;
+                        contenido += `<button type="button" class="btn btn-success" onclick="Depurar${objConfiguracionGlobal.funciondepurar}(${obj[slug]})">Depurar</button>`;
                     } else {
-                        contenido += `<button type="button" class="btn btn-primary disabled">Depurar</button>`;
+                        contenido += `<button type="button" class="btn btn-secondary disabled">Depurar</button>`;
+                    }
+                    contenido += "</td>";
+                }
+
+                if (objConfiguracionGlobal.registrar == true) {
+                    contenido += "<td style='padding: 2px;' class='option-registrar'>";
+                    if (obj["permisoRegistrar"] == 1) {
+                        contenido += `<button type="button" class="btn btn-primary" onclick="Registrar${objConfiguracionGlobal.funcionregistrar}(${obj[slug]})">Registrar</button>`;
+                    } else {
+                        contenido += `<button type="button" class="btn btn-secondary disabled">Registrar</button>`;
                     }
                     contenido += "</td>";
                 }

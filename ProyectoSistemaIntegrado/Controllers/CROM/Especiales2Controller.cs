@@ -1,4 +1,5 @@
-﻿using CapaEntidad.Administracion;
+﻿using CapaDatos;
+using CapaEntidad.Administracion;
 using CapaEntidad.CROM;
 using CapaNegocio.CROM;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +11,12 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Net.Sockets;
+using System.Security;
+using System.Security.Permissions;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace ProyectoSistemaIntegrado.Controllers.CROM
@@ -32,13 +38,98 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             return View();
         }
 
+        public IActionResult PrintAPI([FromBody] List<TrasladoEspeciales2DetalleCLS> listaDetalle)
+        {
+            SocketPermission socketPermission1 = new SocketPermission(PermissionState.Unrestricted);
+            // Create a 'SocketPermission' object for two ip addresses.
+            SocketPermission socketPermission2 = new SocketPermission(PermissionState.None);
+            SecurityElement securityElement1 = socketPermission2.ToXml();
+            // 'SocketPermission' object for 'Connect' permission
+            SecurityElement securityElement2 = new SecurityElement("ConnectAccess");
+            // Second 'SocketPermission' ip-address is '192.168.144.240' for 'All' transport types and
+            // for 'All' ports for the ip-address.
+            SecurityElement securityElement4 = new SecurityElement("URI", "10.34.1.48");
+            //securityElement2.AddChild(securityElement3);
+            securityElement2.AddChild(securityElement4);
+            //securityElement1.AddChild(securityElement2);
+            // Obtain a 'SocketPermission' object using 'FromXml' method.
+            socketPermission2.FromXml(securityElement1);
+            // Obtain a 'SocketPermission' object using 'FromXml' method.
+            socketPermission2.FromXml(securityElement1);
+            Socket clientSock = new Socket(
+                AddressFamily.InterNetwork,
+                SocketType.Stream,
+                ProtocolType.Tcp
+                );
+            //clientSock.NoDelay = true;
+            IPAddress ip = IPAddress.Parse("10.34.1.48");
+            //IPEndPoint remoteEP = new IPEndPoint(ip, 4730);
+            //IPEndPoint remoteEP = new IPEndPoint(ip, 65001);
+            IPEndPoint remoteEP = new IPEndPoint(ip, 9100);
+            clientSock.Connect(remoteEP);
+            if (!clientSock.Connected)
+            {
+                return BadRequest("Printer is not connected");
+            }
+            Encoding enc = Encoding.ASCII;
+            string GS = Convert.ToString((char)29);
+            string ESC = Convert.ToString((char)27);
+            string COMMAND = "";
+            COMMAND = ESC + "@";
+            COMMAND += GS + "V" + (char)1;
+            //byte[] bse = 
+            char[] bse = COMMAND.ToCharArray();
+            byte[] paperCut = enc.GetBytes(bse);
+            // Line feed hexadecimal values
+            byte[] bEsc = new byte[4];
+            // Sends an ESC/POS command to the printer to cut the paper
+
+            string t = ("Listado Especiales 2");
+            t = t + ("Nombre                Monto");
+            foreach (TrasladoEspeciales2DetalleCLS dr in listaDetalle)
+            {
+                t = t + (dr.NombreClienteDepurado.PadRight(15).Substring(0, 15) + " " + dr.Monto);
+                t = t + ("\r\n");
+            }
+
+            /*string t = ("        Ejemplo          \r\n");
+            t = t + ("----------------------------------------\r\n");
+            t = t + ("Table:  Table-C           BillNo: 120 \r\n");
+            t = t + ("----------------------------------------\r\n");
+            t = t + ("Date :2022/01/21  Order: Sylvia \r\n");
+            t = t + ("=======================================\r\n");
+            t = t + ("\r\n");
+            t = t + (" SN. 1   Item: MoMo         Qty: 2   \r\n");
+            t = t + ("\r\n");
+            t = t + ("\r\n");
+            t = t + ("\r\n");
+            t = t + ("\r\n");
+            t = t + ("\r\n");
+            t = t + ("\r\n");*/
+            char[] array = t.ToCharArray();
+            byte[] byData = enc.GetBytes(array);
+            clientSock.Send(byData);
+            clientSock.Send(paperCut);
+            //clientSock.DuplicateAndClose(2);
+            clientSock.Close();
+            return Ok(200);
+        }
+
         public string GuardarTraslados([FromBody] List<TrasladoEspeciales2DetalleCLS> listDetalle, int codigoTraslado, string fechaOperacionStr)
         {
             ViewBag.Message = HttpContext.Session.GetString("usuario");
             UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
 
             Especiales2BL obj = new Especiales2BL();
-            DateTime FechaOperacion = Util.Conversion.ConvertDateSpanishToEnglish(fechaOperacionStr);
+            DateTime FechaOperacion = DateTime.MinValue;
+            try
+            {
+                FechaOperacion = Util.Conversion.ConvertDateSpanishToEnglish(fechaOperacionStr);
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
 
             return obj.GuardarTraslados(listDetalle, codigoTraslado, FechaOperacion, objUsuario.IdUsuario);
         }
@@ -46,6 +137,7 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
 
         public async Task<List<TrasladoEspeciales2CLS>> GetTrasladosEnProceso()
         {
+            CadenaConexion conexion = new CadenaConexion();
             HttpClient client = new HttpClient();
 
             // Setting Base address.
@@ -57,7 +149,7 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
 
             var query = new Dictionary<string, string>()
             {
-                ["env"] = "DEV"
+                ["env"] = conexion.environment
             };
 
             var uri = QueryHelpers.AddQueryString("http://localhost:5000/api/especiales2/trasladosgenerados", query);
@@ -73,7 +165,7 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
                     var row = new TrasladoEspeciales2CLS
                     {
                         CodigoTraslado = Convert.ToInt32(value["codigo_traslado"].ToString()),
-                        FechaOperacionStr = DateTime.Parse(value["fecha_operacion"].ToString()).ToString(),
+                        FechaOperacionStr = DateTime.Parse(value["fecha_operacion"].ToString()).ToShortDateString(),
                         MontoTotal = Convert.ToDecimal(value["monto_total"].ToString()),
                         NumeroPedidos = Convert.ToInt32(value["numero_pedidos"].ToString()),
                         CodigoEstado = Convert.ToInt32(value["codigo_estado"].ToString()),
@@ -90,11 +182,13 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             return list;
         }
 
-        public async Task<List<TrasladoEspeciales2CLS>> GenerarTrasladosDeEspeciales2(string fechaOperacion)
+        public async Task<string> GenerarTrasladosDeEspeciales2(string fechaOperacion)
         {
+            string resultado = "";
             ViewBag.Message = HttpContext.Session.GetString("usuario");
             UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
 
+            CadenaConexion conexion = new CadenaConexion();
             HttpClient client = new HttpClient();
 
             // Setting Base address.
@@ -107,7 +201,7 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
 
             var content = new FormUrlEncodedContent(new[]
             {
-                new KeyValuePair<string, string>("env", "DEV"),
+                new KeyValuePair<string, string>("env", conexion.environment),
                 new KeyValuePair<string, string>("fecha", fechaOperacion),
                 new KeyValuePair<string, string>("usuario", objUsuario.IdUsuario)
             });
@@ -121,69 +215,111 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             HttpResponseMessage response = await client.PostAsync("http://localhost:5000/api/especiales2/generar", content);
             if (response.IsSuccessStatusCode)
             {
-                string jsonArrayString = await response.Content.ReadAsStringAsync();
-                JArray jsonArray = JArray.Parse(jsonArrayString);
-                var json = JObject.Parse(jsonArray[0].ToString());
-
-                string mySqlTime = "00:00:00";
-                DateTime time = DateTime.Parse(mySqlTime);
-
-                var isoDateTimeFormat = CultureInfo.InvariantCulture.DateTimeFormat;
-                foreach (var value in jsonArray)
-                {
-                    var row = new TrasladoEspeciales2CLS
-                    {
-                        CodigoTraslado = Convert.ToInt32(value["codigo_traslado"].ToString()),
-                        FechaOperacionStr = DateTime.Parse(value["fecha_operacion"].ToString()).ToString(),
-                        MontoTotal = Convert.ToDecimal(value["monto_total"].ToString()),
-                        NumeroPedidos = Convert.ToInt32(value["numero_pedidos"].ToString()),
-                        CodigoEstado = Convert.ToInt32(value["codigo_estado"].ToString()),
-                        Estado = value["estado"].ToString(),
-                        ObservacionesTraslado = value["observaciones_traslado"].ToString(),
-                        UsuarioIngreso = value["usuario_ing"].ToString(),
-                        FechaIngresoStr = DateTime.Parse(value["fecha_ing"].ToString()).ToString(),
-                        FechaTrasladoStr = DateTime.Parse(value["fecha_traslado"].ToString()).ToString(),
-                        PermisoImprimir = Convert.ToInt32(value["permiso_imprimir"].ToString())
-                    };
-                    list.Add(row);
-                }
-            }
-            return list;
-        }
-
-        public async Task<string> AceptarGeneracionTrasladoEspeciales2(int codigoTraslado)
-        {
-            string resultado = "";
-
-            HttpClient client = new HttpClient();
-
-            // Setting Base address.
-            client.BaseAddress = new Uri("http://localhost:5000");
-
-            // Setting content type
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-
-            var content = new FormUrlEncodedContent(new[]
-            {
-                new KeyValuePair<string, string>("env", "DEV"),
-                new KeyValuePair<string, string>("codigo", codigoTraslado.ToString())
-            });
-
-            List<TrasladoEspeciales2CLS> list = new List<TrasladoEspeciales2CLS>();
-            HttpResponseMessage response = await client.PutAsync("http://localhost:5000/api/especiales2/aceptargeneracion", content);
-            if (response.IsSuccessStatusCode)
-            {
-                resultado = response.ReasonPhrase;
-            }
-            else {
                 resultado = response.ReasonPhrase;
             }
             return resultado;
         }
 
+
+        //public async Task<List<TrasladoEspeciales2CLS>> GenerarTrasladosDeEspeciales2(string fechaOperacion)
+        //{
+        //    ViewBag.Message = HttpContext.Session.GetString("usuario");
+        //    UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
+
+        //    CadenaConexion conexion = new CadenaConexion();
+        //    HttpClient client = new HttpClient();
+
+        //    // Setting Base address.
+        //    //client.BaseAddress = new Uri("http://localhost:5000/api/");
+        //    client.BaseAddress = new Uri("http://localhost:5000");
+
+        //    // Setting content type
+        //    client.DefaultRequestHeaders.Accept.Clear();
+        //    client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+        //    var content = new FormUrlEncodedContent(new[]
+        //    {
+        //        new KeyValuePair<string, string>("env", conexion.environment),
+        //        new KeyValuePair<string, string>("fecha", fechaOperacion),
+        //        new KeyValuePair<string, string>("usuario", objUsuario.IdUsuario)
+        //    });
+
+        //    //var uri = "http://localhost:5000/api";
+        //    //var uri = "/api/especiales2/traslados";
+        //    //var jsonParameter = JsonConvert.SerializeObject(objTraslado);
+        //    //var data = new StringContent(jsonParameter, Encoding.UTF8, "application/json");
+
+        //    List<TrasladoEspeciales2CLS> list = new List<TrasladoEspeciales2CLS>();
+        //    HttpResponseMessage response = await client.PostAsync("http://localhost:5000/api/especiales2/generar", content);
+        //    if (response.IsSuccessStatusCode)
+        //    {
+        //        string jsonArrayString = await response.Content.ReadAsStringAsync();
+        //        JArray jsonArray = JArray.Parse(jsonArrayString);
+        //        var json = JObject.Parse(jsonArray[0].ToString());
+
+        //        string mySqlTime = "00:00:00";
+        //        DateTime time = DateTime.Parse(mySqlTime);
+
+        //        var isoDateTimeFormat = CultureInfo.InvariantCulture.DateTimeFormat;
+        //        foreach (var value in jsonArray)
+        //        {
+        //            var row = new TrasladoEspeciales2CLS
+        //            {
+        //                CodigoTraslado = Convert.ToInt32(value["codigo_traslado"].ToString()),
+        //                FechaOperacionStr = DateTime.Parse(value["fecha_operacion"].ToString()).ToString(),
+        //                MontoTotal = Convert.ToDecimal(value["monto_total"].ToString()),
+        //                NumeroPedidos = Convert.ToInt32(value["numero_pedidos"].ToString()),
+        //                CodigoEstado = Convert.ToInt32(value["codigo_estado"].ToString()),
+        //                Estado = value["estado"].ToString(),
+        //                ObservacionesTraslado = value["observaciones_traslado"].ToString(),
+        //                UsuarioIngreso = value["usuario_ing"].ToString(),
+        //                FechaIngresoStr = DateTime.Parse(value["fecha_ing"].ToString()).ToString(),
+        //                FechaTrasladoStr = DateTime.Parse(value["fecha_traslado"].ToString()).ToString(),
+        //                PermisoImprimir = Convert.ToInt32(value["permiso_imprimir"].ToString())
+        //            };
+        //            list.Add(row);
+        //        }
+        //    }
+        //    return list;
+        //}
+
+
+
+        //public async Task<string> AceptarGeneracionTrasladoEspeciales2(int codigoTraslado)
+        //{
+        //    string resultado = "";
+
+        //    CadenaConexion conexion = new CadenaConexion();
+        //    HttpClient client = new HttpClient();
+
+        //    // Setting Base address.
+        //    client.BaseAddress = new Uri("http://localhost:5000");
+
+        //    // Setting content type
+        //    client.DefaultRequestHeaders.Accept.Clear();
+        //    client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+        //    var content = new FormUrlEncodedContent(new[]
+        //    {
+        //        new KeyValuePair<string, string>("env", conexion.environment),
+        //        new KeyValuePair<string, string>("codigo", codigoTraslado.ToString())
+        //    });
+
+        //    List<TrasladoEspeciales2CLS> list = new List<TrasladoEspeciales2CLS>();
+        //    HttpResponseMessage response = await client.PutAsync("http://localhost:5000/api/especiales2/aceptargeneracion", content);
+        //    if (response.IsSuccessStatusCode)
+        //    {
+        //        resultado = response.ReasonPhrase;
+        //    }
+        //    else {
+        //        resultado = response.ReasonPhrase;
+        //    }
+        //    return resultado;
+        //}
+
         public async Task<List<TrasladoEspeciales2CLS>> GetTrasladosParaImportacion()
         {
+            CadenaConexion conexion = new CadenaConexion();
             HttpClient client = new HttpClient();
 
             // Setting Base address.
@@ -196,7 +332,7 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
 
             var query = new Dictionary<string, string>()
             {
-                ["env"] = "DEV"
+                ["env"] = conexion.environment
             };
 
             var uri = QueryHelpers.AddQueryString("http://localhost:5000/api/especiales2/importaciones", query);
@@ -218,7 +354,7 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
                     var row = new TrasladoEspeciales2CLS
                     {
                         CodigoTraslado = Convert.ToInt32(value["codigo_traslado"].ToString()),
-                        FechaOperacionStr = DateTime.Parse(value["fecha_operacion"].ToString()).ToString(),
+                        FechaOperacionStr = DateTime.Parse(value["fecha_operacion"].ToString()).ToShortDateString(),
                         MontoTotal = Convert.ToDecimal(value["monto_total"].ToString()),
                         NumeroPedidos = Convert.ToInt32(value["numero_pedidos"].ToString()),
                         CodigoEstado = Convert.ToInt32(value["codigo_estado"].ToString()),
@@ -228,7 +364,8 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
                         FechaIngresoStr = DateTime.Parse(value["fecha_ing"].ToString()).ToString(),
                         FechaTrasladoStr = DateTime.Parse(value["fecha_traslado"].ToString()).ToString(),
                         PermisoImportar = Convert.ToInt32(value["permiso_importar"].ToString()),
-                        PermisoDepurar = Convert.ToInt32(value["permiso_depurar"].ToString())
+                        PermisoDepurar = Convert.ToInt32(value["permiso_depurar"].ToString()),
+                        PermisoRegistrar = Convert.ToInt32(value["permiso_registrar"].ToString())
                     };
                     list.Add(row);
                 }
@@ -238,6 +375,7 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
 
         public async Task<List<TrasladoEspeciales2DetalleCLS>> GetDetalleTrasladosEspeciales2(int codigoTraslado)
         {
+            CadenaConexion conexion = new CadenaConexion();
             HttpClient client = new HttpClient();
 
             // Setting Base address.
@@ -250,7 +388,7 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
 
             var query = new Dictionary<string, string>()
             {
-                ["env"] = "DEV",
+                ["env"] = conexion.environment,
                 ["codigo"] = codigoTraslado.ToString()
             };
 
@@ -274,7 +412,8 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
                             CodigoEmpresa = value["empresa"].ToString(),
                             FechaGrabadoStr = DateTime.Parse(value["fecha_grabado"].ToString()).ToString(),
                             Monto = Convert.ToDecimal(value["monto"].ToString()),
-                            NombreCliente = value["nombre_cliente_depurado"].ToString(),
+                            NombreCliente = value["nombre_cliente"].ToString(),
+                            NombreClienteDepurado = value["nombre_cliente_depurado"].ToString(),
                             NumeroPedido = Convert.ToInt64(value["pedido"].ToString().Split('.')[0]),
                             Serie = value["serie"].ToString()
                         };
@@ -289,10 +428,11 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             return list;
         }
 
-        public async Task<string> AceptarImportacion(int codigoTraslado)
+        public async Task<string> CambiarEstadoTrasladoEspeciales2(int codigoTraslado, int codigoEstado)
         {
             string resultado = "";
 
+            CadenaConexion conexion = new CadenaConexion();
             HttpClient client = new HttpClient();
 
             // Setting Base address.
@@ -304,12 +444,13 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
 
             var content = new FormUrlEncodedContent(new[]
             {
-                new KeyValuePair<string, string>("env", "DEV"),
-                new KeyValuePair<string, string>("codigo", codigoTraslado.ToString())
+                new KeyValuePair<string, string>("env", conexion.environment),
+                new KeyValuePair<string, string>("codigo", codigoTraslado.ToString()),
+                new KeyValuePair<string, string>("estado", codigoEstado.ToString())
             });
 
             List<TrasladoEspeciales2CLS> list = new List<TrasladoEspeciales2CLS>();
-            HttpResponseMessage response = await client.PutAsync("http://localhost:5000/api/especiales2/importacionrealizada", content);
+            HttpResponseMessage response = await client.PutAsync("http://localhost:5000/api/especiales2/cambiarestado", content);
             if (response.IsSuccessStatusCode)
             {
                 resultado = response.ReasonPhrase;
@@ -321,7 +462,38 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             return resultado;
         }
 
+        //public async Task<string> AceptarImportacion(int codigoTraslado)
+        //{
+        //    string resultado = "";
 
+        //    CadenaConexion conexion = new CadenaConexion();
+        //    HttpClient client = new HttpClient();
+
+        //     Setting Base address.
+        //    client.BaseAddress = new Uri("http://localhost:5000");
+
+        //     Setting content type
+        //    client.DefaultRequestHeaders.Accept.Clear();
+        //    client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+        //    var content = new FormUrlEncodedContent(new[]
+        //    {
+        //        new KeyValuePair<string, string>("env", conexion.environment),
+        //        new KeyValuePair<string, string>("codigo", codigoTraslado.ToString())
+        //    });
+
+        //    List<TrasladoEspeciales2CLS> list = new List<TrasladoEspeciales2CLS>();
+        //    HttpResponseMessage response = await client.PutAsync("http://localhost:5000/api/especiales2/importacionrealizada", content);
+        //    if (response.IsSuccessStatusCode)
+        //    {
+        //        resultado = response.ReasonPhrase;
+        //    }
+        //    else
+        //    {
+        //        resultado = response.ReasonPhrase;
+        //    }
+        //    return resultado;
+        //}
 
     }
 }

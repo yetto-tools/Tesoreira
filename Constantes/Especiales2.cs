@@ -6,7 +6,7 @@
         {
             public const int ANULADO = 0;
             public const int RECEPCIONADO = 3;
-            public const int EN_PROCESO_DE_DEPURACION = 4;
+            public const int DEPURADO = 4;
             public const int CARGA_COMPLETADA = 5;
         }
 

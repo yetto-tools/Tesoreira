@@ -18,17 +18,6 @@ namespace Util
                 case 6: localDay = 6; break;
                 default: localDay = 0; break;
             }
-
-            /*switch (day) {
-                case 1: localDay = 7; break;
-                case 2: localDay = 1; break;
-                case 3: localDay = 2; break;
-                case 4: localDay = 3; break;
-                case 5: localDay = 4; break;
-                case 6: localDay = 5; break;
-                case 7: localDay = 6; break;
-                default:  localDay = 0; break;
-            }*/
             return localDay;
         }
 

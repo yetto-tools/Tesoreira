@@ -35,7 +35,7 @@ namespace CapaDatos
                 case "Development":
                     // Ambiente de Produccion
                     //builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
-                    //environment = "5000";
+                    // puerto = "6000";
                     // Ambiente de Desarrollo
                     builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.Development.json"));
                     puerto = "5000";
@@ -43,7 +43,7 @@ namespace CapaDatos
                 case "Production":
                     // Ambiente de Produccion
                     builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
-                    puerto = "5000";
+                    puerto = "6000";
                     break;
                 default:
                     // Ambiente Local

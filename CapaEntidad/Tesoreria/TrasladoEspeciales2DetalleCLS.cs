@@ -18,6 +18,7 @@ namespace CapaEntidad.Tesoreria
         public string NombreEntidad { get; set; }
         public decimal Monto { get; set; }
         public DateTime FechaGrabado { get; set; }
+        public string FechaGrabadoStr { get; set; }
         public int modificacion { get; set; }
         public byte CodigoEstado { get; set; }
         public string Estado { get; set; }

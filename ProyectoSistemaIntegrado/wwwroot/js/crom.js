@@ -38,13 +38,13 @@ function GenerarTrasladosEspeciales2() {
 function MostrarTrasladosEspeciales2Generados() {
     let objConfiguracion = {
         url: "Especiales2/GetTrasladosEnProceso",
-        cabeceras: ["Código Traslado", "Fecha Operación", "Pedidos", "Monto Total", "Fecha Generación", "Usuario Ingreso", "Fecha Traslado", "observaciones", "Codigo Estado", "Estado", "permisoImprimir"],
-        propiedades: ["codigoTraslado", "fechaOperacionStr", "numeroPedidos", "montoTotal", "fechaIngresoStr", "usuarioIngreso", "fechaTrasladoStr", "observacionesTraslado", "codigoEstado", "estado", "permisoImprimir"],
+        cabeceras: ["Código Traslado", "Fecha Operación", "Pedidos", "Monto Total", "Fecha Generación", "Usuario Ingreso", "Fecha Traslado", "observaciones", "Codigo Estado", "Estado","permisoAnular","permisoTraslado", "permisoImprimir"],
+        propiedades: ["codigoTraslado", "fechaOperacionStr", "numeroPedidos", "montoTotal", "fechaIngresoStr", "usuarioIngreso", "fechaTrasladoStr", "observacionesTraslado", "codigoEstado", "estado","permisoAnular","permisoTraslado", "permisoImprimir"],
         displaydecimals: ["montoTotal"],
         divContenedorTabla: "divContenedorTabla",
         divPintado: "divTabla",
-        aceptar: true,
-        funcionaceptar: "AceptarGeneracionTrasladoEspeciales2",
+        aceptartraslado: true,
+        funcionaceptartraslado: "GeneracionEspeciales2",
         paginar: true,
         ocultarColumnas: true,
         hideColumns: [
@@ -76,43 +76,79 @@ function MostrarTrasladosEspeciales2Generados() {
             }, {
                 "targets": [10],
                 "visible": false
+            }, {
+                "targets": [11],
+                "visible": false
+            }, {
+                "targets": [12],
+                "visible": false
             }],
         slug: "codigoTraslado",
-        imprimir: true
+        imprimir: true,
+        eliminar: true,
+        funcioneliminar: "TrasladoEspeciales2"
     }
     pintar(objConfiguracion);
 }
 
-function clickAceptarGeneracionTrasladoEspeciales2(value) {
+function AceptarTrasladoGeneracionEspeciales2(value) {
     let frm = new FormData();
     frm.set("CodigoTraslado", value.toString());
     frm.set("CodigoEstado", CODIGO_ESTADO_POR_RECEPCIONAR.toString());
-    Confirmacion(undefined, undefined, function (rpta) {
-        fetchPost("Especiales2/CambiarEstadoTrasladoEspeciales2", "text", frm, function (data) {
-            if (data == "OK") {
-                MostrarTrasladosEspeciales2Generados();
-            } else {
-                MensajeError(data);
-            }
-        });
+    fetchPost("Especiales2/CambiarEstadoTrasladoEspeciales2", "text", frm, function (data) {
+        if (data == "OK") {
+            MostrarTrasladosEspeciales2Generados();
+        } else {
+            MensajeError(data);
+        }
+    });
+}
+
+function EliminarTrasladoEspeciales2(value) {
+    let frm = new FormData();
+    frm.set("CodigoTraslado", value.toString());
+    fetchPost("Especiales2/EliminarTrasladoEspeciales2", "text", frm, function (data) {
+        if (data == "OK") {
+            MostrarTrasladosEspeciales2Generados();
+        } else {
+            MensajeError(data);
+        }
+    });
+}
+
+function AceptarTrasladoGeneracionEspeciales2(value) {
+    let frm = new FormData();
+    frm.set("CodigoTraslado", value.toString());
+    frm.set("CodigoEstado", CODIGO_ESTADO_POR_RECEPCIONAR.toString());
+    fetchPost("Especiales2/CambiarEstadoTrasladoEspeciales2", "text", frm, function (data) {
+        if (data == "OK") {
+            MostrarTrasladosEspeciales2Generados();
+        } else {
+            MensajeError(data);
+        }
     });
 }
 
 
 function Imprimir(codigoTraslado, obj) {
-    fetchGet("Especiales2/GetDetalleTrasladosEspeciales2/?codigoTraslado=" + codigoTraslado, "json", function (rpta) {
-        let jsonData = JSON.stringify(rpta);
-        fetchPostJson("Especiales2/PrintAPI", "text", jsonData, function (data) {
+    let table = $('#tabla').DataTable();
+    $('#tabla tbody').on('click', '.option-imprimir', function () {
+        let rowIdx = table.row(this).index();
+        let fechaGeneracionStr = table.cell(rowIdx, 4).data();
+        fetchGet("Especiales2/GetDetalleTrasladosEspeciales2/?codigoTraslado=" + codigoTraslado, "json", function (rpta) {
+            let jsonData = JSON.stringify(rpta);
+            fetchPostJson("Especiales2/PrintAPI/?fechaGeneracionStr=" + fechaGeneracionStr, "text", jsonData, function (data) {
 
-        })
+            })
+        });
     });
 }
 
 function MostrarTrasladosParaImportacion() {
     let objConfiguracion = {
         url: "Especiales2/GetTrasladosParaImportacion",
-        cabeceras: ["Código Traslado", "Fecha Operación", "Pedidos", "Monto Total", "observaciones", "Fecha Generación", "Generado por", "Fecha Traslado", "Codigo Estado", "Estado","permisoImportar","permisoDepurar","permisoRegistrar"],
-        propiedades: ["codigoTraslado", "fechaOperacionStr", "numeroPedidos", "montoTotal", "observacionesTraslado", "fechaIngresoStr", "usuarioIngreso", "fechaTrasladoStr", "codigoEstado", "estado","permisoImportar","permisoDepurar","permisoRegistrar"],
+        cabeceras: ["Código Traslado", "Fecha Operación", "Pedidos", "Monto Total", "observaciones", "Fecha Generación", "Generado por", "Fecha Traslado", "Codigo Estado", "Estado","permisoImportar","permisoDepurar","permisoRegistrar","permisoEditar"],
+        propiedades: ["codigoTraslado", "fechaOperacionStr", "numeroPedidos", "montoTotal", "observacionesTraslado", "fechaIngresoStr", "usuarioIngreso", "fechaTrasladoStr", "codigoEstado", "estado","permisoImportar","permisoDepurar","permisoRegistrar","permisoEditar"],
         displaydecimals: ["montoTotal"],
         divContenedorTabla: "divContenedorTabla",
         divPintado: "divTabla",
@@ -153,6 +189,9 @@ function MostrarTrasladosParaImportacion() {
             }, {
                 "targets": [12],
                 "visible": false
+            }, {
+                "targets": [13],
+                "visible": false
             }],
         slug: "codigoTraslado",
         import: true,
@@ -160,7 +199,9 @@ function MostrarTrasladosParaImportacion() {
         depurar: true,
         funciondepurar: "NombresClientesEspeciales2",
         registrar: true,
-        funcionregistrar: "Especiales2"
+        funcionregistrar: "Especiales2",
+        editar: true,
+        funcioneditar: "NombresClientesEspeciales2"
 
     }
     pintar(objConfiguracion);
@@ -207,6 +248,15 @@ function DepurarNombresClientesEspeciales2(obj) {
     });
 }
 
+function EditarNombresClientesEspeciales2(obj) {
+    let table = $('#tabla').DataTable();
+    $('#tabla tbody').on('click', '.option-editar', function () {
+        let rowIdx = table.row(this).index();
+        let codigoTraslado = table.cell(rowIdx, 0).data();
+        MostrarDetalleEspeciales2(codigoTraslado);
+    });
+}
+
 function RegistrarEspeciales2(obj) {
     let semanaOperacion = parseInt(document.getElementById("uiNumeroSemanaActualSistema").value);
     let anioOperacion = parseInt(document.getElementById("uiAnioSemanaActualSistema").value);
@@ -215,12 +265,25 @@ function RegistrarEspeciales2(obj) {
         let rowIdx = table.row(this).index();
         let codigoTraslado = table.cell(rowIdx, 0).data();
         let fechaOperacion = table.cell(rowIdx, 1).data();
-        fetchGet("TrasladosEspeciales2/GetDetalleEspeciales2/?codigoTraslado=" + codigoTraslado, "json", function (rpta) {
-            if (rpta != undefined && rpta != null && rpta.length != 0) {
-                let jsonData = JSON.stringify(rpta);
-                fetchPostJson("TrasladosEspeciales2/RegistrarEspeciales2/?codigoTraslado=" + codigoTraslado + "&fechaOperacion=" + fechaOperacion + "&semanaOperacion=" + semanaOperacion.toString() + "&anioOperacion=" + anioOperacion.toString(), "text", jsonData, function (data) {
-
+        let frm = new FormData();
+        frm.set("CodigoTraslado", codigoTraslado);
+        frm.set("FechaOperacionStr", fechaOperacion);
+        frm.set("SemanaOperacion", semanaOperacion.toString());
+        frm.set("AnioOperacion", anioOperacion.toString());
+        fetchPost("TrasladosEspeciales2/RegistrarEspeciales2", "text", frm, function (data) {
+            if (data == "OK") {
+                let frm1 = new FormData();
+                frm1.set("CodigoTraslado", codigoTraslado);
+                frm1.set("CodigoEstado", CODIGO_ESTADO_COMPLETADO.toString());
+                fetchPost("Especiales2/CambiarEstadoTrasladoEspeciales2", "text", frm1, function (data2) {
+                    if (data2 == "OK") {
+                        MostrarTrasladosParaImportacion();
+                    } else {
+                        MensajeError(data2);
+                    }
                 });
+            } else {
+                MensajeError(data);
             }
         });
     });
@@ -238,7 +301,6 @@ function MostrarDetalleEspeciales2ParaDepuracion(codigoTraslado) {
                     fetchPost("Especiales2/CambiarEstadoTrasladoEspeciales2", "text", frm, function (data) {
                         if (data == "OK") {
                             MostrarTrasladosParaImportacion();
-                            //MostrarDetalleEspeciales2Depurado(codigoTraslado);
                         } else {
                             MensajeError(data);
                         }
@@ -250,8 +312,6 @@ function MostrarDetalleEspeciales2ParaDepuracion(codigoTraslado) {
         }
     });
 }
-
-
 
 
 function MostrarDetalleEspeciales2Depurado(codigoTraslado) {
@@ -275,6 +335,33 @@ function MostrarDetalleEspeciales2Depurado(codigoTraslado) {
             }, {
                 "targets": [2],
                 "visible": true
+            }],
+        slug: "serie"
+    }
+    pintar(objConfiguracion);
+}
+
+
+
+function MostrarDetalleEspeciales2(codigoTraslado) {
+    let objConfiguracion = {
+        url: "TrasladosEspeciales2/GetDetalleEspeciales2/?codigoTraslado=" + codigoTraslado,
+        cabeceras: ["codigoCliente","nombreCliente","codigoEntidad", "nombreEntidad", "monto","Fecha registro", "codigoEstadoDepuracion","Estado"],
+        propiedades: ["codigoCliente", "nombreCliente","codigoEntidad", "nombreEntidad", "monto","fechaGrabadoStr", "codigoEstadoDepuracion","estadoDepuracion"],
+        displaydecimals: ["monto"],
+        divContenedorTabla: "divContenedorTablaDetalle",
+        divPintado: "divTablaDetalle",
+        idtabla: "tablaDetalle",
+        paginar: true,
+        ocultarColumnas: true,
+        hideColumns: [
+            {
+                "targets": [4],
+                "className": "dt-body-right",
+                "visible": true
+            }, {
+                "targets": [6],
+                "visible": false
             }],
         slug: "serie"
     }

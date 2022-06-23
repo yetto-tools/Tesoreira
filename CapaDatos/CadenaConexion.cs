@@ -23,7 +23,7 @@ namespace CapaDatos
 
         public string cadenaCROM { get; set; }
 
-        public string environment { get; set; }
+        public string puerto { get; set; }
 
         public CadenaConexion()
         {
@@ -34,21 +34,21 @@ namespace CapaDatos
             {
                 case "Development":
                     // Ambiente de Produccion
-                    builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
-                    environment = "PROD";
+                    //builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
+                    //environment = "5000";
                     // Ambiente de Desarrollo
-                    //builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.Development.json"));
-                    //environment = "DEV";
+                    builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.Development.json"));
+                    puerto = "5000";
                     break;
                 case "Production":
                     // Ambiente de Produccion
                     builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
-                    environment = "PROD";
+                    puerto = "5000";
                     break;
                 default:
                     // Ambiente Local
                     builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.Development.json"));
-                    environment = "DEV";
+                    puerto = "5000";
                     break;
             }
             

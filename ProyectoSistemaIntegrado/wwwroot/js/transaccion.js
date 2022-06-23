@@ -1248,7 +1248,7 @@ function MostrarDepositosBancarios(anioOperacion, semanaOperacion, codigoReporte
 function clickActualizarNumeroBoletaDeposito(obj) {
     let codigoTransaccion = obj;
     let table = $('#tabla').DataTable();
-    $('#tabla tbody').on('click', '.option-aceptar', function () {
+    $('#tabla tbody').on('click', '.option-actualizar', function () {
         let rowIdx = table.row(this).index();
         let numeroBoletaDeposito = table.cell(rowIdx, 25).nodes().to$().find('input').val();
         if (numeroBoletaDeposito != "") {

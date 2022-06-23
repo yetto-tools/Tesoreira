@@ -22,16 +22,22 @@ namespace CapaNegocio.Tesoreria
             return obj.ActualizarDetalleEspeciales2(listDetalle, codigoTraslado, usuarioAct);
         }
 
+        public List<TrasladoEspeciales2DetalleCLS> GetDetalleUnificadoEspeciales2(int codigoTraslado)
+        {
+            Especiales2DAL obj = new Especiales2DAL();
+            return obj.GetDetalleUnificadoEspeciales2(codigoTraslado);
+        }
+
         public List<TrasladoEspeciales2DetalleCLS> GetDetalleEspeciales2(int codigoTraslado)
         {
             Especiales2DAL obj = new Especiales2DAL();
             return obj.GetDetalleEspeciales2(codigoTraslado);
         }
 
-        public string RegistrarEspeciales2(List<TrasladoEspeciales2DetalleCLS> listDetalle, int codigoTraslado, DateTime fechaOperacion, int semanaOperacion, int anioOperacion, string usuarioIng)
+        public string RegistrarEspeciales2(int codigoTraslado, string fechaOperacionStr, int semanaOperacion, int anioOperacion, string usuarioIng)
         {
             Especiales2DAL obj = new Especiales2DAL();
-            return obj.RegistrarEspeciales2(listDetalle, codigoTraslado, fechaOperacion, semanaOperacion, anioOperacion, usuarioIng);
+            return obj.RegistrarEspeciales2(codigoTraslado, fechaOperacionStr, semanaOperacion, anioOperacion, usuarioIng);
         }
 
     }

@@ -312,8 +312,12 @@ function pintar(objConfiguracion) {
         objConfiguracionGlobal.excluir = false;
     if (objConfiguracionGlobal.aceptar == undefined)
         objConfiguracionGlobal.aceptar = false;
+    if (objConfiguracionGlobal.aceptartraslado == undefined)
+        objConfiguracionGlobal.aceptar = false;
     if (objConfiguracionGlobal.funcionaceptar == undefined)
         objConfiguracionGlobal.funcionaceptar = "";
+    if (objConfiguracionGlobal.funcionaceptartraslado == undefined)
+        objConfiguracionGlobal.funcionaceptartraslado = "";
     if (objConfiguracionGlobal.actualizar == undefined)
         objConfiguracionGlobal.actualizar = false;
     if (objConfiguracionGlobal.funcionactualizar == undefined)
@@ -522,6 +526,10 @@ function generarTabla(res, objConfiguracionGlobal) {
                 contenido += "<td></td>"
                 countColumns++;
             }
+            if (objConfiguracionGlobal.aceptartraslado == true) {
+                contenido += "<td></td>"
+                countColumns++;
+            }
             if (objConfiguracionGlobal.actualizar == true) {
                 contenido += "<td></td>"
                 countColumns++;
@@ -619,6 +627,7 @@ function generarTabla(res, objConfiguracionGlobal) {
                 objConfiguracionGlobal.revision == true ||
                 objConfiguracionGlobal.excluir == true ||
                 objConfiguracionGlobal.aceptar == true ||
+                objConfiguracionGlobal.aceptartraslado == true ||
                 objConfiguracionGlobal.actualizar == true ||
                 objConfiguracionGlobal.verdetalle == true || 
                 objConfiguracionGlobal.addTextBox == true ||
@@ -803,12 +812,11 @@ function generarTabla(res, objConfiguracionGlobal) {
                     }
                     else {
                         contenido += `<button class="btn" disabled>`;
-                        contenido += `<i onclick="Imprimir(${obj[slug]},this)" id="id${+ obj[slug]}" class="btn btn-secondary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer-fill" viewBox="0 0 16 16">
+                        contenido += `<i class="btn btn-secondary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer-fill" viewBox="0 0 16 16">
                             <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z"/>
                             <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
                             </svg></i>`;
                         contenido += `</button>`;
-
                     }
 
                     contenido += "</td>";
@@ -946,8 +954,32 @@ function generarTabla(res, objConfiguracionGlobal) {
                     contenido += "</td>";
                 }
 
+                if (objConfiguracionGlobal.aceptartraslado == true) {
+                    contenido += "<td style='padding: 2px;' class='option-traslado'>";
+                    if (obj["permisoTraslado"] == 1) {
+                        contenido += `<button class="btn">`;
+                        contenido += `<i onclick="AceptarTraslado${objConfiguracionGlobal.funcionaceptartraslado}(${obj[slug]})" id="aceptar${+ obj[slug]}" class="btn btn-outline-primary">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                  <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                                  </svg>
+                                  </i>`;
+                        contenido += `</button>`;
+                    } else {
+                        contenido += `<button class="btn">`;
+                        contenido += `<i id="aceptar${+ obj[slug]}" class="btn btn-outline-secondary">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                  <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                                  </svg>
+                                  </i>`;
+                        contenido += `</button>`;
+                    }
+                    contenido += "</td>";
+                }
+
                 if (objConfiguracionGlobal.actualizar == true) {
-                    contenido += "<td style='padding: 2px;' class='option-aceptar'>";
+                    contenido += "<td style='padding: 2px;' class='option-actualizar'>";
                     if (obj["permisoActualizar"] == 1) {
                         contenido += `<button class="btn">`;
                         contenido += `<i onclick="clickActualizar${objConfiguracionGlobal.funcionactualizar}(${obj[slug]})" id="update${+ obj[slug]}" class="btn btn-outline-primary">

@@ -27,5 +27,7 @@ namespace CapaEntidad.Tesoreria
         public string PrimerApellido { get; set; }
         public string SegundoApellido { get; set; }
         public string CodigoGenero { get; set; }
+
+        public int CodigoTipoBTB { get; set; }
     }
 }

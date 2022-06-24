@@ -11,6 +11,8 @@ namespace CapaEntidad.Administracion
         public short CodigoConfiguracion { get; set; }
         public string NombreImpresora { get; set; }
         public short NumeroCopias { get; set; }
+        public string Ip { get; set; }
+        public int Puerto { get; set; }
     }
 
 

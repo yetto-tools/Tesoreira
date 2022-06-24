@@ -218,6 +218,12 @@ function clearDataFormulario() {
     elementOtrosIngresos.classList.remove('obligatorio');
     document.getElementById('div-otros-ingresos').style.display = 'none';
 
+    document.getElementById('divTablaEspeciales1').style.display = 'none';
+    let tableEspeciales1 = $('#tablaEspeciales1').DataTable();
+    tableEspeciales1.$("input[type=radio]").prop("checked", false);
+    tableEspeciales1.$("input[type=search]").val('');
+    tableEspeciales1.search('').draw();
+
     // Especiales 2
     document.getElementById("uiEsEspeciales2").checked = false;
     document.getElementById('divTablaEspeciales2').style.display = 'none';
@@ -225,6 +231,13 @@ function clearDataFormulario() {
     tableEspeciales2.$("input[type=radio]").prop("checked", false);
     tableEspeciales2.$("input[type=search]").val('');
     tableEspeciales2.search('').draw();
+
+    // Back To Back
+    document.getElementById('divTablaBackToBack').style.display = 'none';
+    let tableBackToBack = $('#tablaBackToBack').DataTable();
+    tableBackToBack.$("input[type=radio]").prop("checked", false);
+    tableBackToBack.$("input[type=search]").val('');
+    tableBackToBack.search('').draw();
 
     // Montos
     document.getElementById('uiCalculadora').value = "";
@@ -305,14 +318,30 @@ function fillComboNewOtrosIngresos(obj) {
     // 2. INGRESOS VARIOS
     let elementOtrosIngresos = document.getElementById("uiCodigoOtroIngreso");
     if (valor == TIPO_ESPECIAL1_OTROS_INGRESOS) {
+
         fetchGet("Configuracion/GetListaOtrosIngresos", "json", function (rpta) {
             FillCombo(rpta, "uiCodigoOtroIngreso", "codigoOtroIngreso", "nombre", "- seleccione -", "-1");
             elementOtrosIngresos.classList.add('obligatorio');
             document.getElementById('div-otros-ingresos').style.display = 'block';
-        })
+        });
+
+        document.getElementById('divTablaEspeciales1').style.display = 'none';
+        document.getElementById('divTabla').style.display = 'block';
+        let table = $('#tabla').DataTable();
+        table.$("input[type=radio]").prop("checked", false);
+        table.$("input[type=search]").val('');
+        table.search('').draw();
+
     } else {
         elementOtrosIngresos.classList.remove('obligatorio');
         document.getElementById('div-otros-ingresos').style.display = 'none';
+
+        document.getElementById('divTabla').style.display = 'none';
+        document.getElementById('divTablaEspeciales1').style.display = 'block';
+        let tableEspeciales1 = $('#tablaEspeciales1').DataTable();
+        tableEspeciales1.$("input[type=radio]").prop("checked", false);
+        tableEspeciales1.$("input[type=search]").val('');
+        tableEspeciales1.search('').draw();
     }
 }
 
@@ -736,7 +765,8 @@ function showControls(obj) {
             set("uiNombreEntidad", "BANCO");
             break;
         case BACK_TO_BACK:
-            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('divTabla').style.display = 'none';
+            document.getElementById('divTablaBackToBack').style.display = 'block';
             document.getElementById('div-planilla-pago').style.display = 'none';
             document.getElementById('uiContainerTipoPago').style.display = 'none';
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
@@ -932,7 +962,7 @@ function showControls(obj) {
             elementRutaVendedor.classList.add('obligatorio');
             break;
         case OPERACION_ESPECIALES_1:
-            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('divTabla').style.display = 'none';
             document.getElementById('div-planilla-pago').style.display = 'none';
             document.getElementById('uiContainerTipoPago').style.display = 'none';
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
@@ -1493,7 +1523,7 @@ function setDataControls(codigoOperacion, data) {
 
             break;
         case OPERACION_ESPECIALES_1:
-            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('divTabla').style.display = 'none';
             document.getElementById('div-planilla-pago').style.display = 'none';
             document.getElementById('uiContainerTipoPago').style.display = 'none';
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
@@ -1507,10 +1537,24 @@ function setDataControls(codigoOperacion, data) {
                     elementOtrosIngresos.classList.add('obligatorio');
                     document.getElementById('div-otros-ingresos').style.display = 'block';
                     document.querySelector('#uiCodigoOtroIngreso').value = data.codigoOtroIngreso.toString();
+
+                    document.getElementById('divTablaEspeciales1').style.display = 'none';
+                    document.getElementById('divTabla').style.display = 'block';
+                    let table = $('#tabla').DataTable();
+                    table.$("input[type=radio]").prop("checked", false);
+                    table.$("input[type=search]").val('');
+                    table.search('').draw();
                 })
             } else {
                 document.getElementById('div-otros-ingresos').style.display = 'none';
                 elementOtrosIngresos.classList.remove('obligatorio');
+
+                document.getElementById('divTabla').style.display = 'none';
+                document.getElementById('divTablaEspeciales1').style.display = 'block';
+                let tableEspeciales1 = $('#tablaEspeciales1').DataTable();
+                tableEspeciales1.$("input[type=radio]").prop("checked", false);
+                tableEspeciales1.$("input[type=search]").val('');
+                tableEspeciales1.search('').draw();
             }
 
             break;
@@ -2030,7 +2074,9 @@ function intelligenceSearch() {
     fetchGet("Entidad/GetAllEntidadesGenericas", "json", function (rpta) {
         if (rpta != null) {
             let listaEntidadesGenericas = rpta.listaEntidadesGenericas;
+            let listaEntidadesEspeciales1 = rpta.listaEntidadesEspeciales1;
             let listaEntidadesEspeciales2 = rpta.listaEntidadesEspeciales2;
+            let listaBackToBack = rpta.listaEntidadesBackToBack;
             let objConfigEntidadesGenericas = {
                 cabeceras: ["codigo", "nombre entidad", "codigo categoria", "categoria", "codigo operacion", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta"],
                 propiedades: ["codigoEntidad", "nombreEntidad", "codigoCategoriaEntidad", "nombreCategoria", "codigoOperacionCaja", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta"],
@@ -2063,6 +2109,44 @@ function intelligenceSearch() {
                 slug: "codigoEntidad"
             }
             pintarEntidades(objConfigEntidadesGenericas, listaEntidadesGenericas);
+
+            let objConfigEspeciales1 = {
+                cabeceras: ["codigo", "nombre entidad", "codigo categoria", "categoria", "codigo operacion", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta"],
+                propiedades: ["codigoEntidad", "nombreEntidad", "codigoCategoriaEntidad", "nombreCategoria", "codigoOperacionCaja", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta"],
+                divContenedorTabla: "divContenedorTablaEspeciales1",
+                divPintado: "divTablaEspeciales1",
+                idtabla: "tablaEspeciales1",
+                ocultarColumnas: true,
+                hideColumns: [
+                    {
+                        "targets": [0],
+                        "className": "dt-body-center"
+                    }, {
+                        "targets": [3],
+                        "visible": false
+                    }, {
+                        "targets": [4],
+                        "visible": false
+                    }, {
+                        "targets": [5],
+                        "visible": false
+                    }, {
+                        "targets": [6],
+                        "visible": false
+                    }, {
+                        "targets": [7],
+                        "visible": false
+                    }, {
+                        "targets": [8],
+                        "visible": false
+                    }],
+                radio: true,
+                paginar: true,
+                eventoradio: "EntidadesEspeciales1",
+                slug: "codigoEntidad",
+                autoWidth: false
+            }
+            pintarEntidades(objConfigEspeciales1, listaEntidadesEspeciales1);
 
             let objConfigEspeciales2 = {
                 cabeceras: ["codigo", "nombre entidad", "codigo categoria", "categoria", "codigo operacion", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta"],
@@ -2101,6 +2185,45 @@ function intelligenceSearch() {
                 autoWidth: false
             }
             pintarEntidades(objConfigEspeciales2, listaEntidadesEspeciales2);
+
+            let objConfigBackToBack = {
+                cabeceras: ["codigo", "nombre entidad", "codigo categoria", "categoria", "codigo operacion", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta"],
+                propiedades: ["codigoEntidad", "nombreEntidad", "codigoCategoriaEntidad", "nombreCategoria", "codigoOperacionCaja", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta"],
+                divContenedorTabla: "divContenedorTablaBackToBack",
+                divPintado: "divTablaBackToBack",
+                idtabla: "tablaBackToBack",
+                ocultarColumnas: true,
+                hideColumns: [
+                    {
+                        "targets": [0],
+                        "className": "dt-body-center"
+                    }, {
+                        "targets": [3],
+                        "visible": false
+                    }, {
+                        "targets": [4],
+                        "visible": false
+                    }, {
+                        "targets": [5],
+                        "visible": false
+                    }, {
+                        "targets": [6],
+                        "visible": false
+                    }, {
+                        "targets": [7],
+                        "visible": false
+                    }, {
+                        "targets": [8],
+                        "visible": false
+                    }],
+                radio: true,
+                paginar: true,
+                eventoradio: "EntidadesBackToBack",
+                slug: "codigoEntidad",
+                autoWidth: false
+            }
+            pintarEntidades(objConfigBackToBack, listaBackToBack);
+
         } else {
             Warning("Error en la obtención de entidades");
         }
@@ -2437,6 +2560,26 @@ function getDataRowRadioEntidades(obj) {
 }
 
 
+function getDataRowRadioEntidadesEspeciales1(obj) {
+    // Incluir el radioButton al inicio, por eso se comienza por la columna 1
+    document.getElementById('div-captura-proveedor').style.display = 'none';
+    let elementNombreProveedor = document.getElementById('uiNombreProveedor');
+    elementNombreProveedor.value = "";
+    let table = $('#tablaEspeciales1').DataTable();
+    $('#tablaEspeciales1 tbody').on('change', 'tr', 'input:radio', function () {
+        let rowIdx = table.row(this).index();
+        set("uiCodigoEntidad", table.cell(rowIdx, 1).data());
+        set("uiNombreEntidad", table.cell(rowIdx, 2).data());
+        set("uiCodigoCategoriaEntidad", table.cell(rowIdx, 3).data());
+        set("uiCategoriaEntidad", table.cell(rowIdx, 4).data());
+        set("uiCodigoOperacionCaja", table.cell(rowIdx, 5).data());
+        set("uiCodigoArea", table.cell(rowIdx, 6).data());
+        set("uiCodigoCanalVenta", table.cell(rowIdx, 8).data());
+        //document.getElementById('div-ventas-en-ruta').style.display = 'none';
+    });
+}
+
+
 function getDataRowRadioEntidadesEspeciales2(obj) {
     // Incluir el radioButton al inicio, por eso se comienza por la columna 1
     document.getElementById('div-captura-proveedor').style.display = 'none';
@@ -2456,6 +2599,25 @@ function getDataRowRadioEntidadesEspeciales2(obj) {
         let elementRutaVendedor = document.getElementById("uiRutaVendedor");
         elementRutaVendedor.classList.remove('obligatorio');
         FillComboUnicaOpcion("uiRutaVendedor", "332", "332");
+    });
+}
+
+function getDataRowRadioEntidadesBackToBack(obj) {
+    // Incluir el radioButton al inicio, por eso se comienza por la columna 1
+    document.getElementById('div-captura-proveedor').style.display = 'none';
+    let elementNombreProveedor = document.getElementById('uiNombreProveedor');
+    elementNombreProveedor.value = "";
+    let table = $('#tablaBackToBack').DataTable();
+    $('#tablaBackToBack tbody').on('change', 'tr', 'input:radio', function () {
+        let rowIdx = table.row(this).index();
+        set("uiCodigoEntidad", table.cell(rowIdx, 1).data());
+        set("uiNombreEntidad", table.cell(rowIdx, 2).data());
+        set("uiCodigoCategoriaEntidad", table.cell(rowIdx, 3).data());
+        set("uiCategoriaEntidad", table.cell(rowIdx, 4).data());
+        set("uiCodigoOperacionCaja", table.cell(rowIdx, 5).data());
+        set("uiCodigoArea", table.cell(rowIdx, 6).data());
+        set("uiCodigoCanalVenta", table.cell(rowIdx, 8).data());
+        //document.getElementById('div-ventas-en-ruta').style.display = 'none';
     });
 }
 
@@ -2600,8 +2762,12 @@ function GuardarEntidad(obj) {
             if (/^[0-9]+$/.test(data)) {
                 document.getElementById("uiClosePopupEntidad").click();
                 let table = $('#tabla').DataTable();
-                if (codigoCategoriaEntidad == CLIENTES_ESPECIALES_2) {
-                    table = $('#tablaEspeciales2').DataTable();
+                if (codigoCategoriaEntidad == CLIENTES_ESPECIALES_1) {
+                    table = $('#tablaEspeciales1').DataTable();
+                } else {
+                    if (codigoCategoriaEntidad == CLIENTES_ESPECIALES_2) {
+                        table = $('#tablaEspeciales2').DataTable();
+                    }
                 }
                 table.row.add([
                     "<input type='radio' name='radio' class='table-row-selected chkSelected' value='" + data + "' onclick = 'getDataRowRadioEntidades(this)'></input>",

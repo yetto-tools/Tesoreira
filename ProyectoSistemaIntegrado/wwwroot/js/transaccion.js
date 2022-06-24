@@ -26,6 +26,10 @@
                 fillCombosBusquedaComplemento();
                 MostrarDepositosBancarios(-1, -1, -1);
                 break;
+            case "ComplementoDepositosBancariosTesoreria":
+                fillCombosBusquedaComplementoTesoreria();
+                MostrarDepositosBancariosEnProceso(-1, -1);
+                break;
             case "ComplementoEmpresaGastos":
                 fillCombosBusquedaComplemento();
                 MostrarGastosParaAsignacionDeEmpresa(-1, -1, -1);
@@ -139,6 +143,19 @@ function fillCombosBusquedaComplemento() {
         }
         FillComboUnicaOpcion("uiFiltroSemana", "-1", "-- No Existen semanas -- ");
         FillComboUnicaOpcion("uiFiltroReporteCaja", "-1", "-- No Existen fechas -- ");
+    })
+}
+
+function fillCombosBusquedaComplementoTesoreria() {
+    fetchGet("Transaccion/FillCombosConsultaTransacciones", "json", function (rpta) {
+        let listaAnios = rpta.listaAnios;
+        if (listaAnios.length == 1) {
+            let data = [{ "value": "-1", "text": "- seleccione -" }, { "value": listaAnios[0]["anio"], "text": listaAnios[0]["anio"] }]
+            FillComboSelectOption(data, "uiFiltroAnio", "value", "text", "- seleccione -", "-1");
+        } else {
+            FillCombo(listaAnios, "uiFiltroAnio", "anio", "anio", "- seleccione -", "-1");
+        }
+        FillComboUnicaOpcion("uiFiltroSemana", "-1", "-- No Existen semanas -- ");
     })
 }
 
@@ -1265,6 +1282,7 @@ function clickActualizarNumeroBoletaDeposito(obj) {
     });
 }
 
+
 function GenerarExcelTransaccionesRevision() {
     let anioOperacion = parseInt(document.getElementById("uiFiltroAnio").value);
     let semanaOperacion = parseInt(document.getElementById("uiFiltroSemana").value);
@@ -1530,3 +1548,109 @@ function MostrarTransaccionesConsultaLimitada(anioOperacion, semanaOperacion, co
     pintar(objConfiguracion);
 }
 
+
+function buscarTransaccionesBancariasEnProceso() {
+    let anioOperacion = parseInt(document.getElementById("uiFiltroAnio").value);
+    let semanaOperacion = parseInt(document.getElementById("uiFiltroSemana").value);
+    MostrarDepositosBancariosEnProceso(anioOperacion, semanaOperacion);
+}
+
+function MostrarDepositosBancariosEnProceso(anioOperacion, semanaOperacion) {
+    let objConfiguracion = {
+        url: "Transaccion/BuscarTransaccionesDepositosBancariosEnProceso/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString(),
+        cabeceras: ["Código", "Código Operación", "Operación", "Fecha Operación", "Día Operación", "Fecha Recibo", "Número Recibo", "Entidad", "Cuenta", "Categoría", "Monto", "Número Voucher", "Número Boleta", "Estado", "codigoEstadoSolicitudCorreccion", "Estado Corrección", "Fecha Transacción", "Creado por", "Signo", "Número Recibo", "Ruta", "Fecha Impresión", "codigoTransaccionAnt", "Revisado", "permisoActualizar"],
+        propiedades: ["codigoTransaccion", "codigoOperacion", "operacion", "fechaStr", "nombreDiaOperacion", "fechaReciboStr", "numeroReciboStr", "nombreEntidad", "numeroCuenta", "categoriaEntidad", "monto", "numeroVoucher", "numeroBoleta", "estado", "codigoEstadoSolicitudCorreccion", "estadoSolicitudCorreccion", "fechaIngStr", "usuarioIng", "signo", "numeroReciboStr", "ruta", "fechaImpresionStr", "codigoTransaccionAnt", "revisado", "permisoActualizar"],
+        displaydecimals: ["monto"],
+        divContenedorTabla: "divContenedorTabla",
+        divPintado: "divTabla",
+        addTextBox: true,
+        propertiesColumnTextBox: [
+            {
+                "header": "Número Boleta",
+                "value": "numeroBoleta",
+                "name": "NumeroBoleta",
+                "align": "text-center",
+                "validate": "solonumeros"
+            }],
+        actualizar: true,
+        funcionactualizar: "EnTesoreriaNumeroBoletaDeposito",
+        paginar: true,
+        ocultarColumnas: true,
+        hideColumns: [
+            {
+                "targets": [1],
+                "visible": false
+            }, {
+                "targets": [5],
+                "visible": false
+            }, {
+                "targets": [6],
+                "visible": false
+            }, {
+                "targets": [9],
+                "visible": false
+            }, {
+                "targets": [10],
+                "className": "dt-body-right"
+            }, {
+                "targets": [13],
+                "visible": false
+            }, {
+                "targets": [14],
+                "visible": false
+            }, {
+                "targets": [15],
+                "visible": false
+            }, {
+                "targets": [16],
+                "visible": false
+            }, {
+                "targets": [17],
+                "visible": false
+            }, {
+                "targets": [18],
+                "visible": false
+            }, {
+                "targets": [19],
+                "visible": false
+            }, {
+                "targets": [20],
+                "visible": false
+            }, {
+                "targets": [21],
+                "visible": false
+            }, {
+                "targets": [22],
+                "visible": false
+            }, {
+                "targets": [23],
+                "visible": false
+            }, {
+                "targets": [24],
+                "visible": false
+            }],
+        slug: "codigoTransaccion"
+    }
+    pintar(objConfiguracion);
+}
+
+
+function clickActualizarEnTesoreriaNumeroBoletaDeposito(obj) {
+    let codigoTransaccion = obj;
+    let table = $('#tabla').DataTable();
+    $('#tabla tbody').on('click', '.option-actualizar', function () {
+        let rowIdx = table.row(this).index();
+        let numeroBoletaDeposito = table.cell(rowIdx, 25).nodes().to$().find('input').val();
+        if (numeroBoletaDeposito != "") {
+            fetchGet("Transaccion/ActualizarNumeroBoletaDeposito/?codigoTransaccion=" + codigoTransaccion.toString() + "&numeroBoletaDeposito=" + numeroBoletaDeposito, "text", function (data) {
+                if (data == "OK") {
+                    buscarTransaccionesBancariasEnProceso();
+                } else {
+                    MensajeError(data);
+                }
+            });
+        } else {
+            Warning("No ha registrado número de boleta de depósito");
+        }
+    });
+}

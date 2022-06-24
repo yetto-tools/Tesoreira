@@ -92,5 +92,7 @@ namespace ProyectoSistemaIntegrado.TagHelpers
             html.Append("</div>");
             output.PreContent.SetHtmlContent(html.ToString());
         }
+
+
     }
 }

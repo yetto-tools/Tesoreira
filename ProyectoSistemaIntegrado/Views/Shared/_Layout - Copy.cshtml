@@ -27,43 +27,40 @@
             ProgramacionSemanalCLS objSemanaActual = JsonConvert.DeserializeObject<ProgramacionSemanalCLS>(cadenaSemana);
             string tituloPrincipal = Context.Session.GetString("tituloPrincipal");
         }
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container">
+        <div class="m-4">
+            @*<div class="container">*@
+            @*<nav class="navbar navbar-expand-lg navbar-dark bg-primary">*@
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
                 <div class="container-fluid">
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main_nav" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="main_nav">
+
+                    @*<div class="collapse navbar-collapse" id="main_nav">*@
+                    <div class="collapse navbar-collapse" id="navbarCollapse1">
                         <ul class="navbar-nav">
+                            @*<li class="nav-item active"><a class="nav-link" href="#">Home </a> </li>*@
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">  Sistema  </a>
+                                <a class="nav-link dropdown-toggle show" href="#" data-bs-toggle="dropdown">Sistema</a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="/Usuario/CambioPassword">Cambio de contraseña</a></li>
+                                    <li>
+                                        <a class="dropdown-item" href="/Usuario/CambioPassword">Cambio de contraseña</a>
+                                    </li>
                                 </ul>
                             </li>
-
                             <site-map items="@listItems">  </site-map>
-
-                            <li class="nav-item"><a class="nav-link" href="/Reportes/Index">Reportes</a></li>
+                            @*<li class="nav-item"><a class="nav-link" href="#"> About </a></li>*@
+                            <li class="nav-item active"><a class="nav-link" href="/Reportes/Index">Reportes</a></li>
                             <li class="nav-item active"><a class="nav-link" href="/Login/CerrarSesion">Cerrar Sesión</a></li>
-
                         </ul>
-                    </div><!-- navbar-collapse.// -->
+                    </div> <!-- navbar-collapse.// -->
                 </div> <!-- container-fluid.// -->
-            </div>
-        </nav>
+            </nav>
+            <!--</div>--><!-- container //  -->
+        </div>
     </header>
 
     <div id="container">
-        <div>
-            <p>Usuario: @objUsuario.NombreUsuario</p>
-        </div>
-        <div class="titulo-principal">
-            <h3>@tituloPrincipal</h3>
-        </div>
-        <div>
-            <p>Semana: @objSemanaActual.NumeroSemana</p>
-        </div>
+        <div><p>Usuario: @objUsuario.NombreUsuario</p></div>
+        <div class="titulo-principal"><h3>@tituloPrincipal</h3></div>
+        <div><p>Semana: @objSemanaActual.NumeroSemana</p></div>
         <input type="hidden" id="hdfOculto" value="@Url.Content("~")" />
         <input type="hidden" id="uiFechaSistema" value="@objSemanaActual.FechaSistema" />
         <input type="hidden" id="uiNumeroSemanaActualSistema" value="@objSemanaActual.NumeroSemana" />

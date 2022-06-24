@@ -64,6 +64,11 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
             return View();
         }
 
+        public IActionResult ComplementoDepositosBancariosTesoreria()
+        {
+            return View();
+        }
+
         public IActionResult ComplementoEmpresaGastos()
         {
             return View();
@@ -161,6 +166,15 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
 
             TransaccionBL obj = new TransaccionBL();
             return obj.BuscarTransaccionesDepositosBancarios(anioOperacion, semanaOperacion, codigoReporte, objUsuario.SuperAdmin);
+        }
+
+        public List<TransaccionCLS> BuscarTransaccionesDepositosBancariosEnProceso(int anioOperacion, int semanaOperacion)
+        {
+            ViewBag.Message = HttpContext.Session.GetString("usuario");
+            UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
+
+            TransaccionBL obj = new TransaccionBL();
+            return obj.BuscarTransaccionesDepositosBancariosEnProceso(anioOperacion, semanaOperacion, objUsuario.SuperAdmin);
         }
 
         public List<TransaccionCLS> BuscarTransaccionesGasto(int anioOperacion, int semanaOperacion, int codigoReporte, int esSuperAdmin)

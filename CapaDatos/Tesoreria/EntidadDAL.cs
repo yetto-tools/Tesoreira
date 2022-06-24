@@ -338,7 +338,8 @@ namespace CapaDatos.Tesoreria
                            0 AS codigo_operacion_caja,
                            y.codigo_area,
                            0 AS codigo_operacion_entidad, 
-                           0 AS codigo_canal_venta 
+                           0 AS codigo_canal_venta,
+                           y.codigo_tipo_btb
                     FROM db_rrhh.empleado y
                     INNER JOIN db_rrhh.area x
                     ON y.codigo_area = x.codigo_area
@@ -359,7 +360,8 @@ namespace CapaDatos.Tesoreria
                            0 AS codigo_operacion_caja,
                            ISNULL(x.codigo_area,0) AS codigo_area,
                            0 AS codigo_operacion_entidad, 
-                           0 AS codigo_canal_venta 
+                           0 AS codigo_canal_venta,
+                           0 AS codigo_tipo_btb 
                     FROM db_rrhh.persona y
                     LEFT JOIN db_rrhh.area x
                     ON y.codigo_area = x.codigo_area
@@ -388,7 +390,8 @@ namespace CapaDatos.Tesoreria
                            END AS codigo_operacion_caja,
                            0 AS codigo_area,
                            0 AS codigo_operacion_entidad,
-                           x.codigo_canal_venta
+                           x.codigo_canal_venta,
+                           0 AS codigo_tipo_btb 
                     FROM db_ventas.config_vendedor_ruta x
                     INNER JOIN db_ventas.vendedor y
                     ON x.codigo_vendedor = y.codigo_vendedor
@@ -415,7 +418,8 @@ namespace CapaDatos.Tesoreria
                            END AS codigo_operacion_caja,
                            0 AS codigo_area,
                            0 AS codigo_operacion_entidad, 
-                           0 AS codigo_canal_venta 
+                           0 AS codigo_canal_venta,
+                           0 AS codigo_tipo_btb 
                     FROM db_ventas.cliente
                     WHERE estado = @EstadoCliente 
                       AND codigo_tipo_cliente IN (2,3)
@@ -432,7 +436,8 @@ namespace CapaDatos.Tesoreria
                            END AS codigo_operacion_caja,
                            0 AS codigo_area,
                            y.codigo_operacion AS codigo_operacion_entidad,
-                           0 AS codigo_canal_venta 
+                           0 AS codigo_canal_venta,
+                           0 AS codigo_tipo_btb 
                     FROM db_tesoreria.entidad y
                     INNER JOIN db_tesoreria.entidad_categoria x
                     ON y.codigo_categoria_entidad = x.codigo_categoria_entidad
@@ -447,7 +452,8 @@ namespace CapaDatos.Tesoreria
 	                       y.codigo_operacion_caja, 
 	                       y.codigo_area,
                            0 AS codigo_operacion_entidad, 
-                           0 AS codigo_canal_venta 
+                           0 AS codigo_canal_venta,
+                           0 AS codigo_tipo_btb 
                     FROM( SELECT CAST(codigo_empresa AS VARCHAR(15)) AS codigo_entidad,
                                  nombre_comercial AS nombre_completo,
                                  1 AS codigo_categoria_entidad,
@@ -479,9 +485,12 @@ namespace CapaDatos.Tesoreria
                             int postCodigoArea = dr.GetOrdinal("codigo_area");
                             int postCodigoOperacionEntidad = dr.GetOrdinal("codigo_operacion_entidad");
                             int postCodigoCanalVenta = dr.GetOrdinal("codigo_canal_venta");
+                            int postCodigoTipoBTB = dr.GetOrdinal("codigo_tipo_btb");
 
                             List<EntidadGenericaCLS> listaGenerica = new List<EntidadGenericaCLS>();
+                            List<EntidadGenericaCLS> listaEspeciales1 = new List<EntidadGenericaCLS>();
                             List<EntidadGenericaCLS> listaEspeciales2 = new List<EntidadGenericaCLS>();
+                            List<EntidadGenericaCLS> listaBackToBack = new List<EntidadGenericaCLS>();
                             while (dr.Read())
                             {
                                 objEntidad = new EntidadGenericaCLS();
@@ -493,13 +502,30 @@ namespace CapaDatos.Tesoreria
                                 objEntidad.CodigoArea = (Int16)dr.GetInt32(postCodigoArea);
                                 objEntidad.CodigoOperacionEntidad = (Int16)dr.GetInt32(postCodigoOperacionEntidad);
                                 objEntidad.CodigoCanalVenta = (Int16)dr.GetInt32(postCodigoCanalVenta);
-                                if (objEntidad.CodigoCategoriaEntidad == Constantes.Entidad.Categoria.CLIENTES_ESPECIALES_2)
-                                    listaEspeciales2.Add(objEntidad);
-                                else
-                                    listaGenerica.Add(objEntidad);
+                                objEntidad.CodigoTipoBTB = dr.GetInt32(postCodigoTipoBTB);
+                                switch (objEntidad.CodigoCategoriaEntidad)
+                                {
+                                    case Constantes.Entidad.Categoria.CLIENTES_ESPECIALES_1:
+                                        listaEspeciales1.Add(objEntidad);
+                                        break;
+
+                                    case Constantes.Entidad.Categoria.CLIENTES_ESPECIALES_2:
+                                        listaEspeciales2.Add(objEntidad);
+                                        break;
+                                    default:
+                                        if (objEntidad.CodigoTipoBTB == Constantes.Empleado.TipoBackToBack.EFECTIVO_COMPLETO_POR_TESORERIA ||
+                                            objEntidad.CodigoTipoBTB == Constantes.Empleado.TipoBackToBack.EFECTIVO_IGSS_POR_TESORERIA)
+                                        {
+                                            listaBackToBack.Add(objEntidad);
+                                        }
+                                        listaGenerica.Add(objEntidad);
+                                        break;
+                                }
                             }
                             objEntidadesGenericas.listaEntidadesGenericas = listaGenerica;
+                            objEntidadesGenericas.listaEntidadesEspeciales1 = listaEspeciales1;
                             objEntidadesGenericas.listaEntidadesEspeciales2 = listaEspeciales2;
+                            objEntidadesGenericas.listaEntidadesBackToBack = listaBackToBack;
 
                         }
                     }

@@ -1,11 +1,26 @@
 ﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using CapaEntidad.Administracion;
 @{
+    ViewData["Title"] = "Generacion";
+    string impresionStr = Context.Session.GetString("impresion");
+    List<ParametroImpresionCLS> listImpresoras = JsonConvert.DeserializeObject<List<ParametroImpresionCLS>>(impresionStr);
+    foreach (ParametroImpresionCLS impresora in listImpresoras)
+    {
+        if (impresora.CodigoConfiguracion == Constantes.ConfiguracionImpresora.IMPRESORA_CORTE_ESPECIALES2)
+        {
+            TempData["Ip"] = impresora.Ip;
+            TempData["Puerto"] = impresora.Puerto;
+        }
+    }
+
     Context.Session.SetString("tituloPrincipal", "Generación de Traslados Especiales 2");
 }
 
 <div style="height: 15px; width:100%;">
 
 </div>
+
 
 <form method="post" id="frmBusqueda">
     <table style="margin-left: auto; margin-right: auto;">
@@ -47,5 +62,4 @@
             });
         });
     </script>
-
 }

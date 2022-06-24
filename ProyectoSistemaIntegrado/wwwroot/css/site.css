@@ -7,6 +7,11 @@ a.navbar-brand {
   word-break: break-all;
 }
 
+.navbar-inverse {
+    background-color: #222;
+    border-color: #080808;
+}
+
 /* Provide sufficient contrast against white background */
 a {
   color: #0366d6;

@@ -4,14 +4,14 @@
         position: relative;
     }
 
-    .dropdown-menu .submenu {
+    .nav-item .submenu {
         display: none;
         position: absolute;
         left: 100%;
         top: -7px;
     }
 
-    .dropdown-menu .submenu-left {
+    .nav-item .submenu-left {
         right: 100%;
         left: auto;
     }
@@ -28,7 +28,6 @@
 
 /* ============ small devices ============ */
 @media (max-width: 991px) {
-
     .dropdown-menu .dropdown-menu {
         margin-left: 0.7rem;
         margin-right: 0.7rem;
@@ -37,28 +36,6 @@
 }
 /* ============ small devices .end// ============ */
 
-/*@media (min-width: 1200px) {
-    .container {
-        width: 1170px;
-    }
-}
-
-@media (min-width: 992px) {
-    .container {
-        width: 970px;
-    }
-
-@media (min-width: 768px) {
-    .container {
-        width: 750px;
-    }
-
-.container {
-    padding-right: 15px;
-    padding-left: 15px;
-    margin-right: auto;
-    margin-left: auto;
-}*/
 
 #container {
     display: flex; /* establish flex container */
@@ -68,17 +45,17 @@
     /*background-color: lightyellow;*/
 }
 
-    #container > div {
-        width: 200px;
-        height: 65px;
-        /* border: 2px dashed red;*/
-    }
+#container > div {
+    width: 200px;
+    height: 65px;
+   /* border: 2px dashed red;*/
+}
 
-        #container > div.titulo-principal {
-            width: 600px;
-            height: 35px;
-            /* border: 2px dashed red;*/
-        }
+#container > div.titulo-principal {
+    width: 600px;
+    height: 35px;
+   /* border: 2px dashed red;*/
+}
 
 
 .input-valor {
@@ -90,6 +67,6 @@
     text-align: right;
     color: #48484D;
     padding: 4px;
-    background-color: #fff;
+    background-color:#fff;
     box-shadow: inset -1px -1px 4px 1px #eee;
 }

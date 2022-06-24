@@ -16,5 +16,13 @@
             public const short SUSPENDIDO = 4;
         }
 
+        public static class TipoBackToBack
+        {
+            public const short NO_APLICA = 0;
+            public const short DEPOSITO_COMPLETO = 1;
+            public const short EFECTIVO_COMPLETO_POR_TESORERIA = 2;
+            public const short EFECTIVO_IGSS_POR_TESORERIA = 3;
+        }
+
     }
 }

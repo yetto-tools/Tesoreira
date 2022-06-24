@@ -20,12 +20,13 @@ namespace CapaDatos.Administracion
                 {
                     conexion.Open();
                     string sql = @"
-                    SELECT codigo_configuracion, 
+                    SELECT codigo_configuracion,
 	                       nombre_impresora, 
-	                       numero_copias 
+	                       numero_copias,
+                           ip,
+                           puerto 
                     FROM db_admon.parametro_impresion
                     WHERE estado = @CodigoEstado";
-
                     using (SqlCommand cmd = new SqlCommand(sql, conexion))
                     {
                         cmd.CommandType = CommandType.Text;
@@ -38,18 +39,22 @@ namespace CapaDatos.Administracion
                             int postCodigoConfiguracion = dr.GetOrdinal("codigo_configuracion");
                             int postNombreImpresora = dr.GetOrdinal("nombre_impresora");
                             int postNumeroCopias = dr.GetOrdinal("numero_copias");
+                            int postIp = dr.GetOrdinal("ip");
+                            int postPuerto = dr.GetOrdinal("puerto");
                             while (dr.Read())
                             {
                                 objParametro = new ParametroImpresionCLS();
                                 objParametro.CodigoConfiguracion = dr.GetInt16(postCodigoConfiguracion);
                                 objParametro.NombreImpresora = dr.GetString(postNombreImpresora);
                                 objParametro.NumeroCopias = dr.GetInt16(postNumeroCopias);
+                                objParametro.Ip = dr.IsDBNull(postIp) ? "" : dr.GetString(postIp);
+                                objParametro.Puerto = dr.GetInt32(postPuerto);
                                 lista.Add(objParametro);
                             }
                         }
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     conexion.Close();
                     lista = null;

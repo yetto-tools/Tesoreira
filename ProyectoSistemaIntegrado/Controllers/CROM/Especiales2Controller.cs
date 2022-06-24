@@ -38,8 +38,11 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             return View();
         }
 
-        public IActionResult PrintAPI([FromBody] List<TrasladoEspeciales2DetalleCLS> listaDetalle, string fechaGeneracionStr)
+        public IActionResult PrintAPI([FromBody] List<TrasladoEspeciales2DetalleCLS> listaDetalle, int codigoTraslado, string fechaGeneracionStr)
         {
+            string ipString = (TempData["Ip"]).ToString();
+            int puerto = Convert.ToInt32(TempData["Puerto"]);
+
             ViewBag.Message = HttpContext.Session.GetString("usuario");
             UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
 
@@ -51,7 +54,7 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             SecurityElement securityElement2 = new SecurityElement("ConnectAccess");
             // Second 'SocketPermission' ip-address is '192.168.144.240' for 'All' transport types and
             // for 'All' ports for the ip-address.
-            SecurityElement securityElement4 = new SecurityElement("URI", "10.34.1.48");
+            SecurityElement securityElement4 = new SecurityElement("URI", ipString);
             //securityElement2.AddChild(securityElement3);
             securityElement2.AddChild(securityElement4);
             //securityElement1.AddChild(securityElement2);
@@ -65,10 +68,8 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
                 ProtocolType.Tcp
                 );
             //clientSock.NoDelay = true;
-            IPAddress ip = IPAddress.Parse("10.34.1.48");
-            //IPEndPoint remoteEP = new IPEndPoint(ip, 4730);
-            //IPEndPoint remoteEP = new IPEndPoint(ip, 65001);
-            IPEndPoint remoteEP = new IPEndPoint(ip, 9100);
+            IPAddress ip = IPAddress.Parse(ipString);
+            IPEndPoint remoteEP = new IPEndPoint(ip, puerto);
             clientSock.Connect(remoteEP);
             if (!clientSock.Connected)
             {
@@ -88,20 +89,31 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             // Sends an ESC/POS command to the printer to cut the paper
 
             string tituloTotal = "TOTAL";
+            string linea = new string('-', 40);
             string t = (fechaGeneracionStr + "\r\n");
+            t = t + ("Traslado No.: " + codigoTraslado.ToString() + "\r\n");
             t = t + ("Usuario:" + objUsuario.IdUsuario + "\r\n");
             t = t + ("Listado Especiales 2 \r\n");
             decimal montoTotal = 0;
-            t = t + ("Nombre             Monto \r\n");
+            t = t + ("Nombre                          Monto \r\n");
             foreach (TrasladoEspeciales2DetalleCLS dr in listaDetalle)
             {
-                t = t + (dr.NombreClienteDepurado.PadRight(15).Substring(0, 15) + " ");
+                t = t + (dr.NombreClienteDepurado.PadRight(30).Substring(0, 30) + " ");
                 t = t + dr.Monto.ToString("N2").PadLeft(10).Substring(0, 10);
                 t = t + ("\r\n");
                 montoTotal = montoTotal + dr.Monto;
             }
-            t = t + (tituloTotal.PadRight(15).Substring(0, 15) + " ");
+            t = t + (linea + "\r\n");
+            t = t + (tituloTotal.PadRight(30).Substring(0, 30) + " ");
             t = t + montoTotal.ToString("N2").PadLeft(10).Substring(0, 10);
+            t = t + "\r\n";
+            t = t + "\r\n";
+            t = t + "\r\n";
+            t = t + "\r\n";
+            t = t + "\r\n";
+            t = t + "\r\n";
+            t = t + "\r\n";
+
             char[] array = t.ToCharArray();
             byte[] byData = enc.GetBytes(array);
             clientSock.Send(byData);
@@ -138,7 +150,7 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             HttpClient client = new HttpClient();
 
             // Setting Base address.
-            client.BaseAddress = new Uri("http://localhost:" + puerto + "/api/");
+            client.BaseAddress = new Uri("http://10.34.1.43:" + puerto + "/api/");
 
             // Setting content type
             client.DefaultRequestHeaders.Accept.Clear();
@@ -155,7 +167,7 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
                     var row = new TrasladoEspeciales2CLS
                     {
                         CodigoTraslado = Convert.ToInt32(value["codigo_traslado"].ToString()),
-                        FechaOperacionStr = DateTime.Parse(value["fecha_operacion"].ToString()).ToShortDateString(),
+                        FechaOperacionStr = value["fecha_operacion"].ToString(),
                         MontoTotal = Convert.ToDecimal(value["monto_total"].ToString()),
                         NumeroPedidos = Convert.ToInt32(value["numero_pedidos"].ToString()),
                         CodigoEstado = Convert.ToInt32(value["codigo_estado"].ToString()),
@@ -185,7 +197,7 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             HttpClient client = new HttpClient();
 
             // Setting Base address.
-            client.BaseAddress = new Uri("http://localhost:" + puerto + "/api/");
+            client.BaseAddress = new Uri("http://10.34.1.43:" + puerto + "/api/");
 
             // Setting content type
             client.DefaultRequestHeaders.Accept.Clear();
@@ -198,7 +210,6 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             });
 
             List<TrasladoEspeciales2CLS> list = new List<TrasladoEspeciales2CLS>();
-            //HttpResponseMessage response = await client.PostAsync("http://localhost:5000/api/especiales2/generar", content);
             HttpResponseMessage response = await client.PostAsync("especiales2/generar", content);
             if (response.IsSuccessStatusCode)
             {
@@ -214,7 +225,7 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             HttpClient client = new HttpClient();
 
             // Setting Base address.
-            client.BaseAddress = new Uri("http://localhost:" + puerto + "/api/");
+            client.BaseAddress = new Uri("http://10.34.1.43:" + puerto + "/api/");
 
             // Setting content type
             client.DefaultRequestHeaders.Accept.Clear();
@@ -233,7 +244,7 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
                     var row = new TrasladoEspeciales2CLS
                     {
                         CodigoTraslado = Convert.ToInt32(value["codigo_traslado"].ToString()),
-                        FechaOperacionStr = DateTime.Parse(value["fecha_operacion"].ToString()).ToShortDateString(),
+                        FechaOperacionStr = value["fecha_operacion"].ToString(),
                         MontoTotal = Convert.ToDecimal(value["monto_total"].ToString()),
                         NumeroPedidos = Convert.ToInt32(value["numero_pedidos"].ToString()),
                         CodigoEstado = Convert.ToInt32(value["codigo_estado"].ToString()),
@@ -260,7 +271,7 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             HttpClient client = new HttpClient();
 
             // Setting Base address.
-            client.BaseAddress = new Uri("http://localhost:" + puerto + "/api/");
+            client.BaseAddress = new Uri("http://10.34.1.43:" + puerto + "/api/");
 
             // Setting content type
             client.DefaultRequestHeaders.Accept.Clear();
@@ -271,7 +282,6 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
                 ["codigo"] = codigoTraslado.ToString()
             };
 
-            //var uri = QueryHelpers.AddQueryString("http://localhost:5000/api/especiales2/detalletraslado", query);
             var uri = QueryHelpers.AddQueryString("especiales2/detalletraslado", query);
 
             List<TrasladoEspeciales2DetalleCLS> list = new List<TrasladoEspeciales2DetalleCLS>();
@@ -317,7 +327,7 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             HttpClient client = new HttpClient();
 
             // Setting Base address.
-            client.BaseAddress = new Uri("http://localhost:" + puerto + "/api/");
+            client.BaseAddress = new Uri("http://10.34.1.43:" + puerto + "/api/");
 
             // Setting content type
             client.DefaultRequestHeaders.Accept.Clear();
@@ -330,7 +340,6 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             });
 
             List<TrasladoEspeciales2CLS> list = new List<TrasladoEspeciales2CLS>();
-            //HttpResponseMessage response = await client.PutAsync("http://localhost:5000/api/especiales2/cambiarestado", content);
             HttpResponseMessage response = await client.PutAsync("especiales2/cambiarestado", content);
             if (response.IsSuccessStatusCode)
             {
@@ -353,13 +362,12 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             HttpClient client = new HttpClient();
 
             // Setting Base address.
-            client.BaseAddress = new Uri("http://localhost:" + puerto + "/api/");
+            client.BaseAddress = new Uri("http://10.34.1.43:" + puerto + "/api/");
 
             // Setting content type
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
-            //var uri = "http://localhost:5000/api/especiales2/eliminartraslado/" + codigoTraslado.ToString();
             var uri = "especiales2/eliminartraslado/" + codigoTraslado.ToString();
 
             List<TrasladoEspeciales2CLS> list = new List<TrasladoEspeciales2CLS>();

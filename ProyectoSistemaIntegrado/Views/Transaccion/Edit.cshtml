@@ -132,18 +132,6 @@
                     </select>
                 </div>
             </div>
-            <div class="mb-3 row">
-                <label class="col-sm-2 col-form-label">Fecha Préstamo:</label>
-                <div class="col-sm-2">
-                    <input type="text" name="FechaPrestamo" class="form-control" autocomplete="off" id="uiFechaPrestamo"
-                           placeholder="Fecha préstamo" />
-                </div>
-                <label class="col-sm-2 col-form-label">Fecha Inicio Pago:</label>
-                <div class="col-sm-2">
-                    <input type="text" name="FechaInicioPago" class="form-control" autocomplete="off" id="uiFechaInicioPago"
-                           placeholder="Inicio de pago" />
-                </div>
-            </div>
         </div>
 
         <div id="div-tipo-bonos-extra" style="display:none">
@@ -608,6 +596,9 @@
     <div id="divTablaBackToBack" style="display:none">
     </div>
 
+    <div id="divTablaVendedores" style="display:none">
+    </div>
+
 </fieldset>
 
 <button class="btn btn-success" onclick="addEntidad()">Agregar Entidad</button>
@@ -725,20 +716,6 @@
     <script src="~/js/transaccion-new.js"></script>
 
     <script>
-        $(function () {
-            $("#uiFechaPrestamo").datepicker({
-                dateFormat: 'dd/mm/yy',
-                changeYear: true
-            });
-        });
-
-        $(function () {
-            $("#uiFechaInicioPago").datepicker({
-                dateFormat: 'dd/mm/yy',
-                changeYear: true
-            });
-        });
-
         $(function () {
             $("#uiFechaDocumento").datepicker({
                 dateFormat: 'dd/mm/yy',

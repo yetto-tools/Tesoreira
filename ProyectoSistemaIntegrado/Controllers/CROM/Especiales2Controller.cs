@@ -38,7 +38,7 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             return View();
         }
 
-        public IActionResult PrintAPI([FromBody] List<TrasladoEspeciales2DetalleCLS> listaDetalle, int codigoTraslado, string fechaGeneracionStr)
+        public IActionResult PrintAPI([FromBody] List<TrasladoEspeciales2DetalleCLS> listaDetalle, int codigoTraslado, string fechaOperacionStr, string fechaGeneracionStr)
         {
             string ipString = (TempData["Ip"]).ToString();
             int puerto = Convert.ToInt32(TempData["Puerto"]);
@@ -90,12 +90,14 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
 
             string tituloTotal = "TOTAL";
             string linea = new string('-', 40);
-            string t = (fechaGeneracionStr + "\r\n");
+            string t = ("Fecha y Hora de Generación: " + fechaGeneracionStr + "\r\n");
+            t = t + ("Fecha de las Operaciones: " + fechaOperacionStr + "\r\n");
             t = t + ("Traslado No.: " + codigoTraslado.ToString() + "\r\n");
             t = t + ("Usuario:" + objUsuario.IdUsuario + "\r\n");
+            t = t + "\r\n";
             t = t + ("Listado Especiales 2 \r\n");
             decimal montoTotal = 0;
-            t = t + ("Nombre                          Monto \r\n");
+            t = t + ("Nombre                             Monto \r\n");
             foreach (TrasladoEspeciales2DetalleCLS dr in listaDetalle)
             {
                 t = t + (dr.NombreClienteDepurado.PadRight(30).Substring(0, 30) + " ");
@@ -174,7 +176,7 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
                         Estado = value["estado"].ToString(),
                         ObservacionesTraslado = value["observaciones_traslado"].ToString(),
                         UsuarioIngreso = value["usuario_ing"].ToString(),
-                        FechaIngresoStr = DateTime.Parse(value["fecha_ing"].ToString()).ToString(),
+                        FechaIngresoStr = value["fecha_ing"].ToString(),
                         FechaTrasladoStr = DateTime.Parse(value["fecha_traslado"].ToString()).ToString(),
                         PermisoAnular = Convert.ToInt32(value["permiso_anular"].ToString()),
                         PermisoTraslado = Convert.ToInt32(value["permiso_traslado"].ToString()),
@@ -251,7 +253,7 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
                         Estado = value["estado"].ToString(),
                         ObservacionesTraslado = value["observaciones_traslado"].ToString(),
                         UsuarioIngreso = value["usuario_ing"].ToString(),
-                        FechaIngresoStr = DateTime.Parse(value["fecha_ing"].ToString()).ToString(),
+                        FechaIngresoStr = value["fecha_ing"].ToString(),
                         FechaTrasladoStr = DateTime.Parse(value["fecha_traslado"].ToString()).ToString(),
                         PermisoImportar = Convert.ToInt32(value["permiso_importar"].ToString()),
                         PermisoDepurar = Convert.ToInt32(value["permiso_depurar"].ToString()),

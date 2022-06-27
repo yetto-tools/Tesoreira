@@ -13,5 +13,7 @@ namespace CapaEntidad.Tesoreria
         public List<EntidadGenericaCLS> listaEntidadesEspeciales1 { get; set; }
         public List<EntidadGenericaCLS> listaEntidadesEspeciales2 { get; set; }
         public List<EntidadGenericaCLS> listaEntidadesBackToBack { get; set; }
+
+        public List<EntidadGenericaCLS> listaEntidadesVendedores { get; set; }
     }
 }

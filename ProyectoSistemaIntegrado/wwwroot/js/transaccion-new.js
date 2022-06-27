@@ -239,6 +239,13 @@ function clearDataFormulario() {
     tableBackToBack.$("input[type=search]").val('');
     tableBackToBack.search('').draw();
 
+    // Vendedores
+    document.getElementById('divTablaVendedores').style.display = 'none';
+    let tableVendedores = $('#tablaVendedores').DataTable();
+    tableVendedores.$("input[type=radio]").prop("checked", false);
+    tableVendedores.$("input[type=search]").val('');
+    tableVendedores.search('').draw();
+
     // Montos
     document.getElementById('uiCalculadora').value = "";
     document.getElementById('uiMontoTransaccion').value = "";
@@ -948,7 +955,8 @@ function showControls(obj) {
             document.getElementById("uiEfectivo").checked = true;
             break;
         case VENTAS_EN_RUTA:
-            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('divTabla').style.display = 'none';
+            document.getElementById('divTablaVendedores').style.display = 'block';
             document.getElementById('div-planilla-pago').style.display = 'none';
             document.getElementById('uiContainerTipoPago').style.display = 'none';
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
@@ -1331,7 +1339,8 @@ function setDataControls(codigoOperacion, data) {
             }
             break;
         case BACK_TO_BACK:
-            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('divTabla').style.display = 'none';
+            document.getElementById('divTablaBackToBack').style.display = 'block';
             document.getElementById('div-planilla-pago').style.display = 'none';
             document.getElementById('uiContainerTipoPago').style.display = 'none';
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
@@ -1501,7 +1510,8 @@ function setDataControls(codigoOperacion, data) {
             document.getElementById('div-bonos-extra').style.display = 'none';
             break;
         case VENTAS_EN_RUTA:
-            document.getElementById('divTabla').style.display = 'block';
+            document.getElementById('divTabla').style.display = 'none';
+            document.getElementById('divTablaVendedores').style.display = 'block';
             document.getElementById('div-planilla-pago').style.display = 'none';
             document.getElementById('uiContainerTipoPago').style.display = 'none';
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
@@ -1569,11 +1579,7 @@ function setDataControls(codigoOperacion, data) {
             document.getElementById('uiTitleDevolucionCxC').innerHTML = 'Monto Préstamo';
 
             let elementTipoCuentaPorCobrar = document.getElementById("uiTipoCuentaPorCobrar");
-            let elementFechaPrestamo = document.getElementById("uiFechaPrestamo");
-            let elementFechaInicioPago = document.getElementById("uiFechaInicioPago");
             elementTipoCuentaPorCobrar.classList.add('obligatorio');
-            elementFechaPrestamo.classList.add('obligatorio');
-            elementFechaInicioPago.classList.add('obligatorio');
             fetchGet("CuentasPorCobrar/GetListTiposCuentasPorCobrar", "json", function (rpta) {
                 FillCombo(rpta, "uiTipoCuentaPorCobrar", "codigoTipoCuentaPorCobrar", "nombre", "- seleccione -", "-1");
                 document.getElementById("uiTipoCuentaPorCobrar").value = data.codigoTipoCuentaPorCobrar.toString();
@@ -2076,7 +2082,9 @@ function intelligenceSearch() {
             let listaEntidadesGenericas = rpta.listaEntidadesGenericas;
             let listaEntidadesEspeciales1 = rpta.listaEntidadesEspeciales1;
             let listaEntidadesEspeciales2 = rpta.listaEntidadesEspeciales2;
-            let listaBackToBack = rpta.listaEntidadesBackToBack;
+            let listaEntidadesBackToBack = rpta.listaEntidadesBackToBack;
+            let listaEntidadesVendedores = rpta.listaEntidadesVendedores;
+
             let objConfigEntidadesGenericas = {
                 cabeceras: ["codigo", "nombre entidad", "codigo categoria", "categoria", "codigo operacion", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta"],
                 propiedades: ["codigoEntidad", "nombreEntidad", "codigoCategoriaEntidad", "nombreCategoria", "codigoOperacionCaja", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta"],
@@ -2222,7 +2230,45 @@ function intelligenceSearch() {
                 slug: "codigoEntidad",
                 autoWidth: false
             }
-            pintarEntidades(objConfigBackToBack, listaBackToBack);
+            pintarEntidades(objConfigBackToBack, listaEntidadesBackToBack);
+
+            let objConfigVendedores = {
+                cabeceras: ["codigo", "nombre entidad", "codigo categoria", "categoria", "codigo operacion", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta"],
+                propiedades: ["codigoEntidad", "nombreEntidad", "codigoCategoriaEntidad", "nombreCategoria", "codigoOperacionCaja", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta"],
+                divContenedorTabla: "divContenedorTablaVendedores",
+                divPintado: "divTablaVendedores",
+                idtabla: "tablaVendedores",
+                ocultarColumnas: true,
+                hideColumns: [
+                    {
+                        "targets": [0],
+                        "className": "dt-body-center"
+                    }, {
+                        "targets": [3],
+                        "visible": false
+                    }, {
+                        "targets": [4],
+                        "visible": true
+                    }, {
+                        "targets": [5],
+                        "visible": false
+                    }, {
+                        "targets": [6],
+                        "visible": false
+                    }, {
+                        "targets": [7],
+                        "visible": false
+                    }, {
+                        "targets": [8],
+                        "visible": false
+                    }],
+                radio: true,
+                paginar: true,
+                eventoradio: "EntidadesVendedores",
+                slug: "codigoEntidad",
+                autoWidth: false
+            }
+            pintarEntidades(objConfigVendedores, listaEntidadesVendedores);
 
         } else {
             Warning("Error en la obtención de entidades");
@@ -2621,14 +2667,48 @@ function getDataRowRadioEntidadesBackToBack(obj) {
     });
 }
 
+function getDataRowRadioEntidadesVendedores(obj) {
+    // Incluir el radioButton al inicio, por eso se comienza por la columna 1
+    document.getElementById('div-captura-proveedor').style.display = 'none';
+    let elementNombreProveedor = document.getElementById('uiNombreProveedor');
+    elementNombreProveedor.value = "";
+    let table = $('#tablaVendedores').DataTable();
+    $('#tablaVendedores tbody').on('change', 'tr', 'input:radio', function () {
+        let rowIdx = table.row(this).index();
+        let codigoEntidad = table.cell(rowIdx, 1).data();
+        let codigoCategoriaEntidad = table.cell(rowIdx, 3).data();
+        set("uiCodigoEntidad", codigoEntidad);
+        set("uiNombreEntidad", table.cell(rowIdx, 2).data());
+        set("uiCodigoCategoriaEntidad", codigoCategoriaEntidad);
+        set("uiCategoriaEntidad", table.cell(rowIdx, 4).data());
+        set("uiCodigoOperacionCaja", table.cell(rowIdx, 5).data());
+        set("uiCodigoArea", table.cell(rowIdx, 6).data());
+        set("uiCodigoCanalVenta", table.cell(rowIdx, 8).data());
+        fetchGet("Vendedores/GetRutasDelVendedor/?codigoCategoriaEntidad=" + codigoCategoriaEntidad + "&codigoVendedor=" + codigoEntidad, "json", function (rpta) {
+            if (rpta != undefined && rpta != null && rpta.length != 0) {
+                FillCombo(rpta, "uiRutaVendedor", "ruta", "ruta", "- seleccione -", "-1");
+            } else {
+                FillComboUnicaOpcion("uiRutaVendedor", "-1", "-- Sin Rutas -- ");
+            }
+        })
+
+        let elementRutaVendedor = document.getElementById("uiRutaVendedor");
+        document.getElementById('div-ventas-en-ruta').style.display = 'block';
+        elementRutaVendedor.classList.add('obligatorio');
+    });
+}
+
+
 function showTablaEspeciales2(obj) {
     if (obj == true) {
         document.getElementById('divTabla').style.display = 'none';
         document.getElementById('divTablaEspeciales2').style.display = 'block';
+        document.getElementById('divTablaVendedores').style.display = 'none';
 
     } else {
-        document.getElementById('divTabla').style.display = 'block';
+        document.getElementById('divTabla').style.display = 'none';
         document.getElementById('divTablaEspeciales2').style.display = 'none';
+        document.getElementById('divTablaVendedores').style.display = 'block';
     }
 }
 
@@ -2767,7 +2847,7 @@ function GuardarEntidad(obj) {
                 } else {
                     if (codigoCategoriaEntidad == CLIENTES_ESPECIALES_2) {
                         table = $('#tablaEspeciales2').DataTable();
-                    }
+                    } 
                 }
                 table.row.add([
                     "<input type='radio' name='radio' class='table-row-selected chkSelected' value='" + data + "' onclick = 'getDataRowRadioEntidades(this)'></input>",
@@ -3104,25 +3184,15 @@ function mostrarVendedores() {
 
 function emptyComboTipoCuentaPorCobrar() {
     let elementTipoCuentaPorCobrar = document.getElementById("uiTipoCuentaPorCobrar");
-    let elementFechaPrestamo = document.getElementById("uiFechaPrestamo");
-    let elementFechaInicioPago = document.getElementById("uiFechaInicioPago");
     elementTipoCuentaPorCobrar.classList.remove('obligatorio');
-    elementFechaPrestamo.classList.remove('obligatorio');
-    elementFechaInicioPago.classList.remove('obligatorio');
-    set("uiFechaPrestamo", "");
-    set("uiFechaInicioPago", "");
     document.getElementById('div-tipo-cuenta-por-cobrar').style.display = 'none';
     FillComboUnicaOpcion("uiTipoCuentaPorCobrar", "-1", "-- No Aplica -- ");
 }
 
 function fillComboTipoCuentaPorCobrar() {
     let elementTipoCuentaPorCobrar = document.getElementById("uiTipoCuentaPorCobrar");
-    let elementFechaPrestamo = document.getElementById("uiFechaPrestamo");
-    let elementFechaInicioPago = document.getElementById("uiFechaInicioPago");
     elementTipoCuentaPorCobrar.classList.add('obligatorio');
-    elementFechaPrestamo.classList.add('obligatorio');
-    elementFechaInicioPago.classList.add('obligatorio');
-    document.getElementById('div-tipo-cuenta-por-cobrar').style.display = 'block';
+        document.getElementById('div-tipo-cuenta-por-cobrar').style.display = 'block';
     fetchGet("CuentasPorCobrar/GetListTiposCuentasPorCobrar", "json", function (rpta) {
         FillCombo(rpta, "uiTipoCuentaPorCobrar", "codigoTipoCuentaPorCobrar", "nombre", "- seleccione -", "-1");
     });

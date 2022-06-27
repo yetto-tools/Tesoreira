@@ -491,6 +491,7 @@ namespace CapaDatos.Tesoreria
                             List<EntidadGenericaCLS> listaEspeciales1 = new List<EntidadGenericaCLS>();
                             List<EntidadGenericaCLS> listaEspeciales2 = new List<EntidadGenericaCLS>();
                             List<EntidadGenericaCLS> listaBackToBack = new List<EntidadGenericaCLS>();
+                            List<EntidadGenericaCLS> listaVendedores = new List<EntidadGenericaCLS>();
                             while (dr.Read())
                             {
                                 objEntidad = new EntidadGenericaCLS();
@@ -518,6 +519,15 @@ namespace CapaDatos.Tesoreria
                                         {
                                             listaBackToBack.Add(objEntidad);
                                         }
+                                        if (objEntidad.CodigoCategoriaEntidad == Constantes.Entidad.Categoria.VENDEDOR ||
+                                            objEntidad.CodigoCategoriaEntidad == Constantes.Entidad.Categoria.RUTERO_LOCAL ||
+                                            objEntidad.CodigoCategoriaEntidad == Constantes.Entidad.Categoria.RUTERO_INTERIOR ||
+                                            objEntidad.CodigoCategoriaEntidad == Constantes.Entidad.Categoria.SUPERMERCADO ||
+                                            objEntidad.CodigoCategoriaEntidad == Constantes.Entidad.Categoria.CAFETERIA)
+                                        {
+                                            listaVendedores.Add(objEntidad);
+                                        }
+
                                         listaGenerica.Add(objEntidad);
                                         break;
                                 }
@@ -526,6 +536,7 @@ namespace CapaDatos.Tesoreria
                             objEntidadesGenericas.listaEntidadesEspeciales1 = listaEspeciales1;
                             objEntidadesGenericas.listaEntidadesEspeciales2 = listaEspeciales2;
                             objEntidadesGenericas.listaEntidadesBackToBack = listaBackToBack;
+                            objEntidadesGenericas.listaEntidadesVendedores = listaVendedores;
 
                         }
                     }

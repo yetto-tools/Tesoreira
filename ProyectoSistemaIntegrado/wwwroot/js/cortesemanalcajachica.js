@@ -108,7 +108,7 @@ function listarReportesSemanalCajaChicaGeneracion() {
                 "visible": false
             }, {
                 "targets": [13],
-                "visible": false
+                "visible": true
             }],
         slug: "codigoReporte",
         aceptar: true,

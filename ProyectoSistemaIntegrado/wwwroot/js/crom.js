@@ -135,10 +135,11 @@ function Imprimir(codigoTraslado, obj) {
     $('#tabla tbody').on('click', '.option-imprimir', function () {
         let rowIdx = table.row(this).index();
         let codigoTraslado = table.cell(rowIdx, 0).data();
+        let fechaOperacionStr = table.cell(rowIdx, 1).data();
         let fechaGeneracionStr = table.cell(rowIdx, 4).data();
         fetchGet("Especiales2/GetDetalleTrasladosEspeciales2/?codigoTraslado=" + codigoTraslado, "json", function (rpta) {
             let jsonData = JSON.stringify(rpta);
-            fetchPostJson("Especiales2/PrintAPI/?codigoTraslado=" + codigoTraslado + "&fechaGeneracionStr=" + fechaGeneracionStr, "text", jsonData, function (data) {
+            fetchPostJson("Especiales2/PrintAPI/?codigoTraslado=" + codigoTraslado + "&fechaOperacionStr=" + fechaOperacionStr + "&fechaGeneracionStr=" + fechaGeneracionStr, "text", jsonData, function (data) {
 
             })
         });

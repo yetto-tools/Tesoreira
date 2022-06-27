@@ -313,7 +313,7 @@ function pintar(objConfiguracion) {
     if (objConfiguracionGlobal.aceptar == undefined)
         objConfiguracionGlobal.aceptar = false;
     if (objConfiguracionGlobal.aceptartraslado == undefined)
-        objConfiguracionGlobal.aceptar = false;
+        objConfiguracionGlobal.aceptartraslado = false;
     if (objConfiguracionGlobal.funcionaceptar == undefined)
         objConfiguracionGlobal.funcionaceptar = "";
     if (objConfiguracionGlobal.funcionaceptartraslado == undefined)

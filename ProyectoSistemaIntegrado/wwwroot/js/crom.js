@@ -12,6 +12,9 @@
             case "ImportEspeciales2":
                 MostrarTrasladosParaImportacion();
                 break;
+            case "ConsultaTrasladosEspeciales2":
+                MostrarTrasladosEspeciales2Consulta("");
+                break;
             default:
                 break;
         }// fin switch
@@ -368,4 +371,68 @@ function MostrarDetalleEspeciales2(codigoTraslado) {
         slug: "serie"
     }
     pintar(objConfiguracion);
+}
+
+
+function BuscarTrasladosEspeciales2() {
+    let fechaStr = document.getElementById("uiFechaOperacion").value;
+    if (fechaStr == "") {
+        Warning("No existe fecha de operación");
+        return;
+    }
+
+    let fechaOperacionStr = convertFormatDate(fechaStr);
+    MostrarTrasladosEspeciales2Consulta(fechaOperacionStr);
+}
+
+function MostrarTrasladosEspeciales2Consulta(fechaOperacion) {
+    if (fechaOperacion == "") {
+        return;
+    }
+
+    let objConfiguracion = {
+        url: "Especiales2/GetConsultaTraslados/?fechaOperacion=" + fechaOperacion,
+        cabeceras: ["Código Traslado", "Fecha Operación", "Pedidos", "Monto Total", "Fecha Generación", "Usuario Ingreso", "Fecha Traslado", "observaciones", "Codigo Estado", "Estado", "permisoImprimir"],
+        propiedades: ["codigoTraslado", "fechaOperacionStr", "numeroPedidos", "montoTotal", "fechaIngresoStr", "usuarioIngreso", "fechaTrasladoStr", "observacionesTraslado", "codigoEstado", "estado", "permisoImprimir"],
+        displaydecimals: ["montoTotal"],
+        divContenedorTabla: "divContenedorTabla",
+        divPintado: "divTabla",
+        paginar: true,
+        ocultarColumnas: true,
+        hideColumns: [
+            {
+                "targets": [0],
+                "className": "dt-body-center",
+                "visible": true
+            }, {
+                "targets": [1],
+                "className": "dt-body-center",
+                "visible": true
+            }, {
+                "targets": [2],
+                "className": "dt-body-center",
+                "visible": true
+            }, {
+                "targets": [3],
+                "className": "dt-body-right",
+                "visible": true
+            }, {
+                "targets": [6],
+                "visible": false
+            }, {
+                "targets": [7],
+                "visible": false
+            }, {
+                "targets": [8],
+                "visible": false
+            }, {
+                "targets": [10],
+                "visible": false
+            }],
+        slug: "codigoTraslado",
+        imprimir: true
+    }
+    pintar(objConfiguracion);
+
+
 }

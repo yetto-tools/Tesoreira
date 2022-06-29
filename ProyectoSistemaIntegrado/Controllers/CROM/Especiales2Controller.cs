@@ -38,6 +38,11 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             return View();
         }
 
+        public IActionResult ConsultaTrasladosEspeciales2()
+        {
+            return View();
+        }
+
         public IActionResult PrintAPI([FromBody] List<TrasladoEspeciales2DetalleCLS> listaDetalle, int codigoTraslado, string fechaOperacionStr, string fechaGeneracionStr)
         {
             string ipString = (TempData["Ip"]).ToString();
@@ -75,7 +80,7 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             {
                 return BadRequest("Printer is not connected");
             }
-            Encoding enc = Encoding.ASCII;
+            Encoding enc = Encoding.Latin1;
             string GS = Convert.ToString((char)29);
             string ESC = Convert.ToString((char)27);
             string COMMAND = "";
@@ -144,6 +149,54 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             return obj.GuardarTraslados(listDetalle, codigoTraslado, FechaOperacion, objUsuario.IdUsuario);
         }
 
+        public async Task<List<TrasladoEspeciales2CLS>> GetConsultaTraslados(string fechaOperacion)
+        {
+            CadenaConexion conexion = new CadenaConexion();
+            string puerto = conexion.puerto;
+            HttpClient client = new HttpClient();
+
+            // Setting Base address.
+            client.BaseAddress = new Uri("http://10.34.1.43:" + puerto + "/api/");
+
+            var query = new Dictionary<string, string>()
+            {
+                ["fecha"] = fechaOperacion
+            };
+
+            // Setting content type
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+            var uri = QueryHelpers.AddQueryString("especiales2/consultatrasladospordia", query);
+
+            //var uri = "especiales2/trasladosgenerados";
+            List<TrasladoEspeciales2CLS> list = new List<TrasladoEspeciales2CLS>();
+            HttpResponseMessage response = await client.GetAsync(uri);
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonArrayString = await response.Content.ReadAsStringAsync();
+                JArray jsonArray = JArray.Parse(jsonArrayString);
+                foreach (var value in jsonArray)
+                {
+                    var row = new TrasladoEspeciales2CLS
+                    {
+                        CodigoTraslado = Convert.ToInt32(value["codigo_traslado"].ToString()),
+                        FechaOperacionStr = value["fecha_operacion"].ToString(),
+                        MontoTotal = Convert.ToDecimal(value["monto_total"].ToString()),
+                        NumeroPedidos = Convert.ToInt32(value["numero_pedidos"].ToString()),
+                        CodigoEstado = Convert.ToInt32(value["codigo_estado"].ToString()),
+                        Estado = value["estado"].ToString(),
+                        ObservacionesTraslado = value["observaciones_traslado"].ToString(),
+                        UsuarioIngreso = value["usuario_ing"].ToString(),
+                        FechaIngresoStr = value["fecha_ing"].ToString(),
+                        FechaTrasladoStr = DateTime.Parse(value["fecha_traslado"].ToString()).ToString(),
+                        PermisoImprimir = Convert.ToInt32(value["permiso_imprimir"].ToString())
+                    };
+                    list.Add(row);
+                }
+            }
+            return list;
+        }
 
         public async Task<List<TrasladoEspeciales2CLS>> GetTrasladosEnProceso()
         {
@@ -213,10 +266,16 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
 
             List<TrasladoEspeciales2CLS> list = new List<TrasladoEspeciales2CLS>();
             HttpResponseMessage response = await client.PostAsync("especiales2/generar", content);
-            if (response.IsSuccessStatusCode)
+
+            resultado = response.ReasonPhrase;
+
+            /*if (response.IsSuccessStatusCode)
             {
                 resultado = response.ReasonPhrase;
             }
+            else { 
+            
+            }*/
             return resultado;
         }
 

@@ -1,0 +1,65 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using CapaEntidad.Administracion;
+@{
+    ViewData["Title"] = "Generacion";
+    string impresionStr = Context.Session.GetString("impresion");
+    List<ParametroImpresionCLS> listImpresoras = JsonConvert.DeserializeObject<List<ParametroImpresionCLS>>(impresionStr);
+    foreach (ParametroImpresionCLS impresora in listImpresoras)
+    {
+        if (impresora.CodigoConfiguracion == Constantes.ConfiguracionImpresora.IMPRESORA_CORTE_ESPECIALES2)
+        {
+            TempData["Ip"] = impresora.Ip;
+            TempData["Puerto"] = impresora.Puerto;
+        }
+    }
+
+    Context.Session.SetString("tituloPrincipal", "Consulta de Traslados Especiales 2");
+}
+
+<div style="height: 15px; width:100%;">
+
+</div>
+
+
+<form method="post" id="frmBusqueda">
+    <table style="margin-left: auto; margin-right: auto;">
+        <tr>
+            <td>FECHA OPERACION</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+                <input type="text" name="FechaOperacion" class="form-control text-center obligatorio" id="uiFechaOperacion" placeholder="Fecha Operación" />
+            </td>
+            <td>
+                <input type="button" class="form-control btn btn-primary" value="BUSCAR" onclick="BuscarTrasladosEspeciales2()" />
+            </td>
+        </tr>
+    </table>
+</form>
+
+<div style="height: 15px; width:100%;">
+
+</div>
+
+<div id="divTabla">
+
+</div>
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/jqueryui.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/crom.js"></script>
+    <script>
+        $(function () {
+            $("#uiFechaOperacion").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeYear: true
+            });
+        });
+    </script>
+}

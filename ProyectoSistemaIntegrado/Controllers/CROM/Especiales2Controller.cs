@@ -176,23 +176,35 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             {
                 string jsonArrayString = await response.Content.ReadAsStringAsync();
                 JArray jsonArray = JArray.Parse(jsonArrayString);
-                foreach (var value in jsonArray)
+                int codigoTraslado = Convert.ToInt32(jsonArray[0]["codigo_traslado"].ToString());
+                if (codigoTraslado != 0)
                 {
-                    var row = new TrasladoEspeciales2CLS
+                    foreach (var value in jsonArray)
                     {
-                        CodigoTraslado = Convert.ToInt32(value["codigo_traslado"].ToString()),
-                        FechaOperacionStr = value["fecha_operacion"].ToString(),
-                        MontoTotal = Convert.ToDecimal(value["monto_total"].ToString()),
-                        NumeroPedidos = Convert.ToInt32(value["numero_pedidos"].ToString()),
-                        CodigoEstado = Convert.ToInt32(value["codigo_estado"].ToString()),
-                        Estado = value["estado"].ToString(),
-                        ObservacionesTraslado = value["observaciones_traslado"].ToString(),
-                        UsuarioIngreso = value["usuario_ing"].ToString(),
-                        FechaIngresoStr = value["fecha_ing"].ToString(),
-                        FechaTrasladoStr = DateTime.Parse(value["fecha_traslado"].ToString()).ToString(),
-                        PermisoImprimir = Convert.ToInt32(value["permiso_imprimir"].ToString())
+                        var row = new TrasladoEspeciales2CLS
+                        {
+                            CodigoTraslado = Convert.ToInt32(value["codigo_traslado"].ToString()),
+                            FechaOperacionStr = value["fecha_operacion"].ToString(),
+                            MontoTotal = Convert.ToDecimal(value["monto_total"].ToString()),
+                            NumeroPedidos = Convert.ToInt32(value["numero_pedidos"].ToString()),
+                            CodigoEstado = Convert.ToInt32(value["codigo_estado"].ToString()),
+                            Estado = value["estado"].ToString(),
+                            ObservacionesTraslado = value["observaciones_traslado"].ToString(),
+                            UsuarioIngreso = value["usuario_ing"].ToString(),
+                            FechaIngresoStr = value["fecha_ing"].ToString(),
+                            FechaTrasladoStr = DateTime.Parse(value["fecha_traslado"].ToString()).ToString(),
+                            PermisoImprimir = Convert.ToInt32(value["permiso_imprimir"].ToString())
+                        };
+                        list.Add(row);
+                    }
+                }
+                else {
+                    var row2 = new TrasladoEspeciales2CLS
+                    {
+                        CodigoTraslado = 0,
+                        ObservacionesTraslado = jsonArray[0]["observaciones_traslado"].ToString()
                     };
-                    list.Add(row);
+                    list.Add(row2);
                 }
             }
             return list;
@@ -217,25 +229,41 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             {
                 string jsonArrayString = await response.Content.ReadAsStringAsync();
                 JArray jsonArray = JArray.Parse(jsonArrayString);
-                foreach (var value in jsonArray)
+                if (jsonArray.Count > 0)
                 {
-                    var row = new TrasladoEspeciales2CLS
+                    int codigoTraslado = Convert.ToInt32(jsonArray[0]["codigo_traslado"].ToString());
+                    if (codigoTraslado != 0)
                     {
-                        CodigoTraslado = Convert.ToInt32(value["codigo_traslado"].ToString()),
-                        FechaOperacionStr = value["fecha_operacion"].ToString(),
-                        MontoTotal = Convert.ToDecimal(value["monto_total"].ToString()),
-                        NumeroPedidos = Convert.ToInt32(value["numero_pedidos"].ToString()),
-                        CodigoEstado = Convert.ToInt32(value["codigo_estado"].ToString()),
-                        Estado = value["estado"].ToString(),
-                        ObservacionesTraslado = value["observaciones_traslado"].ToString(),
-                        UsuarioIngreso = value["usuario_ing"].ToString(),
-                        FechaIngresoStr = value["fecha_ing"].ToString(),
-                        FechaTrasladoStr = DateTime.Parse(value["fecha_traslado"].ToString()).ToString(),
-                        PermisoAnular = Convert.ToInt32(value["permiso_anular"].ToString()),
-                        PermisoTraslado = Convert.ToInt32(value["permiso_traslado"].ToString()),
-                        PermisoImprimir = Convert.ToInt32(value["permiso_imprimir"].ToString())
-                    };
-                    list.Add(row);
+                        foreach (var value in jsonArray)
+                        {
+                            var row = new TrasladoEspeciales2CLS
+                            {
+                                CodigoTraslado = Convert.ToInt32(value["codigo_traslado"].ToString()),
+                                FechaOperacionStr = value["fecha_operacion"].ToString(),
+                                MontoTotal = Convert.ToDecimal(value["monto_total"].ToString()),
+                                NumeroPedidos = Convert.ToInt32(value["numero_pedidos"].ToString()),
+                                CodigoEstado = Convert.ToInt32(value["codigo_estado"].ToString()),
+                                Estado = value["estado"].ToString(),
+                                ObservacionesTraslado = value["observaciones_traslado"].ToString(),
+                                UsuarioIngreso = value["usuario_ing"].ToString(),
+                                FechaIngresoStr = value["fecha_ing"].ToString(),
+                                FechaTrasladoStr = DateTime.Parse(value["fecha_traslado"].ToString()).ToString(),
+                                PermisoAnular = Convert.ToInt32(value["permiso_anular"].ToString()),
+                                PermisoTraslado = Convert.ToInt32(value["permiso_traslado"].ToString()),
+                                PermisoImprimir = Convert.ToInt32(value["permiso_imprimir"].ToString())
+                            };
+                            list.Add(row);
+                        }
+                    }
+                    else
+                    {
+                        var row2 = new TrasladoEspeciales2CLS
+                        {
+                            CodigoTraslado = 0,
+                            ObservacionesTraslado = jsonArray[0]["observaciones_traslado"].ToString()
+                        };
+                        list.Add(row2);
+                    }
                 }
             }
             return list;
@@ -266,16 +294,16 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
 
             List<TrasladoEspeciales2CLS> list = new List<TrasladoEspeciales2CLS>();
             HttpResponseMessage response = await client.PostAsync("especiales2/generar", content);
-
-            resultado = response.ReasonPhrase;
+            resultado = await response.Content.ReadAsStringAsync();
 
             /*if (response.IsSuccessStatusCode)
             {
-                resultado = response.ReasonPhrase;
+                resultado = await response.Content.ReadAsStringAsync();
             }
-            else { 
-            
+            else {
+                resultado = await response.Content.ReadAsStringAsync();
             }*/
+
             return resultado;
         }
 
@@ -300,26 +328,42 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             {
                 string jsonArrayString = await response.Content.ReadAsStringAsync();
                 JArray jsonArray = JArray.Parse(jsonArrayString);
-                foreach (var value in jsonArray)
+                if (jsonArray.Count > 0)
                 {
-                    var row = new TrasladoEspeciales2CLS
+                    int codigoTraslado = Convert.ToInt32(jsonArray[0]["codigo_traslado"].ToString());
+                    if (codigoTraslado != 0)
                     {
-                        CodigoTraslado = Convert.ToInt32(value["codigo_traslado"].ToString()),
-                        FechaOperacionStr = value["fecha_operacion"].ToString(),
-                        MontoTotal = Convert.ToDecimal(value["monto_total"].ToString()),
-                        NumeroPedidos = Convert.ToInt32(value["numero_pedidos"].ToString()),
-                        CodigoEstado = Convert.ToInt32(value["codigo_estado"].ToString()),
-                        Estado = value["estado"].ToString(),
-                        ObservacionesTraslado = value["observaciones_traslado"].ToString(),
-                        UsuarioIngreso = value["usuario_ing"].ToString(),
-                        FechaIngresoStr = value["fecha_ing"].ToString(),
-                        FechaTrasladoStr = DateTime.Parse(value["fecha_traslado"].ToString()).ToString(),
-                        PermisoImportar = Convert.ToInt32(value["permiso_importar"].ToString()),
-                        PermisoDepurar = Convert.ToInt32(value["permiso_depurar"].ToString()),
-                        PermisoRegistrar = Convert.ToInt32(value["permiso_registrar"].ToString()),
-                        PermisoEditar = Convert.ToInt32(value["permiso_editar"].ToString())
-                    };
-                    list.Add(row);
+                        foreach (var value in jsonArray)
+                        {
+                            var row = new TrasladoEspeciales2CLS
+                            {
+                                CodigoTraslado = Convert.ToInt32(value["codigo_traslado"].ToString()),
+                                FechaOperacionStr = value["fecha_operacion"].ToString(),
+                                MontoTotal = Convert.ToDecimal(value["monto_total"].ToString()),
+                                NumeroPedidos = Convert.ToInt32(value["numero_pedidos"].ToString()),
+                                CodigoEstado = Convert.ToInt32(value["codigo_estado"].ToString()),
+                                Estado = value["estado"].ToString(),
+                                ObservacionesTraslado = value["observaciones_traslado"].ToString(),
+                                UsuarioIngreso = value["usuario_ing"].ToString(),
+                                FechaIngresoStr = value["fecha_ing"].ToString(),
+                                FechaTrasladoStr = DateTime.Parse(value["fecha_traslado"].ToString()).ToString(),
+                                PermisoImportar = Convert.ToInt32(value["permiso_importar"].ToString()),
+                                PermisoDepurar = Convert.ToInt32(value["permiso_depurar"].ToString()),
+                                PermisoRegistrar = Convert.ToInt32(value["permiso_registrar"].ToString()),
+                                PermisoEditar = Convert.ToInt32(value["permiso_editar"].ToString())
+                            };
+                            list.Add(row);
+                        }
+                    }
+                    else
+                    {
+                        var row2 = new TrasladoEspeciales2CLS
+                        {
+                            CodigoTraslado = 0,
+                            ObservacionesTraslado = jsonArray[0]["observaciones_traslado"].ToString()
+                        };
+                        list.Add(row2);
+                    }
                 }
             }
             return list;
@@ -351,29 +395,41 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             {
                 string jsonArrayString = await response.Content.ReadAsStringAsync();
                 JArray jsonArray = JArray.Parse(jsonArrayString);
-                var json = JObject.Parse(jsonArray[0].ToString());
-                try
+                int codigoError = Convert.ToInt32(jsonArray[0]["codigo_traslado"].ToString());
+                if (codigoError != 0)
                 {
-                    foreach (var value in jsonArray)
+                    try
                     {
-                        var row = new TrasladoEspeciales2DetalleCLS
+                        foreach (var value in jsonArray)
                         {
-                            CodigoCliente = value["codigo_cliente"].ToString(),
-                            CodigoTraslado = Convert.ToInt32(value["codigo_traslado"].ToString()),
-                            CodigoEmpresa = value["empresa"].ToString(),
-                            FechaGrabadoStr = DateTime.Parse(value["fecha_grabado"].ToString()).ToString(),
-                            Monto = Convert.ToDecimal(value["monto"].ToString()),
-                            NombreCliente = value["nombre_cliente"].ToString(),
-                            NombreClienteDepurado = value["nombre_cliente_depurado"].ToString(),
-                            NumeroPedido = Convert.ToInt64(value["pedido"].ToString().Split('.')[0]),
-                            Serie = value["serie"].ToString()
-                        };
-                        list.Add(row);
+                            var row = new TrasladoEspeciales2DetalleCLS
+                            {
+                                CodigoCliente = value["codigo_cliente"].ToString(),
+                                CodigoTraslado = Convert.ToInt32(value["codigo_traslado"].ToString()),
+                                CodigoEmpresa = value["empresa"].ToString(),
+                                FechaGrabadoStr = DateTime.Parse(value["fecha_grabado"].ToString()).ToString(),
+                                Monto = Convert.ToDecimal(value["monto"].ToString()),
+                                NombreCliente = value["nombre_cliente"].ToString(),
+                                NombreClienteDepurado = value["nombre_cliente_depurado"].ToString(),
+                                NumeroPedido = Convert.ToInt64(value["pedido"].ToString().Split('.')[0]),
+                                Serie = value["serie"].ToString()
+                            };
+                            list.Add(row);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        list = null;
                     }
                 }
-                catch (Exception ex)
+                else
                 {
-                    list = null;
+                    var row2 = new TrasladoEspeciales2DetalleCLS
+                    {
+                        CodigoTraslado = 0,
+                        NombreClienteDepurado = jsonArray[0]["nombre_cliente_depurado"].ToString()
+                    };
+                    list.Add(row2);
                 }
             }
             return list;
@@ -402,14 +458,15 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
 
             List<TrasladoEspeciales2CLS> list = new List<TrasladoEspeciales2CLS>();
             HttpResponseMessage response = await client.PutAsync("especiales2/cambiarestado", content);
-            if (response.IsSuccessStatusCode)
+            resultado = await response.Content.ReadAsStringAsync();
+            /*if (response.IsSuccessStatusCode)
             {
                 resultado = response.ReasonPhrase;
             }
             else
             {
                 resultado = response.ReasonPhrase;
-            }
+            }*/
             return resultado;
         }
 
@@ -433,14 +490,15 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
 
             List<TrasladoEspeciales2CLS> list = new List<TrasladoEspeciales2CLS>();
             HttpResponseMessage response = await client.DeleteAsync(uri);
-            if (response.IsSuccessStatusCode)
+            resultado = await response.Content.ReadAsStringAsync();
+            /*if (response.IsSuccessStatusCode)
             {
                 resultado = response.ReasonPhrase;
             }
             else
             {
                 resultado = response.ReasonPhrase;
-            }
+            }*/
             return resultado;
         }
 

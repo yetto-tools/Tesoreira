@@ -2880,8 +2880,8 @@ function closePopupVendedores() {
 
 
 function getDataRowRadioVendedores(obj) {
-    let table = $('#tablaVendedores').DataTable();
-    $('#tablaVendedores tbody').on('change', 'tr', 'input:radio', function () {
+    let table = $('#tablaRuteros').DataTable();
+    $('#tablaRuteros tbody').on('change', 'tr', 'input:radio', function () {
         let rowIdx = table.row(this).index();
         set("uiCodigoVendedor", table.cell(rowIdx, 1).data());
         set("uiNombreVendedor", table.cell(rowIdx, 2).data());
@@ -2916,7 +2916,7 @@ function listarRuteros() {
         propiedades: ["codigoVendedor", "nombreVendedor", "ruta","canalVenta","codigoCategoriaEntidad"],
         divContenedorTabla: "divContenedorTablaRuteros",
         divPintado: "divTablaRuteros",
-        idtabla: "tablaVendedores",
+        idtabla: "tablaRuteros",
         radio: true,
         paginar: true,
         ocultarColumnas: true,

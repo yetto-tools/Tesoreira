@@ -105,9 +105,9 @@ function FillComboUnicaOpcion(idcontrol, valueprimeraopcion, textoprimeraopcion)
 
 
 async function fetchGet(url, tipoRespuesta, callback) {
+    document.getElementById("divLoading").style.display = "block";
     try {
         var raiz = document.getElementById("hdfOculto").value;
-        document.getElementById("divLoading").style.display = "block";
         //http://localhost
         var urlCompleta = window.location.protocol + "//" + window.location.host + "/" + raiz
             + url
@@ -1083,6 +1083,12 @@ function pintarEntidades(objConfiguracion, res) {
         objConfiguracionGlobal.slug = ""
     if (objConfiguracionGlobal.radio == undefined)
         objConfiguracionGlobal.radio = false;
+    if (objConfiguracionGlobal.editar == undefined)
+        objConfiguracionGlobal.editar = false;
+    if (objConfiguracionGlobal.eliminar == undefined)
+        objConfiguracionGlobal.eliminar = false;
+    if (objConfiguracionGlobal.funcioneditar == undefined)
+        objConfiguracionGlobal.funcioneditar = "";
     if (objConfiguracionGlobal.eventoradio == undefined)
         objConfiguracionGlobal.eventoradio = "Generico";
     if (objConfiguracionGlobal.idtabla == undefined)
@@ -1097,6 +1103,16 @@ function pintarEntidades(objConfiguracion, res) {
         objConfiguracionGlobal.autoWidth = true;
     if (objConfiguracionGlobal.imprimir == undefined)
         objConfiguracionGlobal.imprimir == false;
+    if (objConfiguracionGlobal.import == undefined)
+        objConfiguracionGlobal.import = false;
+    if (objConfiguracionGlobal.depurar == undefined)
+        objConfiguracionGlobal.depurar = false;
+    if (objConfiguracionGlobal.registrar == undefined)
+        objConfiguracionGlobal.registrar = false;
+    if (objConfiguracionGlobal.aceptartraslado == undefined)
+        objConfiguracionGlobal.aceptartraslado = false;
+    if (objConfiguracionGlobal.funcionaceptartraslado == undefined)
+        objConfiguracionGlobal.funcionaceptartraslado = "";
     var contenido = "";
     contenido += "<div id='" + objConfiguracionGlobal.divContenedorTabla + "'>";
     contenido += generarTablaEntidades(res, objConfiguracionGlobal);
@@ -1134,9 +1150,37 @@ function generarTablaEntidades(res, objConfiguracionGlobal) {
             countColumns++;
         }
 
+        if (objConfiguracionGlobal.editar == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
+
+        if (objConfiguracionGlobal.eliminar == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
+
         if (objConfiguracionGlobal.imprimir == true) {
                 contenido += "<td></td>"
                 countColumns++;
+        }
+
+        if (objConfiguracionGlobal.import == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
+        if (objConfiguracionGlobal.depurar == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
+        if (objConfiguracionGlobal.registrar == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
+
+        if (objConfiguracionGlobal.aceptartraslado == true) {
+            contenido += "<td></td>"
+            countColumns++;
         }
 
         contenido += "</tr>";
@@ -1173,14 +1217,131 @@ function generarTablaEntidades(res, objConfiguracionGlobal) {
             let slug = objConfiguracionGlobal.slug;
 
             /* Operaciones (Edit, Delete, Print, etc... */
+            if (objConfiguracionGlobal.editar == true) {
+                contenido += "<td style='padding: 2px;' class='option-editar'>";
+                if (obj["permisoEditar"] == 1) {
+                    contenido += `<button class="btn">`;
+                    if (typeof obj[slug] === 'string') {
+                        contenido += `<i onclick="Editar${objConfiguracionGlobal.funcioneditar}('${obj[slug]}')" class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
+                            </svg></i>`;
+                        contenido += `</button>`;
+                    } else {
+                        contenido += `<i onclick="Editar${objConfiguracionGlobal.funcioneditar}(${obj[slug]})" class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
+                            </svg></i>`;
+                        contenido += `</button>`;
+                    }
+                } else {
+                    contenido += `<button class="btn">`;
+                    contenido += `<i class="btn btn-secondary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
+                            </svg></i>`;
+                    contenido += `</button>`;
+                }
+                contenido += "</td>";
+            }
+
+            if (objConfiguracionGlobal.eliminar == true) {
+                contenido += "<td style='padding: 2px;' class='option-eliminar'>";
+                if (obj["permisoAnular"] == 1) {
+                    contenido += `<button class="btn">`;
+                    if (typeof obj[slug] === 'string') {
+                        contenido += `<i onclick="Eliminar${objConfiguracionGlobal.funcioneliminar}('${obj[slug]}')" class="btn btn-danger">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                  <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
+                                  </svg></i>`;
+                    } else {
+                        contenido += `<i onclick="Eliminar${objConfiguracionGlobal.funcioneliminar}(${obj[slug]})" class="btn btn-danger">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                  <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
+                                  </svg></i>`;
+                    }
+                    contenido += `</button>`;
+                } else {
+                    contenido += `<button class="btn">`;
+                    contenido += `<i class="btn btn-secondary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                            <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
+                            </svg></i>`;
+                    contenido += `</button>`;
+                }
+                contenido += "</td>";
+            }
+
             if (objConfiguracionGlobal.imprimir == true) {
                 contenido += "<td style='padding: 2px;' class='option-imprimir'>";
-                contenido += `<button class="btn">`;
-                contenido += `<i onclick="Imprimir(${obj[slug]},this)" id="id${+ obj[slug]}" class="btn btn-success"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer-fill" viewBox="0 0 16 16">
+                if (obj["permisoImprimir"] == 1) {
+                    contenido += `<button class="btn">`;
+                    contenido += `<i onclick="Imprimir(${obj[slug]},this)" id="id${+ obj[slug]}" class="btn btn-success"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer-fill" viewBox="0 0 16 16">
                             <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z"/>
                             <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
                             </svg></i>`;
-                contenido += `</button>`;
+                    contenido += `</button>`;
+                }
+                else {
+                    contenido += `<button class="btn" disabled>`;
+                    contenido += `<i class="btn btn-secondary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer-fill" viewBox="0 0 16 16">
+                            <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z"/>
+                            <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
+                            </svg></i>`;
+                    contenido += `</button>`;
+                }
+
+                contenido += "</td>";
+            }
+
+            if (objConfiguracionGlobal.import == true) {
+                contenido += "<td style='padding: 2px;' class='option-import'>";
+                if (obj["permisoImportar"] == 1) {
+                    contenido += `<button type="button" class="btn btn-primary" onclick="Importar${objConfiguracionGlobal.funcionimport}(${obj[slug]})">Importar</button>`;
+                } else {
+                    contenido += `<button type="button" class="btn btn-secondary disabled">Importar</button>`;
+                }
+                contenido += "</td>";
+            }
+
+            if (objConfiguracionGlobal.depurar == true) {
+                contenido += "<td style='padding: 2px;' class='option-depurar'>";
+                if (obj["permisoDepurar"] == 1) {
+                    contenido += `<button type="button" class="btn btn-success" onclick="Depurar${objConfiguracionGlobal.funciondepurar}(${obj[slug]})">Depurar</button>`;
+                } else {
+                    contenido += `<button type="button" class="btn btn-secondary disabled">Depurar</button>`;
+                }
+                contenido += "</td>";
+            }
+
+            if (objConfiguracionGlobal.registrar == true) {
+                contenido += "<td style='padding: 2px;' class='option-registrar'>";
+                if (obj["permisoRegistrar"] == 1) {
+                    contenido += `<button type="button" class="btn btn-primary" onclick="Registrar${objConfiguracionGlobal.funcionregistrar}(${obj[slug]})">Registrar</button>`;
+                } else {
+                    contenido += `<button type="button" class="btn btn-secondary disabled">Registrar</button>`;
+                }
+                contenido += "</td>";
+            }
+
+            if (objConfiguracionGlobal.aceptartraslado == true) {
+                contenido += "<td style='padding: 2px;' class='option-traslado'>";
+                if (obj["permisoTraslado"] == 1) {
+                    contenido += `<button class="btn">`;
+                    contenido += `<i onclick="AceptarTraslado${objConfiguracionGlobal.funcionaceptartraslado}(${obj[slug]})" id="aceptar${+ obj[slug]}" class="btn btn-outline-primary">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                  <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                                  </svg>
+                                  </i>`;
+                    contenido += `</button>`;
+                } else {
+                    contenido += `<button class="btn">`;
+                    contenido += `<i id="aceptar${+ obj[slug]}" class="btn btn-outline-secondary">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                  <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                                  </svg>
+                                  </i>`;
+                    contenido += `</button>`;
+                }
                 contenido += "</td>";
             }
 

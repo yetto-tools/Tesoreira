@@ -59,8 +59,8 @@ function MostrarTrasladosEspeciales2Generados() {
                 MensajeError(observaciones);
             } else {
                 let objConfiguracion = {
-                    cabeceras: ["Código Traslado", "Fecha Operación", "Pedidos", "Monto Total", "Fecha Generación", "Usuario Ingreso", "Fecha Traslado", "observaciones", "Codigo Estado", "Estado", "permisoAnular", "permisoTraslado", "permisoImprimir"],
-                    propiedades: ["codigoTraslado", "fechaOperacionStr", "numeroPedidos", "montoTotal", "fechaIngresoStr", "usuarioIngreso", "fechaTrasladoStr", "observacionesTraslado", "codigoEstado", "estado", "permisoAnular", "permisoTraslado", "permisoImprimir"],
+                    cabeceras: ["Código Traslado", "Fecha Operación", "Pedidos", "Monto Total", "Fecha Generación", "Usuario Ingreso", "Fecha Traslado", "observaciones", "Codigo Estado", "Estado", "permisoAnular", "permisoTraslado", "permisoImprimir", "permisoEditar","permisoActualizar"],
+                    propiedades: ["codigoTraslado", "fechaOperacionStr", "numeroPedidos", "montoTotal", "fechaIngresoStr", "usuarioIngreso", "fechaTrasladoStr", "observacionesTraslado", "codigoEstado", "estado", "permisoAnular", "permisoTraslado", "permisoImprimir", "permisoEditar","permisoActualizar"],
                     displaydecimals: ["montoTotal"],
                     divContenedorTabla: "divContenedorTabla",
                     divPintado: "divTabla",
@@ -86,6 +86,9 @@ function MostrarTrasladosEspeciales2Generados() {
                             "className": "dt-body-right",
                             "visible": true
                         }, {
+                            "targets": [5],
+                            "visible": false
+                        }, {
                             "targets": [6],
                             "visible": false
                         }, {
@@ -96,65 +99,151 @@ function MostrarTrasladosEspeciales2Generados() {
                             "visible": false
                         }, {
                             "targets": [10],
-                            "visible": true
+                            "visible": false
                         }, {
                             "targets": [11],
-                            "visible": true
+                            "visible": false
                         }, {
                             "targets": [12],
-                            "visible": true
+                            "visible": false
+                        }, {
+                            "targets": [13],
+                            "visible": false
+                        }, {
+                            "targets": [14],
+                            "visible": false
                         }],
                     slug: "codigoTraslado",
+                    editar: true,
+                    funcioneditar: "DetalleTrasladoEspeciales2",
                     imprimir: true,
                     eliminar: true,
-                    funcioneliminar: "TrasladoEspeciales2"
+                    funcioneliminar: "TrasladoEspeciales2",
+                    actualizar: true,
+                    funcionactualizar: "DetallesEspeciales2Trasladados"
                 }
                 pintarEntidades(objConfiguracion, rpta);
             }
         }
     });
-
-
 }
+
+function ActualizarDetallesEspeciales2Trasladados(value) {
+    let frm = new FormData();
+    frm.set("CodigoTraslado", value.toString());
+    Confirmacion("Traslado Especiales 2", "¿Está seguro(a) de actualizar el traslado?", function (rpta) {
+        fetchPost("Especiales2/ActualizarDetallesTrasladados", "text", frm, function (data) {
+            if (data == "OK") {
+                Redireccionar("Especiales2", "GeneracionTraslados");
+            } else {
+                MensajeError(data);
+            }
+        });
+    });
+}
+
+
+function EditarDetalleTrasladoEspeciales2(codigoTraslado, obj) {
+    let table = $('#tabla').DataTable();
+    $('#tabla tbody').on('click', '.option-editar', function () {
+        let rowIdx = table.row(this).index();
+        let codigoTraslado = table.cell(rowIdx, 0).data();
+        MostrarDetalleEspeciales2Edicion(codigoTraslado);
+    });
+}
+
+function MostrarDetalleEspeciales2Edicion(codigoTraslado) {
+    let objConfiguracion = {
+        url: "Especiales2/GetDetalleTrasladosEspeciales2Edicion/?codigoTraslado=" + codigoTraslado,
+        cabeceras: ["Empresa", "Serie", "Número Pedido", "Código Cliente", "Nombre Cliente", "Monto", "Fecha registro", "permisoAnular"],
+        propiedades: ["codigoEmpresa","serie","numeroPedido", "codigoCliente", "nombreCliente", "monto", "fechaGrabadoStr","permisoAnular"],
+        displaydecimals: ["monto"],
+        divContenedorTabla: "divContenedorTablaDetalle",
+        divPintado: "divTablaDetalle",
+        idtabla: "tablaDetalle",
+        paginar: true,
+        ocultarColumnas: true,
+        hideColumns: [
+            {
+                "targets": [0],
+                "visible": false
+            }, {
+                "targets": [2],
+                "className": "dt-body-center",
+                "visible": true
+            }, {
+                "targets": [3],
+                "className": "dt-body-center",
+                "visible": true
+            }, {
+                "targets": [5],
+                "className": "dt-body-right",
+                "visible": true
+            }, {
+                "targets": [7],
+                "visible": false
+            }],
+        slug: "serie",
+        eliminar: true,
+        funcioneliminar: "DetalleTrasladoEspeciales2"
+    }
+    pintar(objConfiguracion);
+}
+
+function EliminarDetalleTrasladoEspeciales2() {
+    let table = $('#tablaDetalle').DataTable();
+    $('#tablaDetalle tbody').on('click', '.option-eliminar', function () {
+        let rowIdx = table.row(this).index();
+        let codigoEmpresa = table.cell(rowIdx, 0).data();
+        let serie = table.cell(rowIdx, 1).data();
+        let numeroPedido = table.cell(rowIdx, 2).data();
+        let frm = new FormData();
+        frm.set("CodigoEmpresa", codigoEmpresa);
+        frm.set("Serie", serie);
+        frm.set("NumeroPedido", numeroPedido);
+        Confirmacion("Detalle Traslado Especiales 2", "¿Está seguro(a) de quitarlo del listado?", function (rpta) {
+            fetchPost("Especiales2/EliminarDetalleTrasladoEspeciales2", "text", frm, function (data) {
+                if (data == "OK") {
+                    //table.clear().draw();
+                    Redireccionar("Especiales2", "GeneracionTraslados");
+                } else {
+                    MensajeError(data);
+                }
+            });
+        });
+    });
+}
+
 
 function AceptarTrasladoGeneracionEspeciales2(value) {
     let frm = new FormData();
     frm.set("CodigoTraslado", value.toString());
     frm.set("CodigoEstado", CODIGO_ESTADO_POR_RECEPCIONAR.toString());
-    fetchPost("Especiales2/CambiarEstadoTrasladoEspeciales2", "text", frm, function (data) {
-        if (data == "OK") {
-            MostrarTrasladosEspeciales2Generados();
-        } else {
-            MensajeError(data);
-        }
+    Confirmacion("Traslado Especiales 2", "¿Está seguro(a) del monto de especiales 2?", function (rpta) {
+        fetchPost("Especiales2/CambiarEstadoTrasladoEspeciales2", "text", frm, function (data) {
+            if (data == "OK") {
+                Redireccionar("Especiales2", "GeneracionTraslados");
+                //MostrarTrasladosEspeciales2Generados();
+            } else {
+                MensajeError(data);
+            }
+        });
     });
 }
+
 
 function EliminarTrasladoEspeciales2(value) {
     let frm = new FormData();
     frm.set("CodigoTraslado", value.toString());
     fetchPost("Especiales2/EliminarTrasladoEspeciales2", "text", frm, function (data) {
         if (data == "OK") {
-            MostrarTrasladosEspeciales2Generados();
+            Redireccionar("Especiales2", "GeneracionTraslados");
+            //MostrarTrasladosEspeciales2Generados();
         } else {
             MensajeError(data);
         }
     });
 }
-
-function AceptarTrasladoGeneracionEspeciales2(value) {
-    let frm = new FormData();
-    frm.set("CodigoTraslado", value.toString());
-    frm.set("CodigoEstado", CODIGO_ESTADO_POR_RECEPCIONAR.toString());
-    fetchPost("Especiales2/CambiarEstadoTrasladoEspeciales2", "text", frm, function (data) {
-        if (data == "OK") {
-            MostrarTrasladosEspeciales2Generados();
-        } else {
-            MensajeError(data);
-        }
-    });
-}
-
 
 function Imprimir(codigoTraslado, obj) {
     let table = $('#tabla').DataTable();

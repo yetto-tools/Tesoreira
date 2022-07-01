@@ -250,7 +250,9 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
                                 FechaTrasladoStr = DateTime.Parse(value["fecha_traslado"].ToString()).ToString(),
                                 PermisoAnular = Convert.ToInt32(value["permiso_anular"].ToString()),
                                 PermisoTraslado = Convert.ToInt32(value["permiso_traslado"].ToString()),
-                                PermisoImprimir = Convert.ToInt32(value["permiso_imprimir"].ToString())
+                                PermisoImprimir = Convert.ToInt32(value["permiso_imprimir"].ToString()),
+                                PermisoEditar = Convert.ToInt32(value["permiso_editar"].ToString()),
+                                PermisoActualizar = Convert.ToInt32(value["permiso_actualizar"].ToString())
                             };
                             list.Add(row);
                         }
@@ -435,6 +437,73 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             return list;
         }
 
+        public async Task<List<TrasladoEspeciales2DetalleCLS>> GetDetalleTrasladosEspeciales2Edicion(int codigoTraslado)
+        {
+            CadenaConexion conexion = new CadenaConexion();
+            string puerto = conexion.puerto;
+            HttpClient client = new HttpClient();
+
+            // Setting Base address.
+            client.BaseAddress = new Uri("http://10.34.1.43:" + puerto + "/api/");
+
+            // Setting content type
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+            var query = new Dictionary<string, string>()
+            {
+                ["codigo"] = codigoTraslado.ToString()
+            };
+
+            var uri = QueryHelpers.AddQueryString("especiales2/detalletrasladoedicion", query);
+
+            List<TrasladoEspeciales2DetalleCLS> list = new List<TrasladoEspeciales2DetalleCLS>();
+            HttpResponseMessage response = await client.GetAsync(uri);
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonArrayString = await response.Content.ReadAsStringAsync();
+                JArray jsonArray = JArray.Parse(jsonArrayString);
+                int codigoError = Convert.ToInt32(jsonArray[0]["codigo_traslado"].ToString());
+                if (codigoError != 0)
+                {
+                    try
+                    {
+                        foreach (var value in jsonArray)
+                        {
+                            var row = new TrasladoEspeciales2DetalleCLS
+                            {
+                                CodigoCliente = value["codigo_cliente"].ToString(),
+                                CodigoTraslado = Convert.ToInt32(value["codigo_traslado"].ToString()),
+                                CodigoEmpresa = value["empresa"].ToString(),
+                                FechaGrabadoStr = DateTime.Parse(value["fecha_grabado"].ToString()).ToString(),
+                                Monto = Convert.ToDecimal(value["monto"].ToString()),
+                                NombreCliente = value["nombre_cliente"].ToString(),
+                                NombreClienteDepurado = value["nombre_cliente_depurado"].ToString(),
+                                NumeroPedido = Convert.ToInt64(value["pedido"].ToString().Split('.')[0]),
+                                Serie = value["serie"].ToString(),
+                                PermisoAnular = Convert.ToInt32(value["permiso_anular"].ToString())
+                            };
+                            list.Add(row);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        list = null;
+                    }
+                }
+                else
+                {
+                    var row2 = new TrasladoEspeciales2DetalleCLS
+                    {
+                        CodigoTraslado = 0,
+                        NombreClienteDepurado = jsonArray[0]["nombre_cliente_depurado"].ToString()
+                    };
+                    list.Add(row2);
+                }
+            }
+            return list;
+        }
+
         public async Task<string> CambiarEstadoTrasladoEspeciales2(int codigoTraslado, int codigoEstado)
         {
             string resultado = "";
@@ -499,6 +568,75 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             {
                 resultado = response.ReasonPhrase;
             }*/
+            return resultado;
+        }
+
+        public async Task<string> EliminarDetalleTrasladoEspeciales2(string codigoEmpresa, string serie, decimal numeroPedido)
+        {
+            string resultado = "";
+
+            CadenaConexion conexion = new CadenaConexion();
+            string puerto = conexion.puerto;
+            HttpClient client = new HttpClient();
+
+            // Setting Base address.
+            client.BaseAddress = new Uri("http://10.34.1.43:" + puerto + "/api/");
+
+            // Setting content type
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+            var uri = "especiales2/eliminardetalletraslado/" + codigoEmpresa + "," + serie + "," + numeroPedido.ToString();
+
+            List<TrasladoEspeciales2CLS> list = new List<TrasladoEspeciales2CLS>();
+            HttpResponseMessage response = await client.DeleteAsync(uri);
+            resultado = await response.Content.ReadAsStringAsync();
+            /*if (response.IsSuccessStatusCode)
+            {
+                resultado = response.ReasonPhrase;
+            }
+            else
+            {
+                resultado = response.ReasonPhrase;
+            }*/
+            return resultado;
+        }
+
+        public async Task<string> ActualizarDetallesTrasladados(int codigoTraslado)
+        {
+            string resultado = "";
+            ViewBag.Message = HttpContext.Session.GetString("usuario");
+            UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
+
+            CadenaConexion conexion = new CadenaConexion();
+            string puerto = conexion.puerto;
+            HttpClient client = new HttpClient();
+
+            // Setting Base address.
+            client.BaseAddress = new Uri("http://10.34.1.43:" + puerto + "/api/");
+
+            // Setting content type
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+            var content = new FormUrlEncodedContent(new[]
+            {
+                new KeyValuePair<string, string>("codigo", codigoTraslado.ToString()),
+                new KeyValuePair<string, string>("usuario", objUsuario.IdUsuario)
+            });
+
+            List<TrasladoEspeciales2CLS> list = new List<TrasladoEspeciales2CLS>();
+            HttpResponseMessage response = await client.PostAsync("especiales2/modificaciondetalletrasladado", content);
+            resultado = await response.Content.ReadAsStringAsync();
+
+            /*if (response.IsSuccessStatusCode)
+            {
+                resultado = await response.Content.ReadAsStringAsync();
+            }
+            else {
+                resultado = await response.Content.ReadAsStringAsync();
+            }*/
+
             return resultado;
         }
 

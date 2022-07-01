@@ -18,5 +18,6 @@ namespace CapaEntidad.CROM
         public string NombreClienteDepurado { get; set; }
         public long NumeroPedido { get; set; }
         public string Serie { get; set; }
+        public int PermisoAnular { get; set; }
     }
 }

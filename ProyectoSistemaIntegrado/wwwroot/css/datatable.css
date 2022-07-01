@@ -198,6 +198,10 @@ table#tablaVendedores.dataTable tbody tr:hover {
     background-color: #ffa;
 }
 
+table#tablaDetalle.dataTable tbody tr:hover {
+    background-color: #ffa;
+}
+
 table#tabla.dataTable tbody tr:hover > .sorting_1 {
     background-color: #ffa;
 }

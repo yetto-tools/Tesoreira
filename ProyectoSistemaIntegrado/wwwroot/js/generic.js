@@ -1113,6 +1113,10 @@ function pintarEntidades(objConfiguracion, res) {
         objConfiguracionGlobal.aceptartraslado = false;
     if (objConfiguracionGlobal.funcionaceptartraslado == undefined)
         objConfiguracionGlobal.funcionaceptartraslado = "";
+    if (objConfiguracionGlobal.actualizar == undefined)
+        objConfiguracionGlobal.actualizar = false;
+    if (objConfiguracionGlobal.funcionactualizar == undefined)
+        objConfiguracionGlobal.funcionactualizar = "";
     var contenido = "";
     contenido += "<div id='" + objConfiguracionGlobal.divContenedorTabla + "'>";
     contenido += generarTablaEntidades(res, objConfiguracionGlobal);
@@ -1179,6 +1183,11 @@ function generarTablaEntidades(res, objConfiguracionGlobal) {
         }
 
         if (objConfiguracionGlobal.aceptartraslado == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
+
+        if (objConfiguracionGlobal.actualizar == true) {
             contenido += "<td></td>"
             countColumns++;
         }
@@ -1341,6 +1350,16 @@ function generarTablaEntidades(res, objConfiguracionGlobal) {
                                   </svg>
                                   </i>`;
                     contenido += `</button>`;
+                }
+                contenido += "</td>";
+            }
+
+            if (objConfiguracionGlobal.actualizar == true) {
+                contenido += "<td style='padding: 2px;' class='option-update'>";
+                if (obj["permisoActualizar"] == 1) {
+                    contenido += `<button type="button" class="btn btn-primary" onclick="Actualizar${objConfiguracionGlobal.funcionactualizar}(${obj[slug]})">Actualizar</button>`;
+                } else {
+                    contenido += `<button type="button" class="btn btn-secondary disabled">Actualizar</button>`;
                 }
                 contenido += "</td>";
             }

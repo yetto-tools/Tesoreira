@@ -9,6 +9,9 @@
             case "GeneracionTraslados":
                 MostrarTrasladosEspeciales2Generados();
                 break;
+            case "GeneracionTrasladosConta":
+                MostrarTrasladosEspeciales2GeneradosConta();
+                break;
             case "ImportEspeciales2":
                 MostrarTrasladosParaImportacion();
                 break;
@@ -42,7 +45,27 @@ function GenerarTrasladosEspeciales2() {
     });
 }
 
-//url: "Especiales2/GetTrasladosEnProceso",
+function GenerarTrasladosEspeciales2Conta() {
+    let fechaStr = document.getElementById("uiFechaOperacion").value;
+    if (fechaStr == "") {
+        Warning("No existe fecha de operación");
+        return;
+    }
+
+    let fechaOperacionStr = convertFormatDate(fechaStr);
+    fetchGet("Especiales2/GenerarTrasladosDeEspeciales2/?fechaOperacion=" + fechaOperacionStr, "text", function (data) {
+        if (data == "GENERADO") {
+            MostrarTrasladosEspeciales2GeneradosConta()
+        } else {
+            if (data == "VACIO") {
+                Warning("No existen pedidos");
+            } else {
+                MensajeError(data);
+            }
+        }
+    });
+}
+
 function MostrarTrasladosEspeciales2Generados() {
     fetchGet("Especiales2/GetTrasladosEnProceso", "json", function (rpta) {
         if (rpta == undefined || rpta == null) {
@@ -124,6 +147,36 @@ function MostrarTrasladosEspeciales2Generados() {
                 }
                 pintarEntidades(objConfiguracion, rpta);
             }
+        }
+    });
+}
+
+function AceptarTrasladoGeneracionEspeciales2(value) {
+    let frm = new FormData();
+    frm.set("CodigoTraslado", value.toString());
+    frm.set("CodigoEstado", CODIGO_ESTADO_POR_RECEPCIONAR.toString());
+    Confirmacion("Traslado Especiales 2", "¿Está seguro(a) del monto de especiales 2?", function (rpta) {
+        fetchPost("Especiales2/CambiarEstadoTrasladoEspeciales2", "text", frm, function (data) {
+            if (data == "OK") {
+                Redireccionar("Especiales2", "GeneracionTraslados");
+                //MostrarTrasladosEspeciales2Generados();
+            } else {
+                MensajeError(data);
+            }
+        });
+    });
+}
+
+
+function EliminarTrasladoEspeciales2(value) {
+    let frm = new FormData();
+    frm.set("CodigoTraslado", value.toString());
+    fetchPost("Especiales2/EliminarTrasladoEspeciales2", "text", frm, function (data) {
+        if (data == "OK") {
+            Redireccionar("Especiales2", "GeneracionTraslados");
+            //MostrarTrasladosEspeciales2Generados();
+        } else {
+            MensajeError(data);
         }
     });
 }
@@ -215,35 +268,7 @@ function EliminarDetalleTrasladoEspeciales2() {
 }
 
 
-function AceptarTrasladoGeneracionEspeciales2(value) {
-    let frm = new FormData();
-    frm.set("CodigoTraslado", value.toString());
-    frm.set("CodigoEstado", CODIGO_ESTADO_POR_RECEPCIONAR.toString());
-    Confirmacion("Traslado Especiales 2", "¿Está seguro(a) del monto de especiales 2?", function (rpta) {
-        fetchPost("Especiales2/CambiarEstadoTrasladoEspeciales2", "text", frm, function (data) {
-            if (data == "OK") {
-                Redireccionar("Especiales2", "GeneracionTraslados");
-                //MostrarTrasladosEspeciales2Generados();
-            } else {
-                MensajeError(data);
-            }
-        });
-    });
-}
 
-
-function EliminarTrasladoEspeciales2(value) {
-    let frm = new FormData();
-    frm.set("CodigoTraslado", value.toString());
-    fetchPost("Especiales2/EliminarTrasladoEspeciales2", "text", frm, function (data) {
-        if (data == "OK") {
-            Redireccionar("Especiales2", "GeneracionTraslados");
-            //MostrarTrasladosEspeciales2Generados();
-        } else {
-            MensajeError(data);
-        }
-    });
-}
 
 function Imprimir(codigoTraslado, obj) {
     let table = $('#tabla').DataTable();
@@ -416,7 +441,8 @@ function RegistrarEspeciales2(obj) {
                 frm1.set("CodigoEstado", CODIGO_ESTADO_COMPLETADO.toString());
                 fetchPost("Especiales2/CambiarEstadoTrasladoEspeciales2", "text", frm1, function (data2) {
                     if (data2 == "OK") {
-                        MostrarTrasladosParaImportacion();
+                        Redireccionar("Especiales2", "ImportEspeciales2");
+                        //MostrarTrasladosParaImportacion();
                     } else {
                         MensajeError(data2);
                     }
@@ -439,7 +465,8 @@ function MostrarDetalleEspeciales2ParaDepuracion(codigoTraslado) {
                     frm.set("CodigoEstado", CODIGO_ESTADO_DEPURADO.toString());
                     fetchPost("Especiales2/CambiarEstadoTrasladoEspeciales2", "text", frm, function (data) {
                         if (data == "OK") {
-                            MostrarTrasladosParaImportacion();
+                            Redireccionar("Especiales2", "ImportEspeciales2");
+                            //MostrarTrasladosParaImportacion();
                         } else {
                             MensajeError(data);
                         }
@@ -578,6 +605,114 @@ function MostrarTrasladosEspeciales2Consulta(fechaOperacion) {
                 pintarEntidades(objConfiguracion, rpta);
                 //pintar(objConfiguracion);
             }
+        }
+    });
+}
+
+function MostrarTrasladosEspeciales2GeneradosConta() {
+    fetchGet("Especiales2/GetTrasladosEnProcesoContabilidad", "json", function (rpta) {
+        if (rpta == undefined || rpta == null) {
+            Warning("No existe informacion")
+        } else {
+            let codigoTraslado = -1;
+            let observaciones = "";
+            if (rpta.length > 0) {
+                codigoTraslado = parseInt(rpta[0]["codigoTraslado"].toString());
+                observaciones = rpta[0]["observacionesTraslado"].toString();
+            }
+
+            if (codigoTraslado == 0) {
+                MensajeError(observaciones);
+            } else {
+                let objConfiguracion = {
+                    cabeceras: ["Código Traslado", "Fecha Operación", "Pedidos", "Monto Total", "Fecha Generación", "Usuario Ingreso", "Fecha Traslado", "observaciones", "Codigo Estado", "Estado", "permisoAnular", "permisoTraslado", "permisoImprimir", "permisoEditar", "permisoActualizar"],
+                    propiedades: ["codigoTraslado", "fechaOperacionStr", "numeroPedidos", "montoTotal", "fechaIngresoStr", "usuarioIngreso", "fechaTrasladoStr", "observacionesTraslado", "codigoEstado", "estado", "permisoAnular", "permisoTraslado", "permisoImprimir", "permisoEditar", "permisoActualizar"],
+                    displaydecimals: ["montoTotal"],
+                    divContenedorTabla: "divContenedorTabla",
+                    divPintado: "divTabla",
+                    aceptartraslado: true,
+                    funcionaceptartraslado: "GeneracionEspeciales2Conta",
+                    paginar: true,
+                    ocultarColumnas: true,
+                    hideColumns: [
+                        {
+                            "targets": [0],
+                            "className": "dt-body-center",
+                            "visible": true
+                        }, {
+                            "targets": [1],
+                            "className": "dt-body-center",
+                            "visible": true
+                        }, {
+                            "targets": [2],
+                            "className": "dt-body-center",
+                            "visible": true
+                        }, {
+                            "targets": [3],
+                            "className": "dt-body-right",
+                            "visible": true
+                        }, {
+                            "targets": [5],
+                            "visible": false
+                        }, {
+                            "targets": [6],
+                            "visible": false
+                        }, {
+                            "targets": [7],
+                            "visible": false
+                        }, {
+                            "targets": [8],
+                            "visible": false
+                        }, {
+                            "targets": [10],
+                            "visible": false
+                        }, {
+                            "targets": [11],
+                            "visible": false
+                        }, {
+                            "targets": [12],
+                            "visible": false
+                        }, {
+                            "targets": [13],
+                            "visible": false
+                        }, {
+                            "targets": [14],
+                            "visible": false
+                        }],
+                    slug: "codigoTraslado",
+                    eliminar: true,
+                    funcioneliminar: "TrasladoEspeciales2Conta"
+                }
+                pintarEntidades(objConfiguracion, rpta);
+            }
+        }
+    });
+}
+
+function AceptarTrasladoGeneracionEspeciales2Conta(value) {
+    let frm = new FormData();
+    frm.set("CodigoTraslado", value.toString());
+    frm.set("CodigoEstado", CODIGO_ESTADO_POR_RECEPCIONAR.toString());
+    Confirmacion("Traslado Especiales 2", "¿Está seguro(a) del monto de especiales 2?", function (rpta) {
+        fetchPost("Especiales2/CambiarEstadoTrasladoEspeciales2", "text", frm, function (data) {
+            if (data == "OK") {
+                Redireccionar("Especiales2", "GeneracionTrasladosConta");
+            } else {
+                MensajeError(data);
+            }
+        });
+    });
+}
+
+
+function EliminarTrasladoEspeciales2Conta(value) {
+    let frm = new FormData();
+    frm.set("CodigoTraslado", value.toString());
+    fetchPost("Especiales2/EliminarTrasladoEspeciales2", "text", frm, function (data) {
+        if (data == "OK") {
+            Redireccionar("Especiales2", "GeneracionTrasladosConta");
+        } else {
+            MensajeError(data);
         }
     });
 }

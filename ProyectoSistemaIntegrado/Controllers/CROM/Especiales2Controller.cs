@@ -33,6 +33,11 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             return View();
         }
 
+        public IActionResult GeneracionTrasladosConta()
+        {
+            return View();
+        }
+
         public IActionResult ImportEspeciales2()
         {
             return View();
@@ -223,6 +228,67 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
             var uri = "especiales2/trasladosgenerados";
+            List<TrasladoEspeciales2CLS> list = new List<TrasladoEspeciales2CLS>();
+            HttpResponseMessage response = await client.GetAsync(uri);
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonArrayString = await response.Content.ReadAsStringAsync();
+                JArray jsonArray = JArray.Parse(jsonArrayString);
+                if (jsonArray.Count > 0)
+                {
+                    int codigoTraslado = Convert.ToInt32(jsonArray[0]["codigo_traslado"].ToString());
+                    if (codigoTraslado != 0)
+                    {
+                        foreach (var value in jsonArray)
+                        {
+                            var row = new TrasladoEspeciales2CLS
+                            {
+                                CodigoTraslado = Convert.ToInt32(value["codigo_traslado"].ToString()),
+                                FechaOperacionStr = value["fecha_operacion"].ToString(),
+                                MontoTotal = Convert.ToDecimal(value["monto_total"].ToString()),
+                                NumeroPedidos = Convert.ToInt32(value["numero_pedidos"].ToString()),
+                                CodigoEstado = Convert.ToInt32(value["codigo_estado"].ToString()),
+                                Estado = value["estado"].ToString(),
+                                ObservacionesTraslado = value["observaciones_traslado"].ToString(),
+                                UsuarioIngreso = value["usuario_ing"].ToString(),
+                                FechaIngresoStr = value["fecha_ing"].ToString(),
+                                FechaTrasladoStr = DateTime.Parse(value["fecha_traslado"].ToString()).ToString(),
+                                PermisoAnular = Convert.ToInt32(value["permiso_anular"].ToString()),
+                                PermisoTraslado = Convert.ToInt32(value["permiso_traslado"].ToString()),
+                                PermisoImprimir = Convert.ToInt32(value["permiso_imprimir"].ToString()),
+                                PermisoEditar = Convert.ToInt32(value["permiso_editar"].ToString()),
+                                PermisoActualizar = Convert.ToInt32(value["permiso_actualizar"].ToString())
+                            };
+                            list.Add(row);
+                        }
+                    }
+                    else
+                    {
+                        var row2 = new TrasladoEspeciales2CLS
+                        {
+                            CodigoTraslado = 0,
+                            ObservacionesTraslado = jsonArray[0]["observaciones_traslado"].ToString()
+                        };
+                        list.Add(row2);
+                    }
+                }
+            }
+            return list;
+        }
+
+        public async Task<List<TrasladoEspeciales2CLS>> GetTrasladosEnProcesoContabilidad()
+        {
+            CadenaConexion conexion = new CadenaConexion();
+            string puerto = conexion.puerto;
+            HttpClient client = new HttpClient();
+
+            // Setting Base address.
+            client.BaseAddress = new Uri("http://10.34.1.43:" + puerto + "/api/");
+
+            // Setting content type
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+            var uri = "especiales2/trasladosgeneradosconta";
             List<TrasladoEspeciales2CLS> list = new List<TrasladoEspeciales2CLS>();
             HttpResponseMessage response = await client.GetAsync(uri);
             if (response.IsSuccessStatusCode)

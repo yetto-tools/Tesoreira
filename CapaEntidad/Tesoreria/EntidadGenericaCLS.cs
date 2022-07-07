@@ -29,5 +29,9 @@ namespace CapaEntidad.Tesoreria
         public string CodigoGenero { get; set; }
 
         public int CodigoTipoBTB { get; set; }
+
+        public string MesPlanillaBTB { get; set; }
+        public short AnioPlanillaBTB { get; set; }
+        public decimal MontoDevolucionBTB { get; set; }
     }
 }

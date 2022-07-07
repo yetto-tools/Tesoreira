@@ -32,7 +32,6 @@
     }
 }
 
-//bloqueado: "bloqueado",
 function listarReportesGeneracion() {
     let objConfiguracion = {
         url: "CorteCajaSemanal/GetReportesSemanalesCajaGeneracion",

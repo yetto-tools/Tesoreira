@@ -125,6 +125,130 @@ namespace CapaDatos.Tesoreria
             }
         }
 
+        public List<ReporteCajaCLS> GetReportesSemanalesCajaGeneracionTemporal(string usuarioGeneracion, int semanaOculta)
+        {
+            string filterSemanaOcultaTransaccion = String.Empty;
+            string filterSemanaOcultaReporte = String.Empty;
+            if (semanaOculta > 0)
+            {
+                filterSemanaOcultaTransaccion = " AND semana_operacion <> " + semanaOculta.ToString();
+                filterSemanaOcultaReporte = " AND x.numero_semana <> " + semanaOculta.ToString();
+            }
+
+            List<ReporteCajaCLS> lista = null;
+            using (SqlConnection conexion = new SqlConnection(cadenaTesoreria))
+            {
+                try
+                {
+                    string sql = @"
+                    SELECT  COALESCE(x.codigo_reporte,0) AS codigo_reporte, 
+	                       x.anio_operacion, 
+	                       x.semana_operacion,
+	                       db_admon.GetPeriodoSemana(x.anio_operacion,x.semana_operacion) AS semana,
+                           '' AS observaciones,
+	                       1 AS codigo_estado, 
+	                       'Por Generar' AS estado,
+                           @UsuarioGeneracion AS usuario_ing,
+	                       GETDATE() AS fecha_ing,
+                           FORMAT(GETDATE(), 'dd/MM/yyyy, hh:mm:ss') AS fecha_ing_str,
+                           0 AS bloqueado, 
+                           0 AS permiso_anular,
+                           0 AS permiso_editar
+                            
+                    FROM ( SELECT anio_operacion, semana_operacion, codigo_reporte
+                           FROM db_tesoreria.transaccion
+                           WHERE codigo_estado = @CodigoEstadoRegistrado 
+                             AND complemento_conta = 0
+                           " + filterSemanaOcultaTransaccion + @" 
+                           GROUP BY anio_operacion, semana_operacion, codigo_reporte
+                         ) x
+
+                    UNION    
+
+                    SELECT x.codigo_reporte, 
+                           x.anio AS anio_operacion, 
+                           x.numero_semana AS semana_operacion,
+                           db_admon.GetPeriodoSemana(x.anio,x.numero_semana) AS semana, 
+                           x.observaciones, 
+                           x.codigo_estado,
+                           y.nombre AS estado,
+                           x.usuario_ing, 
+                           x.fecha_ing,
+                           FORMAT(x.fecha_ing, 'dd/MM/yyyy, hh:mm:ss') AS fecha_ing_str,
+                           1 AS bloqueado,
+                           CASE  
+                             WHEN x.codigo_estado = @CodigoEstadoGenerado THEN 1
+                             ELSE 0
+                            END AS permiso_anular,
+                            CASE  
+                             WHEN x.codigo_estado = @CodigoEstadoGenerado THEN 1
+                             ELSE 0
+                            END AS permiso_editar
+                    FROM db_tesoreria.reporte_caja x
+                    INNER JOIN db_tesoreria.estado_reporte_caja y
+                    ON x.codigo_estado = y.codigo_estado_reporte_caja
+                    WHERE x.codigo_estado = @CodigoEstadoGenerado
+                    " + filterSemanaOcultaReporte + @"
+                      AND x.arqueo = 0";
+
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand(sql, conexion))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Parameters.AddWithValue("@CodigoEstadoRegistrado", Constantes.EstadoTransacccion.REGISTRADO);
+                        cmd.Parameters.AddWithValue("@UsuarioGeneracion", usuarioGeneracion);
+                        cmd.Parameters.AddWithValue("@CodigoEstadoGenerado", Constantes.ReporteCaja.Estado.GENERADO);
+                        SqlDataReader dr = cmd.ExecuteReader();
+                        if (dr != null)
+                        {
+                            ReporteCajaCLS objReporteCaja;
+                            lista = new List<ReporteCajaCLS>();
+                            int postCodigoReporte = dr.GetOrdinal("codigo_reporte");
+                            int postAnio = dr.GetOrdinal("anio_operacion");
+                            int postNumeroSemana = dr.GetOrdinal("semana_operacion");
+                            int postSemana = dr.GetOrdinal("semana");
+                            int postObservaciones = dr.GetOrdinal("observaciones");
+                            int postCodigoEstado = dr.GetOrdinal("codigo_estado");
+                            int postEstado = dr.GetOrdinal("estado");
+                            int postUsuarioIng = dr.GetOrdinal("usuario_ing");
+                            int postFechaIng = dr.GetOrdinal("fecha_ing");
+                            int postFechaIngStr = dr.GetOrdinal("fecha_ing_str");
+                            int postBloqueado = dr.GetOrdinal("bloqueado");
+                            int postPermisoEditar = dr.GetOrdinal("permiso_editar");
+                            int postPermisoAnular = dr.GetOrdinal("permiso_anular");
+                            while (dr.Read())
+                            {
+                                objReporteCaja = new ReporteCajaCLS();
+                                objReporteCaja.CodigoReporte = dr.GetInt32(postCodigoReporte);
+                                objReporteCaja.Anio = dr.GetInt16(postAnio);
+                                objReporteCaja.NumeroSemana = dr.GetByte(postNumeroSemana);
+                                objReporteCaja.Semana = dr.GetString(postSemana);
+                                objReporteCaja.Observaciones = dr.IsDBNull(postObservaciones) ? "" : dr.GetString(postObservaciones);
+                                objReporteCaja.CodigoEstado = (byte)dr.GetInt32(postCodigoEstado);
+                                objReporteCaja.Estado = dr.GetString(postEstado);
+                                objReporteCaja.UsuarioIng = dr.GetString(postUsuarioIng);
+                                objReporteCaja.FechaIng = dr.GetDateTime(postFechaIng);
+                                objReporteCaja.FechaIngStr = dr.GetString(postFechaIngStr);
+                                objReporteCaja.bloqueado = (byte)dr.GetInt32(postBloqueado);
+                                objReporteCaja.PermisoEditar = (byte)dr.GetInt32(postPermisoEditar);
+                                objReporteCaja.PermisoAnular = (byte)dr.GetInt32(postPermisoAnular);
+
+                                lista.Add(objReporteCaja);
+                            }
+                        }
+                    }
+                    conexion.Close();
+                }
+                catch (Exception)
+                {
+                    conexion.Close();
+                    lista = null;
+                }
+
+                return lista;
+            }
+        }
+
         public List<ReporteCajaCLS> GetReportesSemanalesCajaParaVistoBueno()
         {
             List<ReporteCajaCLS> lista = null;

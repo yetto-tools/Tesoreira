@@ -84,7 +84,8 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
             UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
 
             ReporteCajaBL obj = new ReporteCajaBL();
-            return obj.GetReportesSemanalesCajaGeneracion(objUsuario.IdUsuario);
+            //return obj.GetReportesSemanalesCajaGeneracion(objUsuario.IdUsuario);
+            return obj.GetReportesSemanalesCajaGeneracionTemporal(objUsuario.IdUsuario, objUsuario.SemanaParaExcluir);
         }
 
         public List<ReporteCajaCLS> GetReportesSemanalesCaja(int anio)
@@ -92,24 +93,6 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
             ReporteCajaBL obj = new ReporteCajaBL();
             return obj.GetReportesSemanalesCaja(anio);
         }
-
-        /// <summary>
-        /// Quedará obsoleto, por que ahora se consulta directamente en la tabla de transacciones
-        /// </summary>
-        /// <param name="codigoReporte"></param>
-        /// <returns></returns>
-        /*public ReporteCajaDetalleListCLS GetDetalleReporteCajaSemanal(int codigoReporte) 
-        {
-            ReporteCajaDetalleBL obj = new ReporteCajaDetalleBL();
-            return obj.GetDetalleReporte(codigoReporte);
-        }*/
-
-        /*public ReporteCajaDetalleListCLS GetDetalleReporteCaja(int anioOperacion, int semanaOperacion, int codigoReporte)
-        {
-            ReporteCajaDetalleBL obj = new ReporteCajaDetalleBL();
-            return obj.GetDetalleReporteCaja(anioOperacion, semanaOperacion, codigoReporte);
-        }*/
-
 
         public string EliminarReporteSemanal(int codigoReporte, int anioOperacion, int semanaOperacion)
         {

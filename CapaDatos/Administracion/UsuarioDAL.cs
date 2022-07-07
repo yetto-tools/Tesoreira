@@ -181,7 +181,8 @@ namespace CapaDatos.Administracion
 	                       x.cui, 
 	                       x.estado,
                            x.set_semana_ant,
-                           x.super_admin
+                           x.super_admin,
+                           x.semana_a_excluir
                     FROM db_admon.usuario x
                     INNER JOIN db_rrhh.persona y
                     ON x.cui = y.cui
@@ -201,6 +202,7 @@ namespace CapaDatos.Administracion
                             int postEstado = dr.GetOrdinal("estado");
                             int postSetSemanaAnt = dr.GetOrdinal("set_semana_ant");
                             int postSuperAdmin = dr.GetOrdinal("super_admin");
+                            int postSemanaParaExcluir = dr.GetOrdinal("semana_a_excluir");
 
                             while (dr.Read())
                             {
@@ -209,6 +211,7 @@ namespace CapaDatos.Administracion
                                 objUsuario.NombreUsuario = dr.GetString(postNombreUsuario);
                                 objUsuario.SetSemanaAnterior = dr.GetByte(postSetSemanaAnt);
                                 objUsuario.SuperAdmin = dr.GetByte(postSuperAdmin);
+                                objUsuario.SemanaParaExcluir = dr.GetByte(postSemanaParaExcluir);
                             }
                         }
                     }

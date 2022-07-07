@@ -153,7 +153,7 @@ namespace CapaDatos.Tesoreria
                            0 AS codigo_operacion_caja,
                            y.codigo_area,
                            0 AS codigo_operacion_entidad, 
-                           0 AS codigo_canal_venta 
+                           0 AS codigo_canal_venta
                     FROM db_rrhh.empleado y
                     INNER JOIN db_rrhh.area x
                     ON y.codigo_area = x.codigo_area
@@ -174,7 +174,10 @@ namespace CapaDatos.Tesoreria
                            0 AS codigo_operacion_caja,
                            ISNULL(x.codigo_area,0) AS codigo_area,
                            0 AS codigo_operacion_entidad, 
-                           0 AS codigo_canal_venta 
+                           0 AS codigo_canal_venta,
+                           '' AS mes_planilla_btb,
+                           0 AS anio_planilla_btb,
+                           0.00 AS monto_devolucion_btb
                     FROM db_rrhh.persona y
                     LEFT JOIN db_rrhh.area x
                     ON y.codigo_area = x.codigo_area
@@ -203,7 +206,10 @@ namespace CapaDatos.Tesoreria
                            END AS codigo_operacion_caja,
                            0 AS codigo_area,
                            0 AS codigo_operacion_entidad,
-                           x.codigo_canal_venta
+                           x.codigo_canal_venta,
+                           '' AS mes_planilla_btb,
+                           0 AS anio_planilla_btb,
+                           0.00 AS monto_devolucion_btb
                     FROM db_ventas.config_vendedor_ruta x
                     INNER JOIN db_ventas.vendedor y
                     ON x.codigo_vendedor = y.codigo_vendedor
@@ -230,7 +236,10 @@ namespace CapaDatos.Tesoreria
                            END AS codigo_operacion_caja,
                            0 AS codigo_area,
                            0 AS codigo_operacion_entidad, 
-                           0 AS codigo_canal_venta 
+                           0 AS codigo_canal_venta,
+                           '' AS mes_planilla_btb,
+                           0 AS anio_planilla_btb,
+                           0.00 AS monto_devolucion_btb
                     FROM db_ventas.cliente
                     WHERE estado = @EstadoCliente 
                       AND codigo_tipo_cliente IN (2,3)
@@ -247,7 +256,10 @@ namespace CapaDatos.Tesoreria
                            END AS codigo_operacion_caja,
                            0 AS codigo_area,
                            y.codigo_operacion AS codigo_operacion_entidad,
-                           0 AS codigo_canal_venta 
+                           0 AS codigo_canal_venta,
+                           '' AS mes_planilla_btb,
+                           0 AS anio_planilla_btb,
+                           0.00 AS monto_devolucion_btb
                     FROM db_tesoreria.entidad y
                     INNER JOIN db_tesoreria.entidad_categoria x
                     ON y.codigo_categoria_entidad = x.codigo_categoria_entidad
@@ -262,7 +274,10 @@ namespace CapaDatos.Tesoreria
 	                       y.codigo_operacion_caja, 
 	                       y.codigo_area,
                            0 AS codigo_operacion_entidad, 
-                           0 AS codigo_canal_venta 
+                           0 AS codigo_canal_venta,
+                           '' AS mes_planilla_btb,
+                           0 AS anio_planilla_btb,
+                           0.00 AS monto_devolucion_btb
                     FROM( SELECT CAST(codigo_empresa AS VARCHAR(15)) AS codigo_entidad,
                                  nombre_comercial AS nombre_completo,
                                  1 AS codigo_categoria_entidad,
@@ -295,7 +310,6 @@ namespace CapaDatos.Tesoreria
                             int postCodigoArea = dr.GetOrdinal("codigo_area");
                             int postCodigoOperacionEntidad = dr.GetOrdinal("codigo_operacion_entidad");
                             int postCodigoCanalVenta = dr.GetOrdinal("codigo_canal_venta");
-
                             while (dr.Read())
                             {
                                 objEntidad = new EntidadGenericaCLS();
@@ -339,10 +353,37 @@ namespace CapaDatos.Tesoreria
                            y.codigo_area,
                            0 AS codigo_operacion_entidad, 
                            0 AS codigo_canal_venta,
-                           y.codigo_tipo_btb
+                           y.codigo_tipo_btb,
+                           z.nombre_mes AS mes_planilla_btb,
+                           z.anio AS anio_planilla_btb,
+                           z.monto AS monto_devolucion_btb
                     FROM db_rrhh.empleado y
                     INNER JOIN db_rrhh.area x
                     ON y.codigo_area = x.codigo_area
+                    LEFT JOIN ( SELECT codigo_empleado, 
+	                                   mes,
+	                                   CASE
+		                                 WHEN mes = 1 THEN 'ENERO'
+		                                 WHEN mes = 2 THEN 'FEBRERO'
+		                                 WHEN mes = 3 THEN 'MARZO'
+		                                 WHEN mes = 4 THEN 'ABRIL'
+		                                 WHEN mes = 5 THEN 'MAYO'
+		                                 WHEN mes = 6 THEN 'JUNIO'
+		                                 WHEN mes = 7 THEN 'JULIO'
+		                                 WHEN mes = 8 THEN 'AGOSTO'
+		                                 WHEN mes = 9 THEN 'SEPTIEMBRE'
+		                                 WHEN mes = 10 THEN 'OCTUBRE'
+		                                 WHEN mes = 11 THEN 'NOVIEMBRE'
+		                                 WHEN mes = 12 THEN 'DICIEMBRE'
+		                                 ELSE 'NO DEFINIDO'
+	                                   END AS nombre_mes,
+	                                   anio, 
+	                                   monto
+                                FROM db_contabilidad.pagos_y_descuentos 
+                                WHERE codigo_operacion = 65
+                                AND CAST(CONCAT(anio,'-',mes,'-','01') AS DATE) = (SELECT MAX(CAST(CONCAT(anio,'-',mes,'-','01') AS DATE)) AS ULTIMA_FECHA FROM db_contabilidad.pagos_y_descuentos  WHERE codigo_operacion = 65)
+                    ) z
+                    ON y.codigo_empleado = z.codigo_empleado
                     WHERE (y.codigo_estado <> @CodigoEstadoEmpleado OR y.saldo_prestamo = 1 OR y.pago_pendiente = 1) 
 
                     UNION
@@ -361,7 +402,10 @@ namespace CapaDatos.Tesoreria
                            ISNULL(x.codigo_area,0) AS codigo_area,
                            0 AS codigo_operacion_entidad, 
                            0 AS codigo_canal_venta,
-                           0 AS codigo_tipo_btb 
+                           0 AS codigo_tipo_btb,
+                           '' AS mes_planilla_btb,
+                           0 AS anio_planilla_btb,
+                           0.00 AS monto_devolucion_btb
                     FROM db_rrhh.persona y
                     LEFT JOIN db_rrhh.area x
                     ON y.codigo_area = x.codigo_area
@@ -391,7 +435,10 @@ namespace CapaDatos.Tesoreria
                            0 AS codigo_area,
                            0 AS codigo_operacion_entidad,
                            x.codigo_canal_venta,
-                           0 AS codigo_tipo_btb 
+                           0 AS codigo_tipo_btb,
+                           '' AS mes_planilla_btb,
+                           0 AS anio_planilla_btb,
+                           0.00 AS monto_devolucion_btb
                     FROM db_ventas.config_vendedor_ruta x
                     INNER JOIN db_ventas.vendedor y
                     ON x.codigo_vendedor = y.codigo_vendedor
@@ -419,7 +466,10 @@ namespace CapaDatos.Tesoreria
                            0 AS codigo_area,
                            0 AS codigo_operacion_entidad, 
                            0 AS codigo_canal_venta,
-                           0 AS codigo_tipo_btb 
+                           0 AS codigo_tipo_btb,
+                           '' AS mes_planilla_btb,
+                           0 AS anio_planilla_btb,
+                           0.00 AS monto_devolucion_btb
                     FROM db_ventas.cliente
                     WHERE estado = @EstadoCliente 
                       AND codigo_tipo_cliente IN (2,3)
@@ -437,7 +487,10 @@ namespace CapaDatos.Tesoreria
                            0 AS codigo_area,
                            y.codigo_operacion AS codigo_operacion_entidad,
                            0 AS codigo_canal_venta,
-                           0 AS codigo_tipo_btb 
+                           0 AS codigo_tipo_btb,
+                           '' AS mes_planilla_btb,
+                           0 AS anio_planilla_btb,
+                           0.00 AS monto_devolucion_btb
                     FROM db_tesoreria.entidad y
                     INNER JOIN db_tesoreria.entidad_categoria x
                     ON y.codigo_categoria_entidad = x.codigo_categoria_entidad
@@ -453,7 +506,10 @@ namespace CapaDatos.Tesoreria
 	                       y.codigo_area,
                            0 AS codigo_operacion_entidad, 
                            0 AS codigo_canal_venta,
-                           0 AS codigo_tipo_btb 
+                           0 AS codigo_tipo_btb,
+                           '' AS mes_planilla_btb,
+                           0 AS anio_planilla_btb,
+                           0.00 AS monto_devolucion_btb
                     FROM( SELECT CAST(codigo_empresa AS VARCHAR(15)) AS codigo_entidad,
                                  nombre_comercial AS nombre_completo,
                                  1 AS codigo_categoria_entidad,
@@ -486,6 +542,9 @@ namespace CapaDatos.Tesoreria
                             int postCodigoOperacionEntidad = dr.GetOrdinal("codigo_operacion_entidad");
                             int postCodigoCanalVenta = dr.GetOrdinal("codigo_canal_venta");
                             int postCodigoTipoBTB = dr.GetOrdinal("codigo_tipo_btb");
+                            int postMesPlanillaBTB = dr.GetOrdinal("mes_planilla_btb");
+                            int postAnioPlanillaBTB = dr.GetOrdinal("anio_planilla_btb");
+                            int postMontoDevolucionBTB = dr.GetOrdinal("monto_devolucion_btb");
 
                             List<EntidadGenericaCLS> listaGenerica = new List<EntidadGenericaCLS>();
                             List<EntidadGenericaCLS> listaEspeciales1 = new List<EntidadGenericaCLS>();
@@ -504,6 +563,10 @@ namespace CapaDatos.Tesoreria
                                 objEntidad.CodigoOperacionEntidad = (Int16)dr.GetInt32(postCodigoOperacionEntidad);
                                 objEntidad.CodigoCanalVenta = (Int16)dr.GetInt32(postCodigoCanalVenta);
                                 objEntidad.CodigoTipoBTB = dr.GetInt32(postCodigoTipoBTB);
+                                objEntidad.MesPlanillaBTB = dr.IsDBNull(postMesPlanillaBTB) ? "" : dr.GetString(postMesPlanillaBTB);
+                                objEntidad.AnioPlanillaBTB = dr.IsDBNull(postAnioPlanillaBTB) ? (short)0 : (short)dr.GetInt32(postAnioPlanillaBTB);
+                                objEntidad.MontoDevolucionBTB = dr.IsDBNull(postMontoDevolucionBTB) ? 0 : dr.GetDecimal(postMontoDevolucionBTB);
+
                                 switch (objEntidad.CodigoCategoriaEntidad)
                                 {
                                     case Constantes.Entidad.Categoria.CLIENTES_ESPECIALES_1:
@@ -542,7 +605,7 @@ namespace CapaDatos.Tesoreria
                     }
                     conexion.Close();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     conexion.Close();
                     objEntidadesGenericas = null;

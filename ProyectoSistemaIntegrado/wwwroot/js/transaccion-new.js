@@ -2195,8 +2195,8 @@ function intelligenceSearch() {
             pintarEntidades(objConfigEspeciales2, listaEntidadesEspeciales2);
 
             let objConfigBackToBack = {
-                cabeceras: ["codigo", "nombre entidad", "codigo categoria", "categoria", "codigo operacion", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta"],
-                propiedades: ["codigoEntidad", "nombreEntidad", "codigoCategoriaEntidad", "nombreCategoria", "codigoOperacionCaja", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta"],
+                cabeceras: ["codigo", "nombre entidad", "codigo categoria", "categoria", "codigo operacion", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta", "Mes", "Año","Monto a Devolver"],
+                propiedades: ["codigoEntidad", "nombreEntidad", "codigoCategoriaEntidad", "nombreCategoria", "codigoOperacionCaja", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta", "mesPlanillaBTB", "anioPlanillaBTB", "montoDevolucionBTB"],
                 divContenedorTabla: "divContenedorTablaBackToBack",
                 divPintado: "divTablaBackToBack",
                 idtabla: "tablaBackToBack",
@@ -2223,6 +2223,17 @@ function intelligenceSearch() {
                     }, {
                         "targets": [8],
                         "visible": false
+                    }, {
+                        "targets": [9],
+                        "visible": true
+                    }, {
+                        "targets": [10],
+                        "className": "dt-body-center",
+                        "visible": true
+                    }, {
+                        "targets": [11],
+                        "className": "dt-body-right",
+                        "visible": true
                     }],
                 radio: true,
                 paginar: true,
@@ -2663,6 +2674,7 @@ function getDataRowRadioEntidadesBackToBack(obj) {
         set("uiCodigoOperacionCaja", table.cell(rowIdx, 5).data());
         set("uiCodigoArea", table.cell(rowIdx, 6).data());
         set("uiCodigoCanalVenta", table.cell(rowIdx, 8).data());
+        set("uiMontoTransaccion", table.cell(rowIdx, 11).data());
         //document.getElementById('div-ventas-en-ruta').style.display = 'none';
     });
 }

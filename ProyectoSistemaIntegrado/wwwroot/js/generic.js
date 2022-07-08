@@ -238,6 +238,8 @@ function pintar(objConfiguracion) {
         objConfiguracionGlobal.eliminarreporte = false;
     if (objConfiguracionGlobal.imprimir == undefined)
         objConfiguracionGlobal.imprimir = false;
+    if (objConfiguracionGlobal.funcionimprimir == undefined)
+        objConfiguracionGlobal.funcionimprimir = "";
     if (objConfiguracionGlobal.autorizar == undefined)
         objConfiguracionGlobal.autorizar = false;
     if (objConfiguracionGlobal.funcionrechazar == undefined)
@@ -804,7 +806,7 @@ function generarTabla(res, objConfiguracionGlobal) {
                     contenido += "<td style='padding: 2px;' class='option-imprimir'>";
                     if (obj["permisoImprimir"] == 1) {
                         contenido += `<button class="btn">`;
-                        contenido += `<i onclick="Imprimir(${obj[slug]},this)" id="id${+ obj[slug]}" class="btn btn-success"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer-fill" viewBox="0 0 16 16">
+                        contenido += `<i onclick="Imprimir${objConfiguracionGlobal.funcionimprimir}(${obj[slug]},this)" id="id${+ obj[slug]}" class="btn btn-success"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer-fill" viewBox="0 0 16 16">
                             <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z"/>
                             <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
                             </svg></i>`;
@@ -1064,8 +1066,8 @@ function generarTabla(res, objConfiguracionGlobal) {
                 contenido += "</td>"
             }
             contenido += "</tr>"
+            contenido += "</tfoot>"
         }
-        contenido += "</tfoot>"
         contenido += "</table>";
     }
 
@@ -1083,6 +1085,10 @@ function pintarEntidades(objConfiguracion, res) {
         objConfiguracionGlobal.slug = ""
     if (objConfiguracionGlobal.radio == undefined)
         objConfiguracionGlobal.radio = false;
+    if (objConfiguracionGlobal.informacion == undefined)
+        objConfiguracionGlobal.informacion = false;
+    if (objConfiguracionGlobal.funcioninformacion == undefined)
+        objConfiguracionGlobal.funcioninformacion = "";
     if (objConfiguracionGlobal.editar == undefined)
         objConfiguracionGlobal.editar = false;
     if (objConfiguracionGlobal.eliminar == undefined)
@@ -1117,6 +1123,9 @@ function pintarEntidades(objConfiguracion, res) {
         objConfiguracionGlobal.actualizar = false;
     if (objConfiguracionGlobal.funcionactualizar == undefined)
         objConfiguracionGlobal.funcionactualizar = "";
+    if (objConfiguracionGlobal.sumarcolumna == undefined)
+        objConfiguracionGlobal.sumarcolumna = false;
+
     var contenido = "";
     contenido += "<div id='" + objConfiguracionGlobal.divContenedorTabla + "'>";
     contenido += generarTablaEntidades(res, objConfiguracionGlobal);
@@ -1126,10 +1135,59 @@ function pintarEntidades(objConfiguracion, res) {
         if (objConfiguracionGlobal.ocultarColumnas == false) {
             $("#" + objConfiguracion.idtabla).DataTable();
         } else {
-            $("#" + objConfiguracion.idtabla).DataTable({
-                "autoWidth": objConfiguracionGlobal.autoWidth,
-                "columnDefs": objConfiguracionGlobal.hideColumns, "order": [[0, "desc"]]
-            });
+            if (objConfiguracionGlobal.sumarcolumna == true) {
+                $("#" + objConfiguracion.idtabla).DataTable({
+                    "autoWidth": objConfiguracionGlobal.autoWidth,
+                    "columnDefs": objConfiguracionGlobal.hideColumns, "order": [[0, "desc"]],
+                    "footerCallback": function (row, data, start, end, display) {
+                        let api = this.api();
+                        objConfiguracionGlobal.columnasumalist.map((columna) => {
+                            let total = api
+                                .column(columna)  // get column 1 , which is mark
+                                .data()
+                                .reduce(function (a, b) {
+                                    let valorA = a;
+                                    let valorB = b;
+                                    if (!/^\d*(\.\d{1})?\d{0,1}$/.test(valorA)) {
+                                        xmlDoc = parser.parseFromString(valorA, "text/xml");
+                                        abstracts = xmlDoc.querySelectorAll("input");
+                                        abstracts.forEach(a => {
+                                            valorA = a.getAttribute('value');
+                                        });
+                                    }
+
+                                    if (!/^\d*(\.\d{1})?\d{0,1}$/.test(valorB)) {
+                                        xmlDoc = parser.parseFromString(valorB, "text/xml");
+                                        abstracts = xmlDoc.querySelectorAll("input");
+                                        abstracts.forEach(a => {
+                                            valorB = a.getAttribute('value');
+                                        });
+                                    }
+
+                                    if (isNaN(valorA) || isNaN(valorB)) {
+                                        alert("Error en la sumatoria de columna");
+                                    }
+
+                                    return parseFloat(valorA) + parseFloat(valorB);  // calculate the mark column
+
+                                });
+
+                            const formatterQuetzales = new Intl.NumberFormat('qut', {
+                                minimumFractionDigits: 2 // 2 decimales
+                            });
+
+                            $(api.column(columna).footer()).html(  // update the footer using the  total of mark column
+                                formatterQuetzales.format(total)
+                            );
+                        });
+                    }
+                });
+            } else {
+                $("#" + objConfiguracion.idtabla).DataTable({
+                    "autoWidth": objConfiguracionGlobal.autoWidth,
+                    "columnDefs": objConfiguracionGlobal.hideColumns, "order": [[0, "desc"]]
+                });
+            }
         }
     }
 }
@@ -1151,6 +1209,11 @@ function generarTablaEntidades(res, objConfiguracionGlobal) {
 
         for (let i = 0; i < cabeceras.length; i++) {
             contenido += "<td>" + cabeceras[i] + "</td>";
+            countColumns++;
+        }
+
+        if (objConfiguracionGlobal.informacion == true) {
+            contenido += "<td></td>"
             countColumns++;
         }
 
@@ -1226,6 +1289,32 @@ function generarTablaEntidades(res, objConfiguracionGlobal) {
             let slug = objConfiguracionGlobal.slug;
 
             /* Operaciones (Edit, Delete, Print, etc... */
+            if (objConfiguracionGlobal.informacion == true) {
+                contenido += "<td style='padding: 2px;' class='option-info'>";
+                if (obj["permisoInformacion"] == 1) {
+                    contenido += `<button class="btn">`;
+                    contenido += `<i onclick="VerInformacion${objConfiguracionGlobal.funcioninformacion}(${obj[slug]})" id="idInfo${+ obj[slug]}" class="btn btn-info">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                  <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                                  </svg>
+                                  </i>`;
+                    contenido += `</button>`;
+                }
+                else {
+                    contenido += `<button class="btn" disabled>`;
+                    contenido += `<i class="btn btn-secondary">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                  <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                                  </svg>
+                                  </i>`;
+                    contenido += `</button>`;
+                }
+
+                contenido += "</td>";
+            }
+
             if (objConfiguracionGlobal.editar == true) {
                 contenido += "<td style='padding: 2px;' class='option-editar'>";
                 if (obj["permisoEditar"] == 1) {
@@ -1368,7 +1457,16 @@ function generarTablaEntidades(res, objConfiguracionGlobal) {
         }
 
         contenido += "</tbody>";
-        contenido += "</tfoot>"
+        if (objConfiguracionGlobal.sumarcolumna == true) {
+            contenido += "<tfoot>"
+            contenido += "<tr>"
+            for (let j = 0; j < countColumns; j++) {
+                contenido += "<td class='table-secondary'>"
+                contenido += "</td>"
+            }
+            contenido += "</tr>"
+            contenido += "</tfoot>"
+        }
         contenido += "</table>";
     }
 

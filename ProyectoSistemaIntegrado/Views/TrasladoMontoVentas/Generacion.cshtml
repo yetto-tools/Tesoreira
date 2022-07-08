@@ -1,0 +1,82 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using CapaEntidad.Administracion;
+@{
+    ViewData["Title"] = "Generacion";
+    string impresionStr = Context.Session.GetString("impresion");
+    List<ParametroImpresionCLS> listImpresoras = JsonConvert.DeserializeObject<List<ParametroImpresionCLS>>(impresionStr);
+    foreach (ParametroImpresionCLS impresora in listImpresoras)
+    {
+        if (impresora.CodigoConfiguracion == Constantes.ConfiguracionImpresora.IMPRESORA_CORTE_ESPECIALES2)
+        {
+            TempData["Ip"] = impresora.Ip;
+            TempData["Puerto"] = impresora.Puerto;
+        }
+    }
+
+    Context.Session.SetString("tituloPrincipal", "Generación de Traslado de Montos");
+}
+
+<div style="height: 15px; width:100%;">
+
+</div>
+
+
+<form method="post" id="frmNewTraslado">
+    <table style="margin-left: auto; margin-right: auto;">
+        <tr>
+            <td>TIPO</td>
+            <td>FECHA OPERACION</td>
+            <td>EFECTIVO</td>
+            <td>CHEQUE</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+                <select class="form-control" id="uiTipoTraslado" name="CodigoTipoTraslado">
+                    <option value="-1">-- Seleccione --</option>
+                    <option value="1">CONTADO</option>
+                    <option value="2">CRÉDITO</option>
+                </select>
+            </td>
+            <td>
+                <input type="text" name="FechaOperacionStr" class="form-control text-center obligatorio" id="uiFechaOperacionStr" placeholder="Fecha Operación" />
+            </td>
+            <td>
+                <input type="text" name="MontoEfectivo" id="uiMontoEfectivo" class="form-control decimal-2 text-right" placeholder="Monto" />
+            </td>
+            <td>
+                <input type="text" name="MontoCheques" id="uiMontoCheque" class="form-control decimal-2 text-right" placeholder="Monto" />
+            </td>
+            <td>
+                <input type="button" class="form-control btn btn-primary" value="AGREGAR" onclick="GuardarTrasladoMontoVentas()" />
+            </td>
+        </tr>
+    </table>
+</form>
+
+<div style="height: 15px; width:100%;">
+
+</div>
+
+<div id="divTabla">
+
+</div>
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/jqueryui.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/ventas.js"></script>
+    <script>
+        $(function () {
+            $("#uiFechaOperacionStr").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeYear: true
+            });
+        });
+    </script>
+}

@@ -418,7 +418,76 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
                                 PermisoImportar = Convert.ToInt32(value["permiso_importar"].ToString()),
                                 PermisoDepurar = Convert.ToInt32(value["permiso_depurar"].ToString()),
                                 PermisoRegistrar = Convert.ToInt32(value["permiso_registrar"].ToString()),
-                                PermisoEditar = Convert.ToInt32(value["permiso_editar"].ToString())
+                                PermisoEditar = Convert.ToInt32(value["permiso_editar"].ToString()),
+                                PermisoInformacion = Convert.ToInt32(value["permiso_informacion"].ToString())
+                            };
+                            list.Add(row);
+                        }
+                    }
+                    else
+                    {
+                        var row2 = new TrasladoEspeciales2CLS
+                        {
+                            CodigoTraslado = 0,
+                            ObservacionesTraslado = jsonArray[0]["observaciones_traslado"].ToString()
+                        };
+                        list.Add(row2);
+                    }
+                }
+            }
+            return list;
+        }
+
+        public async Task<List<TrasladoEspeciales2CLS>> GetTrasladosParaImportacionPorFecha(string fechaOperacion)
+        {
+            CadenaConexion conexion = new CadenaConexion();
+            string puerto = conexion.puerto;
+            HttpClient client = new HttpClient();
+
+            // Setting Base address.
+            client.BaseAddress = new Uri("http://10.34.1.43:" + puerto + "/api/");
+
+            var query = new Dictionary<string, string>()
+            {
+                ["fecha"] = fechaOperacion
+            };
+
+            // Setting content type
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+            var uri = QueryHelpers.AddQueryString("especiales2/importacionesporfecha", query);
+
+            List<TrasladoEspeciales2CLS> list = new List<TrasladoEspeciales2CLS>();
+            HttpResponseMessage response = await client.GetAsync(uri);
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonArrayString = await response.Content.ReadAsStringAsync();
+                JArray jsonArray = JArray.Parse(jsonArrayString);
+                if (jsonArray.Count > 0)
+                {
+                    int codigoTraslado = Convert.ToInt32(jsonArray[0]["codigo_traslado"].ToString());
+                    if (codigoTraslado != 0)
+                    {
+                        foreach (var value in jsonArray)
+                        {
+                            var row = new TrasladoEspeciales2CLS
+                            {
+                                CodigoTraslado = Convert.ToInt32(value["codigo_traslado"].ToString()),
+                                FechaOperacionStr = value["fecha_operacion"].ToString(),
+                                MontoTotal = Convert.ToDecimal(value["monto_total"].ToString()),
+                                NumeroPedidos = Convert.ToInt32(value["numero_pedidos"].ToString()),
+                                CodigoEstado = Convert.ToInt32(value["codigo_estado"].ToString()),
+                                Estado = value["estado"].ToString(),
+                                ObservacionesTraslado = value["observaciones_traslado"].ToString(),
+                                UsuarioIngreso = value["usuario_ing"].ToString(),
+                                FechaIngresoStr = value["fecha_ing"].ToString(),
+                                FechaTrasladoStr = DateTime.Parse(value["fecha_traslado"].ToString()).ToString(),
+                                PermisoImportar = Convert.ToInt32(value["permiso_importar"].ToString()),
+                                PermisoDepurar = Convert.ToInt32(value["permiso_depurar"].ToString()),
+                                PermisoRegistrar = Convert.ToInt32(value["permiso_registrar"].ToString()),
+                                PermisoEditar = Convert.ToInt32(value["permiso_editar"].ToString()),
+                                PermisoInformacion = Convert.ToInt32(value["permiso_informacion"].ToString())
                             };
                             list.Add(row);
                         }

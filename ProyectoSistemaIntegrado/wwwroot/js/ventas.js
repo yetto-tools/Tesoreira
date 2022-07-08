@@ -27,6 +27,17 @@
                     break;
             }// fin switch
         }// fin if
+        else {
+            if (nameController == "TrasladoMontoVentas") {
+                switch (nameAction) {
+                    case "Generacion":
+                        MostrarTrasladoMontoVentasEnProceso();
+                        break;
+                    default:
+                        break;
+                }// fin switch
+            }
+        }
     }// fin if
 }
 
@@ -114,8 +125,6 @@ function SetComboRutas(idcontrol, value) {
         }
     })
 }
-
-
 
 function ListarVendedores(codigoCanalVenta) {
     let objConfiguracion = {
@@ -500,4 +509,136 @@ function ListarVendedoresRutaConsulta(codigoCanalVenta) {
         slug: "codigoVendedor"
     }
     pintar(objConfiguracion);
+}
+
+/* Traslado de Monto de Ventas */
+function GuardarTrasladoMontoVentas() {
+    let errores = ValidarDatos("frmNewTraslado")
+    if (errores != "") {
+        MensajeError(errores);
+        return;
+    }
+    let frmGuardar = document.getElementById("frmNewTraslado");
+    let frm = new FormData(frmGuardar);
+    Confirmacion(undefined, undefined, function (rpta) {
+        fetchPost("TrasladoMontoVentas/GuardarTraslado", "text", frm, function (data) {
+            if (data == "OK") {
+                MostrarTrasladoMontoVentasEnProceso();
+            } else {
+                MensajeError(data);
+            }
+        });
+    });
+}
+
+function MostrarTrasladoMontoVentasEnProceso() {
+    let objConfiguracion = {
+        url: "TrasladoMontoVentas/GetTrasladosEnProceso",
+        cabeceras: ["Código Traslado", "codigoTipoTraslado", "Tipo Traslado", "Fecha Operación", "Monto Efectivo", "Monto Cheques", "Monto", "Fecha Generación", "Generado Por", "codigoEstado", "Estado", "permisoAnular", "permisoImprimir", "permisoTraslado"],
+        propiedades: ["codigoTraslado", "codigoTipoTraslado", "tipoTraslado", "fechaOperacionStr", "montoEfectivo", "montoCheques", "monto", "fechaGeneracionStr", "usuarioIng", "codigoEstado", "estado", "permisoAnular", "permisoImprimir", "permisoTraslado"],
+        divContenedorTabla: "divContenedorTabla",
+        divPintado: "divTabla",
+        displaydecimals: ["montoEfectivo", "montoCheques", "monto"],
+        paginar: true,
+        ocultarColumnas: true,
+        hideColumns: [
+            {
+                "targets": [0],
+                "className": "dt-body-center",
+                "visible": true
+            }, {
+                "targets": [1],
+                "visible": false
+            }, {
+                "targets": [4],
+                "className": "dt-body-right",
+                "visible": true
+            }, {
+                "targets": [5],
+                "className": "dt-body-right",
+                "visible": true
+            }, {
+                "targets": [6],
+                "className": "dt-body-right",
+                "visible": true
+            }, {
+                "targets": [8],
+                "visible": false
+            }, {
+                "targets": [9],
+                "visible": false
+            }, {
+                "targets": [11],
+                "visible": false
+            }, {
+                "targets": [12],
+                "visible": false
+            }, {
+                "targets": [13],
+                "visible": false
+            }],
+        slug: "codigoTraslado",
+        eliminar: true,
+        funcioneliminar: "TrasladoMontoVentas",
+        imprimir: true,
+        funcionimprimir: "ConstanciaTrasladoMontoVentas",
+        aceptartraslado: true,
+        funcionaceptartraslado: "MontoVentas"
+    }
+    pintar(objConfiguracion);
+}
+
+function EliminarTrasladoMontoVentas(obj) {
+    let codigoTraslado = parseInt(obj);
+    let table = $('#tabla').DataTable();
+    $('#tabla tbody').on('click', '.option-eliminar', function () {
+        let rowIdx = table.row(this).index();
+        let codigoTraslado = table.cell(rowIdx, 0).data();
+        Confirmacion("Anulación de Traslado", "¿Desea anular este traslado de monto de caja?", function (rpta) {
+            fetchGet("TrasladoMontoVentas/AnularTraslado/?codigoTraslado=" + codigoTraslado.toString(), "text", function (data) {
+                if (data == "OK") {
+                    MostrarTrasladoMontoVentasEnProceso();
+                } else {
+                    MensajeError(data);
+                }
+            })
+        })
+    });
+}
+
+
+function AceptarTrasladoMontoVentas(obj) {
+    let codigoTraslado = parseInt(obj);
+    let table = $('#tabla').DataTable();
+    $('#tabla tbody').on('click', '.option-traslado', function () {
+        let rowIdx = table.row(this).index();
+        let codigoTraslado = table.cell(rowIdx, 0).data();
+        Confirmacion("Aceptación de traslado", "¿Desea aceptar el traslado?", function (rpta) {
+            fetchGet("TrasladoMontoVentas/AceptarTraslado/?codigoTraslado=" + codigoTraslado.toString(), "text", function (data) {
+                if (data == "OK") {
+                    MostrarTrasladoMontoVentasEnProceso();
+                } else {
+                    MensajeError(data);
+                }
+            })
+        })
+    });
+}
+
+
+function ImprimirConstanciaTrasladoMontoVentas(codigoTraslado, obj) {
+    let table = $('#tabla').DataTable();
+    $('#tabla tbody').on('click', '.option-imprimir', function () {
+        let rowIdx = table.row(this).index();
+        let codigoTraslado = table.cell(rowIdx, 0).data();
+        let tipoTraslado = table.cell(rowIdx, 2).data();
+        let fechaOperacionStr = table.cell(rowIdx, 3).data();
+        let montoEfectivo = table.cell(rowIdx, 4).data();
+        let montoCheques = table.cell(rowIdx, 5).data();
+        let montoTotal = table.cell(rowIdx, 6).data();
+        let fechaGeneracionStr = table.cell(rowIdx, 7).data();
+        fetchGet("TrasladoMontoVentas/PrintConstanciaTrasladoMontoVentas/?codigoTraslado=" + codigoTraslado + "&tipoTraslado=" + tipoTraslado + "&fechaOperacionStr=" + fechaOperacionStr + "&fechaGeneracionStr=" + fechaGeneracionStr + "&montoEfectivo=" + montoEfectivo + "&montoCheques=" + montoCheques + "&montoTotal=" + montoTotal, "text", function (data) {
+
+        })
+    });
 }

@@ -7,6 +7,23 @@
 
 </div>
 
+<form method="post" id="frmBusqueda">
+    <table style="margin-left: auto; margin-right: auto;">
+        <tr>
+            <td>FECHA OPERACION</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+                <input type="text" name="FechaOperacion" class="form-control text-center obligatorio" id="uiFechaOperacion" placeholder="Fecha Operación" />
+            </td>
+            <td>
+                <input type="button" class="form-control btn btn-primary" value="BUSCAR" onclick="BuscarTrasladosEspeciales2ParaImportacion()" />
+            </td>
+        </tr>
+    </table>
+</form>
+
 <div style="height: 15px; width:100%;">
 
 </div>
@@ -26,4 +43,12 @@
     <script src="~/js/sweetalert.js"></script>
     <script src="~/js/generic.js"></script>
     <script src="~/js/crom.js"></script>
+    <script>
+        $(function () {
+            $("#uiFechaOperacion").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeYear: true
+            });
+        });
+    </script>
 }

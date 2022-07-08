@@ -286,8 +286,23 @@ function Imprimir(codigoTraslado, obj) {
     });
 }
 
+function BuscarTrasladosEspeciales2ParaImportacion() {
+    MostrarTrasladosParaImportacion();
+}
+
 function MostrarTrasladosParaImportacion() {
-    fetchGet("Especiales2/GetTrasladosParaImportacion", "json", function (rpta) {
+    let fechaStr = document.getElementById("uiFechaOperacion").value;
+    let url = "";
+    let fechaOperacionStr = "";
+    if (fechaStr == "") {
+        url = "Especiales2/GetTrasladosParaImportacion";
+    } else {
+        fechaOperacionStr = convertFormatDate(fechaStr);
+        url = "Especiales2/GetTrasladosParaImportacionPorFecha/?fechaOperacion=" + fechaOperacionStr;
+    }
+    document.getElementById("uiFechaOperacion").value = "";
+
+    fetchGet(url, "json", function (rpta) {
         if (rpta == undefined || rpta == null) {
             Warning("No existe informacion")
         } else {
@@ -308,6 +323,8 @@ function MostrarTrasladosParaImportacion() {
                     divContenedorTabla: "divContenedorTabla",
                     divPintado: "divTabla",
                     paginar: true,
+                    sumarcolumna: true,
+                    columnasumalist: [3],
                     ocultarColumnas: true,
                     hideColumns: [
                         {
@@ -349,6 +366,8 @@ function MostrarTrasladosParaImportacion() {
                             "visible": false
                         }],
                     slug: "codigoTraslado",
+                    informacion: true,
+                    funcioninformacion: "DetalleEspeciales2",
                     import: true,
                     funcionimport: "Especiales2",
                     depurar: true,
@@ -363,6 +382,10 @@ function MostrarTrasladosParaImportacion() {
             }
         }
     });
+}
+
+function VerInformacionDetalleEspeciales2(obj) {
+    MostrarDetalleEspeciales2SinDepurar(obj);
 }
 
 function ImportarEspeciales2() {
@@ -386,7 +409,8 @@ function ImportarEspeciales2() {
                             frm.set("CodigoEstado", CODIGO_ESTADO_RECEPCIONADO.toString());
                             fetchPost("Especiales2/CambiarEstadoTrasladoEspeciales2", "text", frm, function (data2) {
                                 if (data2 == "OK") {
-                                    MostrarTrasladosParaImportacion();
+                                    Redireccionar("Especiales2", "ImportEspeciales2");
+                                    //MostrarTrasladosParaImportacion();
                                 } else {
                                     MensajeError(data2);
                                 }
@@ -479,7 +503,40 @@ function MostrarDetalleEspeciales2ParaDepuracion(codigoTraslado) {
     });
 }
 
+/**
+ * Detalle de especiales desde CROM
+ * @param {any} codigoTraslado
+ */
+function MostrarDetalleEspeciales2SinDepurar(codigoTraslado) {
+    let objConfiguracion = {
+        url: "Especiales2/GetDetalleTrasladosEspeciales2/?codigoTraslado=" + codigoTraslado,
+        cabeceras: ["Código Cliente", "Nombre Cliente", "Monto", "Fecha Grabación"],
+        propiedades: ["codigoCliente", "nombreClienteDepurado", "monto", "fechaGrabadoStr"],
+        displaydecimals: ["monto"],
+        divContenedorTabla: "divContenedorTablaDetalle",
+        divPintado: "divTablaDetalle",
+        idtabla: "tablaDetalle",
+        paginar: true,
+        ocultarColumnas: true,
+        hideColumns: [
+            {
+                "targets": [0],
+                "className": "dt-body-center",
+                "visible": true
+            }, {
+                "targets": [2],
+                "className": "dt-body-right",
+                "visible": true
+            }],
+        slug: "codigoCliente"
+    }
+    pintar(objConfiguracion);
+}
 
+/**
+ * Detalle de especiales obtenidos desde el Sistema de Tesorería
+ * @param {any} codigoTraslado
+ */
 function MostrarDetalleEspeciales2Depurado(codigoTraslado) {
     let objConfiguracion = {
         url: "TrasladosEspeciales2/GetDetalleEspeciales2/?codigoTraslado=" + codigoTraslado,

@@ -29,6 +29,7 @@ namespace CapaEntidad.CROM
         public int PermisoRegistrar { get; set; }
         public int PermisoEditar { get; set; }
         public int PermisoActualizar { get; set; }
+        public int PermisoInformacion { get; set; }
     }
 
 

@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace CapaDatos.Ventas
 {
-    public class TrasladoMontoVentasDAL : CadenaConexion
+    public class TrasladoVentasContadoDAL : CadenaConexion
     {
-        public string GuardarTraslado(TrasladoMontoVentasCLS objTraslado, string usuarioIng)
+        public string GuardarTraslado(TrasladoVentasContadoCLS objTraslado, string usuarioIng)
         {
             string resultado = "";
             using (SqlConnection conexion = new SqlConnection(cadenaTesoreria))
@@ -19,13 +19,13 @@ namespace CapaDatos.Ventas
                 try
                 {
                     string sql = @"
-                    INSERT INTO db_tesoreria.traslado_caja(codigo_traslado,codigo_tipo_traslado,fecha_operacion,monto_efectivo,monto_cheques,monto,fecha_recepcion,usuario_recepcion,
+                    INSERT INTO db_tesoreria.traslado_ventas_contado(codigo_traslado,fecha_operacion,monto_efectivo,monto_cheques,monto_transferencia,monto,fecha_recepcion,usuario_recepcion,
 	                observaciones_generacion,observaciones_recepcion,anio_operacion,semana_operacion,dia_operacion,codigo_estado,usuario_ing,fecha_ing,usuario_act,fecha_act)
-                    VALUES(NEXT VALUE FOR db_tesoreria.SQ_VENTAS_TRASLADO_CAJA,
-                           @CodigoTipoTraslado,
+                    VALUES(NEXT VALUE FOR db_tesoreria.SQ_TRASLADO_VENTA_CONTADO,
                            @FechaOperacion,
                            @MontoEfectivo,
                            @MontoCheques,
+                           @MontoTransferencia, 
                            @Monto,
                            @FechaRecepcion,
                            @UsuarioRecepcion,
@@ -45,10 +45,10 @@ namespace CapaDatos.Ventas
                     {
                         cmd.CommandType = CommandType.Text;
 
-                        cmd.Parameters.AddWithValue("@CodigoTipoTraslado", objTraslado.CodigoTipoTraslado);
                         cmd.Parameters.AddWithValue("@FechaOperacion", objTraslado.FechaOperacion);
                         cmd.Parameters.AddWithValue("@MontoEfectivo", objTraslado.MontoEfectivo);
                         cmd.Parameters.AddWithValue("@MontoCheques", objTraslado.MontoCheques);
+                        cmd.Parameters.AddWithValue("@MontoTransferencia", objTraslado.MontoTransferencia);
                         cmd.Parameters.AddWithValue("@Monto", objTraslado.Monto);
                         cmd.Parameters.AddWithValue("@FechaRecepcion", DBNull.Value);
                         cmd.Parameters.AddWithValue("@UsuarioRecepcion", DBNull.Value);
@@ -80,9 +80,9 @@ namespace CapaDatos.Ventas
             }
         }
 
-        public List<TrasladoMontoVentasCLS> GetTrasladosEnProceso()
+        public List<TrasladoVentasContadoCLS> GetTrasladosEnProceso()
         {
-            List<TrasladoMontoVentasCLS> lista = null;
+            List<TrasladoVentasContadoCLS> lista = null;
             using (SqlConnection conexion = new SqlConnection(cadenaTesoreria))
             {
                 try
@@ -90,15 +90,10 @@ namespace CapaDatos.Ventas
                     conexion.Open();
                     string sql = @"
                     SELECT x.codigo_traslado,
-	                       x.codigo_tipo_traslado,
-                           CASE
-                            WHEN x.codigo_tipo_traslado = 1 THEN 'CONTADO'
-                            WHEN x.codigo_tipo_traslado = 2 THEN 'CREDITO'
-                            ELSE ''
-                           END AS tipo_traslado, 
                            FORMAT(x.fecha_operacion,'dd/MM/yyyy') AS fecha_operacion_str,
 	                       x.monto_efectivo,
 	                       x.monto_cheques,
+                           x.monto_transferencia,
 	                       x.monto,
 	                       x.anio_operacion,
 	                       x.semana_operacion,
@@ -120,7 +115,7 @@ namespace CapaDatos.Ventas
                              ELSE 0
                            END AS permiso_traslado 
 
-                    FROM db_tesoreria.traslado_caja x
+                    FROM db_tesoreria.traslado_ventas_contado x
                     INNER JOIN db_tesoreria.estado_traslado_caja y
                     ON x.codigo_estado = y.codigo_estado
                     WHERE x.codigo_estado IN (@CodigoEstadoGenerado,@CodigoEstadoAceptado)
@@ -134,14 +129,13 @@ namespace CapaDatos.Ventas
                         SqlDataReader dr = cmd.ExecuteReader();
                         if (dr != null)
                         {
-                            TrasladoMontoVentasCLS objTraslado;
-                            lista = new List<TrasladoMontoVentasCLS>();
+                            TrasladoVentasContadoCLS objTraslado;
+                            lista = new List<TrasladoVentasContadoCLS>();
                             int postCodigoTraslado = dr.GetOrdinal("codigo_traslado");
-                            int postCodigoTipoTraslado = dr.GetOrdinal("codigo_tipo_traslado");
-                            int postTipoTraslado = dr.GetOrdinal("tipo_traslado");
                             int postFechaOperacionStr = dr.GetOrdinal("fecha_operacion_str");
                             int postMontoEfectivo = dr.GetOrdinal("monto_efectivo");
                             int postMontoCheques = dr.GetOrdinal("monto_cheques");
+                            int postMontoTransferencia = dr.GetOrdinal("monto_transferencia");
                             int postMonto = dr.GetOrdinal("monto");
                             int postAnioOperacion = dr.GetOrdinal("anio_operacion");
                             int postSemanaOperacion = dr.GetOrdinal("semana_operacion");
@@ -155,14 +149,13 @@ namespace CapaDatos.Ventas
                             int postPermisoTraslado = dr.GetOrdinal("permiso_traslado");
                             while (dr.Read())
                             {
-                                objTraslado = new TrasladoMontoVentasCLS();
+                                objTraslado = new TrasladoVentasContadoCLS();
 
                                 objTraslado.CodigoTraslado = dr.GetInt32(postCodigoTraslado);
-                                objTraslado.CodigoTipoTraslado = dr.GetByte(postCodigoTipoTraslado);
-                                objTraslado.TipoTraslado = dr.GetString(postTipoTraslado);
                                 objTraslado.FechaOperacionStr = dr.GetString(postFechaOperacionStr);
                                 objTraslado.MontoEfectivo = dr.GetDecimal(postMontoEfectivo);
                                 objTraslado.MontoCheques = dr.GetDecimal(postMontoCheques);
+                                objTraslado.MontoTransferencia = dr.GetDecimal(postMontoTransferencia);
                                 objTraslado.Monto = dr.GetDecimal(postMonto);
                                 objTraslado.AnioOperacion = dr.GetInt16(postAnioOperacion);
                                 objTraslado.SemanaOperacion = dr.GetByte(postSemanaOperacion);
@@ -174,6 +167,98 @@ namespace CapaDatos.Ventas
                                 objTraslado.PermisoAnular = dr.GetInt32(postPermisoAnular);
                                 objTraslado.PermisoImprimir = dr.GetInt32(postPermisoImprimir);
                                 objTraslado.PermisoTraslado = dr.GetInt32(postPermisoTraslado);
+
+                                lista.Add(objTraslado);
+                            }
+                        }
+                    }
+                    conexion.Close();
+                }
+                catch (Exception ex)
+                {
+                    conexion.Close();
+                    lista = null;
+                }
+
+                return lista;
+            }
+        }
+
+        public List<TrasladoVentasContadoCLS> GetTrasladosParaRecepcion(int codigoTipoTraslado)
+        {
+            List<TrasladoVentasContadoCLS> lista = null;
+            using (SqlConnection conexion = new SqlConnection(cadenaTesoreria))
+            {
+                try
+                {
+                    conexion.Open();
+                    string sql = @"
+                    SELECT x.codigo_traslado,
+                           FORMAT(x.fecha_operacion,'dd/MM/yyyy') AS fecha_operacion_str,
+	                       x.monto_efectivo,
+	                       x.monto_cheques,
+                           x.monto_transferencia,
+	                       x.monto,
+	                       x.anio_operacion,
+	                       x.semana_operacion,
+	                       x.dia_operacion,
+                           FORMAT(x.fecha_ing, 'dd/MM/yyyy, hh:mm:ss') AS fecha_generacion_str,
+	                       x.usuario_ing,
+	                       x.codigo_estado,
+	                       y.nombre AS estado,
+                           CASE
+                             WHEN x.codigo_estado = @CodigoEstadoAceptado THEN 1
+                             ELSE 0
+                           END AS permiso_registrar
+
+                    FROM db_tesoreria.traslado_ventas_contado x
+                    INNER JOIN db_tesoreria.estado_traslado_caja y
+                    ON x.codigo_estado = y.codigo_estado
+                    WHERE x.codigo_estado = @CodigoEstadoAceptado
+                    ORDER BY x.codigo_traslado DESC";
+
+                    using (SqlCommand cmd = new SqlCommand(sql, conexion))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Parameters.AddWithValue("@CodigoEstadoAceptado", Constantes.Ventas.EstadoTrasladoCaja.ACEPTADO);
+                        SqlDataReader dr = cmd.ExecuteReader();
+                        if (dr != null)
+                        {
+                            TrasladoVentasContadoCLS objTraslado;
+                            lista = new List<TrasladoVentasContadoCLS>();
+                            int postCodigoTraslado = dr.GetOrdinal("codigo_traslado");
+                            int postFechaOperacionStr = dr.GetOrdinal("fecha_operacion_str");
+                            int postMontoEfectivo = dr.GetOrdinal("monto_efectivo");
+                            int postMontoCheques = dr.GetOrdinal("monto_cheques");
+                            int postMontoTransferencia = dr.GetOrdinal("monto_transferencia");
+                            int postMonto = dr.GetOrdinal("monto");
+                            int postAnioOperacion = dr.GetOrdinal("anio_operacion");
+                            int postSemanaOperacion = dr.GetOrdinal("semana_operacion");
+                            int postDiaOperacion = dr.GetOrdinal("dia_operacion");
+                            int postFechaGeneracionStr = dr.GetOrdinal("fecha_generacion_str");
+                            int postUsuarioIng = dr.GetOrdinal("usuario_ing");
+                            int postCodigoEstado = dr.GetOrdinal("codigo_estado");
+                            int postEstado = dr.GetOrdinal("estado");
+                            int postPermisoRegistrar = dr.GetOrdinal("permiso_registrar");
+
+                            while (dr.Read())
+                            {
+                                objTraslado = new TrasladoVentasContadoCLS();
+
+                                objTraslado.CodigoTraslado = dr.GetInt32(postCodigoTraslado);
+                                objTraslado.FechaOperacionStr = dr.GetString(postFechaOperacionStr);
+                                objTraslado.MontoEfectivo = dr.GetDecimal(postMontoEfectivo);
+                                objTraslado.MontoCheques = dr.GetDecimal(postMontoCheques);
+                                objTraslado.MontoTransferencia = dr.GetDecimal(postMontoTransferencia);
+                                objTraslado.Monto = dr.GetDecimal(postMonto);
+                                objTraslado.AnioOperacion = dr.GetInt16(postAnioOperacion);
+                                objTraslado.SemanaOperacion = dr.GetByte(postSemanaOperacion);
+                                objTraslado.DiaOperacion = dr.GetByte(postDiaOperacion);
+                                objTraslado.FechaGeneracionStr = dr.GetString(postFechaGeneracionStr);
+                                objTraslado.UsuarioIng = dr.GetString(postUsuarioIng);
+                                objTraslado.CodigoEstado = dr.GetInt16(postCodigoEstado);
+                                objTraslado.Estado = dr.GetString(postEstado);
+                                objTraslado.PermisoRegistrar = dr.GetInt32(postPermisoRegistrar);
 
                                 lista.Add(objTraslado);
                             }
@@ -199,7 +284,7 @@ namespace CapaDatos.Ventas
                 try
                 {
                     string sql = @"
-                    UPDATE db_tesoreria.traslado_caja
+                    UPDATE db_tesoreria.traslado_ventas_contado
                     SET codigo_estado = @CodigoEstadoAnulado,
                         usuario_act = @UsuarioAct,
                         fecha_act = @FechaAct
@@ -237,7 +322,7 @@ namespace CapaDatos.Ventas
                 try
                 {
                     string sql = @"
-                    UPDATE db_tesoreria.traslado_caja
+                    UPDATE db_tesoreria.traslado_ventas_contado
                     SET codigo_estado = @CodigoEstadoAceptado,
                         usuario_act = @UsuarioAct,
                         fecha_act = @FechaAct

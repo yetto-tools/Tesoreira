@@ -869,6 +869,315 @@ namespace CapaDatos.Tesoreria
             return resultado;
         }
 
+        public string RegistrarEfectivoVentasEstablecimiento(int codigoTraslado, TransaccionCLS objTransaccion, string usuarioIng)
+        {
+            string resultado = "";
+            using (SqlConnection conexion = new SqlConnection(cadenaTesoreria))
+            {
+                conexion.Open();
+
+                SqlCommand cmd = conexion.CreateCommand();
+                SqlTransaction transaction;
+
+                // Start a local transaction.
+                transaction = conexion.BeginTransaction("SampleTransaction");
+
+                // Must assign both transaction object and connection
+                // to Command object for a pending local transaction
+                cmd.Connection = conexion;
+                cmd.Transaction = transaction;
+
+                try
+                {
+                    string codigoSeguridad = Util.Seguridad.GenerarCadena();
+                    int anio = DateTime.Now.Year;
+                    string sqlSequence = "SELECT sig_valor FROM db_admon.secuencia_detalle WHERE codigo_secuencia = @CodigoSecuencia AND anio = @AnioTransaccion";
+
+                    // ExecuteScalar(), Executes the query, and returns the first column of the first row in the result set returned by the query. Additional columns or rows are ignored.
+                    cmd.CommandText = sqlSequence;
+                    cmd.Parameters.AddWithValue("@CodigoSecuencia", Constantes.Secuencia.SIT_SEQ_TRANSACCION);
+                    cmd.Parameters.AddWithValue("@AnioTransaccion", anio);
+                    long correlativoTransaccion = (long)cmd.ExecuteScalar();
+
+                    string sentenciaUpdateTransaccion = string.Empty;
+                    string sentenciaUpdateRecibo = string.Empty;
+                    long correlativoReciboReferencia = 0;
+                    
+                    cmd.CommandText = "SELECT NEXT VALUE FOR db_tesoreria.SQ_RECIBO_INGRESO";
+                    long correlativoRecibo = (long)cmd.ExecuteScalar();
+
+                    sentenciaUpdateTransaccion = "UPDATE db_admon.secuencia_detalle SET sig_valor = @siguienteValor WHERE codigo_secuencia = @CodigoSecuencia  AND anio = @AnioTransaccion";
+                    long codigoTransaccion = long.Parse(anio.ToString() + correlativoTransaccion.ToString("D6"));
+
+                    string sentenciaSQL = @"
+                    INSERT INTO db_tesoreria.transaccion( codigo_transaccion,
+                                                          codigo_seguridad,  
+                                                          codigo_empresa,
+                                                          codigo_operacion,
+                                                          codigo_operacion_caja,
+                                                          codigo_tipo_cxc,
+                                                          codigo_cxc,
+                                                          codigo_area,
+                                                          codigo_categoria_entidad,
+                                                          codigo_entidad,
+                                                          codigo_tipo_operacion,  
+                                                          codigo_tipo_transaccion,
+                                                          codigo_tipo_documento,  
+                                                          efectivo,
+                                                          deposito,
+                                                          cheque,  
+                                                          nit_proveedor,  
+                                                          serie_factura,
+                                                          numero_documento,
+                                                          fecha_documento,
+                                                          conceder_iva,
+                                                          nit_empresa_concede_iva,  
+                                                          codigo_banco_deposito,
+                                                          numero_cuenta,  
+                                                          numero_boleta, 
+                                                          numero_recibo,
+                                                          fecha_recibo,
+                                                          fecha_operacion,
+                                                          anio_operacion,
+                                                          semana_operacion,
+                                                          dia_operacion,
+                                                          codigo_boleta_comision,  
+                                                          ruta,
+                                                          codigo_vendedor,  
+                                                          semana_comision,
+                                                          anio_comision,
+                                                          monto_efectivo,
+                                                          monto_cheques,  
+                                                          monto,
+                                                          codigo_frecuencia_pago,  
+                                                          codigo_tipo_pago,		
+	                                                      codigo_planilla,
+	                                                      codigo_pago_planilla,
+	                                                      anio_planilla,	
+	                                                      mes_planilla,		
+	                                                      semana_planilla,		
+	                                                      codigo_quincena_planilla,
+                                                          codigo_bono_extra,  
+                                                          tipo_especiales_1,
+                                                          observaciones,
+                                                          fecha_confirmacion,
+                                                          motivo_anulacion,
+                                                          usuario_anulacion,
+                                                          fecha_anulacion,  
+                                                          codigo_estado,
+                                                          usuario_ing,
+                                                          fecha_ing,
+                                                          usuario_act,
+                                                          fecha_act,
+                                                          anio_sueldo_indirecto,
+                                                          mes_sueldo_indirecto,
+                                                          complemento_conta,
+                                                          codigo_reporte,
+                                                          codigo_tipo_doc_deposito,
+                                                          numero_voucher,
+                                                          nombre_proveedor,
+                                                          codigo_canal_venta,
+                                                          codigo_otro_ingreso,
+                                                          numero_recibo_referencia,
+                                                          monto_saldo_anterior_cxc,
+                                                          monto_saldo_actual_cxc)
+                    VALUES(@CodigoTransaccion,
+                           @CodigoSeguridad,
+                           @CodigoEmpresa,
+                           @CodigoOperacion,
+                           @CodigoOperacionCaja,
+                           @CodigoTipoCuentaPorCobrar,
+                           @CodigoCuentaPorCobrar,
+                           @CodigoArea,
+                           @CodigoCategoriaEntidad,
+                           @CodigoEntidad,
+                           @CodigoTipoOperacion, 
+                           @CodigoTipoTransaccion,
+                           @CodigoTipoDocumento, 
+                           @Efectivo,
+                           @Deposito,
+                           @Cheque, 
+                           @NitProveedor, 
+                           @SerieFactura,
+                           @NumeroDocumento,
+                           @FechaDocumento,
+                           @ConcederIva,
+                           @NitEmpresaConcedeIva, 
+                           @CodigoBancoDeposito,
+                           @NumeroCuenta,
+                           @NumeroBoleta, 
+                           @NumeroRecibo,
+                           @FechaRecibo,
+                           @FechaOperacion,
+                           @AnioOperacion,
+                           @SemanaOperacion,
+                           @DiaOperacion,
+                           @CodigoBoletaComision,
+                           @Ruta,
+                           @CodigoVendedor,
+                           @SemanaComision, 
+                           @AnioComision,
+                           @MontoEfectivo,
+                           @MontoCheques, 
+                           @Monto,
+                           @CodigoFrecuenciaPago, 
+                           @CodigoTipoPago,
+                           @CodigoPlanilla,
+                           @CodigoPagoPlanilla,
+                           @AnioPlanilla,
+                           @MesPlanilla,
+                           @SemanaPlanilla,
+                           @CodigoQuincenaPlanilla, 
+                           @CodigoBonoExtra,
+                           @TipoEspeciales1,
+                           @Observaciones,
+                           @FechaConfirmacion,
+                           @MotivoAnulacion,
+                           @UsuarioAnulacion,
+                           @FechaAnulacion, 
+                           @CodigoEstado,
+                           @UsuarioIng,
+                           @FechaIng,
+                           @UsuarioAct,
+                           @FechaAct,
+                           @AnioSueldoIndirecto,
+                           @MesSueldoIndirecto,
+                           @ComplementoConta,
+                           @CodigoReporte,
+                           @CodigoTipoDocumentoDeposito,
+                           @NumeroVoucher,
+                           @NombreProveedor,
+                           @CodigoCanalVenta,
+                           @CodigoOtroIngreso,
+                           @NumeroReciboReferencia,
+                           @MontoSaldoAnteriorCuentaPorCobrar,
+                           @MontoSaldoActualCuentaPorCobrar)";
+
+                    cmd.CommandText = sentenciaSQL;
+                    cmd.Parameters.AddWithValue("@CodigoTransaccion", codigoTransaccion);
+                    cmd.Parameters.AddWithValue("@CodigoSeguridad", codigoSeguridad);
+                    cmd.Parameters.AddWithValue("@CodigoEmpresa", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@CodigoOperacion", Constantes.Operacion.Ingreso.VENTAS_ESTABLECIMIENTO);
+                    cmd.Parameters.AddWithValue("@CodigoOperacionCaja", Constantes.Operacion.Ingreso.VENTAS_ESTABLECIMIENTO);
+                    cmd.Parameters.AddWithValue("@CodigoTipoCuentaPorCobrar", Constantes.CuentaPorCobrar.Tipo.NO_APLICA);
+                    cmd.Parameters.AddWithValue("@CodigoCuentaPorCobrar", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@CodigoArea", Constantes.Area.NINGUNA);
+                    cmd.Parameters.AddWithValue("@CodigoCategoriaEntidad", Constantes.Entidad.Categoria.CAJA);
+                    cmd.Parameters.AddWithValue("@CodigoEntidad", Constantes.Entidad.VENTA_ESTABLECIMIENTO);
+                    cmd.Parameters.AddWithValue("@CodigoTipoOperacion", Constantes.TipoOperacion.INGRESO);
+                    cmd.Parameters.AddWithValue("@CodigoTipoTransaccion", "NF");
+                    cmd.Parameters.AddWithValue("@CodigoTipoDocumento", Constantes.TipoDocumento.VALE);
+                    cmd.Parameters.AddWithValue("@Efectivo", objTransaccion.Efectivo);
+                    cmd.Parameters.AddWithValue("@Deposito", 0);
+                    cmd.Parameters.AddWithValue("@Cheque", 0);
+                    cmd.Parameters.AddWithValue("@NitProveedor", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@SerieFactura", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@NumeroDocumento", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@FechaDocumento", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@ConcederIva", 0);
+                    cmd.Parameters.AddWithValue("@NitEmpresaConcedeIva", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@CodigoBancoDeposito", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@NumeroCuenta", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@NumeroBoleta", string.Empty);
+                    cmd.Parameters.AddWithValue("@NumeroRecibo", correlativoRecibo);
+                    cmd.Parameters.AddWithValue("@FechaRecibo", DateTime.Now);
+
+                    cmd.Parameters.AddWithValue("@FechaOperacion", objTransaccion.FechaOperacion);
+                    cmd.Parameters.AddWithValue("@AnioOperacion", objTransaccion.AnioOperacion);
+                    cmd.Parameters.AddWithValue("@SemanaOperacion", objTransaccion.SemanaOperacion);
+                    cmd.Parameters.AddWithValue("@DiaOperacion", Util.Conversion.DayOfWeek(objTransaccion.FechaOperacion));
+
+                    cmd.Parameters.AddWithValue("@CodigoBoletaComision", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Ruta", 0);
+                    cmd.Parameters.AddWithValue("@CodigoVendedor", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@SemanaComision", 0);
+                    cmd.Parameters.AddWithValue("@AnioComision", 0);
+
+                    cmd.Parameters.AddWithValue("@MontoEfectivo", objTransaccion.MontoEfectivo);
+                    cmd.Parameters.AddWithValue("@MontoCheques", objTransaccion.MontoCheques);
+                    cmd.Parameters.AddWithValue("@Monto", objTransaccion.Monto);
+
+                    cmd.Parameters.AddWithValue("@CodigoFrecuenciaPago", 0);
+                    cmd.Parameters.AddWithValue("@CodigoTipoPago", 0);
+                    cmd.Parameters.AddWithValue("@CodigoPlanilla", 0);
+                    cmd.Parameters.AddWithValue("@CodigoPagoPlanilla", 0);
+                    cmd.Parameters.AddWithValue("@AnioPlanilla", 0);
+                    cmd.Parameters.AddWithValue("@MesPlanilla", 0);
+                    cmd.Parameters.AddWithValue("@SemanaPlanilla", 0);
+                    cmd.Parameters.AddWithValue("@CodigoQuincenaPlanilla", 0);
+                    cmd.Parameters.AddWithValue("@CodigoBonoExtra", 0);
+                    cmd.Parameters.AddWithValue("@TipoEspeciales1", 0);
+                    cmd.Parameters.AddWithValue("@Observaciones", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@FechaConfirmacion", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@MotivoAnulacion", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@UsuarioAnulacion", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@FechaAnulacion", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@CodigoEstado", Constantes.EstadoTransacccion.REGISTRADO);
+                    cmd.Parameters.AddWithValue("@UsuarioIng", usuarioIng);
+                    cmd.Parameters.AddWithValue("@FechaIng", DateTime.Now);
+                    cmd.Parameters.AddWithValue("@FechaAct", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@UsuarioAct", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@AnioSueldoIndirecto", 0);
+                    cmd.Parameters.AddWithValue("@MesSueldoIndirecto", 0);
+                    cmd.Parameters.AddWithValue("@ComplementoConta", 0);
+                    cmd.Parameters.AddWithValue("@CodigoReporte", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@CodigoTipoDocumentoDeposito", 0);
+                    cmd.Parameters.AddWithValue("@NumeroVoucher", string.Empty);
+                    cmd.Parameters.AddWithValue("@NombreProveedor", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@CodigoCanalVenta", 0);
+                    cmd.Parameters.AddWithValue("@CodigoOtroIngreso", 0);
+                    cmd.Parameters.AddWithValue("@NumeroReciboReferencia", correlativoReciboReferencia);
+                    cmd.Parameters.AddWithValue("@MontoSaldoAnteriorCuentaPorCobrar", 0);
+                    cmd.Parameters.AddWithValue("@MontoSaldoActualCuentaPorCobrar", 0);
+
+                    cmd.ExecuteNonQuery();
+
+                    cmd.CommandText = sentenciaUpdateTransaccion;
+                    cmd.Parameters.AddWithValue("@siguienteValor", correlativoTransaccion + 1);
+                    cmd.ExecuteNonQuery();
+
+                    #region Actualizar estado del traslado de caja
+
+                    string sentenciaUpdateTrasladoCaja = @"
+                    UPDATE db_tesoreria.traslado_ventas_contado
+                    SET codigo_estado = @CodigoEstadoRecepcionado,
+                        fecha_recepcion = @FechaRecepcion,
+                        usuario_recepcion = @UsuarioRecepcion,
+                        usuario_act = @UsuarioAct,
+                        fecha_act = @FechaAct
+                    WHERE codigo_traslado = @CodigoTraslado";
+
+                    cmd.CommandText = sentenciaUpdateTrasladoCaja;
+                    cmd.Parameters.AddWithValue("@CodigoEstadoRecepcionado", Constantes.Ventas.EstadoTrasladoCaja.RECEPCIONADO);
+                    cmd.Parameters.AddWithValue("@UsuarioRecepcion", usuarioIng);
+                    cmd.Parameters.AddWithValue("@FechaRecepcion", DateTime.Now);
+                    cmd.Parameters["@UsuarioAct"].Value = usuarioIng;
+                    cmd.Parameters["@FechaAct"].Value = DateTime.Now;
+                    cmd.Parameters.AddWithValue("@CodigoTraslado", codigoTraslado);
+
+                    // rows sotred the number of rows affected
+                    int rows = cmd.ExecuteNonQuery();
+
+                    #endregion
+
+                    // Attempt to commit the transaction.
+                    transaction.Commit();
+                    conexion.Close();
+
+                    //resultado = "OK";
+                    resultado = codigoTransaccion.ToString();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    conexion.Close();
+                    resultado = "Error [0]: " + ex.Message;
+                }
+            }
+
+            return resultado;
+        }
+
         static async Task SearchContentAsync(string conn, long codigoTransaccion, int codigoTipoCorreccion, string observaciones, string usuarioIng)
         {
             List<PersonaCLS> lista = null;

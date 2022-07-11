@@ -7,14 +7,14 @@
     List<ParametroImpresionCLS> listImpresoras = JsonConvert.DeserializeObject<List<ParametroImpresionCLS>>(impresionStr);
     foreach (ParametroImpresionCLS impresora in listImpresoras)
     {
-        if (impresora.CodigoConfiguracion == Constantes.ConfiguracionImpresora.IMPRESORA_CORTE_ESPECIALES2)
+        if (impresora.CodigoConfiguracion == Constantes.ConfiguracionImpresora.IMPRESORA_CAJA_VENTAS_ESTABLECIMIENTO)
         {
             TempData["Ip"] = impresora.Ip;
             TempData["Puerto"] = impresora.Puerto;
         }
     }
 
-    Context.Session.SetString("tituloPrincipal", "Generación de Traslado de Montos");
+    Context.Session.SetString("tituloPrincipal", "Traslado de Ventas al Contado");
 }
 
 <div style="height: 15px; width:100%;">
@@ -25,20 +25,13 @@
 <form method="post" id="frmNewTraslado">
     <table style="margin-left: auto; margin-right: auto;">
         <tr>
-            <td>TIPO</td>
-            <td>FECHA OPERACION</td>
+            <td>FECHA</td>
             <td>EFECTIVO</td>
             <td>CHEQUE</td>
+            <td>TRANSFERENCIA</td>
             <td></td>
         </tr>
         <tr>
-            <td>
-                <select class="form-control" id="uiTipoTraslado" name="CodigoTipoTraslado">
-                    <option value="-1">-- Seleccione --</option>
-                    <option value="1">CONTADO</option>
-                    <option value="2">CRÉDITO</option>
-                </select>
-            </td>
             <td>
                 <input type="text" name="FechaOperacionStr" class="form-control text-center obligatorio" id="uiFechaOperacionStr" placeholder="Fecha Operación" />
             </td>
@@ -47,6 +40,9 @@
             </td>
             <td>
                 <input type="text" name="MontoCheques" id="uiMontoCheque" class="form-control decimal-2 text-right" placeholder="Monto" />
+            </td>
+            <td>
+                <input type="text" name="MontoTransferencia" id="uiMontoTransferencia" class="form-control decimal-2 text-right" placeholder="Monto" />
             </td>
             <td>
                 <input type="button" class="form-control btn btn-primary" value="AGREGAR" onclick="GuardarTrasladoMontoVentas()" />

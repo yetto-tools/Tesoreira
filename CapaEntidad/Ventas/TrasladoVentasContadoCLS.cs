@@ -6,16 +6,14 @@ using System.Threading.Tasks;
 
 namespace CapaEntidad.Ventas
 {
-    public class TrasladoMontoVentasCLS
+    public class TrasladoVentasContadoCLS
     {
         public int CodigoTraslado { get; set; }
-        public byte CodigoTipoTraslado { get; set; }
-        public string TipoTraslado { get; set; }
         public DateTime FechaOperacion { get; set; }
-
         public string FechaOperacionStr { get; set; }
         public decimal MontoEfectivo { get; set; }
         public decimal MontoCheques { get; set; }
+        public decimal MontoTransferencia { get; set; }
         public decimal Monto { get; set; }
         public string FechaRecepcion { get; set; }
         public string UsuarioRecepcion { get; set; }
@@ -31,7 +29,7 @@ namespace CapaEntidad.Ventas
         public int PermisoAnular { get; set; }
         public int PermisoImprimir { get; set; }
         public int PermisoTraslado { get; set; }
-        public int PermisoRecepcionar { get; set; }
+        public int PermisoRegistrar { get; set; }
     }
 }
 

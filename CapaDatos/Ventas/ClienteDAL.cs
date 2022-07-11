@@ -117,30 +117,55 @@ namespace CapaDatos.Ventas
             }
         }
 
-        /*public List<ClienteCLS> listaCliente()
+        public List<ClienteCLS> GetListAllClientesAlCredito(string codigoEmpresa)
         {
-            List<ClienteCLS> list = new List<ClienteCLS>();
-            try
+            List<ClienteCLS> lista = null;
+            using (SqlConnection conexion = new SqlConnection(cadenaQSystems))
             {
-                using (MySqlConnection con = new MySqlConnection(cadenaCROM))
+                try
                 {
-                    MySqlCommand cmd = new MySqlCommand("select * from cxc_cliente where cliente = 1398", con);
-                    MySqlDataReader reader = cmd.ExecuteReader();
-                    while (reader.Read())
+                    String sql = @"
+                    SELECT x.CLI_CODIGO AS codigo_cliente, 
+                           x.CLI_NOMBRE AS nombre_cliente 
+                    FROM Qsystems.dbo.MASTCLI x
+                    INNER JOIN Qsystems.dbo.CLIENTES_EXTRA y
+                    ON x.CLI_CODIGO = y.EXT_CLIENTE AND x.CLI_EMPRESA = y.EXT_EMPRESA
+                    WHERE EXT_CONCRED = 'C'
+                    AND x.CLI_EMPRESA = @CodigoEmpresa";
+
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand(sql, conexion))
                     {
-                       
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Parameters.AddWithValue("@CodigoEmpresa", codigoEmpresa);
+                        SqlDataReader dr = cmd.ExecuteReader();
+                        if (dr != null)
+                        {
+                            ClienteCLS objCliente;
+                            lista = new List<ClienteCLS>();
+                            int postCodigoCliente = dr.GetOrdinal("codigo_cliente");
+                            int postNombreCliente = dr.GetOrdinal("nombre_cliente");
+                            while (dr.Read())
+                            {
+                                objCliente = new ClienteCLS();
+                                objCliente.CodigoCliente = dr.GetString(postCodigoCliente);
+                                objCliente.NombreCompleto = dr.GetString(postNombreCliente);
+                                lista.Add(objCliente);
+                            }
+                        }
                     }
+                    conexion.Close();
+                }
+                catch (Exception)
+                {
+                    conexion.Close();
+                    lista = null;
                 }
 
+                return lista;
             }
-            catch (Exception ex)
-            {
-                return null;
-            }
-
-            return list;
-        }*/
-
-
+        }
     }
+
+
 }

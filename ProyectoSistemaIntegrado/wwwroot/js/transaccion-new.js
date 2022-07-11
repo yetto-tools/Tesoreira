@@ -2010,69 +2010,41 @@ function GuardarDatos(nombreImpresora, numeroCopias) {
     })
 }
 
-/*function ImprimirConstanciaIngresos(codigoOperacion, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion) {
-    let html = getHtmlConstanciaIngreso(codigoOperacion, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion);
-    document.getElementById("html-content-holder").innerHTML = html;
-
-    html2canvas(document.getElementById("html-content-holder")).then(function (canvas) {
-        var anchorTag = document.createElement("a");
-        document.body.appendChild(anchorTag);
-        anchorTag.download = "filename.jpg";
-        anchorTag.href = canvas.toDataURL();
-        anchorTag.target = '_blank';
-        anchorTag.click();
-    });
-}*/
-
-
-/*function ImprimirConstanciaEgresos(numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion) {
-    let html = getHtmlConstanciaEgreso(numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion);
-
-    document.getElementById("html-content-holder").innerHTML = html;
-    html2canvas(document.getElementById("html-content-holder")).then(function (canvas) {
-        var anchorTag = document.createElement("a");
-        document.body.appendChild(anchorTag);
-        anchorTag.download = "filename.jpg";
-        anchorTag.href = canvas.toDataURL();
-        anchorTag.target = '_blank';
-        anchorTag.click();
-    });
-}**/
 
 /* Temporalmente obsoleto */
-function intelligenceSearch10() {
-    // Incluir el radioButton al inicio, por eso se comienza por la columna 1
-    let objGlobalConfigTransaccion = {
-        url: "Transaccion/ListarEntidadesGenericas",
-        cabeceras: ["codigo", "nombre entidad", "codigo categoria", "categoria", "codigo operacion", "codigoArea","codigoOperacionEntidad","codigoCanalVenta"],
-        propiedades: ["codigoEntidad", "nombreEntidad", "codigoCategoriaEntidad", "nombreCategoria","codigoOperacionCaja","codigoArea","codigoOperacionEntidad","codigoCanalVenta"],
-        divContenedorTabla: "divContenedorTabla",
-        ocultarColumnas: true,
-        hideColumns: [
-            {   "targets": [3], 
-                "visible": false
-            }, {
-                "targets": [5],
-                "visible": false
-            }, {
-                "targets": [6],
-                "visible": false
-            }, {
-                "targets": [7],
-                "visible": false
-            }, {
-                "targets": [8],
-                "visible": false
-            }],
-        divPintado: "divTabla",
-        radio: true,
-        paginar: true,
-        eventoradio: "Entidades",
-        slug: "codigoEntidad"
+//function intelligenceSearch10() {
+//    // Incluir el radioButton al inicio, por eso se comienza por la columna 1
+//    let objGlobalConfigTransaccion = {
+//        url: "Transaccion/ListarEntidadesGenericas",
+//        cabeceras: ["codigo", "nombre entidad", "codigo categoria", "categoria", "codigo operacion", "codigoArea","codigoOperacionEntidad","codigoCanalVenta"],
+//        propiedades: ["codigoEntidad", "nombreEntidad", "codigoCategoriaEntidad", "nombreCategoria","codigoOperacionCaja","codigoArea","codigoOperacionEntidad","codigoCanalVenta"],
+//        divContenedorTabla: "divContenedorTabla",
+//        ocultarColumnas: true,
+//        hideColumns: [
+//            {   "targets": [3], 
+//                "visible": false
+//            }, {
+//                "targets": [5],
+//                "visible": false
+//            }, {
+//                "targets": [6],
+//                "visible": false
+//            }, {
+//                "targets": [7],
+//                "visible": false
+//            }, {
+//                "targets": [8],
+//                "visible": false
+//            }],
+//        divPintado: "divTabla",
+//        radio: true,
+//        paginar: true,
+//        eventoradio: "Entidades",
+//        slug: "codigoEntidad"
 
-    }
-    pintar(objGlobalConfigTransaccion);
-}
+//    }
+//    pintar(objGlobalConfigTransaccion);
+//}
 
 
 //"className": "dt-body-right"

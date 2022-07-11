@@ -1,10 +1,4 @@
-﻿using CapaEntidad.Administracion;
-using CapaEntidad.Ventas;
-using CapaNegocio.Ventas;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -13,10 +7,16 @@ using System.Security;
 using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
+using CapaEntidad.Administracion;
+using CapaEntidad.Ventas;
+using CapaNegocio.Ventas;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace ProyectoSistemaIntegrado.Controllers.Ventas
 {
-    public class TrasladoMontoVentasController : Controller
+    public class TrasladoVentasContadoController : Controller
     {
         public IActionResult Index()
         {
@@ -28,19 +28,30 @@ namespace ProyectoSistemaIntegrado.Controllers.Ventas
             return View();
         }
 
-        public string GuardarTraslado(TrasladoMontoVentasCLS objTraslado)
+        public IActionResult RecepcionEfectivoVentas()
+        {
+            return View();
+        }
+
+        public string GuardarTraslado(TrasladoVentasContadoCLS objTraslado)
         {
             ViewBag.Message = HttpContext.Session.GetString("usuario");
             UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
 
-            TrasladoMontoVentasBL obj = new TrasladoMontoVentasBL();
+            TrasladoVentasContadoBL obj = new TrasladoVentasContadoBL();
             return obj.GuardarTraslado(objTraslado, objUsuario.IdUsuario);
         }
 
-        public List<TrasladoMontoVentasCLS> GetTrasladosEnProceso()
+        public List<TrasladoVentasContadoCLS> GetTrasladosEnProceso()
         {
-            TrasladoMontoVentasBL obj = new TrasladoMontoVentasBL();
+            TrasladoVentasContadoBL obj = new TrasladoVentasContadoBL();
             return obj.GetTrasladosEnProceso();
+        }
+
+        public List<TrasladoVentasContadoCLS> GetTrasladosParaRecepcion(int codigoTipoTraslado)
+        {
+            TrasladoVentasContadoBL obj = new TrasladoVentasContadoBL();
+            return obj.GetTrasladosParaRecepcion(codigoTipoTraslado);
         }
 
         public string AnularTraslado(int codigoTraslado)
@@ -48,7 +59,7 @@ namespace ProyectoSistemaIntegrado.Controllers.Ventas
             ViewBag.Message = HttpContext.Session.GetString("usuario");
             UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
 
-            TrasladoMontoVentasBL obj = new TrasladoMontoVentasBL();
+            TrasladoVentasContadoBL obj = new TrasladoVentasContadoBL();
             return obj.AnularTraslado(codigoTraslado, objUsuario.IdUsuario);
         }
 
@@ -57,11 +68,11 @@ namespace ProyectoSistemaIntegrado.Controllers.Ventas
             ViewBag.Message = HttpContext.Session.GetString("usuario");
             UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
 
-            TrasladoMontoVentasBL obj = new TrasladoMontoVentasBL();
+            TrasladoVentasContadoBL obj = new TrasladoVentasContadoBL();
             return obj.AceptarTraslado(codigoTraslado, objUsuario.IdUsuario);
         }
 
-        public IActionResult PrintConstanciaTrasladoMontoVentas(int codigoTraslado, string tipoTraslado, string fechaOperacionStr, string fechaGeneracionStr, decimal montoEfectivo, decimal montoCheques, decimal montoTotal)
+        public IActionResult PrintConstanciaTrasladoVentasAlContado(int codigoTraslado, string fechaOperacionStr, string fechaGeneracionStr, decimal montoEfectivo, decimal montoCheques, decimal montoTransferencia, decimal montoTotal)
         {
             string ipString = (TempData["Ip"]).ToString();
             int puerto = Convert.ToInt32(TempData["Puerto"]);
@@ -113,10 +124,12 @@ namespace ProyectoSistemaIntegrado.Controllers.Ventas
 
             string lineaMontoEfectivo = "Monto Efectivo: ";
             string lineaMontoCheques = "Monto Cheques: ";
+            string lineaMontoTransferencia = "Monto Transferencia: ";
             string lineaMontoTotal = "MONTO TOTAL: ";
 
             string linea = new string('-', 40);
-            string t = ("TRASLADO DE VENTAS AL " + tipoTraslado + "\r\n");
+            string t = ("----------- CAJA ----------------------- \r\n");
+            t = t + ("TRASLADO DE VENTAS AL CONTADO \r\n");
             t = t + ("Fecha Generacion: " + fechaGeneracionStr + "\r\n");
             t = t + ("Fecha Operacion: " + fechaOperacionStr + "\r\n");
             t = t + ("Usuario: " + objUsuario.IdUsuario + "\r\n");
@@ -127,6 +140,9 @@ namespace ProyectoSistemaIntegrado.Controllers.Ventas
             t = t + "\r\n";
             t = t + (lineaMontoCheques.PadRight(30).Substring(0, 30) + " ");
             t = t + montoCheques.ToString("N2").PadLeft(10).Substring(0, 10);
+            t = t + "\r\n";
+            t = t + (lineaMontoTransferencia.PadRight(30).Substring(0, 30) + " ");
+            t = t + montoTransferencia.ToString("N2").PadLeft(10).Substring(0, 10);
             t = t + "\r\n";
             t = t + (linea + "\r\n");
             t = t + (lineaMontoTotal.PadRight(30).Substring(0, 30) + " ");

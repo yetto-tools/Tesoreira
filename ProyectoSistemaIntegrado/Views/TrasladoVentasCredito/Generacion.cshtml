@@ -1,0 +1,135 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using CapaEntidad.Administracion;
+@{
+    ViewData["Title"] = "Generacion";
+    string impresionStr = Context.Session.GetString("impresion");
+    List<ParametroImpresionCLS> listImpresoras = JsonConvert.DeserializeObject<List<ParametroImpresionCLS>>(impresionStr);
+    foreach (ParametroImpresionCLS impresora in listImpresoras)
+    {
+        if (impresora.CodigoConfiguracion == Constantes.ConfiguracionImpresora.IMPRESORA_CAJA_VENTAS_ESTABLECIMIENTO)
+        {
+            TempData["Ip"] = impresora.Ip;
+            TempData["Puerto"] = impresora.Puerto;
+        }
+    }
+
+    Context.Session.SetString("tituloPrincipal", "Traslado de Ventas al Crédito");
+}
+
+<button type="button" id="ShowPopupPedidos" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropPedidos" style="display:none">
+</button>
+
+
+<div style="height: 15px; width:100%;">
+
+</div>
+
+
+<form method="post" id="frmNewTraslado">
+    <table style="margin-left: auto; margin-right: auto;">
+        <tr>
+            <td>FECHA PAGO</td>
+            <td>FECHA CREDITO</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+                <input type="text" name="FechaOperacionStr" class="form-control text-center obligatorio" id="uiFechaOperacionStr" placeholder="Fecha Operación" />
+            </td>
+            <td>
+                <input type="text" name="FechaCreditoStr" class="form-control text-center obligatorio" id="uiFechaCreditoStr" placeholder="Fecha Crédito" />
+            </td>
+            <td>
+                <input type="button" class="form-control btn btn-primary" value="BUSCAR" onclick="BuscarPedidosAlCredito()" />
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>CLIENTE</td>
+            <td colspan="3">NOMBRE</td>
+        </tr>
+        <tr>
+            <td>
+                <input type="text" readonly name="CodigoCliente" id="uiCodigoCliente" class="form-control obligatorio" placeholder="Código" />
+            </td>
+            <td colspan="3">
+                <input type="text" readonly name="NombreCliente" id="uiNombreCliente" class="form-control obligatorio" placeholder="Nombre Cliente" />
+            </td>
+        </tr>
+        <tr>
+            <td>EFECTIVO</td>
+            <td>CHEQUE</td>
+            <td>TRANSFERENCIA</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+                <input type="text" name="MontoEfectivo" id="uiMontoEfectivo" class="form-control decimal-2 text-right" placeholder="Monto" />
+            </td>
+            <td>
+                <input type="text" name="MontoCheques" id="uiMontoCheque" class="form-control decimal-2 text-right" placeholder="Monto" />
+            </td>
+            <td>
+                <input type="text" name="MontoTransferencia" id="uiMontoTransferencia" class="form-control decimal-2 text-right" placeholder="Monto" />
+            </td>
+            <td>
+                <input type="button" class="form-control btn btn-primary" value="AGREGAR" onclick="GuardarTrasladoMontoPagoCredito()" />
+            </td>
+        </tr>
+    </table>
+</form>
+
+<div style="height: 15px; width:100%;">
+
+</div>
+
+<div id="divTabla">
+
+</div>
+
+<!-- Modal Pedidos al Credito -->
+<div class="modal fade" id="staticBackdropPedidos" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelPedidos" aria-hidden="true">
+    <div class="modal-dialog  modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uiTitlePopupPedidos"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="uiClosePopupPedidos">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="divTablaPedidos">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary">Agregar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/jqueryui.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/ventas.js"></script>
+    <script>
+        $(function () {
+            $("#uiFechaOperacionStr").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeYear: true
+            });
+        });
+        $(function () {
+            $("#uiFechaCreditoStr").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeYear: true
+            });
+        });
+    </script>
+}

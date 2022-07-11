@@ -20,6 +20,13 @@ namespace ProyectoSistemaIntegrado.Controllers.Ventas
             ClienteBL obj = new ClienteBL();
             return obj.GetListAllClientes();
         }
+
+        public List<ClienteCLS> GetListAllClientesAlCredito(string codigoEmpresa)
+        {
+            ClienteBL obj = new ClienteBL();
+            return obj.GetListAllClientesAlCredito(codigoEmpresa);
+        }
+
     }
 
 

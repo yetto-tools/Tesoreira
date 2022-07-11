@@ -1062,7 +1062,7 @@ function generarTabla(res, objConfiguracionGlobal) {
             contenido += "<tfoot>"
             contenido += "<tr>"
             for (let j = 0; j < countColumns; j++) {
-                contenido += "<td class='table-secondary'>"
+                contenido += "<td class='table-secondary text-right'>"
                 contenido += "</td>"
             }
             contenido += "</tr>"
@@ -1828,3 +1828,20 @@ const formatRegional = (valor) => {
     return valor.toString().replaceAll(expr, rep);
 }
 
+function FormatDate(inputDate) {
+    let date, month, year;
+
+    date = inputDate.getDate();
+    month = inputDate.getMonth() + 1;
+    year = inputDate.getFullYear();
+
+    date = date
+        .toString()
+        .padStart(2, '0');
+
+    month = month
+        .toString()
+        .padStart(2, '0');
+
+    return `${date}/${month}/${year}`;
+}

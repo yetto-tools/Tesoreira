@@ -22,5 +22,12 @@ namespace CapaNegocio.Ventas
             ClienteDAL obj = new ClienteDAL();
             return obj.GetListAllClientes();
         }
+
+        public List<ClienteCLS> GetListAllClientesAlCredito(string codigoEmpresa)
+        {
+            ClienteDAL obj = new ClienteDAL();
+            return obj.GetListAllClientesAlCredito(codigoEmpresa);
+        }
+
     }
 }

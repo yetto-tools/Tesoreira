@@ -1,0 +1,54 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using CapaEntidad.Administracion;
+@{
+    ViewData["Title"] = "Recepcion";
+    Context.Session.SetString("tituloPrincipal", "Recepción de efectivo de ventas");
+}
+
+<div style="height: 15px; width:100%;">
+
+</div>
+
+<form method="post" id="frmNewTraslado">
+    <table style="margin-left: auto; margin-right: auto;">
+        <tr>
+            <td>FECHA OPERACION</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+                <input type="text" name="FechaOperacionStr" class="form-control text-center obligatorio" id="uiFechaOperacionStr" placeholder="Fecha Operación" />
+            </td>
+            <td>
+                <input type="button" class="form-control btn btn-primary" value="BUSCAR" onclick="BuscarTrasladosDeVentasAlContado()" />
+            </td>
+        </tr>
+    </table>
+</form>
+
+<div style="height: 15px; width:100%;">
+
+</div>
+
+<div id="divTabla">
+
+</div>
+
+
+@section Scripts {
+    <script src="~/js/datatable.js"></script>
+    <script src="~/js/bootstrap.js"></script>
+    <script src="~/js/jqueryui.js"></script>
+    <script src="~/js/sweetalert.js"></script>
+    <script src="~/js/generic.js"></script>
+    <script src="~/js/ventas.js"></script>
+    <script>
+        $(function () {
+            $("#uiFechaOperacionStr").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeYear: true
+            });
+        });
+    </script>
+}

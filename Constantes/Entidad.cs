@@ -4,6 +4,7 @@ namespace Constantes
     public static class Entidad
     {
         public static short EMPLEADOS = 0;
+        public static short VENTA_ESTABLECIMIENTO = 1;
 
         public static class Categoria
         {
@@ -45,7 +46,7 @@ namespace Constantes
             //public static short Taller y Vehículos	30
             //public static short Banco	31
             public const short SOCIO = 32;
-            //public static short CAJA	33
+            public const short CAJA = 33;
             //public static short CAJA CHICA	34
             //public static short Mantenimiento de Maquinaria	35
             public const short EMPLEADO = 36;

@@ -28,14 +28,33 @@
             }// fin switch
         }// fin if
         else {
-            if (nameController == "TrasladoMontoVentas") {
+            if (nameController == "TrasladoVentasContado") {
                 switch (nameAction) {
                     case "Generacion":
+                        let today = new Date();
+                        const result = FormatDate(today);
+                        set("uiFechaOperacionStr", result);
                         MostrarTrasladoMontoVentasEnProceso();
+                        break;
+                    case "RecepcionEfectivoVentas":
+                        MostrarTrasladoMontoVentasAlContadoParaRecepcion();
                         break;
                     default:
                         break;
                 }// fin switch
+            } else {
+                if (nameController == "TrasladoVentasCredito") {
+                    switch (nameAction) {
+                        case "Generacion":
+                            let today = new Date();
+                            const result = FormatDate(today);
+                            set("uiFechaOperacionStr", result);
+                            //MostrarTrasladoMontoVentasEnProceso();
+                            break;
+                        default:
+                            break;
+                    }// fin switch
+                }
             }
         }
     }// fin if
@@ -511,7 +530,15 @@ function ListarVendedoresRutaConsulta(codigoCanalVenta) {
     pintar(objConfiguracion);
 }
 
-/* Traslado de Monto de Ventas */
+/* ------------------------------------------------------------ */
+/* --------------- Traslado de Monto de Ventas ---------------- */
+/* ------------------------------------------------------------ */
+function clearFiltroBusquedaGeneracionMontoVentas() {
+    document.getElementById("uiMontoEfectivo").value = "";
+    document.getElementById("uiMontoCheque").value = "";
+    document.getElementById("uiMontoTransferencia").value = "";
+}
+
 function GuardarTrasladoMontoVentas() {
     let errores = ValidarDatos("frmNewTraslado")
     if (errores != "") {
@@ -521,8 +548,9 @@ function GuardarTrasladoMontoVentas() {
     let frmGuardar = document.getElementById("frmNewTraslado");
     let frm = new FormData(frmGuardar);
     Confirmacion(undefined, undefined, function (rpta) {
-        fetchPost("TrasladoMontoVentas/GuardarTraslado", "text", frm, function (data) {
+        fetchPost("TrasladoVentasContado/GuardarTraslado", "text", frm, function (data) {
             if (data == "OK") {
+                clearFiltroBusquedaGeneracionMontoVentas();;
                 MostrarTrasladoMontoVentasEnProceso();
             } else {
                 MensajeError(data);
@@ -533,12 +561,12 @@ function GuardarTrasladoMontoVentas() {
 
 function MostrarTrasladoMontoVentasEnProceso() {
     let objConfiguracion = {
-        url: "TrasladoMontoVentas/GetTrasladosEnProceso",
-        cabeceras: ["Código Traslado", "codigoTipoTraslado", "Tipo Traslado", "Fecha Operación", "Monto Efectivo", "Monto Cheques", "Monto", "Fecha Generación", "Generado Por", "codigoEstado", "Estado", "permisoAnular", "permisoImprimir", "permisoTraslado"],
-        propiedades: ["codigoTraslado", "codigoTipoTraslado", "tipoTraslado", "fechaOperacionStr", "montoEfectivo", "montoCheques", "monto", "fechaGeneracionStr", "usuarioIng", "codigoEstado", "estado", "permisoAnular", "permisoImprimir", "permisoTraslado"],
+        url: "TrasladoVentasContado/GetTrasladosEnProceso",
+        cabeceras: ["Código Traslado", "Fecha Operación", "Monto Efectivo", "Monto Cheques","Montro Transferencia", "Monto", "Fecha Generación", "Generado Por", "codigoEstado", "Estado", "permisoAnular", "permisoImprimir", "permisoTraslado"],
+        propiedades: ["codigoTraslado","fechaOperacionStr", "montoEfectivo", "montoCheques","montoTransferencia", "monto", "fechaGeneracionStr", "usuarioIng", "codigoEstado", "estado", "permisoAnular", "permisoImprimir", "permisoTraslado"],
         divContenedorTabla: "divContenedorTabla",
         divPintado: "divTabla",
-        displaydecimals: ["montoEfectivo", "montoCheques", "monto"],
+        displaydecimals: ["montoEfectivo", "montoCheques", "montoTransferencia","monto"],
         paginar: true,
         ocultarColumnas: true,
         hideColumns: [
@@ -550,6 +578,14 @@ function MostrarTrasladoMontoVentasEnProceso() {
                 "targets": [1],
                 "visible": false
             }, {
+                "targets": [2],
+                "className": "dt-body-right",
+                "visible": true
+            }, {
+                "targets": [3],
+                "className": "dt-body-right",
+                "visible": true
+            }, {
                 "targets": [4],
                 "className": "dt-body-right",
                 "visible": true
@@ -558,23 +594,19 @@ function MostrarTrasladoMontoVentasEnProceso() {
                 "className": "dt-body-right",
                 "visible": true
             }, {
-                "targets": [6],
-                "className": "dt-body-right",
-                "visible": true
+                "targets": [7],
+                "visible": false
             }, {
                 "targets": [8],
                 "visible": false
             }, {
-                "targets": [9],
+                "targets": [10],
                 "visible": false
             }, {
                 "targets": [11],
                 "visible": false
             }, {
                 "targets": [12],
-                "visible": false
-            }, {
-                "targets": [13],
                 "visible": false
             }],
         slug: "codigoTraslado",
@@ -595,7 +627,7 @@ function EliminarTrasladoMontoVentas(obj) {
         let rowIdx = table.row(this).index();
         let codigoTraslado = table.cell(rowIdx, 0).data();
         Confirmacion("Anulación de Traslado", "¿Desea anular este traslado de monto de caja?", function (rpta) {
-            fetchGet("TrasladoMontoVentas/AnularTraslado/?codigoTraslado=" + codigoTraslado.toString(), "text", function (data) {
+            fetchGet("TrasladoVentasContado/AnularTraslado/?codigoTraslado=" + codigoTraslado.toString(), "text", function (data) {
                 if (data == "OK") {
                     MostrarTrasladoMontoVentasEnProceso();
                 } else {
@@ -614,7 +646,7 @@ function AceptarTrasladoMontoVentas(obj) {
         let rowIdx = table.row(this).index();
         let codigoTraslado = table.cell(rowIdx, 0).data();
         Confirmacion("Aceptación de traslado", "¿Desea aceptar el traslado?", function (rpta) {
-            fetchGet("TrasladoMontoVentas/AceptarTraslado/?codigoTraslado=" + codigoTraslado.toString(), "text", function (data) {
+            fetchGet("TrasladoVentasContado/AceptarTraslado/?codigoTraslado=" + codigoTraslado.toString(), "text", function (data) {
                 if (data == "OK") {
                     MostrarTrasladoMontoVentasEnProceso();
                 } else {
@@ -631,14 +663,158 @@ function ImprimirConstanciaTrasladoMontoVentas(codigoTraslado, obj) {
     $('#tabla tbody').on('click', '.option-imprimir', function () {
         let rowIdx = table.row(this).index();
         let codigoTraslado = table.cell(rowIdx, 0).data();
-        let tipoTraslado = table.cell(rowIdx, 2).data();
-        let fechaOperacionStr = table.cell(rowIdx, 3).data();
-        let montoEfectivo = table.cell(rowIdx, 4).data();
-        let montoCheques = table.cell(rowIdx, 5).data();
-        let montoTotal = table.cell(rowIdx, 6).data();
-        let fechaGeneracionStr = table.cell(rowIdx, 7).data();
-        fetchGet("TrasladoMontoVentas/PrintConstanciaTrasladoMontoVentas/?codigoTraslado=" + codigoTraslado + "&tipoTraslado=" + tipoTraslado + "&fechaOperacionStr=" + fechaOperacionStr + "&fechaGeneracionStr=" + fechaGeneracionStr + "&montoEfectivo=" + montoEfectivo + "&montoCheques=" + montoCheques + "&montoTotal=" + montoTotal, "text", function (data) {
+        let fechaOperacionStr = table.cell(rowIdx, 1).data();
+        let montoEfectivo = table.cell(rowIdx, 2).data();
+        let montoCheques = table.cell(rowIdx, 3).data();
+        let montoTransferencia = table.cell(rowIdx, 4).data();
+        let montoTotal = table.cell(rowIdx, 5).data();
+        let fechaGeneracionStr = table.cell(rowIdx, 6).data();
+        fetchGet("TrasladoVentasContado/PrintConstanciaTrasladoVentasAlContado/?codigoTraslado=" + codigoTraslado + "&fechaOperacionStr=" + fechaOperacionStr + "&fechaGeneracionStr=" + fechaGeneracionStr + "&montoEfectivo=" + montoEfectivo + "&montoCheques=" + montoCheques + "&montoTransferencia=" + montoTransferencia + "&montoTotal=" + montoTotal, "text", function (data) {
 
         })
+    });
+}
+
+/* --------------- Recepción de Monto de Ventas ---------------- */
+function BuscarTrasladosDeVentasAlContado() {
+    let fechaStr = document.getElementById("uiFechaOperacionStr").value;
+    MostrarTrasladoMontoVentasAlContadoParaRecepcion();
+}
+
+function MostrarTrasladoMontoVentasAlContadoParaRecepcion() {
+    let objConfiguracion = {
+        url: "TrasladoVentasContado/GetTrasladosParaRecepcion/?codigoTipoTraslado=1",
+        cabeceras: ["Código Traslado", "Fecha Operación", "Monto Efectivo", "Monto Cheques","Monto Transferencia", "Monto", "Fecha Generación", "Generado Por", "codigoEstado", "Estado", "permisoRegistrar"],
+        propiedades: ["codigoTraslado", "fechaOperacionStr", "montoEfectivo", "montoCheques","montoTransferencia" ,"monto", "fechaGeneracionStr", "usuarioIng", "codigoEstado", "estado", "permisoRegistrar"],
+        divContenedorTabla: "divContenedorTabla",
+        divPintado: "divTabla",
+        displaydecimals: ["montoEfectivo", "montoCheques","montoTransferencia", "monto"],
+        paginar: true,
+        sumarcolumna: true,
+        columnasumalist: [2,3,4,5],
+        ocultarColumnas: true,
+        hideColumns: [
+            {
+                "targets": [0],
+                "className": "dt-body-center",
+                "visible": true
+            }, {
+                "targets": [1],
+                "visible": false
+            }, {
+                "targets": [2],
+                "className": "dt-body-right",
+                "visible": true
+            }, {
+                "targets": [3],
+                "className": "dt-body-right",
+                "visible": true
+            }, {
+                "targets": [4],
+                "className": "dt-body-right",
+                "visible": true
+            }, {
+                "targets": [5],
+                "className": "dt-body-right",
+                "visible": true
+            }, {
+                "targets": [8],
+                "visible": false
+            }, {
+                "targets": [10],
+                "visible": false
+            }],
+        slug: "codigoTraslado",
+        registrar: true,
+        funcionregistrar: "EfectivoVentasEstablecimiento"
+    }
+    pintar(objConfiguracion);
+}
+
+function RegistrarEfectivoVentasEstablecimiento() {
+    let semanaOperacion = parseInt(document.getElementById("uiNumeroSemanaActualSistema").value);
+    let anioOperacion = parseInt(document.getElementById("uiAnioSemanaActualSistema").value);
+
+    let table = $('#tabla').DataTable();
+    $('#tabla tbody').on('click', '.option-registrar', function () {
+        let rowIdx = table.row(this).index();
+        let codigoTraslado = table.cell(rowIdx, 0).data();
+        let fechaOperacionStr = table.cell(rowIdx, 1).data();
+
+        let montoEfectivo = table.cell(rowIdx, 2).data();
+        let montoCheques = table.cell(rowIdx, 3).data();
+        let montoTransferencia = table.cell(rowIdx, 4).data();
+        let montoTotal = table.cell(rowIdx, 5).data();
+
+        let frm = new FormData();
+        frm.set("FechaStr", fechaOperacionStr);
+        frm.set("AnioOperacion", anioOperacion);
+        frm.set("SemanaOperacion", semanaOperacion);
+        frm.set("MontoEfectivo", montoEfectivo);
+        frm.set("MontoCheques", montoCheques);
+        frm.set("MontoTransferencia", montoTransferencia);
+        frm.set("Monto", montoTotal);
+        Confirmacion("Recepción de Efectivo de Ventas", "Monto a recepcionar es el correcto?", function (rpta) {
+            fetchPost("Transaccion/RegistrarEfectivoVentasEstablecimiento/?codigoTraslado=" + codigoTraslado, "text", frm, function (data) {
+                if (!/^[0-9]+$/.test(data)) {
+                    MensajeError(data);
+                } else {
+                    BuscarTrasladosDeVentasAlContado();
+                }
+            });
+        });
+    });
+}
+
+
+/* --------------------- Traslados de Ventas Al Credito ----------------------- */
+
+function BuscarPedidosAlCredito() {
+    let fechaStr = document.getElementById("uiFechaCreditoStr").value;
+    if (fechaStr == "") {
+        Warning("No existe fecha de crédito");
+        return;
+    }
+
+    let fechaCreditoStr = convertFormatDate(fechaStr);
+    fetchGet("Pedidos/GetPedidosAlCredito/?fechaCreditoStr=" + fechaCreditoStr, "json", function (rpta) {
+        if (rpta == undefined || rpta == null) {
+            Warning("No existe informacion")
+        } else {
+            let codigoPedido = -1;
+            let observaciones = "";
+            if (rpta.length > 0) {
+                codigoPedido = parseInt(rpta[0]["pedido"].toString());
+                observaciones = rpta[0]["observaciones"].toString();
+            }
+
+            if (codigoPedido == 0) {
+                MensajeError(observaciones);
+            } else {
+                let objConfiguracion = {
+                    cabeceras: ["codigoEmpresa", "seriePedido", "numeroPedido", "monto", "codigoCliente", "nombreCliente", "serieFactura", "numeroFactura", "numeroVale", "numeroPedidoQSystems"],
+                    propiedades: ["codigoEmpresa","seriePedido","numeroPedido","monto","codigoCliente","nombreCliente","serieFactura","numeroFactura","numeroVale","numeroPedidoQSystems"],
+                    displaydecimals: ["montoTotal"],
+                    divContenedorTabla: "divContenedorTabla",
+                    divPintado: "divTabla",
+                    aceptartraslado: true,
+                    funcionaceptartraslado: "GeneracionEspeciales2",
+                    paginar: true,
+                    ocultarColumnas: true,
+                    hideColumns: [
+                        {
+                            "targets": [0],
+                            "visible": false
+                        }, {
+                            "targets": [3],
+                            "className": "dt-body-right",
+                            "visible": true
+                        }
+                    ],
+                    slug: "codigoTraslado"
+                }
+                pintarEntidades(objConfiguracion, rpta);
+            }
+        }
     });
 }

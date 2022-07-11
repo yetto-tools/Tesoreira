@@ -271,6 +271,13 @@ namespace CapaNegocio.Tesoreria
             return obj.GuardarTransaccion(objTransaccion, usuarioIng);
         }
 
+        public string RegistrarEfectivoVentasEstablecimiento(int codigoTraslado, TransaccionCLS objTransaccion, string usuarioIng)
+        {
+            TransaccionDAL obj = new TransaccionDAL();
+            objTransaccion.FechaOperacion = Util.Conversion.ConvertDateSpanishToEnglish(objTransaccion.FechaStr);
+            return obj.RegistrarEfectivoVentasEstablecimiento(codigoTraslado, objTransaccion, usuarioIng);
+        }
+
         public string ActualizarTransaccion(TransaccionCLS objTransaccion, string usuarioAct)
         {
             TransaccionDAL obj = new TransaccionDAL();

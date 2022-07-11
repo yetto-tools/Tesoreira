@@ -262,6 +262,15 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
             return obj.GuardarTransaccion(objTransaccion, objUsuario.IdUsuario, complemento);
         }
 
+        public string RegistrarEfectivoVentasEstablecimiento(int codigoTraslado, TransaccionCLS objTransaccion)
+        {
+            ViewBag.Message = HttpContext.Session.GetString("usuario");
+            UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
+
+            TransaccionBL obj = new TransaccionBL();
+            return obj.RegistrarEfectivoVentasEstablecimiento(codigoTraslado, objTransaccion, objUsuario.IdUsuario);
+        }
+
         public string ActualizarTransaccion(TransaccionCLS objTransaccion)
         {
             ViewBag.Message = HttpContext.Session.GetString("usuario");

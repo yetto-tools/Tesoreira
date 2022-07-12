@@ -25,6 +25,7 @@ namespace CapaEntidad.CROM
         public long NumeroPedidoQSystems { get; set; }
 
         public string Observaciones { get; set; }
+        public int PermisoSelect { get; set; }
 
 
     }

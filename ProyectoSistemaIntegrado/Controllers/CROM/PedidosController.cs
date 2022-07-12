@@ -68,7 +68,8 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
                             NumeroFactura = Convert.ToInt64(value["factura"].ToString().Split('.')[0]),
                             NumeroVale = Convert.ToInt64(value["vale"].ToString().Split('.')[0]),
                             NumeroPedidoQSystems = Convert.ToInt64(value["qsys_pedido"].ToString().Split('.')[0]),
-                            Observaciones = value["observaciones"].ToString()
+                            Observaciones = value["observaciones"].ToString(),
+                            PermisoSelect = Convert.ToInt32(value["permiso_select"].ToString())
                         };
                         list.Add(row);
                     }

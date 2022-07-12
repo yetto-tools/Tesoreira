@@ -27,14 +27,32 @@
 
 
 <form method="post" id="frmNewTraslado">
+    <label class="col-sm-4 col-form-label" style="display:block;">Codigo Empresa:</label>
+    <input type="text" name="CodigoEmpresa" class="form-control text-center obligatorio" id="uiCodigoEmpresa" />
+    <label class="col-sm-4 col-form-label" style="display:block;">Serie Pedido:</label>
+    <input type="text" name="SeriePedido" class="form-control text-center obligatorio" id="uiSeriePedido" />
+    <label class="col-sm-4 col-form-label" style="display:block;">Numero Pedido:</label>
+    <input type="text" name="NumeroPedido" class="form-control text-center obligatorio" id="uiNumeroPedido" />
+    <label class="col-sm-4 col-form-label" style="display:block;">Numero Pedido Qsystems:</label>
+    <input type="text" name="NumeroPedidoQsystems" class="form-control text-center obligatorio" id="uiNumeroPedidoQSystems" />
+    <label class="col-sm-4 col-form-label" style="display:block;">Serie Factura:</label>
+    <input type="text" name="SerieFactura" class="form-control text-center obligatorio" id="uiSerieFactura" />
+    <label class="col-sm-4 col-form-label" style="display:block;">Numero Factura:</label>
+    <input type="text" name="NumeroFactura" class="form-control text-center obligatorio" id="uiNumeroFactura" />
+    <label class="col-sm-4 col-form-label" style="display:block;">Numero Vale:</label>
+    <input type="text" name="NumeroVale" class="form-control text-center obligatorio" id="uiNumeroVale" />
     <table style="margin-left: auto; margin-right: auto;">
         <tr>
+            <td>TRASLADO</td>
             <td>FECHA PAGO</td>
             <td>FECHA CREDITO</td>
             <td></td>
             <td></td>
         </tr>
         <tr>
+            <td>
+                <input type="text" readonly name="CodigoTraslado" class="form-control text-center obligatorio" id="uiCodigoTraslado" placeholder="Código Traslado" />
+            </td>
             <td>
                 <input type="text" name="FechaOperacionStr" class="form-control text-center obligatorio" id="uiFechaOperacionStr" placeholder="Fecha Operación" />
             </td>
@@ -44,7 +62,6 @@
             <td>
                 <input type="button" class="form-control btn btn-primary" value="BUSCAR" onclick="BuscarPedidosAlCredito()" />
             </td>
-            <td></td>
         </tr>
         <tr>
             <td>CLIENTE</td>
@@ -75,7 +92,7 @@
                 <input type="text" name="MontoTransferencia" id="uiMontoTransferencia" class="form-control decimal-2 text-right" placeholder="Monto" />
             </td>
             <td>
-                <input type="button" class="form-control btn btn-primary" value="AGREGAR" onclick="GuardarTrasladoMontoPagoCredito()" />
+                <input type="button" class="form-control btn btn-primary" value="ACEPTAR" onclick="AceptarTrasladoMontoPagoCredito()" />
             </td>
         </tr>
     </table>
@@ -104,7 +121,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary">Agregar</button>
+                @*<button type="button" class="btn btn-primary">Agregar</button>*@
             </div>
         </div>
     </div>

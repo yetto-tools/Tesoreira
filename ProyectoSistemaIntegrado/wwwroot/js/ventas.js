@@ -770,6 +770,12 @@ function RegistrarEfectivoVentasEstablecimiento() {
 /* --------------------- Traslados de Ventas Al Credito ----------------------- */
 
 function BuscarPedidosAlCredito() {
+    setI("uiTitlePopupPedidos", "Pedidos al Crédito");
+    document.getElementById("ShowPopupPedidos").click();
+    MostrarPedidosAlCredito();
+}
+
+function MostrarPedidosAlCredito() {
     let fechaStr = document.getElementById("uiFechaCreditoStr").value;
     if (fechaStr == "") {
         Warning("No existe fecha de crédito");
@@ -784,7 +790,7 @@ function BuscarPedidosAlCredito() {
             let codigoPedido = -1;
             let observaciones = "";
             if (rpta.length > 0) {
-                codigoPedido = parseInt(rpta[0]["pedido"].toString());
+                codigoPedido = Number(rpta[0]["numeroPedido"].toString());
                 observaciones = rpta[0]["observaciones"].toString();
             }
 
@@ -792,13 +798,14 @@ function BuscarPedidosAlCredito() {
                 MensajeError(observaciones);
             } else {
                 let objConfiguracion = {
-                    cabeceras: ["codigoEmpresa", "seriePedido", "numeroPedido", "monto", "codigoCliente", "nombreCliente", "serieFactura", "numeroFactura", "numeroVale", "numeroPedidoQSystems"],
-                    propiedades: ["codigoEmpresa","seriePedido","numeroPedido","monto","codigoCliente","nombreCliente","serieFactura","numeroFactura","numeroVale","numeroPedidoQSystems"],
+                    cabeceras: ["codigoEmpresa", "seriePedido", "Pedido", "Cliente", "Nombre Cliente", "Monto", "serieFactura", "numeroFactura", "numeroVale", "numeroPedidoQSystems","permisoSelect"],
+                    propiedades: ["codigoEmpresa", "seriePedido", "numeroPedido", "codigoCliente", "nombreCliente", "monto", "serieFactura","numeroFactura","numeroVale","numeroPedidoQSystems","permisoSelect"],
                     displaydecimals: ["montoTotal"],
-                    divContenedorTabla: "divContenedorTabla",
-                    divPintado: "divTabla",
-                    aceptartraslado: true,
-                    funcionaceptartraslado: "GeneracionEspeciales2",
+                    divContenedorTabla: "divContenedorTablaPedidos",
+                    divPintado: "divTablaPedidos",
+                    idtabla: "tablaPedidos",
+                    aceptarselect: true,
+                    funcionaceptarselect: "PedidoConCreditoParaPago",
                     paginar: true,
                     ocultarColumnas: true,
                     hideColumns: [
@@ -806,15 +813,64 @@ function BuscarPedidosAlCredito() {
                             "targets": [0],
                             "visible": false
                         }, {
+                            "targets": [1],
+                            "visible": false
+                        }, {
+                            "targets": [2],
+                            "className": "dt-body-center",
+                            "visible": true
+                        }, {
                             "targets": [3],
+                            "className": "dt-body-center",
+                            "visible": true
+                        }, {
+                            "targets": [5],
                             "className": "dt-body-right",
                             "visible": true
+                        }, {
+                            "targets": [6],
+                            "visible": false
+                        }, {
+                            "targets": [7],
+                            "visible": false
+                        }, {
+                            "targets": [8],
+                            "visible": false
+                        }, {
+                            "targets": [9],
+                            "visible": false
+                        }, {
+                            "targets": [10],
+                            "visible": false
                         }
                     ],
-                    slug: "codigoTraslado"
+                    slug: "codigoTraslado",
+                    autoWidth: false
                 }
                 pintarEntidades(objConfiguracion, rpta);
             }
         }
     });
+}
+
+
+function AceptarSelectPedidoConCreditoParaPago() {
+    let table = $('#tablaPedidos').DataTable();
+    $('#tablaPedidos tbody').on('click', '.option-select', function () {
+        let rowIdx = table.row(this).index();
+        set("uiCodigoEmpresa", table.cell(rowIdx, 0).data());
+        set("uiSeriePedido", table.cell(rowIdx, 1).data());
+        set("uiNumeroPedido", table.cell(rowIdx, 2).data());
+        set("uiCodigoCliente", table.cell(rowIdx, 3).data());
+        set("uiNombreCliente", table.cell(rowIdx, 4).data());
+        set("uiMontoEfectivo", table.cell(rowIdx, 5).data());
+        set("uiSerieFactura", table.cell(rowIdx, 6).data());
+        set("uiNumeroFactura", table.cell(rowIdx, 7).data());
+        set("uiNumeroVale", table.cell(rowIdx, 8).data());
+        set("uiNumeroPedidoQSystems", table.cell(rowIdx, 9).data());
+
+    });
+    document.getElementById("uiClosePopupPedidos").click();
+
+
 }

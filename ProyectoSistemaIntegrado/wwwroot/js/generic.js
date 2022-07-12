@@ -1119,6 +1119,10 @@ function pintarEntidades(objConfiguracion, res) {
         objConfiguracionGlobal.aceptartraslado = false;
     if (objConfiguracionGlobal.funcionaceptartraslado == undefined)
         objConfiguracionGlobal.funcionaceptartraslado = "";
+    if (objConfiguracionGlobal.aceptarselect == undefined)
+        objConfiguracionGlobal.aceptarselect = false;
+    if (objConfiguracionGlobal.funcionaceptarselect == undefined)
+        objConfiguracionGlobal.funcionaceptarselect = "";
     if (objConfiguracionGlobal.actualizar == undefined)
         objConfiguracionGlobal.actualizar = false;
     if (objConfiguracionGlobal.funcionactualizar == undefined)
@@ -1246,6 +1250,11 @@ function generarTablaEntidades(res, objConfiguracionGlobal) {
         }
 
         if (objConfiguracionGlobal.aceptartraslado == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
+
+        if (objConfiguracionGlobal.aceptarselect == true) {
             contenido += "<td></td>"
             countColumns++;
         }
@@ -1424,6 +1433,30 @@ function generarTablaEntidades(res, objConfiguracionGlobal) {
                 if (obj["permisoTraslado"] == 1) {
                     contenido += `<button class="btn">`;
                     contenido += `<i onclick="AceptarTraslado${objConfiguracionGlobal.funcionaceptartraslado}(${obj[slug]})" id="aceptar${+ obj[slug]}" class="btn btn-outline-primary">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                  <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                                  </svg>
+                                  </i>`;
+                    contenido += `</button>`;
+                } else {
+                    contenido += `<button class="btn">`;
+                    contenido += `<i id="aceptar${+ obj[slug]}" class="btn btn-outline-secondary">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                  <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                                  </svg>
+                                  </i>`;
+                    contenido += `</button>`;
+                }
+                contenido += "</td>";
+            }
+
+            if (objConfiguracionGlobal.aceptarselect == true) {
+                contenido += "<td style='padding: 2px;' class='option-select'>";
+                if (obj["permisoSelect"] == 1) {
+                    contenido += `<button class="btn">`;
+                    contenido += `<i onclick="AceptarSelect${objConfiguracionGlobal.funcionaceptarselect}(${obj[slug]})" id="aceptarselect${+ obj[slug]}" class="btn btn-outline-primary">
                                   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
                                   <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                                   <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>

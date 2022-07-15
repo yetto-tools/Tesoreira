@@ -294,7 +294,7 @@ function MostrarTrasladosParaImportacion() {
     let fechaStr = document.getElementById("uiFechaOperacion").value;
     let url = "";
     let fechaOperacionStr = "";
-    if (fechaStr == "") {
+    if (fechaStr === "") {
         url = "Especiales2/GetTrasladosParaImportacion";
     } else {
         fechaOperacionStr = convertFormatDate(fechaStr);
@@ -303,7 +303,7 @@ function MostrarTrasladosParaImportacion() {
     document.getElementById("uiFechaOperacion").value = "";
 
     fetchGet(url, "json", function (rpta) {
-        if (rpta == undefined || rpta == null) {
+        if (rpta == undefined || rpta == null || rpta.length == 0) {
             Warning("No existe informacion")
         } else {
             let codigoTraslado = -1;
@@ -376,11 +376,11 @@ function MostrarTrasladosParaImportacion() {
                     funcionregistrar: "Especiales2",
                     editar: true,
                     funcioneditar: "NombresClientesEspeciales2"
-
                 }
                 pintarEntidades(objConfiguracion, rpta);
-            }
-        }
+                
+            }// fin else
+        }// fin else
     });
 }
 

@@ -390,7 +390,7 @@ function pintar(objConfiguracion) {
                                             alert("Error en la sumatoria de columna");
                                         }
 
-                                        return parseFloat(valorA) + parseFloat(valorB);  // calculate the mark column
+                                        return roundToTwo(parseFloat(valorA) + parseFloat(valorB));  // calculate the mark column
 
                                     });
 
@@ -1140,6 +1140,7 @@ function pintarEntidades(objConfiguracion, res) {
             $("#" + objConfiguracion.idtabla).DataTable();
         } else {
             if (objConfiguracionGlobal.sumarcolumna == true) {
+
                 $("#" + objConfiguracion.idtabla).DataTable({
                     "autoWidth": objConfiguracionGlobal.autoWidth,
                     "columnDefs": objConfiguracionGlobal.hideColumns, "order": [[0, "desc"]],
@@ -1172,7 +1173,7 @@ function pintarEntidades(objConfiguracion, res) {
                                         alert("Error en la sumatoria de columna");
                                     }
 
-                                    return parseFloat(valorA) + parseFloat(valorB);  // calculate the mark column
+                                    return roundToTwo(parseFloat(valorA) + parseFloat(valorB));  // calculate the mark column
 
                                 });
 
@@ -1487,7 +1488,7 @@ function generarTablaEntidades(res, objConfiguracionGlobal) {
             }
 
             contenido += "</tr>";
-        }
+        }// fin for
 
         contenido += "</tbody>";
         if (objConfiguracionGlobal.sumarcolumna == true) {
@@ -1498,8 +1499,8 @@ function generarTablaEntidades(res, objConfiguracionGlobal) {
                 contenido += "</td>"
             }
             contenido += "</tr>"
-            contenido += "</tfoot>"
         }
+        contenido += "</tfoot>"
         contenido += "</table>";
     }
 
@@ -1877,4 +1878,9 @@ function FormatDate(inputDate) {
         .padStart(2, '0');
 
     return `${date}/${month}/${year}`;
+}
+
+
+function roundToTwo(num) {
+    return +(Math.round(num + "e+2") + "e-2");
 }

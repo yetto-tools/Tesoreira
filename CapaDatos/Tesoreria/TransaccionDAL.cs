@@ -1933,6 +1933,7 @@ namespace CapaDatos.Tesoreria
                              WHEN (((x.codigo_estado = @CodigoEstadoTransaccion  AND 0 = " + setSemanaAnterior.ToString() + @") OR 1 = " + esSuperAdmin.ToString() + @") AND x.liquidacion = 0) THEN 1
                              ELSE 0
                             END AS permiso_editar,
+                            1 AS permiso_imprimir,
                             e.signo,
                             x.ruta,
                             FORMAT(GETDATE(), 'dd/MM/yyyy, hh:mm:ss') AS fecha_impresion_str,
@@ -1947,7 +1948,9 @@ namespace CapaDatos.Tesoreria
                             END AS tipo_operacion_contable,
                             x.monto_saldo_anterior_cxc,
                             x.monto_saldo_actual_cxc,
-                            x.numero_cuenta
+                            x.numero_cuenta,
+                            x.codigo_bono_extra,
+                            f.nombre AS tipo_bono_extra
 
                     FROM db_tesoreria.transaccion x
                     INNER JOIN db_tesoreria.operacion w
@@ -1962,6 +1965,8 @@ namespace CapaDatos.Tesoreria
                     ON x.codigo_categoria_entidad = d.codigo_categoria_entidad
                     INNER JOIN db_tesoreria.tipo_operacion e
                     ON w.codigo_tipo_operacion = e.codigo_tipo_operacion
+                    INNER JOIN db_tesoreria.bono_extra f
+                    ON x.codigo_bono_extra = f.codigo_bono_extra
                     WHERE x.complemento_conta = 0
                       AND x.codigo_estado = @CodigoEstadoTransaccion
                     " + filterUsuarioIngreso + @"    
@@ -2014,6 +2019,7 @@ namespace CapaDatos.Tesoreria
                             int postFechaIngStr = dr.GetOrdinal("fecha_ing_str");
                             int postPermisoAnular = dr.GetOrdinal("permiso_anular");
                             int postPermisoEditar = dr.GetOrdinal("permiso_editar");
+                            int postPermisoImprimir = dr.GetOrdinal("permiso_imprimir");
                             int postSigno = dr.GetOrdinal("signo");
                             int postRuta = dr.GetOrdinal("ruta");
                             int postFechaImpresionStr = dr.GetOrdinal("fecha_impresion_str");
@@ -2025,6 +2031,8 @@ namespace CapaDatos.Tesoreria
                             int postMontoSaldoAnteriorCxC = dr.GetOrdinal("monto_saldo_anterior_cxc");
                             int postMontoSaldoActualCxC = dr.GetOrdinal("monto_saldo_actual_cxc");
                             int postNumeroCuenta = dr.GetOrdinal("numero_cuenta");
+                            int postCodigoBonoExtra = dr.GetOrdinal("codigo_bono_extra");
+                            int postTipoBonoExtra = dr.GetOrdinal("tipo_bono_extra");
 
                             while (dr.Read())
                             {
@@ -2045,7 +2053,7 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.CodigoCategoriaEntidad = dr.GetInt16(postCodigoCategoriaEntidad);
                                 objTransaccion.CategoriaEntidad = dr.GetString(postCategoriaEntidad);
                                 objTransaccion.CodigoOperacion = dr.GetInt16(postCodigoOperacion);
-                                objTransaccion.Operacion = dr.GetString(postOperacion);
+                                objTransaccion.Operacion = dr.GetString(postOperacion) + (dr.GetByte(postCodigoBonoExtra) == 0 ? "" : " (" + dr.GetString(postTipoBonoExtra) + ")");
                                 objTransaccion.CodigoTipoCuentaPorCobrar = dr.GetByte(postCodigoTipoCuentaPorCobrar);
                                 objTransaccion.TipoCuentaPorCobrar = dr.GetString(postTipoCuentaPorCobrar);
                                 objTransaccion.CodigoCuentaPorCobrar = dr.IsDBNull(postCodigoCuentaPorCobrar) ? -1 : dr.GetInt64(postCodigoCuentaPorCobrar);
@@ -2062,6 +2070,7 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.UsuarioIng = dr.GetString(postUsuarioIng);
                                 objTransaccion.PermisoAnular = (Byte)dr.GetInt32(postPermisoAnular);
                                 objTransaccion.PermisoEditar = (Byte)dr.GetInt32(postPermisoEditar);
+                                objTransaccion.PermisoImprimir = (Byte)dr.GetInt32(postPermisoImprimir);
                                 objTransaccion.Signo = dr.GetInt16(postSigno);
                                 objTransaccion.Ruta = dr.GetInt16(postRuta);
                                 objTransaccion.FechaImpresionStr = dr.GetString(postFechaImpresionStr);
@@ -4527,7 +4536,6 @@ namespace CapaDatos.Tesoreria
                             x.codigo_tipo_pago,
                             x.codigo_quincena_planilla,
                             e.signo,
-                            x.codigo_bono_extra,
                             x.codigo_tipo_documento,
                             x.observaciones,
                             COALESCE(x.codigo_reporte,0) AS codigo_reporte,
@@ -4544,7 +4552,9 @@ namespace CapaDatos.Tesoreria
                             x.usuario_ing,
                             x.codigo_otro_ingreso,
                             monto_saldo_anterior_cxc,
-                            monto_saldo_actual_cxc    
+                            monto_saldo_actual_cxc,
+                            x.codigo_bono_extra,
+                            f.nombre AS tipo_bono_extra
                             
                     FROM db_tesoreria.transaccion x
                     INNER JOIN db_tesoreria.operacion w
@@ -4559,6 +4569,8 @@ namespace CapaDatos.Tesoreria
                     ON x.codigo_categoria_entidad = d.codigo_categoria_entidad
                     INNER JOIN db_tesoreria.tipo_operacion e
                     ON w.codigo_tipo_operacion = e.codigo_tipo_operacion
+                    INNER JOIN db_tesoreria.bono_extra f
+                    ON x.codigo_bono_extra = f.codigo_bono_extra
                     WHERE x.codigo_transaccion = @CodigoTransaccion";
 
                     conexion.Open();
@@ -4616,7 +4628,6 @@ namespace CapaDatos.Tesoreria
                             int postCodigoTipoPago = dr.GetOrdinal("codigo_tipo_pago");
                             int postCodigoQuincenaPlanilla = dr.GetOrdinal("codigo_quincena_planilla");
                             int postSignoOperacion = dr.GetOrdinal("signo");
-                            int postCodigoBonoExtra = dr.GetOrdinal("codigo_bono_extra");
                             int postCodigoTipoDocumento = dr.GetOrdinal("codigo_tipo_documento");
                             int postObservaciones = dr.GetOrdinal("observaciones");
                             int postCodigoReporte = dr.GetOrdinal("codigo_reporte");
@@ -4636,8 +4647,8 @@ namespace CapaDatos.Tesoreria
                             int postCodigoOtroIngreso = dr.GetOrdinal("codigo_otro_ingreso");
                             int postMontoSaldoAnteriorCxC = dr.GetOrdinal("monto_saldo_anterior_cxc");
                             int postMontoSaldoActualCxC = dr.GetOrdinal("monto_saldo_actual_cxc");
-
-
+                            int postCodigoBonoExtra = dr.GetOrdinal("codigo_bono_extra");
+                            int postTipoBonoExtra = dr.GetOrdinal("tipo_bono_extra");
                             while (dr.Read())
                             {
                                 objTransaccion.CodigoTransaccion = dr.GetInt64(postCodigoTransaccion);
@@ -4658,7 +4669,7 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.CategoriaEntidad = dr.GetString(postCategoriaEntidad);
                                 objTransaccion.CodigoOperacion = dr.GetInt16(postCodigoOperacion);
                                 objTransaccion.CodigoOperacionCaja = dr.GetInt16(postCodigoOperacionCaja);
-                                objTransaccion.Operacion = dr.GetString(postOperacion);
+                                objTransaccion.Operacion = dr.GetString(postOperacion) + (dr.GetByte(postCodigoBonoExtra) == 0 ? "" : " (" + dr.GetString(postTipoBonoExtra) + ")");
                                 objTransaccion.CodigoTipoCuentaPorCobrar = dr.GetByte(postCodigoTipoCuentaPorCobrar);
                                 objTransaccion.TipoCuentaPorCobrar = dr.GetString(postTipoCuentaPorCobrar);
                                 objTransaccion.CodigoCuentaPorCobrar = dr.IsDBNull(postCodigoCuentaPorCobrar) ? -1 : dr.GetInt64(postCodigoCuentaPorCobrar);

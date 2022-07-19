@@ -30,6 +30,7 @@ namespace CapaEntidad.CROM
         public int PermisoEditar { get; set; }
         public int PermisoActualizar { get; set; }
         public int PermisoInformacion { get; set; }
+        public decimal MontoTotalDia { get; set; }
     }
 
 

@@ -47,7 +47,7 @@ namespace CapaDatos.Planilla
                                 objSaldoPrestamoCLS.NombreEmpresa = dr.GetString(postNombreEmpresa);
                                 objSaldoPrestamoCLS.CodigoEmpleado = dr.GetString(postCodigoEmpleado);
                                 objSaldoPrestamoCLS.NombreCompleto = dr.GetString(postNombreCompleto);
-                                objSaldoPrestamoCLS.CodigoOperacion = dr.GetInt16(postCodigoOperacion);
+                                objSaldoPrestamoCLS.CodigoOperacion = (short)dr.GetInt32(postCodigoOperacion);
                                 objSaldoPrestamoCLS.CodigoOperacionDescuento = (short)dr.GetInt32(postCodigoOperacionDescuento);
                                 objSaldoPrestamoCLS.Operacion = dr.GetString(postOperacion);
                                 objSaldoPrestamoCLS.CodigoFrecuenciaPago = dr.GetByte(postCodigoFrecuenciaPago);
@@ -60,7 +60,7 @@ namespace CapaDatos.Planilla
                     }// fin using
                     conexion.Close();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     conexion.Close();
                     lista = null;

@@ -48,7 +48,7 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             return View();
         }
 
-        public IActionResult PrintAPI([FromBody] List<TrasladoEspeciales2DetalleCLS> listaDetalle, int codigoTraslado, string fechaOperacionStr, string fechaGeneracionStr)
+        public IActionResult PrintAPI([FromBody] List<TrasladoEspeciales2DetalleCLS> listaDetalle, int codigoTraslado, string fechaOperacionStr, string fechaGeneracionStr, decimal montoTotalDia)
         {
             string ipString = (TempData["Ip"]).ToString();
             int puerto = Convert.ToInt32(TempData["Puerto"]);
@@ -99,6 +99,7 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             // Sends an ESC/POS command to the printer to cut the paper
 
             string tituloTotal = "TOTAL";
+            string tituloMontoTotalPorDia = "TOTAL DEL DIA:";
             string linea = new string('-', 40);
             string t = ("Fecha y Hora de Generación: " + fechaGeneracionStr + "\r\n");
             t = t + ("Fecha de las Operaciones: " + fechaOperacionStr + "\r\n");
@@ -120,6 +121,16 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
             t = t + montoTotal.ToString("N2").PadLeft(10).Substring(0, 10);
             t = t + "\r\n";
             t = t + "\r\n";
+            t = t + "\r\n";
+            t = t + "\r\n";
+            
+            if (montoTotalDia > 0)
+            {
+                t = t + (linea + "\r\n");
+                t = t + (tituloMontoTotalPorDia.PadRight(30).Substring(0, 30) + " ");
+                t = t + montoTotalDia.ToString("N2").PadLeft(10).Substring(0, 10);
+                t = t + (linea + "\r\n");
+            }
             t = t + "\r\n";
             t = t + "\r\n";
             t = t + "\r\n";
@@ -257,7 +268,8 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
                                 PermisoTraslado = Convert.ToInt32(value["permiso_traslado"].ToString()),
                                 PermisoImprimir = Convert.ToInt32(value["permiso_imprimir"].ToString()),
                                 PermisoEditar = Convert.ToInt32(value["permiso_editar"].ToString()),
-                                PermisoActualizar = Convert.ToInt32(value["permiso_actualizar"].ToString())
+                                PermisoActualizar = Convert.ToInt32(value["permiso_actualizar"].ToString()),
+                                MontoTotalDia = Convert.ToDecimal(value["monto_total_dia"].ToString())
                             };
                             list.Add(row);
                         }

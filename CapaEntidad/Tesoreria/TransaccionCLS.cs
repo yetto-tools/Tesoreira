@@ -128,6 +128,7 @@ namespace CapaEntidad.Tesoreria
         public byte PermisoAnular { get; set; }
         public byte PermisoCorregir { get; set; }
         public byte PermisoAutorizar { get; set; }
+        public byte PermisoImprimir { get; set; }
         public DateTime? FechaPrestamo { get; set; }
         public DateTime? FechaInicioPago { get; set; }
 

@@ -82,8 +82,8 @@ function MostrarTrasladosEspeciales2Generados() {
                 MensajeError(observaciones);
             } else {
                 let objConfiguracion = {
-                    cabeceras: ["Código Traslado", "Fecha Operación", "Pedidos", "Monto Total", "Fecha Generación", "Usuario Ingreso", "Fecha Traslado", "observaciones", "Codigo Estado", "Estado", "permisoAnular", "permisoTraslado", "permisoImprimir", "permisoEditar","permisoActualizar"],
-                    propiedades: ["codigoTraslado", "fechaOperacionStr", "numeroPedidos", "montoTotal", "fechaIngresoStr", "usuarioIngreso", "fechaTrasladoStr", "observacionesTraslado", "codigoEstado", "estado", "permisoAnular", "permisoTraslado", "permisoImprimir", "permisoEditar","permisoActualizar"],
+                    cabeceras: ["Código Traslado", "Fecha Operación", "Pedidos", "Monto Total", "Fecha Generación", "Usuario Ingreso", "Fecha Traslado", "observaciones", "Codigo Estado", "Estado", "permisoAnular", "permisoTraslado", "permisoImprimir", "permisoEditar", "permisoActualizar", "montoTotalDia"],
+                    propiedades: ["codigoTraslado", "fechaOperacionStr", "numeroPedidos", "montoTotal", "fechaIngresoStr", "usuarioIngreso", "fechaTrasladoStr", "observacionesTraslado", "codigoEstado", "estado", "permisoAnular", "permisoTraslado", "permisoImprimir", "permisoEditar", "permisoActualizar", "montoTotalDia"],
                     displaydecimals: ["montoTotal"],
                     divContenedorTabla: "divContenedorTabla",
                     divPintado: "divTabla",
@@ -135,6 +135,13 @@ function MostrarTrasladosEspeciales2Generados() {
                         }, {
                             "targets": [14],
                             "visible": false
+                        }, {
+                            "targets": [15],
+                            "visible": false
+                        }, {
+                            "targets": [16],
+                            "className": "dt-body-center",
+                            "visible": true
                         }],
                     slug: "codigoTraslado",
                     editar: true,
@@ -143,7 +150,9 @@ function MostrarTrasladosEspeciales2Generados() {
                     eliminar: true,
                     funcioneliminar: "TrasladoEspeciales2",
                     actualizar: true,
-                    funcionactualizar: "DetallesEspeciales2Trasladados"
+                    funcionactualizar: "DetallesEspeciales2Trasladados",
+                    check: true,
+                    checkheader: "Incluir Total del Día"
                 }
                 pintarEntidades(objConfiguracion, rpta);
             }
@@ -209,7 +218,7 @@ function MostrarDetalleEspeciales2Edicion(codigoTraslado) {
     let objConfiguracion = {
         url: "Especiales2/GetDetalleTrasladosEspeciales2Edicion/?codigoTraslado=" + codigoTraslado,
         cabeceras: ["Empresa", "Serie", "Número Pedido", "Código Cliente", "Nombre Cliente", "Monto", "Fecha registro", "permisoAnular"],
-        propiedades: ["codigoEmpresa","serie","numeroPedido", "codigoCliente", "nombreCliente", "monto", "fechaGrabadoStr","permisoAnular"],
+        propiedades: ["codigoEmpresa", "serie", "numeroPedido", "codigoCliente", "nombreCliente", "monto", "fechaGrabadoStr", "permisoAnular"],
         displaydecimals: ["monto"],
         divContenedorTabla: "divContenedorTablaDetalle",
         divPintado: "divTablaDetalle",
@@ -268,8 +277,6 @@ function EliminarDetalleTrasladoEspeciales2() {
 }
 
 
-
-
 function Imprimir(codigoTraslado, obj) {
     let table = $('#tabla').DataTable();
     $('#tabla tbody').on('click', '.option-imprimir', function () {
@@ -277,9 +284,15 @@ function Imprimir(codigoTraslado, obj) {
         let codigoTraslado = table.cell(rowIdx, 0).data();
         let fechaOperacionStr = table.cell(rowIdx, 1).data();
         let fechaGeneracionStr = table.cell(rowIdx, 4).data();
+        let montoTotalDia = "0";
+        let checkImprimirMontoTotalDia = table.cell(rowIdx, 16).nodes().to$().find('input').prop('checked') == true ? 1 : 0;
+        if (checkImprimirMontoTotalDia == true) {
+            montoTotalDia = table.cell(rowIdx, 15).data();
+        }
+
         fetchGet("Especiales2/GetDetalleTrasladosEspeciales2/?codigoTraslado=" + codigoTraslado, "json", function (rpta) {
             let jsonData = JSON.stringify(rpta);
-            fetchPostJson("Especiales2/PrintAPI/?codigoTraslado=" + codigoTraslado + "&fechaOperacionStr=" + fechaOperacionStr + "&fechaGeneracionStr=" + fechaGeneracionStr, "text", jsonData, function (data) {
+            fetchPostJson("Especiales2/PrintAPI/?codigoTraslado=" + codigoTraslado + "&fechaOperacionStr=" + fechaOperacionStr + "&fechaGeneracionStr=" + fechaGeneracionStr + "&montoTotalDia=" + montoTotalDia, "text", jsonData, function (data) {
 
             })
         });

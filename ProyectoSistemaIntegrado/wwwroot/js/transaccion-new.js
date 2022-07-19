@@ -138,20 +138,27 @@ function clearDataFormulario() {
     elementPlanillaPago.style.display = 'none';
     clearDataPlanilla();
     // Inicializa datos de comisión (Bonos Extras)
+    document.getElementById('div-tipo-bonos-extra').style.display = 'none';
     let elementOptionBonoExtraComision = document.getElementById("uiOptionPorComisiones");
     let elementOptionBonoQuintalaje = document.getElementById("uiOptionBonoQuintalaje");
     let elementOptionFeriadosODomingos = document.getElementById("uiOptionBonosFeriadosODomingos");
     let elementOptionBonosExtras = document.getElementById("uiOptionBonosOtros");
+
     elementOptionBonoExtraComision.checked = false;
     elementOptionBonoQuintalaje.checked = false;
     elementOptionFeriadosODomingos.checked = false;
     elementOptionBonosExtras.checked = false;
+
+    document.getElementById('div-bonos-extra').style.display = 'none';
     set("uiNumeroRuta", "");
     FillComboUnicaOpcion("uiSemanaComision", "-1", "-- No Aplica -- ");
     FillComboUnicaOpcion("uiAnioComision", "-1", "-- No Aplica -- ");
     let elementRuta = document.getElementById("uiNumeroRuta");
     let elementSemanaComision = document.getElementById("uiSemanaComision");
     let elementAnioComision = document.getElementById("uiAnioComision");
+    document.getElementById("uiEsVendedor").checked = false;
+    document.getElementById("uiEsVendedor").value = "0";
+
     elementRuta.classList.remove('obligatorio');
     elementSemanaComision.classList.remove('obligatorio');
     elementAnioComision.classList.remove('obligatorio');
@@ -1766,7 +1773,7 @@ function fillMesesPlanilla(mes) {
             select.selectedIndex = 0;
         } else {
             if (codigoOperacion == PLANILLA_BONO_14) {
-                FillComboUnicaOpcion("uiMesPlanilla", "6", "JUNIO");
+                FillComboUnicaOpcion("uiMesPlanilla", "7", "JULIO");
                 select.selectedIndex = 0;
             }
         }
@@ -2671,6 +2678,8 @@ function getDataRowRadioEntidadesVendedores(obj) {
         fetchGet("Vendedores/GetRutasDelVendedor/?codigoCategoriaEntidad=" + codigoCategoriaEntidad + "&codigoVendedor=" + codigoEntidad, "json", function (rpta) {
             if (rpta != undefined && rpta != null && rpta.length != 0) {
                 FillCombo(rpta, "uiRutaVendedor", "ruta", "ruta", "- seleccione -", "-1");
+
+
             } else {
                 FillComboUnicaOpcion("uiRutaVendedor", "-1", "-- Sin Rutas -- ");
             }
@@ -2871,6 +2880,13 @@ function getDataRowRadioVendedores(obj) {
         set("uiNombreVendedor", table.cell(rowIdx, 2).data());
         set("uiNumeroRuta", table.cell(rowIdx, 3).data());
         set("uiCodigoCategoriaVendedor", table.cell(rowIdx, 5).data());
+
+        set("uiCodigoArea", "0");
+        set("uiCodigoEntidad", table.cell(rowIdx, 1).data());
+        set("uiCodigoCategoriaEntidad", table.cell(rowIdx, 5).data());
+        set("uiNombreEntidad", table.cell(rowIdx, 2).data());
+
+
     });
     document.getElementById("uiClosePopupVendedores").click();
 }

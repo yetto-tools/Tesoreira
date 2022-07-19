@@ -759,7 +759,10 @@ function RegistrarEfectivoVentasEstablecimiento() {
                 if (!/^[0-9]+$/.test(data)) {
                     MensajeError(data);
                 } else {
-                    BuscarTrasladosDeVentasAlContado();
+                    //PrintConstanciaIngresos(data, codigoTipoOperacion, nombreImpresora, numeroCopias);
+                    //setTimeout(() => {
+                        BuscarTrasladosDeVentasAlContado();
+                    //}, 1000);
                 }
             });
         });

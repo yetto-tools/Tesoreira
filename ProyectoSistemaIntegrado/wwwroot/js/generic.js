@@ -615,7 +615,6 @@ function generarTabla(res, objConfiguracionGlobal) {
 
 
             if (objConfiguracionGlobal.editar == true ||
-                objConfiguracionGlobal.check == true ||
                 objConfiguracionGlobal.eliminar == true ||
                 objConfiguracionGlobal.autorizar == true ||
                 objConfiguracionGlobal.imprimir == true ||
@@ -1129,6 +1128,14 @@ function pintarEntidades(objConfiguracion, res) {
         objConfiguracionGlobal.funcionactualizar = "";
     if (objConfiguracionGlobal.sumarcolumna == undefined)
         objConfiguracionGlobal.sumarcolumna = false;
+    if (objConfiguracionGlobal.check == undefined)
+        objConfiguracionGlobal.check = false;
+    if (objConfiguracionGlobal.checkid == undefined)
+        objConfiguracionGlobal.checkid = "default";
+    if (objConfiguracionGlobal.checkheader == undefined)
+        objConfiguracionGlobal.checkheader = "";
+    if (objConfiguracionGlobal.funcioncheck == undefined)
+        objConfiguracionGlobal.funcioncheck = "";
 
     var contenido = "";
     contenido += "<div id='" + objConfiguracionGlobal.divContenedorTabla + "'>";
@@ -1217,6 +1224,11 @@ function generarTablaEntidades(res, objConfiguracionGlobal) {
             countColumns++;
         }
 
+        if (objConfiguracionGlobal.check == true) {
+            contenido += "<td>" + objConfiguracionGlobal.checkheader + "</td>";
+            countColumns++;
+        }
+
         if (objConfiguracionGlobal.informacion == true) {
             contenido += "<td></td>"
             countColumns++;
@@ -1271,6 +1283,7 @@ function generarTablaEntidades(res, objConfiguracionGlobal) {
         contenido += "<tbody id='tbody" + objConfiguracionGlobal.idtabla + "'>";
         let obj;
         let valor = "";
+        let disableCheck = "";
         let nombrePropiedadActual;
         for (let i = 0; i < nregistros; i++) {
             obj = res[i]
@@ -1299,6 +1312,25 @@ function generarTablaEntidades(res, objConfiguracionGlobal) {
             let slug = objConfiguracionGlobal.slug;
 
             /* Operaciones (Edit, Delete, Print, etc... */
+            disableCheck = "";
+            if (obj[objConfiguracionGlobal.disablecheck] == 1) {
+                disableCheck = `disabled = "disabled"`;
+            }
+
+            if (objConfiguracionGlobal.check == true) {
+                contenido += `<td class='option-check'>`;
+                if (objConfiguracionGlobal.checkid == "default") {
+                    contenido += `<input type='checkbox' name='check' class='table-row-selected chkSelected' value='0' ${disableCheck} />`;
+                } else {
+                    if (obj[objConfiguracionGlobal.checkid] == 1) {
+                        contenido += `<input type='checkbox' name='check' class='table-row-selected chkSelected' value='1' checked onClick="clickCheck${objConfiguracionGlobal.funcioncheck}(this)" ${disableCheck} />`;
+                    } else {
+                        contenido += `<input type='checkbox' name='check' class='table-row-selected chkSelected' value='0' onClick="clickCheck${objConfiguracionGlobal.funcioncheck}(this)" ${disableCheck} />`;
+                    }
+                }
+                contenido += `</td>`;
+            }
+
             if (objConfiguracionGlobal.informacion == true) {
                 contenido += "<td style='padding: 2px;' class='option-info'>";
                 if (obj["permisoInformacion"] == 1) {

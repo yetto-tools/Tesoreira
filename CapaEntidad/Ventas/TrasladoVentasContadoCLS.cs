@@ -30,6 +30,7 @@ namespace CapaEntidad.Ventas
         public int PermisoImprimir { get; set; }
         public int PermisoTraslado { get; set; }
         public int PermisoRegistrar { get; set; }
+        public decimal MontoTotalDia { get; set; }
     }
 }
 

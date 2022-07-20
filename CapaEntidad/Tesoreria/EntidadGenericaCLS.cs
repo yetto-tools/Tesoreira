@@ -33,5 +33,6 @@ namespace CapaEntidad.Tesoreria
         public string MesPlanillaBTB { get; set; }
         public short AnioPlanillaBTB { get; set; }
         public decimal MontoDevolucionBTB { get; set; }
+        public byte ConcedeIva { get; set; }
     }
 }

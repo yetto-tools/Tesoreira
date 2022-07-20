@@ -72,7 +72,7 @@ namespace ProyectoSistemaIntegrado.Controllers.Ventas
             return obj.AceptarTraslado(codigoTraslado, objUsuario.IdUsuario);
         }
 
-        public IActionResult PrintConstanciaTrasladoVentasAlContado(int codigoTraslado, string fechaOperacionStr, string fechaGeneracionStr, decimal montoEfectivo, decimal montoCheques, decimal montoTransferencia, decimal montoTotal)
+        public IActionResult PrintConstanciaTrasladoVentasAlContado(int codigoTraslado, string fechaOperacionStr, string fechaGeneracionStr, decimal montoEfectivo, decimal montoCheques, decimal montoTransferencia, decimal montoTotal, decimal montoTotalDia)
         {
             string ipString = (TempData["Ip"]).ToString();
             int puerto = Convert.ToInt32(TempData["Puerto"]);
@@ -126,6 +126,7 @@ namespace ProyectoSistemaIntegrado.Controllers.Ventas
             string lineaMontoCheques = "Monto Cheques: ";
             string lineaMontoTransferencia = "Monto Transferencia: ";
             string lineaMontoTotal = "MONTO TOTAL: ";
+            string tituloMontoTotalPorDia = "TOTAL DEL DIA:";
 
             string linea = new string('-', 40);
             string t = ("----------- CAJA ----------------------- \r\n");
@@ -147,6 +148,16 @@ namespace ProyectoSistemaIntegrado.Controllers.Ventas
             t = t + (linea + "\r\n");
             t = t + (lineaMontoTotal.PadRight(30).Substring(0, 30) + " ");
             t = t + montoTotal.ToString("N2").PadLeft(10).Substring(0, 10);
+            t = t + "\r\n";
+            t = t + "\r\n";
+            t = t + "\r\n";
+            if (montoTotalDia > 0)
+            {
+                t = t + (linea + "\r\n");
+                t = t + (tituloMontoTotalPorDia.PadRight(30).Substring(0, 30) + " ");
+                t = t + montoTotalDia.ToString("N2").PadLeft(10).Substring(0, 10);
+                t = t + (linea + "\r\n");
+            }
             t = t + "\r\n";
             t = t + "\r\n";
             t = t + ("Impreso el " + DateTime.Now.ToString("dddd, dd MMMM yyyy HH:mm:ss") + "\r\n");

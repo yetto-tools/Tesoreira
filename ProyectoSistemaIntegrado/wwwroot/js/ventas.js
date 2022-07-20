@@ -562,8 +562,8 @@ function GuardarTrasladoMontoVentas() {
 function MostrarTrasladoMontoVentasEnProceso() {
     let objConfiguracion = {
         url: "TrasladoVentasContado/GetTrasladosEnProceso",
-        cabeceras: ["Código Traslado", "Fecha Operación", "Monto Efectivo", "Monto Cheques","Montro Transferencia", "Monto", "Fecha Generación", "Generado Por", "codigoEstado", "Estado", "permisoAnular", "permisoImprimir", "permisoTraslado"],
-        propiedades: ["codigoTraslado","fechaOperacionStr", "montoEfectivo", "montoCheques","montoTransferencia", "monto", "fechaGeneracionStr", "usuarioIng", "codigoEstado", "estado", "permisoAnular", "permisoImprimir", "permisoTraslado"],
+        cabeceras: ["Código Traslado", "Fecha Operación", "Monto Efectivo", "Monto Cheques","Montro Transferencia", "Monto", "Fecha Generación", "Generado Por", "codigoEstado", "Estado", "permisoAnular", "permisoImprimir", "permisoTraslado","montoTotalDia"],
+        propiedades: ["codigoTraslado", "fechaOperacionStr", "montoEfectivo", "montoCheques", "montoTransferencia", "monto", "fechaGeneracionStr", "usuarioIng", "codigoEstado", "estado", "permisoAnular", "permisoImprimir", "permisoTraslado","montoTotalDia"],
         divContenedorTabla: "divContenedorTabla",
         divPintado: "divTabla",
         displaydecimals: ["montoEfectivo", "montoCheques", "montoTransferencia","monto"],
@@ -608,6 +608,13 @@ function MostrarTrasladoMontoVentasEnProceso() {
             }, {
                 "targets": [12],
                 "visible": false
+            }, {
+                "targets": [13],
+                "visible": false
+            }, {
+                "targets": [14],
+                "className": "dt-body-center",
+                "visible": true
             }],
         slug: "codigoTraslado",
         eliminar: true,
@@ -615,7 +622,9 @@ function MostrarTrasladoMontoVentasEnProceso() {
         imprimir: true,
         funcionimprimir: "ConstanciaTrasladoMontoVentas",
         aceptartraslado: true,
-        funcionaceptartraslado: "MontoVentas"
+        funcionaceptartraslado: "MontoVentas",
+        check: true,
+        checkheader: "Incluir Total del Día"
     }
     pintar(objConfiguracion);
 }
@@ -669,7 +678,12 @@ function ImprimirConstanciaTrasladoMontoVentas(codigoTraslado, obj) {
         let montoTransferencia = table.cell(rowIdx, 4).data();
         let montoTotal = table.cell(rowIdx, 5).data();
         let fechaGeneracionStr = table.cell(rowIdx, 6).data();
-        fetchGet("TrasladoVentasContado/PrintConstanciaTrasladoVentasAlContado/?codigoTraslado=" + codigoTraslado + "&fechaOperacionStr=" + fechaOperacionStr + "&fechaGeneracionStr=" + fechaGeneracionStr + "&montoEfectivo=" + montoEfectivo + "&montoCheques=" + montoCheques + "&montoTransferencia=" + montoTransferencia + "&montoTotal=" + montoTotal, "text", function (data) {
+        let montoTotalDia = "0";
+        let checkImprimirMontoTotalDia = table.cell(rowIdx, 14).nodes().to$().find('input').prop('checked') == true ? 1 : 0;
+        if (checkImprimirMontoTotalDia == true) {
+            montoTotalDia = table.cell(rowIdx, 13).data();
+        }
+        fetchGet("TrasladoVentasContado/PrintConstanciaTrasladoVentasAlContado/?codigoTraslado=" + codigoTraslado + "&fechaOperacionStr=" + fechaOperacionStr + "&fechaGeneracionStr=" + fechaGeneracionStr + "&montoEfectivo=" + montoEfectivo + "&montoCheques=" + montoCheques + "&montoTransferencia=" + montoTransferencia + "&montoTotal=" + montoTotal + "&montoTotalDia=" + montoTotalDia, "text", function (data) {
 
         })
     });

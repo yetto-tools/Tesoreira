@@ -76,7 +76,7 @@
     return table;
 }
 
-function getHtmlConstanciaEgreso(codigoTransaccion, codigoOperacion, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, numeroCuenta) {
+function getHtmlConstanciaEgreso(codigoTransaccion, codigoOperacion, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, numeroCuenta, observaciones) {
     let table = `<div style="width: 287px; max-width: 287px; text-align: center; align-content: center; margin-left: 25px;">
                  <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">TESORERÍA</p>
                  <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">${codigoSeguridad}</p>
@@ -106,6 +106,11 @@ function getHtmlConstanciaEgreso(codigoTransaccion, codigoOperacion, numeroRecib
         table += `  <tr style="border-collapse: collapse;">
                         <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Concepto:</td>
                         <td style="font-size: 18px; font-family: 'Arial, sans-serif';">${nombreOperacion}</td>
+                    </tr>`;
+
+        table += `  <tr style="border-collapse: collapse;">
+                        <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Motivo:</td>
+                        <td style="font-size: 18px; font-family: 'Arial, sans-serif';">${observaciones}</td>
                     </tr>`;
 
                     if (codigoOperacion == ANTICIPO_LIQUIDABLE || codigoOperacion == ANTICIPO_SALARIO || codigoOperacion == PRESTAMO) {

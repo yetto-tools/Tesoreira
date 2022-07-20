@@ -10,7 +10,7 @@
             case "New":
                 fillCombosNew();
                 document.getElementById("uiNitEmpresaConcedeIva").checked = false;
-                setComboConsumidorConcedeIVA();
+                //setComboConsumidorConcedeIVA();
                 FillComboUnicaOpcion("uiNumeroCuenta", "-1", "-- No existe cuenta -- ");
                 clearDataFormulario();
                 intelligenceSearch();
@@ -23,7 +23,7 @@
                 codigoTransaccion = url1.searchParams.get("codigoTransaccion");
                 fillCombosEdit(codigoTransaccion);
                 document.getElementById("uiNitEmpresaConcedeIva").checked = false;
-                setComboConsumidorConcedeIVA();
+                //setComboConsumidorConcedeIVA();
                 FillComboUnicaOpcion("uiNumeroCuenta", "-1", "-- No existe cuenta -- ");
                 intelligenceSearch();
                 break;
@@ -31,7 +31,7 @@
                 codigoTransaccion = url1.searchParams.get("codigoTransaccion");
                 fillCombosEdit(codigoTransaccion);
                 document.getElementById("uiNitEmpresaConcedeIva").checked = false;
-                setComboConsumidorConcedeIVA();
+                //setComboConsumidorConcedeIVA();
                 FillComboUnicaOpcion("uiNumeroCuenta", "-1", "-- No existe cuenta -- ");
                 clearDataFormulario();
                 intelligenceSearch();
@@ -44,7 +44,7 @@
 
 function setEmptyDataTransaccion(checkEspeciales2, fechaOperacionStr) {
     document.getElementById("uiNitEmpresaConcedeIva").checked = false;
-    setComboConsumidorConcedeIVA();
+    //setComboConsumidorConcedeIVA();
     FillComboUnicaOpcion("uiNumeroCuenta", "-1", "-- No existe cuenta -- ");
     clearDataFormulario();
     let selectOption = document.getElementById("cboOperacion");
@@ -252,6 +252,13 @@ function clearDataFormulario() {
     tableVendedores.$("input[type=radio]").prop("checked", false);
     tableVendedores.$("input[type=search]").val('');
     tableVendedores.search('').draw();
+
+    // Concede IVA
+    document.getElementById('divTablaEmpresasConcedeIVA').style.display = 'none';
+    let tableEmpresasConcedeIVA = $('#tablaEmpresasConcedeIVA').DataTable();
+    tableEmpresasConcedeIVA.$("input[type=radio]").prop("checked", false);
+    tableEmpresasConcedeIVA.$("input[type=search]").val('');
+    tableEmpresasConcedeIVA.search('').draw();
 
     // Montos
     document.getElementById('uiCalculadora').value = "";
@@ -520,6 +527,14 @@ function fillComboOpciones() {
         document.getElementById("uiEfectivo").checked = true;
         document.getElementById("uiDeposito").disabled = false;
         document.getElementById("uiCheque").disabled = false;
+
+        document.getElementById('div-operacion-gasto').style.display = 'none';
+        FillComboUnicaOpcion("uiEntidadGasto", "-1", "-- No existe entidad gasto -- ");
+        FillComboUnicaOpcion("uiProveedorEntidad", "-1", "-- No existe proveedor gasto -- ");
+        FillComboUnicaOpcion("uiCategoriaEntidadGastos", "-1", "-- No existe categoria gasto -- ");
+
+
+
     } else {
         document.getElementById("uiEfectivo").checked = true;
         document.getElementById("uiDeposito").disabled = true;
@@ -735,6 +750,15 @@ function MostrarEntidadesGenericas(value) {
         set("uiNombreEntidad", "EMPLEADOS");
         document.getElementById('divTabla').style.display = 'none';
     }
+}
+
+function OcultarTodasLasTablas() {
+    document.getElementById('divTabla').style.display = 'none';
+    document.getElementById('divTablaEspeciales1').style.display = 'none';
+    document.getElementById('divTablaEspeciales2').style.display = 'none';
+    document.getElementById('divTablaBackToBack').style.display = 'none';
+    document.getElementById('divTablaVendedores').style.display = 'none';
+    document.getElementById('divTablaEmpresasConcedeIVA').style.display = 'none';
 }
 
 
@@ -1966,6 +1990,7 @@ function GuardarDatos(nombreImpresora, numeroCopias) {
     let checkEfectivo = document.getElementById("uiEfectivo");
     let checkDeposito = document.getElementById("uiDeposito");
     let checkCheque = document.getElementById("uiCheque");
+    //let checkConcederIva = document.getElementById("uiCheque");
     if (checkEfectivo.checked == false && checkDeposito.checked == false && checkCheque.checked == false) {
         MensajeError("Debe seleccionar una forma de pago");
         return;
@@ -2063,6 +2088,7 @@ function intelligenceSearch() {
             let listaEntidadesEspeciales2 = rpta.listaEntidadesEspeciales2;
             let listaEntidadesBackToBack = rpta.listaEntidadesBackToBack;
             let listaEntidadesVendedores = rpta.listaEntidadesVendedores;
+            let listaEmpresasConcedeIVA = rpta.listaEmpresasConcedeIVA;
 
             let objConfigEntidadesGenericas = {
                 cabeceras: ["codigo", "nombre entidad", "codigo categoria", "categoria", "codigo operacion", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta"],
@@ -2259,6 +2285,45 @@ function intelligenceSearch() {
                 autoWidth: false
             }
             pintarEntidades(objConfigVendedores, listaEntidadesVendedores);
+
+
+            let objConfigEmpresasConcedeIVA = {
+                cabeceras: ["codigo", "nombre entidad", "codigo categoria", "categoria", "codigo operacion", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta"],
+                propiedades: ["codigoEntidad", "nombreEntidad", "codigoCategoriaEntidad", "nombreCategoria", "codigoOperacionCaja", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta"],
+                divContenedorTabla: "divContenedorTablaEmpresasConcedeIVA",
+                divPintado: "divTablaEmpresasConcedeIVA",
+                idtabla: "tablaEmpresasConcedeIVA",
+                ocultarColumnas: true,
+                hideColumns: [
+                    {
+                        "targets": [0],
+                        "className": "dt-body-center"
+                    }, {
+                        "targets": [3],
+                        "visible": false
+                    }, {
+                        "targets": [4],
+                        "visible": true
+                    }, {
+                        "targets": [5],
+                        "visible": false
+                    }, {
+                        "targets": [6],
+                        "visible": false
+                    }, {
+                        "targets": [7],
+                        "visible": false
+                    }, {
+                        "targets": [8],
+                        "visible": false
+                    }],
+                radio: true,
+                paginar: true,
+                eventoradio: "EntidadesConcedeIVA",
+                slug: "codigoEntidad",
+                autoWidth: false
+            }
+            pintarEntidades(objConfigEmpresasConcedeIVA, listaEmpresasConcedeIVA);
 
         } else {
             Warning("Error en la obtención de entidades");
@@ -2691,6 +2756,26 @@ function getDataRowRadioEntidadesVendedores(obj) {
     });
 }
 
+function getDataRowRadioEntidadesConcedeIVA(obj) {
+    // Incluir el radioButton al inicio, por eso se comienza por la columna 1
+    document.getElementById('div-captura-proveedor').style.display = 'none';
+    let elementNombreProveedor = document.getElementById('uiNombreProveedor');
+    elementNombreProveedor.value = "";
+    let table = $('#tablaEmpresasConcedeIVA').DataTable();
+    $('#tablaEmpresasConcedeIVA tbody').on('change', 'tr', 'input:radio', function () {
+        let rowIdx = table.row(this).index();
+        set("uiCodigoEntidad", table.cell(rowIdx, 1).data());
+        set("uiNombreEntidad", table.cell(rowIdx, 2).data());
+        set("uiCodigoCategoriaEntidad", table.cell(rowIdx, 3).data());
+        set("uiCategoriaEntidad", table.cell(rowIdx, 4).data());
+        set("uiCodigoOperacionCaja", table.cell(rowIdx, 5).data());
+        set("uiCodigoArea", table.cell(rowIdx, 6).data());
+        set("uiCodigoCanalVenta", table.cell(rowIdx, 8).data());
+    });
+}
+
+
+
 
 function showTablaEspeciales2(obj) {
     if (obj == true) {
@@ -2932,7 +3017,7 @@ function listarRuteros() {
     pintar(objGlobalConfigTransaccion);
 }
 
-function setComboConsumidorConcedeIVA()
+/*function setComboConsumidorConcedeIVA()
 {
     // Clear el Combo del Nit de la empresa a quien se le concede el IVA
     let select = document.getElementById("cboNitConsumidor");
@@ -2944,7 +3029,7 @@ function clearDataFactura() {
     setComboConsumidorConcedeIVA();
     set("uiSerieFactura","");
     set("uiNumeroDocumento", "");
-}
+}*/
 
 function fillShowDataAdicionalPlanilla(obj) {
     let codigoOperacion = parseInt(document.getElementById("cboOperacion").value);
@@ -3124,9 +3209,11 @@ function setDataAdicionalPlanilla(codigoFrecuenciaPago, data) {
 
 function setDataAdicionaTipoDocumento(obj) {
     let element = document.getElementById("cboEmpresas");
+
     let checkConcedeIva = document.getElementById("uiNitEmpresaConcedeIva");
-    fillComboEmpresasConcecionIVA(checkConcedeIva);
     checkConcedeIva.checked = false;
+    checkConcedeIva.value = "0";
+
     document.getElementById('div-documento-vale').style.display = 'none';
     document.getElementById('div-documento-factura').style.display = 'none';
     document.getElementById('div-forma-pago-deposito').style.display = 'none';
@@ -3161,20 +3248,54 @@ function setDataAdicionaTipoDocumento(obj) {
 }
 
 function fillComboEmpresasConcecionIVA(obj) {
+    // Limpiar transaccion
+    clearDataTransaccion();
+    let elementObservaciones = document.getElementById("uiObservaciones");
     if (obj.checked) {
-        let element = document.getElementById("cboNitConsumidor");
+        obj.value = "1";
+        OcultarTodasLasTablas();
+
+        document.getElementById('divTablaEmpresasConcedeIVA').style.display = 'block';
+        elementObservaciones.classList.add('obligatorio');
+
+        // Limpiar Gastos Generales
+        document.getElementById('div-operacion-gasto').style.display = 'none';
+        FillComboUnicaOpcion("uiEntidadGasto", "-1", "-- No existe entidad gasto -- ");
+        FillComboUnicaOpcion("uiProveedorEntidad", "-1", "-- No existe proveedor gasto -- ");
+        FillComboUnicaOpcion("uiCategoriaEntidadGastos", "-1", "-- No existe categoria gasto -- ");
+
+        let tableEmpresasConcedeIVA = $('#tablaEmpresasConcedeIVA').DataTable();
+        tableEmpresasConcedeIVA.$("input[type=radio]").prop("checked", false);
+        tableEmpresasConcedeIVA.$("input[type=search]").val('');
+        tableEmpresasConcedeIVA.search('').draw();
+
+        /*let element = document.getElementById("cboNitConsumidor");
         element.classList.add('obligatorio');
         fetchGet("Transaccion/FillEmpresasConcecionIVA", "json", function (rpta) {
             FillCombo(rpta, "cboNitConsumidor", "nit", "nombre", "- seleccione -", "-1");
-        })
+        })*/
+
     } else {
-        let element = document.getElementById("cboNitConsumidor");
+        obj.value = "0";
+        //document.getElementById('divTabla').style.display = 'block';
+
+
+        document.getElementById('divTablaEmpresasConcedeIVA').style.display = 'none';
+        elementObservaciones.classList.remove('obligatorio');
+
+        let codigoOperacion = document.getElementById("cboOperacion").value;
+        //document.getElementById('div-operacion-gasto').style.display = 'block';
+        //fillEntidadesGasto(codigoOperacion);
+        showControls(codigoOperacion);
+
+        /*let element = document.getElementById("cboNitConsumidor");
         element.classList.remove('obligatorio');
         let select = document.getElementById("cboNitConsumidor");
         select.options.length = 0;
-        select.options[select.options.length] = new Option('No Aplica', '1000');
+        select.options[select.options.length] = new Option('No Aplica', '1000');*/
     }
 }
+
 
 function mostrarVendedores() {
     setI("uiTitlePopupVendedores", "Listado de Vendedores");

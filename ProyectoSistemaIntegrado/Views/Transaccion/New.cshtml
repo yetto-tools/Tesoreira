@@ -353,8 +353,6 @@
                 <div class="col-sm-6">
                     <input class="form-check-input" type="checkbox" id="uiNitEmpresaConcedeIva" onClick="fillComboEmpresasConcecionIVA(this)" />
                     <label class="form-check-label" for="uiNitEmpresaConcedeIva">Conceder IVA</label>
-                    <select class="form-control" id="cboNitConsumidor" name="NitEmpresaConcedeIva">
-                    </select>
                 </div>
             </div>
         </div>
@@ -466,15 +464,15 @@
 
         @if (setSemanaAnterior == 1)
         {
-            <div style="display:block;" id="div-captura-recibo">
-                <div class="mb-3 row">
-                    <label class="col-sm-2 col-form-label">Referencia:</label>
-                    <div class="col-sm-3">
-                        <input type="text" name="NumeroReciboReferencia" class="form-control solonumeros obligatorio text-center" id="uiNumeroReciboReferencia"
-                               placeholder="Número de Recibo" />
-                    </div>
+        <div style="display:block;" id="div-captura-recibo">
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label">Referencia:</label>
+                <div class="col-sm-3">
+                    <input type="text" name="NumeroReciboReferencia" class="form-control solonumeros obligatorio text-center" id="uiNumeroReciboReferencia"
+                           placeholder="Número de Recibo" />
                 </div>
             </div>
+        </div>
         }
 
         <div class="mb-3 row">
@@ -576,6 +574,10 @@
     </div>
 
     <div id="divTablaVendedores" style="display:none">
+    </div>
+
+    <div id="divTablaEmpresasConcedeIVA" style="display:none">
+
     </div>
 
 </fieldset>

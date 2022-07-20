@@ -1950,7 +1950,8 @@ namespace CapaDatos.Tesoreria
                             x.monto_saldo_actual_cxc,
                             x.numero_cuenta,
                             x.codigo_bono_extra,
-                            f.nombre AS tipo_bono_extra
+                            f.nombre AS tipo_bono_extra,
+                            x.observaciones
 
                     FROM db_tesoreria.transaccion x
                     INNER JOIN db_tesoreria.operacion w
@@ -2033,6 +2034,7 @@ namespace CapaDatos.Tesoreria
                             int postNumeroCuenta = dr.GetOrdinal("numero_cuenta");
                             int postCodigoBonoExtra = dr.GetOrdinal("codigo_bono_extra");
                             int postTipoBonoExtra = dr.GetOrdinal("tipo_bono_extra");
+                            int postObservaciones = dr.GetOrdinal("observaciones");
 
                             while (dr.Read())
                             {
@@ -2082,6 +2084,7 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.MontoSaldoAnteriorCxC = dr.GetDecimal(postMontoSaldoAnteriorCxC);
                                 objTransaccion.MontoSaldoActualCxC = dr.GetDecimal(postMontoSaldoActualCxC);
                                 objTransaccion.NumeroCuenta = dr.IsDBNull(postNumeroCuenta) ? "" : dr.GetString(postNumeroCuenta);
+                                objTransaccion.Observaciones = dr.IsDBNull(postObservaciones) ? "" : dr.GetString(postObservaciones);
 
                                 lista.Add(objTransaccion);
                             }

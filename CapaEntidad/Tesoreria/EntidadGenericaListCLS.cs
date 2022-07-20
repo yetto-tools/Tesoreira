@@ -15,5 +15,7 @@ namespace CapaEntidad.Tesoreria
         public List<EntidadGenericaCLS> listaEntidadesBackToBack { get; set; }
 
         public List<EntidadGenericaCLS> listaEntidadesVendedores { get; set; }
+
+        public List<EntidadGenericaCLS> listaEmpresasConcedeIVA { get; set; }
     }
 }

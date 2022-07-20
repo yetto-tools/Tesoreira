@@ -182,8 +182,8 @@ function fillSemanasTransacciones(obj) {
 function MostrarTransacciones(codigoTipoOperacion, codigoOperacion, codigoCategoriaEntidad, diaOperacion) {
     let objConfiguracion = {
         url: "Transaccion/BuscarTransacciones/?codigoTipoOperacion=" + codigoTipoOperacion.toString() + "&codigoOperacion=" + codigoOperacion.toString() + "&codigoCategoriaEntidad=" + codigoCategoriaEntidad.toString() + "&diaOperacion=" + diaOperacion.toString(),
-        cabeceras: ["Código", "codigoTransaccionAnt", "correccion", "Código Operación", "Operación", "Tipo Operación", "Código Cuenta por Cobrar", "Año", "Semana", "Fecha Operación", "Día Operación", "Fecha Recibo", "Número Recibo", "codigoEntidad", "Entidad", "Cuenta", "Categoría", "Monto", "Estado", "Fecha Transacción", "Creado por", "Anular", "Editar", "Signo", "Número Recibo", "Ruta", "Fecha Impresión", "Recursos", "codigoSeguridad", "montoSaldoAnteriorCxC", "montoSaldoActualCxC","permisoImprimir"],
-        propiedades: ["codigoTransaccion", "codigoTransaccionAnt", "correccion", "codigoOperacion", "operacion", "tipoOperacionContable", "codigoCuentaPorCobrar", "anioOperacion", "semanaOperacion", "fechaStr", "nombreDiaOperacion", "fechaReciboStr", "numeroRecibo", "codigoEntidad", "nombreEntidad", "numeroCuenta", "categoriaEntidad", "monto", "estado", "fechaIngStr", "usuarioIng", "permisoAnular", "permisoEditar", "signo", "numeroReciboStr", "ruta", "fechaImpresionStr", "recursos", "codigoSeguridad", "montoSaldoAnteriorCxC", "montoSaldoActualCxC","permisoImprimir"],
+        cabeceras: ["Código", "codigoTransaccionAnt", "correccion", "Código Operación", "Operación", "Tipo Operación", "Código Cuenta por Cobrar", "Año", "Semana", "Fecha Operación", "Día Operación", "Fecha Recibo", "Número Recibo", "codigoEntidad", "Entidad", "Cuenta", "Categoría", "Monto", "Estado", "Fecha Transacción", "Creado por", "Anular", "Editar", "Signo", "Número Recibo", "Ruta", "Fecha Impresión", "Recursos", "codigoSeguridad", "montoSaldoAnteriorCxC", "montoSaldoActualCxC","permisoImprimir","observaciones"],
+        propiedades: ["codigoTransaccion", "codigoTransaccionAnt", "correccion", "codigoOperacion", "operacion", "tipoOperacionContable", "codigoCuentaPorCobrar", "anioOperacion", "semanaOperacion", "fechaStr", "nombreDiaOperacion", "fechaReciboStr", "numeroRecibo", "codigoEntidad", "nombreEntidad", "numeroCuenta", "categoriaEntidad", "monto", "estado", "fechaIngStr", "usuarioIng", "permisoAnular", "permisoEditar", "signo", "numeroReciboStr", "ruta", "fechaImpresionStr", "recursos", "codigoSeguridad", "montoSaldoAnteriorCxC", "montoSaldoActualCxC","permisoImprimir","observaciones"],
         displaydecimals: ["monto", "montoSaldoAnteriorCxC", "montoSaldoActualCxC"],
         divContenedorTabla: "divContenedorTabla",
         divPintado: "divTabla",
@@ -209,11 +209,17 @@ function MostrarTransacciones(codigoTipoOperacion, codigoOperacion, codigoCatego
                 "targets": [6],
                 "visible": false
             }, {
+                "targets": [11],
+                "visible": false
+            }, {
                 "targets": [13],
                 "visible": false
             }, {
                 "targets": [17],
                 "className": "dt-body-right"
+            }, {
+                "targets": [18],
+                "visible": false
             }, {
                 "targets": [21],
                 "visible": false
@@ -246,6 +252,9 @@ function MostrarTransacciones(codigoTipoOperacion, codigoOperacion, codigoCatego
                 "visible": false
             }, {
                 "targets": [31],
+                "visible": false
+            }, {
+                "targets": [32],
                 "visible": false
             }],
         slug: "codigoTransaccion"
@@ -326,6 +335,7 @@ function Imprimir(obj) {
         let codigoSeguridad = table.cell(rowIdx, 28).data();
         let montoSaldoAnteriorCxC = table.cell(rowIdx, 29).data();
         let montoSaldoActualCxC = table.cell(rowIdx, 30).data();
+        let observaciones = table.cell(rowIdx, 32).data();
 
         let recursos = "";
         if (recurso != "") {
@@ -339,7 +349,7 @@ function Imprimir(obj) {
         if (signo == 1) { // Ingreso
             ImprimirConstanciaIngresos(codigoTransaccion, codigoOperacion, numeroReciboStr, fechaReciboStr, codigoEntidad, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC);
         } else { // Egreso
-            ImprimirConstanciaEgresos(codigoTransaccion, codigoOperacion, numeroReciboStr, fechaReciboStr, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, numeroCuenta);
+            ImprimirConstanciaEgresos(codigoTransaccion, codigoOperacion, numeroReciboStr, fechaReciboStr, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, numeroCuenta, observaciones);
         }
     });
 }
@@ -1029,8 +1039,8 @@ function ImprimirConstanciaIngresos(codigoTransaccion, codigoOperacion, numeroRe
     ventana.close();
 }
 
-function ImprimirConstanciaEgresos(codigoTransaccion, codigoOperacion, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, numeroCuenta) {
-    let html = getHtmlConstanciaEgreso(codigoTransaccion, codigoOperacion, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, numeroCuenta);
+function ImprimirConstanciaEgresos(codigoTransaccion, codigoOperacion, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, numeroCuenta, observaciones) {
+    let html = getHtmlConstanciaEgreso(codigoTransaccion, codigoOperacion, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, numeroCuenta, observaciones);
     var ventana = window.open();
     ventana.document.write(html);
     ventana.print();

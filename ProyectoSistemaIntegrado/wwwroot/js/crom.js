@@ -289,7 +289,6 @@ function Imprimir(codigoTraslado, obj) {
         if (checkImprimirMontoTotalDia == true) {
             montoTotalDia = table.cell(rowIdx, 15).data();
         }
-
         fetchGet("Especiales2/GetDetalleTrasladosEspeciales2/?codigoTraslado=" + codigoTraslado, "json", function (rpta) {
             let jsonData = JSON.stringify(rpta);
             fetchPostJson("Especiales2/PrintAPI/?codigoTraslado=" + codigoTraslado + "&fechaOperacionStr=" + fechaOperacionStr + "&fechaGeneracionStr=" + fechaGeneracionStr + "&montoTotalDia=" + montoTotalDia, "text", jsonData, function (data) {

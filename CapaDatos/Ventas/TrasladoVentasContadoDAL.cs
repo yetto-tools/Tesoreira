@@ -113,7 +113,11 @@ namespace CapaDatos.Ventas
                            CASE
                              WHEN x.codigo_estado = @CodigoEstadoGenerado THEN 1
                              ELSE 0
-                           END AS permiso_traslado 
+                           END AS permiso_traslado,
+                           ( SELECT sum(monto)
+                             FROM db_tesoreria.traslado_ventas_contado
+                             WHERE fecha_operacion = x.fecha_operacion
+                               AND codigo_estado <> 0) AS monto_total_dia
 
                     FROM db_tesoreria.traslado_ventas_contado x
                     INNER JOIN db_tesoreria.estado_traslado_caja y
@@ -147,6 +151,8 @@ namespace CapaDatos.Ventas
                             int postPermisoAnular = dr.GetOrdinal("permiso_anular");
                             int postPermisoImprimir = dr.GetOrdinal("permiso_imprimir");
                             int postPermisoTraslado = dr.GetOrdinal("permiso_traslado");
+                            int postMontoTotalDia = dr.GetOrdinal("monto_total_dia");
+
                             while (dr.Read())
                             {
                                 objTraslado = new TrasladoVentasContadoCLS();
@@ -167,6 +173,8 @@ namespace CapaDatos.Ventas
                                 objTraslado.PermisoAnular = dr.GetInt32(postPermisoAnular);
                                 objTraslado.PermisoImprimir = dr.GetInt32(postPermisoImprimir);
                                 objTraslado.PermisoTraslado = dr.GetInt32(postPermisoTraslado);
+                                objTraslado.MontoTotalDia = dr.GetDecimal(postMontoTotalDia);
+
 
                                 lista.Add(objTraslado);
                             }

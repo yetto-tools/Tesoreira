@@ -74,8 +74,11 @@ namespace ProyectoSistemaIntegrado.Controllers.Ventas
 
         public IActionResult PrintConstanciaTrasladoVentasAlContado(int codigoTraslado, string fechaOperacionStr, string fechaGeneracionStr, decimal montoEfectivo, decimal montoCheques, decimal montoTransferencia, decimal montoTotal, decimal montoTotalDia)
         {
-            string ipString = (TempData["Ip"]).ToString();
-            int puerto = Convert.ToInt32(TempData["Puerto"]);
+            string ipString = HttpContext.Session.GetString("Ip");
+            int puerto = Convert.ToInt32(HttpContext.Session.GetString("Puerto"));
+
+            //string ipString = (TempData["Ip"]).ToString();
+            //int puerto = Convert.ToInt32(TempData["Puerto"]);
 
             ViewBag.Message = HttpContext.Session.GetString("usuario");
             UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);

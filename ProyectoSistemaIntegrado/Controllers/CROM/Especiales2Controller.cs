@@ -50,8 +50,11 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
 
         public IActionResult PrintAPI([FromBody] List<TrasladoEspeciales2DetalleCLS> listaDetalle, int codigoTraslado, string fechaOperacionStr, string fechaGeneracionStr, decimal montoTotalDia)
         {
-            string ipString = (TempData["Ip"]).ToString();
-            int puerto = Convert.ToInt32(TempData["Puerto"]);
+            string ipString = HttpContext.Session.GetString("Ip");
+            int puerto = Convert.ToInt32(HttpContext.Session.GetString("Puerto"));
+
+            //string ipString = (TempData["Ip"]).ToString();
+            //int puerto = Convert.ToInt32(TempData["Puerto"]);
 
             ViewBag.Message = HttpContext.Session.GetString("usuario");
             UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);

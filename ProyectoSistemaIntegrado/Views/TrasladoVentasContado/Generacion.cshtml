@@ -9,8 +9,11 @@
     {
         if (impresora.CodigoConfiguracion == Constantes.ConfiguracionImpresora.IMPRESORA_CAJA_VENTAS_ESTABLECIMIENTO)
         {
-            TempData["Ip"] = impresora.Ip;
-            TempData["Puerto"] = impresora.Puerto;
+            Context.Session.SetString("Ip", impresora.Ip);
+            Context.Session.SetString("Puerto", impresora.Puerto.ToString());
+
+            //TempData["Ip"] = impresora.Ip;
+            //TempData["Puerto"] = impresora.Puerto;
         }
     }
 

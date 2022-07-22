@@ -564,7 +564,7 @@ namespace CapaDatos.Contabilidad
                     }// fin using
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     lista = null;

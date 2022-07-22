@@ -10,5 +10,7 @@
 
         public long CodigoTraslado { get; set; }
 
+        public int CodigoTipoReporte { get; set; }
+
     }
 }

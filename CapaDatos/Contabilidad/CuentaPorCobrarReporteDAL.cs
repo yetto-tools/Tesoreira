@@ -916,7 +916,7 @@ namespace CapaDatos.Contabilidad
 
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     objReporte = null;

@@ -38,12 +38,18 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
             return View();
         }
 
-        public IActionResult ViewReporteSemanalCajaPDF(int anioOperacion, int semanaOperacion, int codigoReporte)
+        public IActionResult ConsultaReportesEnProceso()
+        {
+            return View();
+        }
+
+        public IActionResult ViewReporteSemanalCajaPDF(int anioOperacion, int semanaOperacion, int codigoReporte, int codigoTipoReporte)
         {
             ReportViewModel obj = new ReportViewModel();
             obj.CodigoReporte = codigoReporte;
             obj.AnioOperacion = anioOperacion;
             obj.SemanaOperacion = semanaOperacion;
+            obj.CodigoTipoReporte = codigoTipoReporte;
             var demoViewPortrait = new ViewAsPdf("ViewReporteSemanalCajaPDF", String.Empty, obj);
             demoViewPortrait.PageMargins = new Margins { Bottom = 5, Left = 5, Right = 5, Top = 5 };
             demoViewPortrait.PageSize = Size.Letter;
@@ -86,6 +92,15 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
             ReporteCajaBL obj = new ReporteCajaBL();
             //return obj.GetReportesSemanalesCajaGeneracion(objUsuario.IdUsuario);
             return obj.GetReportesSemanalesCajaGeneracionTemporal(objUsuario.IdUsuario, objUsuario.SemanaParaExcluir);
+        }
+
+        public List<ReporteCajaCLS> GetReportesSemanalesEnProcesoDeGeneracion(int anioOperacion, int semanaOperacion)
+        {
+            ViewBag.Message = HttpContext.Session.GetString("usuario");
+            UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
+
+            ReporteCajaBL obj = new ReporteCajaBL();
+            return obj.GetReportesSemanalesEnProcesoDeGeneracion(objUsuario.IdUsuario, anioOperacion, semanaOperacion);
         }
 
         public List<ReporteCajaCLS> GetReportesSemanalesCaja(int anio)

@@ -172,6 +172,8 @@ namespace CapaEntidad.Tesoreria
 
         public decimal MontoSaldoActualCxC { get; set; }
 
+        public string PeriodoComision { get; set; }
+
     }
 
 

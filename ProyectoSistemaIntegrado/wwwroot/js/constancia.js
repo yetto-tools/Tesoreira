@@ -1,4 +1,4 @@
-﻿function getHtmlConstanciaIngreso(codigoTransaccion, codigoOperacion, numeroRecibo, fechaRecibo, codigoEntidad, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC) {
+﻿function getHtmlConstanciaIngreso(codigoTransaccion, codigoOperacion, numeroRecibo, fechaRecibo, codigoEntidad, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, observaciones) {
     let table = `<div style="width: 287px; max-width: 287px; text-align: center; align-content: center; margin-left: 25px;">
                  <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">TESORERÍA</p>
                  <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">${codigoSeguridad}</p>
@@ -33,6 +33,10 @@
     table += `      <tr style="border-collapse: collapse;">
                         <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Concepto:</td>
                         <td style="font-size: 18px; font-family: 'Arial, sans-serif';">${nombreOperacion}</td>
+                    </tr>
+                    <tr style="border-collapse: collapse;">
+                        <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Motivo:</td>
+                        <td style="font-size: 18px; font-family: 'Arial, sans-serif';">${observaciones}</td>
                     </tr>
                     <tr style="border-collapse: collapse;">
                         <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Recurso:</td>
@@ -76,7 +80,7 @@
     return table;
 }
 
-function getHtmlConstanciaEgreso(codigoTransaccion, codigoOperacion, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, numeroCuenta, observaciones) {
+function getHtmlConstanciaEgreso(codigoTransaccion, codigoOperacion, codigoOperacionCaja, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, numeroCuenta, observaciones, periodoComision) {
     let table = `<div style="width: 287px; max-width: 287px; text-align: center; align-content: center; margin-left: 25px;">
                  <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">TESORERÍA</p>
                  <p style="text-align: center; align-content: center; font-size: 18px; font-family: 'Arial, sans-serif'; font-weight: bold;">${codigoSeguridad}</p>
@@ -107,6 +111,13 @@ function getHtmlConstanciaEgreso(codigoTransaccion, codigoOperacion, numeroRecib
                         <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Concepto:</td>
                         <td style="font-size: 18px; font-family: 'Arial, sans-serif';">${nombreOperacion}</td>
                     </tr>`;
+
+                    if (codigoOperacion == PLANILLA_BONOS_EXTRAS && codigoOperacionCaja == PLANILLA_BONOS_EXTRAS) {
+                        table += `<tr style="border-collapse: collapse;">
+                            <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Periodo:</td>
+                            <td style="font-size: 18px; font-family: 'Arial, sans-serif';">${periodoComision}</td>
+                        </tr>`
+                    }
 
         table += `  <tr style="border-collapse: collapse;">
                         <td style="width: 75px; max-width: 75px; border-collapse: collapse; font-size: 18px; font-family: 'Arial, sans-serif';">Motivo:</td>

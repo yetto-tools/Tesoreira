@@ -818,7 +818,7 @@ namespace CapaDatos.RRHH
                     }// fin using
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     objEmpleadoComboCLS = null;

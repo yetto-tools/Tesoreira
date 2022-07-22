@@ -249,6 +249,94 @@ namespace CapaDatos.Tesoreria
             }
         }
 
+        public List<ReporteCajaCLS> GetReportesSemanalesEnProcesoDeGeneracion(string usuarioGeneracion, int anioOperacion, int semanaOperacion)
+        {
+            string filterSemanaOcultaTransaccion = String.Empty;
+
+            List<ReporteCajaCLS> lista = null;
+            using (SqlConnection conexion = new SqlConnection(cadenaTesoreria))
+            {
+                try
+                {
+                    string sql = @"
+                    SELECT 0 AS codigo_reporte, 
+	                       x.anio_operacion, 
+	                       x.semana_operacion,
+	                       db_admon.GetPeriodoSemana(x.anio_operacion,x.semana_operacion) AS semana,
+                           '' AS observaciones,
+	                       1 AS codigo_estado, 
+	                       'Por Generar' AS estado,
+                           @UsuarioGeneracion AS usuario_ing,
+	                       GETDATE() AS fecha_ing,
+                           FORMAT(GETDATE(), 'dd/MM/yyyy, hh:mm:ss') AS fecha_ing_str,
+                           1 AS permiso_ver_reporte 
+                            
+                    FROM ( SELECT anio_operacion, semana_operacion
+                           FROM db_tesoreria.transaccion
+                           WHERE codigo_estado in (@CodigoEstadoRegistrado,@CodigoEstadoGenerado)
+                             AND complemento_conta = 0
+                             AND anio_operacion = @AnioOperacion    
+                             AND semana_operacion = @SemanaOperacion   
+                           GROUP BY anio_operacion, semana_operacion
+                         ) x";
+
+                    conexion.Open();
+                    using (SqlCommand cmd = new SqlCommand(sql, conexion))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Parameters.AddWithValue("@CodigoEstadoRegistrado", Constantes.EstadoTransacccion.REGISTRADO);
+                        cmd.Parameters.AddWithValue("@CodigoEstadoGenerado", Constantes.ReporteCaja.Estado.GENERADO);
+                        cmd.Parameters.AddWithValue("@UsuarioGeneracion", usuarioGeneracion);
+                        cmd.Parameters.AddWithValue("@AnioOperacion", anioOperacion);
+                        cmd.Parameters.AddWithValue("@SemanaOperacion", semanaOperacion);
+
+                        SqlDataReader dr = cmd.ExecuteReader();
+                        if (dr != null)
+                        {
+                            ReporteCajaCLS objReporteCaja;
+                            lista = new List<ReporteCajaCLS>();
+                            int postCodigoReporte = dr.GetOrdinal("codigo_reporte");
+                            int postAnio = dr.GetOrdinal("anio_operacion");
+                            int postNumeroSemana = dr.GetOrdinal("semana_operacion");
+                            int postSemana = dr.GetOrdinal("semana");
+                            int postObservaciones = dr.GetOrdinal("observaciones");
+                            int postCodigoEstado = dr.GetOrdinal("codigo_estado");
+                            int postEstado = dr.GetOrdinal("estado");
+                            int postUsuarioIng = dr.GetOrdinal("usuario_ing");
+                            int postFechaIng = dr.GetOrdinal("fecha_ing");
+                            int postFechaIngStr = dr.GetOrdinal("fecha_ing_str");
+                            int postPermisoVerReporte = dr.GetOrdinal("permiso_ver_reporte");
+                            while (dr.Read())
+                            {
+                                objReporteCaja = new ReporteCajaCLS();
+                                objReporteCaja.CodigoReporte = dr.GetInt32(postCodigoReporte);
+                                objReporteCaja.Anio = dr.GetInt16(postAnio);
+                                objReporteCaja.NumeroSemana = dr.GetByte(postNumeroSemana);
+                                objReporteCaja.Semana = dr.GetString(postSemana);
+                                objReporteCaja.Observaciones = dr.IsDBNull(postObservaciones) ? "" : dr.GetString(postObservaciones);
+                                objReporteCaja.CodigoEstado = (byte)dr.GetInt32(postCodigoEstado);
+                                objReporteCaja.Estado = dr.GetString(postEstado);
+                                objReporteCaja.UsuarioIng = dr.GetString(postUsuarioIng);
+                                objReporteCaja.FechaIng = dr.GetDateTime(postFechaIng);
+                                objReporteCaja.FechaIngStr = dr.GetString(postFechaIngStr);
+                                objReporteCaja.PermisoVerReporte = (byte)dr.GetInt32(postPermisoVerReporte);
+
+                                lista.Add(objReporteCaja);
+                            }
+                        }
+                    }
+                    conexion.Close();
+                }
+                catch (Exception)
+                {
+                    conexion.Close();
+                    lista = null;
+                }
+
+                return lista;
+            }
+        }
+
         public List<ReporteCajaCLS> GetReportesSemanalesCajaParaVistoBueno()
         {
             List<ReporteCajaCLS> lista = null;
@@ -353,7 +441,7 @@ namespace CapaDatos.Tesoreria
                     INNER JOIN db_tesoreria.estado_reporte_caja y
                     ON x.codigo_estado = y.codigo_estado_reporte_caja
                     WHERE x.anio = @Anio 
-                      AND x.codigo_estado <> @CodigoEstadoAnulado
+                      AND x.codigo_estado IN (@CodigoEstadoPorRevisar,@CodigoEstadoVistoBueno)
                       AND x.arqueo = 0";
 
                     conexion.Open();
@@ -361,7 +449,8 @@ namespace CapaDatos.Tesoreria
                     {
                         cmd.CommandType = CommandType.Text;
                         cmd.Parameters.AddWithValue("@Anio", anio);
-                        cmd.Parameters.AddWithValue("@CodigoEstadoAnulado", Constantes.ReporteCaja.Estado.ANULADO);
+                        cmd.Parameters.AddWithValue("@CodigoEstadoPorRevisar", Constantes.ReporteCaja.Estado.POR_REVISAR);
+                        cmd.Parameters.AddWithValue("@CodigoEstadoVistoBueno", Constantes.ReporteCaja.Estado.VISTO_BUENO);
                         SqlDataReader dr = cmd.ExecuteReader();
                         if (dr != null)
                         {
@@ -736,7 +825,7 @@ namespace CapaDatos.Tesoreria
                     }
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     lista = null;

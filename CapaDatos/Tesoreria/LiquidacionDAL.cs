@@ -102,7 +102,7 @@ namespace CapaDatos.Tesoreria
                     }
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     lista = null;
@@ -237,7 +237,7 @@ namespace CapaDatos.Tesoreria
                     }
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     lista = null;
@@ -366,7 +366,7 @@ namespace CapaDatos.Tesoreria
                     }
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     lista = null;
@@ -466,7 +466,7 @@ namespace CapaDatos.Tesoreria
                     }
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     lista = null;
@@ -870,7 +870,7 @@ namespace CapaDatos.Tesoreria
                     
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     objReporte = null;

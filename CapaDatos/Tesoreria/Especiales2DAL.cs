@@ -135,7 +135,7 @@ namespace CapaDatos.Tesoreria
                     }// fin using
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     listaDetalle = null;
@@ -411,7 +411,7 @@ namespace CapaDatos.Tesoreria
                     }
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     lista = null;

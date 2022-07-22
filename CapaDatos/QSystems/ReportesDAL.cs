@@ -142,7 +142,7 @@ namespace CapaDatos.QSystems
                     }
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     lista = null;
@@ -222,7 +222,7 @@ namespace CapaDatos.QSystems
                     }
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     lista = null;

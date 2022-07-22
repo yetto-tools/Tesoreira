@@ -309,7 +309,7 @@ namespace CapaDatos.Tesoreria
                     }// fin using
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     lista = null;

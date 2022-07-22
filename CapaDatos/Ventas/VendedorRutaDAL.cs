@@ -469,7 +469,7 @@ namespace CapaDatos.Ventas
                     }
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     resultado = -1;

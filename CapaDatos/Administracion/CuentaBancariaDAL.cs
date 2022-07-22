@@ -123,7 +123,7 @@ namespace CapaDatos.Administracion
                     }
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     resultado = "<select name=NumeroCuenta id=uiNumeroCuenta class=select-cuenta-bancaria><option value=-1>-- Error--</option></select>";

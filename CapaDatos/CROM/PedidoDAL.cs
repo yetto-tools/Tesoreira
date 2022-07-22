@@ -38,7 +38,7 @@ namespace CapaDatos.CROM
                     //Console.WriteLine("id={0}, value={1}", reader.GetInt32("id"), reader.GetString("value"));
                 }
             }
-            catch (MySqlException ex)
+            catch (MySqlException)
             {
                 //Console.Write(ex.Message);
                 lista = null;

@@ -265,7 +265,7 @@ namespace CapaDatos.Contabilidad
                     }
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     lista = null;
@@ -770,7 +770,7 @@ namespace CapaDatos.Contabilidad
                     }
                     conexion.Close();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     conexion.Close();
                     objReporte = null;

@@ -16,10 +16,10 @@ namespace CapaNegocio.Tesoreria
             return obj.GetDetalleReporte(codigoReporte);
         }
 
-        public ReporteCajaDetalleListCLS GetDetalleReporteCaja(int anioOperacion, int semanaOperacion, int codigoReporte)
+        public ReporteCajaDetalleListCLS GetDetalleReporteCaja(int anioOperacion, int semanaOperacion, int codigoReporte, int codigoTipoReporte)
         {
             ReporteCajaDetalleDAL obj = new ReporteCajaDetalleDAL();
-            return obj.GetDetalleReporteCaja(anioOperacion, semanaOperacion, codigoReporte);
+            return obj.GetDetalleReporteCaja(anioOperacion, semanaOperacion, codigoReporte, codigoTipoReporte);
         }
 
         public ReporteCajaDetalleListCLS GetDetalleResumenVentasPagoPlanilaNF(int anioOperacion, int semanaOperacion, int codigoReporte)

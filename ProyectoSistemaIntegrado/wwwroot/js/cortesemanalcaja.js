@@ -15,6 +15,11 @@
                 document.getElementById("uiFiltroAnio").value = anioActual.toString();
                 listarReportesConsulta(anioActual);
                 break;
+            case "ConsultaReportesEnProceso":
+                let anioActualSistema = parseInt(document.getElementById("uiAnioSemanaActualSistema").value);
+                let semanaActualSistema = parseInt(document.getElementById("uiNumeroSemanaActualSistema").value);
+                listarReportesEnProcesoDeGeneracion(anioActualSistema, semanaActualSistema);
+                break;
             default:
                 break;
         }// fin switch
@@ -183,7 +188,7 @@ function GenerarPdf(obj) {
         let codigoReporte = parseInt(table.cell(rowIdx, 0).data());
         let anioOperacion = parseInt(table.cell(rowIdx, 1).data());
         let semanaOperacion = parseInt(table.cell(rowIdx, 2).data());
-        fetchGet("CorteCajaSemanal/ViewReporteSemanalCajaPDF/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString() + "&codigoReporte=" + codigoReporte.toString(), "pdf", function (data) {
+        fetchGet("CorteCajaSemanal/ViewReporteSemanalCajaPDF/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString() + "&codigoReporte=" + codigoReporte.toString() + "&codigoTipoReporte=0", "pdf", function (data) {
             var file = new Blob([data], { type: 'application/pdf' });
             var fileURL = URL.createObjectURL(file);
             window.open(fileURL, "EPrescription");
@@ -255,3 +260,51 @@ function clickAceptarReporteTesoreria(obj) {
 }
 
 
+function listarReportesEnProcesoDeGeneracion(anio,semana) {
+    let objConfiguracion = {
+        url: "CorteCajaSemanal/GetReportesSemanalesEnProcesoDeGeneracion/?anioOperacion=" + anio.toString() + "&semanaOperacion=" + semana.toString(),
+        cabeceras: ["Código Reporte", "Año", "Número Semana", "Semana", "Estado", "Generado por", "fecha Generación", "permisoVerReporte"],
+        propiedades: ["codigoReporte", "anio", "numeroSemana", "semana", "estado", "usuarioIng", "fechaIngStr", "permisoVerReporte"],
+        divContenedorTabla: "divContenedorTabla",
+        divPintado: "divTabla",
+        paginar: true,
+        ocultarColumnas: true,
+        hideColumns: [
+            {
+                "targets": [0],
+                "className": "dt-body-center",
+                "visible": true
+            }, {
+                "targets": [1],
+                "className": "dt-body-center",
+                "visible": true
+            }, {
+                "targets": [2],
+                "className": "dt-body-center",
+                "visible": true
+            }, {
+                "targets": [7],
+                "visible": false
+            }],
+        slug: "codigoReporte",
+        viewreporte: true,
+        funcionviewreporte: "SemanalEnProceso"
+    }
+    pintar(objConfiguracion);
+}
+
+function VerReporteSemanalEnProceso() {
+    let table = $('#tabla').DataTable();
+    $('#tabla tbody').on('click', '.option-view-reporte', function () {
+        let rowIdx = table.row(this).index();
+        let codigoReporte = parseInt(table.cell(rowIdx, 0).data());
+        let anioOperacion = parseInt(table.cell(rowIdx, 1).data());
+        let semanaOperacion = parseInt(table.cell(rowIdx, 2).data());
+        fetchGet("CorteCajaSemanal/ViewReporteSemanalCajaPDF/?anioOperacion=" + anioOperacion.toString() + "&semanaOperacion=" + semanaOperacion.toString() + "&codigoReporte=" + codigoReporte.toString() + "&codigoTipoReporte=1", "pdf", function (data) {
+            var file = new Blob([data], { type: 'application/pdf' });
+            var fileURL = URL.createObjectURL(file);
+            window.open(fileURL, "EPrescription");
+        })
+    });
+
+}

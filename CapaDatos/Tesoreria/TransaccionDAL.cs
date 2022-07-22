@@ -1215,7 +1215,7 @@ namespace CapaDatos.Tesoreria
                         }
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     lista = null;
@@ -1360,11 +1360,10 @@ namespace CapaDatos.Tesoreria
                     SearchContentAsync(cadenaTesoreria, codigoTransaccion, codigoTipoCorreccion, observaciones, usuarioIng);
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     transaction.Rollback();
                     conexion.Close();
-                    resultado = "Error [0]: " + ex.Message;
                 }
             }
 
@@ -1900,6 +1899,7 @@ namespace CapaDatos.Tesoreria
                             x.codigo_categoria_entidad,
                             d.nombre AS categoria_entidad,
 		                    x.codigo_operacion,
+                            x.codigo_operacion_caja,
 		                    w.nombre_operacion AS operacion,
                             w.nombre_reporte_caja AS operacion_caja,
 		                    x.codigo_tipo_cxc,
@@ -1951,7 +1951,8 @@ namespace CapaDatos.Tesoreria
                             x.numero_cuenta,
                             x.codigo_bono_extra,
                             f.nombre AS tipo_bono_extra,
-                            x.observaciones
+                            x.observaciones,
+                            db_admon.GetPeriodoSemana(x.anio_comision,x.semana_comision) AS periodo_comision
 
                     FROM db_tesoreria.transaccion x
                     INNER JOIN db_tesoreria.operacion w
@@ -2003,6 +2004,7 @@ namespace CapaDatos.Tesoreria
                             int postCodigoCategoriaEntidad = dr.GetOrdinal("codigo_categoria_entidad");
                             int postCategoriaEntidad = dr.GetOrdinal("categoria_entidad");
                             int postCodigoOperacion = dr.GetOrdinal("codigo_operacion");
+                            int postCodigoOperacionCaja = dr.GetOrdinal("codigo_operacion_caja");
                             int postOperacion = dr.GetOrdinal("operacion");
                             int postCodigoTipoCuentaPorCobrar = dr.GetOrdinal("codigo_tipo_cxc");
                             int postTipoCuentaPorCobrar = dr.GetOrdinal("tipo_cxc");
@@ -2035,6 +2037,7 @@ namespace CapaDatos.Tesoreria
                             int postCodigoBonoExtra = dr.GetOrdinal("codigo_bono_extra");
                             int postTipoBonoExtra = dr.GetOrdinal("tipo_bono_extra");
                             int postObservaciones = dr.GetOrdinal("observaciones");
+                            int postPeriodoComision = dr.GetOrdinal("periodo_comision");
 
                             while (dr.Read())
                             {
@@ -2055,6 +2058,7 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.CodigoCategoriaEntidad = dr.GetInt16(postCodigoCategoriaEntidad);
                                 objTransaccion.CategoriaEntidad = dr.GetString(postCategoriaEntidad);
                                 objTransaccion.CodigoOperacion = dr.GetInt16(postCodigoOperacion);
+                                objTransaccion.CodigoOperacionCaja = dr.GetInt16(postCodigoOperacionCaja);
                                 objTransaccion.Operacion = dr.GetString(postOperacion) + (dr.GetByte(postCodigoBonoExtra) == 0 ? "" : " (" + dr.GetString(postTipoBonoExtra) + ")");
                                 objTransaccion.CodigoTipoCuentaPorCobrar = dr.GetByte(postCodigoTipoCuentaPorCobrar);
                                 objTransaccion.TipoCuentaPorCobrar = dr.GetString(postTipoCuentaPorCobrar);
@@ -2085,6 +2089,7 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.MontoSaldoActualCxC = dr.GetDecimal(postMontoSaldoActualCxC);
                                 objTransaccion.NumeroCuenta = dr.IsDBNull(postNumeroCuenta) ? "" : dr.GetString(postNumeroCuenta);
                                 objTransaccion.Observaciones = dr.IsDBNull(postObservaciones) ? "" : dr.GetString(postObservaciones);
+                                objTransaccion.PeriodoComision = dr.IsDBNull(postPeriodoComision) ? "" : dr.GetString(postPeriodoComision);
 
                                 lista.Add(objTransaccion);
                             }
@@ -2093,7 +2098,7 @@ namespace CapaDatos.Tesoreria
                     }
                     conexion.Close();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     conexion.Close();
                     lista = null;
@@ -2142,6 +2147,7 @@ namespace CapaDatos.Tesoreria
                             x.codigo_categoria_entidad,
                             d.nombre AS categoria_entidad,
 		                    x.codigo_operacion,
+                            x.codigo_operacion_caja, 
 		                    w.nombre_operacion AS operacion,
                             w.nombre_reporte_caja AS operacion_caja,
 		                    x.codigo_tipo_cxc,
@@ -2189,7 +2195,11 @@ namespace CapaDatos.Tesoreria
                             x.monto_saldo_anterior_cxc,
                             x.monto_saldo_actual_cxc,
                             x.numero_cuenta,
-                            x.nombre_proveedor
+                            x.nombre_proveedor,
+                            x.codigo_bono_extra,
+                            f.nombre AS tipo_bono_extra,
+                            x.observaciones,
+                            db_admon.GetPeriodoSemana(x.anio_comision,x.semana_comision) AS periodo_comision
 
                     FROM db_tesoreria.transaccion x
                     INNER JOIN db_tesoreria.operacion w
@@ -2204,6 +2214,8 @@ namespace CapaDatos.Tesoreria
                     ON x.codigo_categoria_entidad = d.codigo_categoria_entidad
                     INNER JOIN db_tesoreria.tipo_operacion e
                     ON w.codigo_tipo_operacion = e.codigo_tipo_operacion
+                    INNER JOIN db_tesoreria.bono_extra f
+                    ON x.codigo_bono_extra = f.codigo_bono_extra
                     WHERE x.codigo_estado <> 0
                       AND x.anio_operacion = @AnioOperacion
                       AND x.semana_operacion = @SemanaOperacion  
@@ -2241,6 +2253,7 @@ namespace CapaDatos.Tesoreria
                             int postCodigoCategoriaEntidad = dr.GetOrdinal("codigo_categoria_entidad");
                             int postCategoriaEntidad = dr.GetOrdinal("categoria_entidad");
                             int postCodigoOperacion = dr.GetOrdinal("codigo_operacion");
+                            int postCodigoOperacionCaja = dr.GetOrdinal("codigo_operacion_caja");
                             int postOperacion = dr.GetOrdinal("operacion");
                             int postCodigoTipoCuentaPorCobrar = dr.GetOrdinal("codigo_tipo_cxc");
                             int postTipoCuentaPorCobrar = dr.GetOrdinal("tipo_cxc");
@@ -2272,6 +2285,10 @@ namespace CapaDatos.Tesoreria
                             int postMontoSaldoActualCxC = dr.GetOrdinal("monto_saldo_actual_cxc");
                             int postNumeroCuenta = dr.GetOrdinal("numero_cuenta");
                             int postNombreProveedor = dr.GetOrdinal("nombre_proveedor");
+                            int postCodigoBonoExtra = dr.GetOrdinal("codigo_bono_extra");
+                            int postTipoBonoExtra = dr.GetOrdinal("tipo_bono_extra");
+                            int postObservaciones = dr.GetOrdinal("observaciones");
+                            int postPeriodoComision = dr.GetOrdinal("periodo_comision");
 
                             while (dr.Read())
                             {
@@ -2292,6 +2309,7 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.CodigoCategoriaEntidad = dr.GetInt16(postCodigoCategoriaEntidad);
                                 objTransaccion.CategoriaEntidad = dr.GetString(postCategoriaEntidad);
                                 objTransaccion.CodigoOperacion = dr.GetInt16(postCodigoOperacion);
+                                objTransaccion.CodigoOperacionCaja = dr.GetInt16(postCodigoOperacionCaja);
                                 objTransaccion.Operacion = dr.GetString(postOperacion);
                                 objTransaccion.CodigoTipoCuentaPorCobrar = dr.GetByte(postCodigoTipoCuentaPorCobrar);
                                 objTransaccion.TipoCuentaPorCobrar = dr.GetString(postTipoCuentaPorCobrar);
@@ -2323,6 +2341,9 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.MontoSaldoActualCxC = dr.GetDecimal(postMontoSaldoActualCxC);
                                 objTransaccion.NumeroCuenta = dr.IsDBNull(postNumeroCuenta) ? "" : dr.GetString(postNumeroCuenta);
                                 objTransaccion.NombreProveedor = dr.IsDBNull(postNombreProveedor) ? "" : dr.GetString(postNombreProveedor);
+                                objTransaccion.Observaciones = dr.IsDBNull(postObservaciones) ? "" : dr.GetString(postObservaciones);
+                                objTransaccion.PeriodoComision = dr.IsDBNull(postPeriodoComision) ? "" : dr.GetString(postPeriodoComision);
+
 
                                 lista.Add(objTransaccion);
                             }
@@ -2330,7 +2351,7 @@ namespace CapaDatos.Tesoreria
                     }
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     lista = null;
@@ -2610,7 +2631,7 @@ namespace CapaDatos.Tesoreria
                     }
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     lista = null;
@@ -2899,7 +2920,7 @@ namespace CapaDatos.Tesoreria
                     }
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     lista = null;
@@ -3629,7 +3650,7 @@ namespace CapaDatos.Tesoreria
                     }
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     lista = null;
@@ -4118,7 +4139,7 @@ namespace CapaDatos.Tesoreria
                     }
                     conexion.Close();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     conexion.Close();
                     lista = null;
@@ -4899,7 +4920,7 @@ namespace CapaDatos.Tesoreria
                     }// fin using
                     conexion.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     objTransaccionComboCLS = null;

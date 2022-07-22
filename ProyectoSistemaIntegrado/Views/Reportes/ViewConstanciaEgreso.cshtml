@@ -46,14 +46,21 @@
                 <td style="width: 85px; border-collapse: collapse;"><div style="text-align:left">Concepto:</div></td>
                 <td><div style="text-align:left">@objTransaccion.Operacion</div></td>
             </tr>
+            @if (objTransaccion.CodigoOperacion == Constantes.Operacion.Egreso.PLANILLA_BONOS_EXTRAS_COMISION && objTransaccion.CodigoOperacionCaja == Constantes.Operacion.Egreso.PLANILLA_BONOS_EXTRAS_COMISION)
+            {
+                <tr style="border-collapse: collapse;">
+                    <td style="width: 85px; border-collapse: collapse;"><div style="text-align:left">Periodo:</div></td>
+                    <td><div style="text-align:left">@objTransaccion.PeriodoComision</div></td>
+                </tr>
+            }
             <tr style="border-collapse: collapse;">
                 <td style="width: 85px; border-collapse: collapse;"><div style="text-align:left">Motivo:</div></td>
                 <td><div style="text-align:left">@objTransaccion.Observaciones</div></td>
             </tr>
 
             @if (objTransaccion.CodigoOperacion == Constantes.Operacion.Egreso.PRESTAMO_EGRESO ||
-                 objTransaccion.CodigoOperacion == Constantes.Operacion.Egreso.ANTICIPO_LIQUIDABLE_EGRESO ||
-                 objTransaccion.CodigoOperacion == Constantes.Operacion.Egreso.ANTICIPO_SALARIO)
+               objTransaccion.CodigoOperacion == Constantes.Operacion.Egreso.ANTICIPO_LIQUIDABLE_EGRESO ||
+               objTransaccion.CodigoOperacion == Constantes.Operacion.Egreso.ANTICIPO_SALARIO)
             {
                 <tr style="border-collapse: collapse;">
                     <td style="width: 85px; border-collapse: collapse;"><div style="text-align:left">Saldo Anterior:</div></td>
@@ -84,8 +91,8 @@
                 </td>
             </tr>
             @if (objTransaccion.CodigoOperacion == Constantes.Operacion.Egreso.PRESTAMO_EGRESO ||
-                 objTransaccion.CodigoOperacion == Constantes.Operacion.Egreso.ANTICIPO_LIQUIDABLE_EGRESO ||
-                 objTransaccion.CodigoOperacion == Constantes.Operacion.Egreso.ANTICIPO_SALARIO)
+               objTransaccion.CodigoOperacion == Constantes.Operacion.Egreso.ANTICIPO_LIQUIDABLE_EGRESO ||
+               objTransaccion.CodigoOperacion == Constantes.Operacion.Egreso.ANTICIPO_SALARIO)
             {
                 <tr style="border-collapse: collapse;">
                     <td style="width: 85px; border-collapse: collapse;"><div style="text-align:left">Saldo Actual:</div></td>

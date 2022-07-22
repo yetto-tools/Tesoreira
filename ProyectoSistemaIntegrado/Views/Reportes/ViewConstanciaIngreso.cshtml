@@ -54,16 +54,21 @@
                 <td><div style="text-align:left;">@objTransaccion.Operacion</div></td>
             </tr>
             <tr style="border-collapse: collapse;">
+                <td style="border-collapse: collapse;"><div style="text-align:left;">Motivo:</div></td>
+                <td><div style="text-align:left;">@objTransaccion.Observaciones</div></td>
+            </tr>
+            <tr style="border-collapse: collapse;">
                 <td style="border-collapse: collapse;"><div style="text-align:left;">Recurso:</div></td>
                 <td><div style="text-align:left;">@objTransaccion.Recursos.TrimEnd(',')</div></td>
             </tr>
             @if (objTransaccion.CodigoOperacion == Constantes.Operacion.Ingreso.PRESTAMO_ABONO ||
-                 objTransaccion.CodigoOperacion == Constantes.Operacion.Ingreso.ANTICIPO_LIQUIDABLE_REEMBOLSO ||
-                 objTransaccion.CodigoOperacion == Constantes.Operacion.Ingreso.DEVOLUCION_POR_ANTICIPO_SALARIO)
+                objTransaccion.CodigoOperacion == Constantes.Operacion.Ingreso.ANTICIPO_LIQUIDABLE_REEMBOLSO ||
+                objTransaccion.CodigoOperacion == Constantes.Operacion.Ingreso.DEVOLUCION_POR_ANTICIPO_SALARIO)
             {
                 <tr style="border-collapse: collapse;">
                     <td style="width: 85px; border-collapse: collapse;"><div style="text-align:left">Saldo Anterior:</div></td>
-                    <td><div style="text-align:left">@objTransaccion.MontoSaldoAnteriorCxC.ToString("N2")</div>
+                    <td>
+                        <div style="text-align:left">@objTransaccion.MontoSaldoAnteriorCxC.ToString("N2")</div>
                     </td>
                 </tr>
             }
@@ -85,14 +90,14 @@
                             default:
                                 montoStr = objTransaccion.Monto.ToString("N2");
                                 break;
-}
+                        }
                         @montoStr
                     </div>
                 </td>
             </tr>
             @if (objTransaccion.CodigoOperacion == Constantes.Operacion.Ingreso.PRESTAMO_ABONO ||
-                 objTransaccion.CodigoOperacion == Constantes.Operacion.Ingreso.ANTICIPO_LIQUIDABLE_REEMBOLSO ||
-                 objTransaccion.CodigoOperacion == Constantes.Operacion.Ingreso.DEVOLUCION_POR_ANTICIPO_SALARIO)
+                objTransaccion.CodigoOperacion == Constantes.Operacion.Ingreso.ANTICIPO_LIQUIDABLE_REEMBOLSO ||
+                objTransaccion.CodigoOperacion == Constantes.Operacion.Ingreso.DEVOLUCION_POR_ANTICIPO_SALARIO)
             {
                 <tr style="border-collapse: collapse;">
                     <td style="width: 85px; border-collapse: collapse;"><div style="text-align:left">Saldo Actual:</div></td>

@@ -78,7 +78,7 @@ namespace CapaDatos.Ventas
                 {
                     String sql = @"
                     SELECT cli_codigo AS codigo_cliente, 
-	                       cli_nombre AS nombre_cliente
+                           LTRIM(RTRIM(cli_nombre)) AS nombre_cliente
                     FROM MASTCLI 
                     WHERE cli_empresa = 'PSA'
                       AND cli_vendedor NOT IN (0,1,4,332) AND cli_codigo NOT IN ('000001')
@@ -126,7 +126,7 @@ namespace CapaDatos.Ventas
                 {
                     String sql = @"
                     SELECT x.CLI_CODIGO AS codigo_cliente, 
-                           x.CLI_NOMBRE AS nombre_cliente 
+                           LTRIM(RTRIM(x.CLI_NOMBRE)) AS nombre_cliente
                     FROM Qsystems.dbo.MASTCLI x
                     INNER JOIN Qsystems.dbo.CLIENTES_EXTRA y
                     ON x.CLI_CODIGO = y.EXT_CLIENTE AND x.CLI_EMPRESA = y.EXT_EMPRESA

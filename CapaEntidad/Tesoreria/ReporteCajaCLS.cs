@@ -25,6 +25,7 @@ namespace CapaEntidad.Tesoreria
         public byte bloqueado { get; set; }
         public byte PermisoEditar { get; set; }
         public byte PermisoAnular { get; set; }
+        public byte PermisoVerReporte { get; set; }
         public byte PermisoArqueo { get; set; }
         public string FechaCorteStr { get; set; }
         public byte Arqueo { get; set; }

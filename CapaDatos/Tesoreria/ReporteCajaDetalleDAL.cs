@@ -803,7 +803,7 @@ namespace CapaDatos.Tesoreria
         }
 
 
-        public ReporteCajaDetalleListCLS GetDetalleReporteCaja(int anioOperacion, int semanaOperacion, int codigoReporte)
+        public ReporteCajaDetalleListCLS GetDetalleReporteCaja(int anioOperacion, int semanaOperacion, int codigoReporte, int codigoTipoReporte)
         {
             int postCodigoConcepto = 0;
             int postConcepto = 0;
@@ -826,8 +826,16 @@ namespace CapaDatos.Tesoreria
             {
                 try
                 {
+                    string sqlSp = string.Empty;
+                    if (codigoTipoReporte == 0)
+                    {
+                        sqlSp = "db_tesoreria.uspGetReporteSemanalDonPepe";
+                    }
+                    else {
+                        sqlSp = "db_tesoreria.uspGetReporteSemanalEnProcesoDonPepe";
+                    }
                     conexion.Open();
-                    using (SqlCommand cmd = new SqlCommand("db_tesoreria.uspGetReporteSemanalDonPepe", conexion))
+                    using (SqlCommand cmd = new SqlCommand(sqlSp, conexion))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@Anio", anioOperacion);
@@ -1018,7 +1026,7 @@ namespace CapaDatos.Tesoreria
                     }
                     conexion.Close();
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
                     conexion.Close();
                     objReporteCaja = null;
@@ -1179,7 +1187,7 @@ namespace CapaDatos.Tesoreria
                     }
                     conexion.Close();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     conexion.Close();
                     objReporteCaja = null;

@@ -18,6 +18,12 @@ namespace CapaNegocio.Tesoreria
             return obj.GetReportesSemanalesCajaGeneracionTemporal(usuarioGeneracion, semanaOculta);
         }
 
+        public List<ReporteCajaCLS> GetReportesSemanalesEnProcesoDeGeneracion(string usuarioGeneracion, int anioOperacion, int semanaOperacion)
+        {
+            ReporteCajaDAL obj = new ReporteCajaDAL();
+            return obj.GetReportesSemanalesEnProcesoDeGeneracion(usuarioGeneracion, anioOperacion, semanaOperacion);
+        }
+
         public List<ReporteCajaCLS> GetReportesSemanalesCajaParaVistoBueno()
         {
             ReporteCajaDAL obj = new ReporteCajaDAL();

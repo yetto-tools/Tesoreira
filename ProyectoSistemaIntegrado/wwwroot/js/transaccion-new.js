@@ -281,6 +281,9 @@ function clearDataFormulario() {
     FillComboUnicaOpcion("uiEntidadGasto", "-1", "-- No existe entidad gasto -- ");
     FillComboUnicaOpcion("uiProveedorEntidad", "-1", "-- No existe proveedor gasto -- ");
     FillComboUnicaOpcion("uiCategoriaEntidadGastos", "-1", "-- No existe categoria gasto -- ");
+
+    // Observaciones
+
 }
 
 function setValueNumeroDocumentoDeposito(obj) {
@@ -547,7 +550,9 @@ function fillComboOpciones() {
 function fillCuentasBancarias(obj) {
     let valor = parseInt(obj.value, 10);
     let codigoOperacion = parseInt(document.getElementById('cboOperacion').value)
-    if (codigoOperacion != BACK_TO_BACK) {
+    //if (codigoOperacion != BACK_TO_BACK && codigoOperacion == DEPOSITOS_BANCARIOS) {
+    if (codigoOperacion == DEPOSITOS_BANCARIOS) {
+        set("uiCodigoCategoriaEntidad", CATEGORIA_BANCO.toString());
         set("uiCodigoEntidad", valor.toString());
         if (obj.selectedIndex > 0) {
             set("uiNombreEntidad", obj.options[obj.selectedIndex].text);
@@ -943,7 +948,7 @@ function showControls(obj) {
             fillShowDataAdicionalPlanilla("-1");
             break;
         case PLANILLA_BONO_14:
-            document.getElementById('divTabla').style.display = 'none';
+            document.getElementById('divTabla').style.display = 'block';
             document.getElementById('div-planilla-pago').style.display = 'block';
             document.getElementById('uiContainerTipoPago').style.display = 'none';
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
@@ -957,7 +962,7 @@ function showControls(obj) {
             fillShowDataAdicionalPlanilla("-1");
             break;
         case PLANILLA_AGUINALDO:
-            document.getElementById('divTabla').style.display = 'none';
+            document.getElementById('divTabla').style.display = 'block';
             document.getElementById('div-planilla-pago').style.display = 'block';
             document.getElementById('uiContainerTipoPago').style.display = 'none';
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
@@ -1177,10 +1182,10 @@ function showControls(obj) {
             document.getElementById('div-tipo-especiales1').style.display = 'none';
             document.getElementById('div-bonos-extra').style.display = 'none';
             document.getElementById('div-operacion-gasto').style.display = 'none';
-            set("uiCodigoCategoriaEntidad", CATEGORIA_EMPRESA.toString());
-            set("uiCodigoEntidad", EMPRESA_PANIFICADORA_AMERICANA_INDIVIDUAL.toString());
+            set("uiCodigoCategoriaEntidad", CATEGORIA_GENERICA.toString());
+            set("uiCodigoEntidad", ENTIDAD_RESERVAS.toString());
             set("uiCodigoArea", "0");
-            set("uiNombreEntidad", "Panificadora Americana Individual");
+            set("uiNombreEntidad", "RESERVAS");
             set("uiObservaciones", "");
             document.getElementById("uiNingunTipoDocumento").checked = true;
             document.getElementById('uiNingunTipoDocumento').onClick = setDataAdicionaTipoDocumento("0");
@@ -1195,10 +1200,10 @@ function showControls(obj) {
             document.getElementById('div-tipo-especiales1').style.display = 'none';
             document.getElementById('div-bonos-extra').style.display = 'none';
             document.getElementById('div-operacion-gasto').style.display = 'none';
-            set("uiCodigoCategoriaEntidad", CATEGORIA_EMPRESA.toString());
-            set("uiCodigoEntidad", EMPRESA_PANIFICADORA_AMERICANA_INDIVIDUAL.toString());
+            set("uiCodigoCategoriaEntidad", CATEGORIA_GENERICA.toString());
+            set("uiCodigoEntidad", ENTIDAD_RESERVAS.toString());
             set("uiCodigoArea", "0");
-            set("uiNombreEntidad", "Panificadora Americana Individual");
+            set("uiNombreEntidad", "RESERVAS");
             set("uiObservaciones", "");
             document.getElementById("uiNingunTipoDocumento").checked = true;
             document.getElementById('uiNingunTipoDocumento').onClick = setDataAdicionaTipoDocumento("0");
@@ -3218,6 +3223,7 @@ function setDataAdicionaTipoDocumento(obj) {
     document.getElementById('div-documento-factura').style.display = 'none';
     document.getElementById('div-forma-pago-deposito').style.display = 'none';
     document.getElementById("uiNitEmpresaConcedeIva").checked = false;
+
     let codigoTipoDocumento = parseInt(obj, 10);
     switch (codigoTipoDocumento) {
         case VALE:
@@ -3230,16 +3236,25 @@ function setDataAdicionaTipoDocumento(obj) {
             break;
         case BOLETA_PAGO:
             clearDataDepositosBancarios();
+            // colocar como obligatorio los campos para esta opcion
+            setCamposObligatoriosDepositosBancarios();
+
             document.getElementById('div-forma-pago-deposito').style.display = 'block';
             element.classList.remove('obligatorio');
             break;
         case TRANSFERENCIA:
             clearDataDepositosBancarios();
+            // colocar como obligatorio los campos para esta opcion
+            setCamposObligatoriosDepositosBancarios();
+
             document.getElementById('div-forma-pago-deposito').style.display = 'block';
             element.classList.remove('obligatorio');
             break;
         case PROVAL:
             clearDataDepositosBancarios();
+            // colocar como obligatorio los campos para esta opcion
+            setCamposObligatoriosDepositosBancarios();
+
             document.getElementById('div-forma-pago-deposito').style.display = 'block';
             element.classList.remove('obligatorio');
             break;

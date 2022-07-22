@@ -54,7 +54,7 @@ namespace CapaDatos.Administracion
                         }
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     conexion.Close();
                     lista = null;

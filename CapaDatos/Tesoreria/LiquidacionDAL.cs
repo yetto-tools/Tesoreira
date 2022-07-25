@@ -20,42 +20,46 @@ namespace CapaDatos.Tesoreria
                 try
                 {
                     string sentenciaTraslados = @"
-                    SELECT CAST(0 AS BIGINT) AS codigo_traslado, 
-                           anio_operacion, 
-                           semana_operacion, 
-                           db_admon.GetPeriodoSemana(anio_operacion,semana_operacion)  AS periodo,
-                           count(*) AS cantidad, 
-                           SUM(monto) AS monto_total,
-                           1 AS codigo_estado,
-                           'POR GENERAR'  AS estado,
-                           0 AS bloqueado,
-                           0 AS permiso_anular 
+                    SELECT m.* 
+                    FROM ( SELECT CAST(0 AS BIGINT) AS codigo_traslado, 
+                                  anio_operacion, 
+                                  semana_operacion, 
+                                  db_admon.GetPeriodoSemana(anio_operacion,semana_operacion)  AS periodo,
+                                  count(*) AS cantidad, 
+                                  SUM(monto) AS monto_total,
+                                  1 AS codigo_estado,
+                                  'POR GENERAR'  AS estado,
+                                  0 AS bloqueado,
+                                  0 AS permiso_anular 
 
-                    FROM db_tesoreria.transaccion
-                    WHERE codigo_estado <> @CodigoEstadoTransaccion
-                      AND liquidacion = 0
-                      AND complemento_conta = 0
-                      AND codigo_categoria_entidad <> @CodigoCategoriaEntidad
-                      AND codigo_operacion = @CodigoOperacion  
-                    GROUP BY anio_operacion, semana_operacion
+                           FROM db_tesoreria.transaccion
+                           WHERE codigo_estado <> @CodigoEstadoTransaccion
+                             AND liquidacion = 0
+                             AND complemento_conta = 0
+                             AND codigo_categoria_entidad <> @CodigoCategoriaEntidad
+                             AND codigo_operacion = @CodigoOperacion  
+                           GROUP BY anio_operacion, semana_operacion
 
-                    UNION
+                           UNION
 
-                    SELECT x.codigo_traslado, 
-                           x.anio_operacion, 
-                           x.semana_operacion, 
-                           db_admon.GetPeriodoSemana(x.anio_operacion,x.semana_operacion)  AS periodo,
-                           (SELECT COUNT(*) FROM db_tesoreria.traslado_liquidacion_detalle WHERE codigo_traslado = x.codigo_traslado) AS cantidad,
-                           (SELECT SUM(monto) FROM db_tesoreria.traslado_liquidacion_detalle WHERE codigo_traslado = x.codigo_traslado) AS monto_total,
-                           x.codigo_estado,
-                           y.nombre AS estado, 
-                           1 AS bloqueado,
-                           1 AS permiso_anular 
+                           SELECT x.codigo_traslado, 
+                                  x.anio_operacion, 
+                                  x.semana_operacion, 
+                                  db_admon.GetPeriodoSemana(x.anio_operacion,x.semana_operacion)  AS periodo,
+                                  (SELECT COUNT(*) FROM db_tesoreria.traslado_liquidacion_detalle WHERE codigo_traslado = x.codigo_traslado) AS cantidad,
+                                  (SELECT SUM(monto) FROM db_tesoreria.traslado_liquidacion_detalle WHERE codigo_traslado = x.codigo_traslado) AS monto_total,
+                                  x.codigo_estado,
+                                  y.nombre AS estado, 
+                                  1 AS bloqueado,
+                                  1 AS permiso_anular 
 
-                    FROM db_tesoreria.traslado_liquidacion x
-                    INNER JOIN db_tesoreria.estado_traslado_liquidacion y
-                    ON x.codigo_estado = y.codigo_estado_traslado
-                    WHERE codigo_estado = @CodigoEstadoTraslado";
+                           FROM db_tesoreria.traslado_liquidacion x
+                           INNER JOIN db_tesoreria.estado_traslado_liquidacion y
+                           ON x.codigo_estado = y.codigo_estado_traslado
+                           WHERE codigo_estado = @CodigoEstadoTraslado
+                    ) m
+                    ORDER BY m.anio_operacion DESC, m.semana_operacion DESC
+                    ";
 
                     conexion.Open();
                     using (SqlCommand cmd = new SqlCommand(sentenciaTraslados, conexion))

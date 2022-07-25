@@ -2204,8 +2204,13 @@
             {
                 <tr>
                     <td style="padding: 4px; font-size: 8px">
-                        @dr.NombreEntidad @if (dr.Observaciones != null)
-                        {@dr.Observaciones}
+                        @dr.NombreEntidad 
+                        @if (dr.Observaciones != null && dr.Observaciones != "")
+                        {
+                            <span>(
+                            @dr.Observaciones
+                            )</span>
+                        }
                     </td>
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
                         <div style="text-align: right;">

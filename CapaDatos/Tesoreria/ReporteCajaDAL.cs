@@ -258,6 +258,8 @@ namespace CapaDatos.Tesoreria
             {
                 try
                 {
+                    //AND fecha_operacion > DATEADD(week, -2, GETDATE())
+
                     string sql = @"
                     SELECT 0 AS codigo_reporte, 
 	                       x.anio_operacion, 
@@ -269,14 +271,12 @@ namespace CapaDatos.Tesoreria
                            @UsuarioGeneracion AS usuario_ing,
 	                       GETDATE() AS fecha_ing,
                            FORMAT(GETDATE(), 'dd/MM/yyyy, hh:mm:ss') AS fecha_ing_str,
-                           1 AS permiso_ver_reporte 
-                            
-                    FROM ( SELECT anio_operacion, semana_operacion
-                           FROM db_tesoreria.transaccion
-                           WHERE codigo_estado in (@CodigoEstadoRegistrado,@CodigoEstadoGenerado)
-                             AND complemento_conta = 0
-                             AND anio_operacion = @AnioOperacion    
-                             AND semana_operacion = @SemanaOperacion   
+                           1 AS permiso_ver_reporte
+                    FROM ( SELECT y.anio_operacion, y.semana_operacion
+                           FROM db_tesoreria.transaccion y
+                           WHERE y.codigo_estado in (@CodigoEstadoRegistrado,@CodigoEstadoGenerado)
+                             AND y.complemento_conta = 0
+                             AND (SELECT COALESCE((SELECT TOP (1) codigo_estado FROM db_tesoreria.reporte_caja WHERE anio = y.anio_operacion AND numero_semana = y.semana_operacion and codigo_estado IN (3,4)),0)) = 0
                            GROUP BY anio_operacion, semana_operacion
                          ) x";
 
@@ -287,8 +287,6 @@ namespace CapaDatos.Tesoreria
                         cmd.Parameters.AddWithValue("@CodigoEstadoRegistrado", Constantes.EstadoTransacccion.REGISTRADO);
                         cmd.Parameters.AddWithValue("@CodigoEstadoGenerado", Constantes.ReporteCaja.Estado.GENERADO);
                         cmd.Parameters.AddWithValue("@UsuarioGeneracion", usuarioGeneracion);
-                        cmd.Parameters.AddWithValue("@AnioOperacion", anioOperacion);
-                        cmd.Parameters.AddWithValue("@SemanaOperacion", semanaOperacion);
 
                         SqlDataReader dr = cmd.ExecuteReader();
                         if (dr != null)

@@ -7,6 +7,9 @@
     if (nameController == "Especiales2") {
         switch (nameAction) {
             case "GeneracionTraslados":
+                let today = new Date();
+                const result = FormatDate(today);
+                set("uiFechaOperacion", result);
                 MostrarTrasladosEspeciales2Generados();
                 break;
             case "GeneracionTrasladosConta":

@@ -46,13 +46,13 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
             return obj.GetDetalleEspeciales2(codigoTraslado);
         }
 
-        public string RegistrarEspeciales2(int codigoTraslado, string fechaOperacionStr, int semanaOperacion, int anioOperacion)
+        public string RegistrarEspeciales2(int codigoTraslado, string fechaOperacionStr)
         {
             ViewBag.Message = HttpContext.Session.GetString("usuario");
             UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
 
             Especiales2BL obj = new Especiales2BL();
-            return obj.RegistrarEspeciales2(codigoTraslado, fechaOperacionStr, semanaOperacion, anioOperacion, objUsuario.IdUsuario);
+            return obj.RegistrarEspeciales2(codigoTraslado, fechaOperacionStr, objUsuario.IdUsuario);
         }
 
 

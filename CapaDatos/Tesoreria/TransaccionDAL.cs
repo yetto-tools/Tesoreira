@@ -151,7 +151,8 @@ namespace CapaDatos.Tesoreria
                                                           codigo_otro_ingreso,
                                                           numero_recibo_referencia,
                                                           monto_saldo_anterior_cxc,
-                                                          monto_saldo_actual_cxc)
+                                                          monto_saldo_actual_cxc,
+                                                          codigo_tipo_sueldo_indirecto)
                     VALUES(@CodigoTransaccion,
                            @CodigoSeguridad,
                            @CodigoEmpresa,
@@ -222,7 +223,8 @@ namespace CapaDatos.Tesoreria
                            @CodigoOtroIngreso,
                            @NumeroReciboReferencia,
                            @MontoSaldoAnteriorCuentaPorCobrar,
-                           @MontoSaldoActualCuentaPorCobrar)";
+                           @MontoSaldoActualCuentaPorCobrar,
+                           @CodigoTipoSueldoIndirecto)";
 
                     cmd.CommandText = sentenciaSQL;
                     cmd.Parameters.AddWithValue("@CodigoTransaccion", codigoTransaccion);
@@ -296,6 +298,7 @@ namespace CapaDatos.Tesoreria
                     cmd.Parameters.AddWithValue("@NumeroReciboReferencia", correlativoReciboReferencia);
                     cmd.Parameters.AddWithValue("@MontoSaldoAnteriorCuentaPorCobrar", objTransaccion.MontoSaldoAnteriorCxC);
                     cmd.Parameters.AddWithValue("@MontoSaldoActualCuentaPorCobrar", objTransaccion.MontoSaldoActualCxC);
+                    cmd.Parameters.AddWithValue("@CodigoTipoSueldoIndirecto", objTransaccion.CodigoTipoSueldoIndirecto == -1 ? 0 : objTransaccion.CodigoTipoSueldoIndirecto);
 
 
                     cmd.ExecuteNonQuery();
@@ -562,7 +565,8 @@ namespace CapaDatos.Tesoreria
                                                           codigo_otro_ingreso,
                                                           numero_recibo_referencia,
                                                           monto_saldo_anterior_cxc,
-                                                          monto_saldo_actual_cxc)
+                                                          monto_saldo_actual_cxc,
+                                                          codigo_tipo_sueldo_indirecto)
                     VALUES(@CodigoTransaccion,
                            @CodigoSeguridad,
                            @CodigoEmpresa,
@@ -634,7 +638,8 @@ namespace CapaDatos.Tesoreria
                            @CodigoOtroIngreso,
                            @NumeroReciboReferencia,
                            @MontoSaldoAnteriorCxC,
-                           @MontoSaldoActualCxC)";
+                           @MontoSaldoActualCxC,
+                           @CodigoTipoSueldoIndirecto)";
 
                     cmd.CommandText = sentenciaSQL;
                     cmd.Parameters.AddWithValue("@CodigoTransaccion", codigoTransaccion);
@@ -709,6 +714,7 @@ namespace CapaDatos.Tesoreria
                     cmd.Parameters.AddWithValue("@NumeroReciboReferencia", objTransaccion.NumeroReciboReferencia);
                     cmd.Parameters.AddWithValue("@MontoSaldoAnteriorCxC", objTransaccion.MontoSaldoAnteriorCxC);
                     cmd.Parameters.AddWithValue("@MontoSaldoActualCxC", objTransaccion.MontoSaldoActualCxC);
+                    cmd.Parameters.AddWithValue("@CodigoTipoSueldoIndirecto", objTransaccion.CodigoTipoSueldoIndirecto == -1 ? 0 : objTransaccion.CodigoTipoSueldoIndirecto);
 
                     cmd.ExecuteNonQuery();
 
@@ -980,7 +986,8 @@ namespace CapaDatos.Tesoreria
                                                           codigo_otro_ingreso,
                                                           numero_recibo_referencia,
                                                           monto_saldo_anterior_cxc,
-                                                          monto_saldo_actual_cxc)
+                                                          monto_saldo_actual_cxc,
+                                                          codigo_tipo_sueldo_indirecto)
                     VALUES(@CodigoTransaccion,
                            @CodigoSeguridad,
                            @CodigoEmpresa,
@@ -1051,7 +1058,8 @@ namespace CapaDatos.Tesoreria
                            @CodigoOtroIngreso,
                            @NumeroReciboReferencia,
                            @MontoSaldoAnteriorCuentaPorCobrar,
-                           @MontoSaldoActualCuentaPorCobrar)";
+                           @MontoSaldoActualCuentaPorCobrar,
+                           @CodigoTipoSueldoIndirecto)";
 
                     cmd.CommandText = sentenciaSQL;
                     cmd.Parameters.AddWithValue("@CodigoTransaccion", codigoTransaccion);
@@ -1129,6 +1137,8 @@ namespace CapaDatos.Tesoreria
                     cmd.Parameters.AddWithValue("@NumeroReciboReferencia", correlativoReciboReferencia);
                     cmd.Parameters.AddWithValue("@MontoSaldoAnteriorCuentaPorCobrar", 0);
                     cmd.Parameters.AddWithValue("@MontoSaldoActualCuentaPorCobrar", 0);
+
+                    cmd.Parameters.AddWithValue("@CodigoTipoSueldoIndirecto", 0);
 
                     cmd.ExecuteNonQuery();
 
@@ -1477,7 +1487,8 @@ namespace CapaDatos.Tesoreria
                                                           codigo_otro_ingreso,
                                                           numero_recibo_referencia,
                                                           monto_saldo_anterior_cxc,
-                                                          monto_saldo_actual_cxc)
+                                                          monto_saldo_actual_cxc,
+                                                          codigo_tipo_sueldo_indirecto)
                     VALUES(@CodigoTransaccion,
                            @CodigoSeguridad,
                            @CodigoEmpresa,
@@ -1549,7 +1560,8 @@ namespace CapaDatos.Tesoreria
                            @CodigoOtroIngreso,
                            @NumeroReciboReferencia,
                            @MontoSaldoAnteriorCxC,
-                           @MontoSaldoActualCxC)";
+                           @MontoSaldoActualCxC,
+                           @CodigoTipoSueldoIndirecto)";
 
                     cmd.CommandText = sentenciaSQL;
                     cmd.Parameters.AddWithValue("@CodigoTransaccion", codigoTransaccion);
@@ -1624,8 +1636,7 @@ namespace CapaDatos.Tesoreria
                     cmd.Parameters.AddWithValue("@NumeroReciboReferencia", objTransaccion.NumeroReciboReferencia);
                     cmd.Parameters.AddWithValue("@MontoSaldoAnteriorCxC", objTransaccion.MontoSaldoAnteriorCxC);
                     cmd.Parameters.AddWithValue("@MontoSaldoActualCxC", objTransaccion.MontoSaldoActualCxC);
-
-
+                    cmd.Parameters.AddWithValue("@CodigoTipoSueldoIndirecto", objTransaccion.CodigoTipoSueldoIndirecto == -1 ? 0 : objTransaccion.CodigoTipoSueldoIndirecto);
                     cmd.ExecuteNonQuery();
 
                     #region Registro en Cuenta Corriente
@@ -4557,6 +4568,7 @@ namespace CapaDatos.Tesoreria
                             x.mes_planilla,
                             x.codigo_frecuencia_pago,
                             x.semana_planilla,
+                            x.codigo_vendedor,    
                             x.codigo_tipo_pago,
                             x.codigo_quincena_planilla,
                             e.signo,
@@ -4578,7 +4590,14 @@ namespace CapaDatos.Tesoreria
                             monto_saldo_anterior_cxc,
                             monto_saldo_actual_cxc,
                             x.codigo_bono_extra,
-                            f.nombre AS tipo_bono_extra
+                            f.nombre AS tipo_bono_extra,
+                            CASE
+                              WHEN codigo_operacion_caja = 64 THEN 1
+                              ELSE 0
+                            END AS es_sueldo_indirecto,
+                            x.anio_sueldo_indirecto,
+                            x.mes_sueldo_indirecto,
+                            x.codigo_tipo_sueldo_indirecto
                             
                     FROM db_tesoreria.transaccion x
                     INNER JOIN db_tesoreria.operacion w
@@ -4649,6 +4668,7 @@ namespace CapaDatos.Tesoreria
                             int postMesPlanilla = dr.GetOrdinal("mes_planilla");
                             int postCodigoFrecuenciaPago = dr.GetOrdinal("codigo_frecuencia_pago");
                             int postSemanaPlanilla = dr.GetOrdinal("semana_planilla");
+                            int postCodigoVendedor = dr.GetOrdinal("codigo_vendedor");
                             int postCodigoTipoPago = dr.GetOrdinal("codigo_tipo_pago");
                             int postCodigoQuincenaPlanilla = dr.GetOrdinal("codigo_quincena_planilla");
                             int postSignoOperacion = dr.GetOrdinal("signo");
@@ -4673,6 +4693,10 @@ namespace CapaDatos.Tesoreria
                             int postMontoSaldoActualCxC = dr.GetOrdinal("monto_saldo_actual_cxc");
                             int postCodigoBonoExtra = dr.GetOrdinal("codigo_bono_extra");
                             int postTipoBonoExtra = dr.GetOrdinal("tipo_bono_extra");
+                            int postEsSueldoIndirecto = dr.GetOrdinal("es_sueldo_indirecto");
+                            int postAnioSueldoIndirecto = dr.GetOrdinal("anio_sueldo_indirecto");
+                            int postMesSueldoIndirecto = dr.GetOrdinal("mes_sueldo_indirecto");
+                            int postCodigoTipoSueldoIndirecto = dr.GetOrdinal("codigo_tipo_sueldo_indirecto");
                             while (dr.Read())
                             {
                                 objTransaccion.CodigoTransaccion = dr.GetInt64(postCodigoTransaccion);
@@ -4719,6 +4743,7 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.MesPlanilla = dr.GetByte(postMesPlanilla);
                                 objTransaccion.CodigoFrecuenciaPago = dr.GetByte(postCodigoFrecuenciaPago);
                                 objTransaccion.SemanaPlanilla = dr.GetByte(postSemanaPlanilla);
+                                objTransaccion.CodigoVendedor = dr.IsDBNull(postCodigoVendedor) ? "" : dr.GetString(postCodigoVendedor); ;
                                 objTransaccion.CodigoTipoPago = dr.GetByte(postCodigoTipoPago);
                                 objTransaccion.CodigoQuincenaPlanilla = dr.GetInt32(postCodigoQuincenaPlanilla);
                                 objTransaccion.Signo = dr.GetInt16(postSignoOperacion);
@@ -4742,6 +4767,10 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.CodigoOtroIngreso = dr.GetInt16(postCodigoOtroIngreso);
                                 objTransaccion.MontoSaldoAnteriorCxC = dr.GetDecimal(postMontoSaldoAnteriorCxC);
                                 objTransaccion.MontoSaldoActualCxC = dr.GetDecimal(postMontoSaldoActualCxC);
+                                objTransaccion.EsSueldoIndirecto = dr.GetInt32(postEsSueldoIndirecto);
+                                objTransaccion.AnioSueldoIndirecto = dr.GetInt16(postAnioSueldoIndirecto);
+                                objTransaccion.MesSueldoIndirecto = dr.GetByte(postMesSueldoIndirecto);
+                                objTransaccion.CodigoTipoSueldoIndirecto = dr.GetInt16(postCodigoTipoSueldoIndirecto);
                             }
                         }
                     }

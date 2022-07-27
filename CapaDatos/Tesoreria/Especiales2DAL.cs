@@ -421,7 +421,7 @@ namespace CapaDatos.Tesoreria
             }
         }
 
-        public string RegistrarEspeciales2(int codigoTraslado, string fechaOperacionStr, int semanaOperacion, int anioOperacion, string usuarioIng)
+        public string RegistrarEspeciales2(int codigoTraslado, string fechaOperacionStr, string usuarioIng)
         {
             string resultado = "";
             using (SqlConnection conexion = new SqlConnection(cadenaTesoreria))
@@ -445,8 +445,8 @@ namespace CapaDatos.Tesoreria
                         cmd.Parameters.AddWithValue("@CodigoTraslado", codigoTraslado);
                         cmd.Parameters.AddWithValue("@FechaOperacion", fechaOperacion);
                         cmd.Parameters.AddWithValue("@DiaOperacion", diaOperacion);
-                        cmd.Parameters.AddWithValue("@SemanaOperacion", semanaOperacion);
-                        cmd.Parameters.AddWithValue("@AnioOperacion", anioOperacion);
+                        //cmd.Parameters.AddWithValue("@SemanaOperacion", semanaOperacion);
+                        //cmd.Parameters.AddWithValue("@AnioOperacion", anioOperacion);
                         cmd.Parameters.AddWithValue("@UsuarioIng", usuarioIng);
 
                         //Set SqlParameter

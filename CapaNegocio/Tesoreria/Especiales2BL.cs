@@ -34,10 +34,10 @@ namespace CapaNegocio.Tesoreria
             return obj.GetDetalleEspeciales2(codigoTraslado);
         }
 
-        public string RegistrarEspeciales2(int codigoTraslado, string fechaOperacionStr, int semanaOperacion, int anioOperacion, string usuarioIng)
+        public string RegistrarEspeciales2(int codigoTraslado, string fechaOperacionStr, string usuarioIng)
         {
             Especiales2DAL obj = new Especiales2DAL();
-            return obj.RegistrarEspeciales2(codigoTraslado, fechaOperacionStr, semanaOperacion, anioOperacion, usuarioIng);
+            return obj.RegistrarEspeciales2(codigoTraslado, fechaOperacionStr, usuarioIng);
         }
 
     }

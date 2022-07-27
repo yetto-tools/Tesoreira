@@ -698,14 +698,14 @@ function BuscarTrasladosDeVentasAlContado() {
 function MostrarTrasladoMontoVentasAlContadoParaRecepcion() {
     let objConfiguracion = {
         url: "TrasladoVentasContado/GetTrasladosParaRecepcion/?codigoTipoTraslado=1",
-        cabeceras: ["Código Traslado", "Fecha Operación", "Monto Efectivo", "Monto Cheques","Monto Transferencia", "Monto", "Fecha Generación", "Generado Por", "codigoEstado", "Estado", "permisoRegistrar"],
-        propiedades: ["codigoTraslado", "fechaOperacionStr", "montoEfectivo", "montoCheques","montoTransferencia" ,"monto", "fechaGeneracionStr", "usuarioIng", "codigoEstado", "estado", "permisoRegistrar"],
+        cabeceras: ["Código Traslado","Año","Semana", "Fecha Operación", "Monto Efectivo", "Monto Cheques","Monto Transferencia", "Monto", "Fecha Generación", "Generado Por", "codigoEstado", "Estado", "permisoRegistrar"],
+        propiedades: ["codigoTraslado","anioOperacion","semanaOperacion", "fechaOperacionStr", "montoEfectivo", "montoCheques","montoTransferencia" ,"monto", "fechaGeneracionStr", "usuarioIng", "codigoEstado", "estado", "permisoRegistrar"],
         divContenedorTabla: "divContenedorTabla",
         divPintado: "divTabla",
         displaydecimals: ["montoEfectivo", "montoCheques","montoTransferencia", "monto"],
         paginar: true,
         sumarcolumna: true,
-        columnasumalist: [2,3,4,5],
+        columnasumalist: [4,5,6,7],
         ocultarColumnas: true,
         hideColumns: [
             {
@@ -714,15 +714,15 @@ function MostrarTrasladoMontoVentasAlContadoParaRecepcion() {
                 "visible": true
             }, {
                 "targets": [1],
-                "visible": false
+                "className": "dt-body-center",
+                "visible": true
             }, {
                 "targets": [2],
-                "className": "dt-body-right",
+                "className": "dt-body-center",
                 "visible": true
             }, {
                 "targets": [3],
-                "className": "dt-body-right",
-                "visible": true
+                "visible": false
             }, {
                 "targets": [4],
                 "className": "dt-body-right",
@@ -732,10 +732,18 @@ function MostrarTrasladoMontoVentasAlContadoParaRecepcion() {
                 "className": "dt-body-right",
                 "visible": true
             }, {
-                "targets": [8],
-                "visible": false
+                "targets": [6],
+                "className": "dt-body-right",
+                "visible": true
+            }, {
+                "targets": [7],
+                "className": "dt-body-right",
+                "visible": true
             }, {
                 "targets": [10],
+                "visible": false
+            }, {
+                "targets": [12],
                 "visible": false
             }],
         slug: "codigoTraslado",
@@ -746,19 +754,22 @@ function MostrarTrasladoMontoVentasAlContadoParaRecepcion() {
 }
 
 function RegistrarEfectivoVentasEstablecimiento() {
-    let semanaOperacion = parseInt(document.getElementById("uiNumeroSemanaActualSistema").value);
-    let anioOperacion = parseInt(document.getElementById("uiAnioSemanaActualSistema").value);
+    //let semanaOperacion = parseInt(document.getElementById("uiNumeroSemanaActualSistema").value);
+    //let anioOperacion = parseInt(document.getElementById("uiAnioSemanaActualSistema").value);
 
     let table = $('#tabla').DataTable();
     $('#tabla tbody').on('click', '.option-registrar', function () {
         let rowIdx = table.row(this).index();
         let codigoTraslado = table.cell(rowIdx, 0).data();
-        let fechaOperacionStr = table.cell(rowIdx, 1).data();
+        let anioOperacion = table.cell(rowIdx, 1).data();
+        let semanaOperacion = table.cell(rowIdx, 2).data();
 
-        let montoEfectivo = table.cell(rowIdx, 2).data();
-        let montoCheques = table.cell(rowIdx, 3).data();
-        let montoTransferencia = table.cell(rowIdx, 4).data();
-        let montoTotal = table.cell(rowIdx, 5).data();
+        let fechaOperacionStr = table.cell(rowIdx, 3).data();
+
+        let montoEfectivo = table.cell(rowIdx, 4).data();
+        let montoCheques = table.cell(rowIdx, 5).data();
+        let montoTransferencia = table.cell(rowIdx, 6).data();
+        let montoTotal = table.cell(rowIdx, 7).data();
 
         let frm = new FormData();
         frm.set("FechaStr", fechaOperacionStr);

@@ -174,6 +174,8 @@ namespace CapaEntidad.Tesoreria
 
         public string PeriodoComision { get; set; }
 
+        public int EsSueldoIndirecto { get; set; }
+        public short CodigoTipoSueldoIndirecto { get; set; }
     }
 
 

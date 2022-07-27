@@ -327,12 +327,33 @@ function fillAnioSueldosIndirectorDonPepe() {
         let data = [{ "value": anioActual.toString(), "text": anioActual.toString() }, { "value": anioAnterior.toString(), "text": anioAnterior.toString()}]
         FillCombo(data, "uiAnioSueldoIndirecto", "value", "text", "- seleccione -", "-1");
         select.selectedIndex = 1;
-        fillMesesSueldosIndirectosDonPepe(anioActual);
+        fillMesesSueldosIndirectosDonPepe(anioActual,0);
     } else {
         let data = [{ "value": anioActual.toString(), "text": anioActual.toString() }]
         FillCombo(data, "uiAnioSueldoIndirecto", "value", "text", "- seleccione -", "-1");
         select.selectedIndex = 0;
-        fillMesesSueldosIndirectosDonPepe(anioActual);
+        fillMesesSueldosIndirectosDonPepe(anioActual,0);
+    }
+}
+
+function fillAnioEdicionSueldosIndirectosDonPepe(anio, mes) {
+    let arrayDate = getFechaSistema();
+    let numeroMes = arrayDate[0]["mes"];
+    let anioActual = arrayDate[0]["anio"];
+    let anioAnterior = anioActual - 1;
+    let select = document.getElementById("uiAnioSueldoIndirecto");
+    if (numeroMes == 1) {
+        let data = [{ "value": anioActual.toString(), "text": anioActual.toString() }, { "value": anioAnterior.toString(), "text": anioAnterior.toString() }]
+        FillCombo(data, "uiAnioSueldoIndirecto", "value", "text", "- seleccione -", "-1");
+        select.selectedIndex = 1;
+        select.value = anio.toString();
+        fillMesesSueldosIndirectosDonPepe(anioActual, mes);
+    } else {
+        let data = [{ "value": anioActual.toString(), "text": anioActual.toString() }]
+        FillCombo(data, "uiAnioSueldoIndirecto", "value", "text", "- seleccione -", "-1");
+        select.selectedIndex = 0;
+        select.value = anio.toString();
+        fillMesesSueldosIndirectosDonPepe(anioActual, mes);
     }
 }
 
@@ -439,6 +460,7 @@ function fillCombosEdit(codigoTransaccion) {
                 set("uiNumeroReciboReferencia", data.numeroReciboReferencia.toString());
                 set("uiFechaReciboStr", data.fechaReciboStr);
                 set("uiNombreProveedor", data.nombreProveedor);
+                set("uiEsSueldosIndirectos", data.esSueldoIndirecto.toString());
                 setDataControls(codigoOperacion, data);
             })
         }
@@ -702,12 +724,15 @@ function setSueldosIndirectosDonPepe(habilitar, checked) {
     let elementAnioSueldoIndirecto = document.getElementById("uiAnioSueldoIndirecto");
     let elementMesSueldoIndirecto = document.getElementById("uiMesSueldoIndirecto");
     let elementCheckSueldoIndirecto = document.getElementById("uiEsSueldosIndirectos");
+    let elementCheckTipoSueldoIndirecto = document.getElementById("uiTipoSueldoIndirecto");
     if (habilitar == true) {
         document.getElementById('div-sueldo-indirecto-entidad-don-pepe').style.display = 'block';
         elementCheckSueldoIndirecto.checked = checked;
         elementCheckSueldoIndirecto.value = checked == true ? "1": "0";
         elementAnioSueldoIndirecto.classList.add('obligatorio');
         elementMesSueldoIndirecto.classList.add('obligatorio');
+        elementCheckTipoSueldoIndirecto.classList.add('obligatorio');
+        elementCheckTipoSueldoIndirecto.selectedIndex = 1;
         fillAnioSueldosIndirectorDonPepe();
     } else {
         document.getElementById('div-sueldo-indirecto-entidad-don-pepe').style.display = 'none';
@@ -715,8 +740,10 @@ function setSueldosIndirectosDonPepe(habilitar, checked) {
         elementCheckSueldoIndirecto.value = checked == true ? "1" : "0";
         elementAnioSueldoIndirecto.classList.remove('obligatorio');
         elementMesSueldoIndirecto.classList.remove('obligatorio');
+        elementCheckTipoSueldoIndirecto.classList.remove('obligatorio');
         FillComboUnicaOpcion("uiAnioSueldoIndirecto", "-1", "-- No aplica -- ");
         FillComboUnicaOpcion("uiMesSueldoIndirecto", "-1", "-- Sin Meses -- ");
+        elementCheckTipoSueldoIndirecto.selectedIndex = 0;
     }
 }
 
@@ -1250,6 +1277,7 @@ function setDataControls(codigoOperacion, data) {
             let elementRuta = document.getElementById("uiNumeroRuta");
             let elementSemanaComision = document.getElementById("uiSemanaComision");
             let elementAnioComision = document.getElementById("uiAnioComision");
+            let elementCodigoVendedor = document.getElementById("uiCodigoVendedor");
             switch (data.codigoBonoExtra) {
                 case BONO_COMISIONES:
                     document.getElementById('div-bonos-extra').style.display = 'block';
@@ -1257,7 +1285,7 @@ function setDataControls(codigoOperacion, data) {
                     elementSemanaComision.classList.add('obligatorio');
                     elementAnioComision.classList.add('obligatorio');
                     elementRuta.value = data.ruta;
-
+                    elementCodigoVendedor.value = data.codigoVendedor;
                     // Fill Anio Comision
                     let contenido = "";
                     let anioOperacion = parseInt(document.getElementById("uiAnioOperacion").value);
@@ -1429,7 +1457,34 @@ function setDataControls(codigoOperacion, data) {
             document.getElementById('div-tipo-bonos-extra').style.display = 'none';
             document.getElementById('div-tipo-especiales1').style.display = 'none';
             document.getElementById('div-bonos-extra').style.display = 'none';
-            fillEntidadesGasto(GASTOS_INDIRECTOS);
+            let elementAnioSueldoIndirecto = document.getElementById("uiAnioSueldoIndirecto");
+            let elementMesSueldoIndirecto = document.getElementById("uiMesSueldoIndirecto");
+            let elementCheckSueldoIndirecto = document.getElementById("uiEsSueldosIndirectos");
+            let elementCheckTipoSueldoIndirecto = document.getElementById("uiTipoSueldoIndirecto");
+            if (data.esSueldoIndirecto == 1) {
+                elementCheckSueldoIndirecto.checked = true;
+                if (data.codigoEntidad == ENTIDAD_DON_PEPE) {
+                    document.getElementById('div-sueldo-indirecto-entidad-don-pepe').style.display = 'block';
+                    elementAnioSueldoIndirecto.classList.add('obligatorio');
+                    elementMesSueldoIndirecto.classList.add('obligatorio');
+                    elementCheckTipoSueldoIndirecto.classList.add('obligatorio');
+                    //elementCheckTipoSueldoIndirecto.selectedIndex = 1;
+                    elementCheckTipoSueldoIndirecto.value = data.codigoTipoSueldoIndirecto.toString();
+                    fillAnioEdicionSueldosIndirectosDonPepe(data.anioSueldoIndirecto, data.mesSueldoIndirecto);
+                } else {
+                    document.getElementById('div-sueldo-indirecto-entidad-don-pepe').style.display = 'none';
+                    elementAnioSueldoIndirecto.classList.remove('obligatorio');
+                    elementMesSueldoIndirecto.classList.remove('obligatorio');
+                    elementCheckTipoSueldoIndirecto.classList.remove('obligatorio');
+                    FillComboUnicaOpcion("uiAnioSueldoIndirecto", "-1", "-- No aplica -- ");
+                    FillComboUnicaOpcion("uiMesSueldoIndirecto", "-1", "-- Sin Meses -- ");
+                    elementCheckTipoSueldoIndirecto.selectedIndex = 0;
+                }
+            } else {
+                elementCheckSueldoIndirecto.checked = false;
+                fillEntidadesGasto(GASTOS_INDIRECTOS);
+            }
+           
             break;
         case GASTOS_ADMINISTRATIVOS:
             document.getElementById('divTabla').style.display = 'block';
@@ -1810,7 +1865,7 @@ function fillMesesPlanilla(mes) {
 }
 
 
-function fillMesesSueldosIndirectosDonPepe(obj) {
+function fillMesesSueldosIndirectosDonPepe(obj, mes) {
     let anio = parseInt(obj);
     let arrayDate = getFechaSistema();
     let anioActual = arrayDate[0]["anio"];
@@ -1821,71 +1876,110 @@ function fillMesesSueldosIndirectosDonPepe(obj) {
         if (anio == anioActual) {
             switch (mesActual) {
                 case 1: // ENERO
-                    data = [{ "text": "- seleccione - ", "value": "-1" }, { "text": "ENERO", "value": "1" }, { "text": "DICIEMBRE", "value": "12" }]
+                    data = [{ "text": "ENERO", "value": "1" }, { "text": "DICIEMBRE", "value": "12" }]
                     FillCombo(data, "uiMesSueldoIndirecto", "value", "text", "- seleccione -", "-1");
-                    select.selectedIndex = 1;
+                    select.selectedIndex = 0;
+                    if (mes > 0) {
+                        select.value = mes.toString();
+                    }
                     break;
                 case 2: // FEBRERO
-                    data = [{ "text": "- seleccione - ", "value": "-1" }, { "text": "FEBRERO", "value": "2" }, { "text": "ENERO", "value": "1" }]
+                    data = [{ "text": "FEBRERO", "value": "2" }, { "text": "ENERO", "value": "1" }]
                     FillCombo(data, "uiMesSueldoIndirecto", "value", "text", "- seleccione -", "-1");
-                    select.selectedIndex = 1;
+                    select.selectedIndex = 0;
+                    if (mes > 0) {
+                        select.value = mes.toString();
+                    }
                     break;
                 case 3: // MARZO
-                    data = [{ "text": "- seleccione - ", "value": "-1" }, { "text": "FEBRERO", "value": "2" }, { "text": "ENERO", "value": "1" }]
+                    data = [{ "text": "FEBRERO", "value": "2" }, { "text": "ENERO", "value": "1" }]
                     FillCombo(data, "uiMesSueldoIndirecto", "value", "text", "- seleccione -", "-1");
-                    select.selectedIndex = 1;
+                    select.selectedIndex = 0;
+                    if (mes > 0) {
+                        select.value = mes.toString();
+                    }
                     break;
                 case 4: // ABRIL
-                    data = [{ "text": "- seleccione - ", "value": "-1" }, { "text": "ABRIL", "value": "4" }, { "text": "MARZO", "value": "3" }]
+                    data = [{ "text": "ABRIL", "value": "4" }, { "text": "MARZO", "value": "3" }]
                     FillCombo(data, "uiMesSueldoIndirecto", "value", "text", "- seleccione -", "-1");
-                    select.selectedIndex = 1;
+                    select.selectedIndex = 0;
+                    if (mes > 0) {
+                        select.value = mes.toString();
+                    }
                     break;
                 case 5: // MAYO
-                    data = [{ "text": "- seleccione - ", "value": "-1" }, { "text": "MAYO", "value": "5" }, { "text": "ABRIL", "value": "4" }]
+                    data = [{ "text": "MAYO", "value": "5" }, { "text": "ABRIL", "value": "4" }]
                     FillCombo(data, "uiMesSueldoIndirecto", "value", "text", "- seleccione -", "-1");
-                    select.selectedIndex = 1;
+                    select.selectedIndex = 0;
+                    if (mes > 0) {
+                        select.value = mes.toString();
+                    }
                     break;
                 case 6: // JUNIO
-                    data = [{ "text": "- seleccione - ", "value": "-1" }, { "text": "JUNIO", "value": "6" }, { "text": "MAYO", "value": "5" }]
+                    data = [{ "text": "JUNIO", "value": "6" }, { "text": "MAYO", "value": "5" }]
                     FillCombo(data, "uiMesSueldoIndirecto", "value", "text", "- seleccione -", "-1");
-                    select.selectedIndex = 1;
+                    select.selectedIndex = 0;
+                    if (mes > 0) {
+                        select.value = mes.toString();
+                    }
                     break;
                 case 7: // JULIO
-                    data = [{ "text": "- seleccione - ", "value": "-1" }, { "text": "JULIO", "value": "7" }, { "text": "JUNIO", "value": "6" }]
+                    data = [{ "text": "JULIO", "value": "7" }, { "text": "JUNIO", "value": "6" }]
                     FillCombo(data, "uiMesSueldoIndirecto", "value", "text", "- seleccione -", "-1");
-                    select.selectedIndex = 1;
+                    select.selectedIndex = 0;
+                    if (mes > 0) {
+                        select.value = mes.toString();
+                    }
                     break;
                 case 8: // AGOSTO
-                    data = [{ "text": "- seleccione - ", "value": "-1" }, { "text": "AGOSTO", "value": "8" }, { "text": "JULIO", "value": "7" }]
+                    data = [{ "text": "AGOSTO", "value": "8" }, { "text": "JULIO", "value": "7" }]
                     FillCombo(data, "uiMesSueldoIndirecto", "value", "text", "- seleccione -", "-1");
-                    select.selectedIndex = 1;
+                    select.selectedIndex = 0;
+                    if (mes > 0) {
+                        select.value = mes.toString();
+                    }
                     break;
                 case 9: // SEPTIEMBRE
-                    data = [{ "text": "- seleccione - ", "value": "-1" }, { "text": "SEPTIEMBRE", "value": "9" }, { "text": "AGOSTO", "value": "8" }]
+                    data = [{ "text": "SEPTIEMBRE", "value": "9" }, { "text": "AGOSTO", "value": "8" }]
                     FillCombo(data, "uiMesSueldoIndirecto", "value", "text", "- seleccione -", "-1");
-                    select.selectedIndex = 1;
+                    select.selectedIndex = 0;
+                    if (mes > 0) {
+                        select.value = mes.toString();
+                    }
                     break;
                 case 10: // NOVIEMBRE
-                    data = [{ "text": "- seleccione - ", "value": "-1" }, { "text": "OCTUBRE", "value": "10" }, { "text": "SEPTIEMBRE", "value": "9" }]
+                    data = [{ "text": "OCTUBRE", "value": "10" }, { "text": "SEPTIEMBRE", "value": "9" }]
                     FillCombo(data, "uiMesSueldoIndirecto", "value", "text", "- seleccione -", "-1");
-                    select.selectedIndex = 1;
+                    select.selectedIndex = 0;
+                    if (mes > 0) {
+                        select.value = mes.toString();
+                    }
                     break;
                 case 11:
-                    data = [{ "text": "- seleccione - ", "value": "-1" }, { "text": "NOVIEMBRE", "value": "11" }, { "text": "OCTUBRE", "value": "10" }]
+                    data = [{ "text": "NOVIEMBRE", "value": "11" }, { "text": "OCTUBRE", "value": "10" }]
                     FillCombo(data, "uiMesSueldoIndirecto", "value", "text", "- seleccione -", "-1");
-                    select.selectedIndex = 1;
+                    select.selectedIndex = 0;
+                    if (mes > 0) {
+                        select.value = mes.toString();
+                    }
                     break;
                 case 12:
-                    data = [{ "text": "- seleccione - ", "value": "-1" }, { "text": "DICIEMBRE", "value": "12" }, { "text": "NOVIEMBRE", "value": "11" }]
+                    data = [{ "text": "DICIEMBRE", "value": "12" }, { "text": "NOVIEMBRE", "value": "11" }]
                     FillCombo(data, "uiMesSueldoIndirecto", "value", "text", "- seleccione -", "-1");
-                    select.selectedIndex = 1;
+                    select.selectedIndex = 0;
+                    if (mes > 0) {
+                        select.value = mes.toString();
+                    }
                     break;
 
             }// fin switch
         } else {
-            data = [{ "text": "- seleccione - ", "value": "-1" }, { "text": "DICIEMBRE", "value": "12" }, { "text": "NOVIEMBRE", "value": "11" }]
+            data = [{ "text": "DICIEMBRE", "value": "12" }, { "text": "NOVIEMBRE", "value": "11" }]
             FillCombo(data, "uiMesSueldoIndirecto", "value", "text", "- seleccione -", "-1");
-            select.selectedIndex = 1;
+            select.selectedIndex = 0;
+            if (mes > 0) {
+                select.value = mes.toString();
+            }
         }
     } else {
         FillComboUnicaOpcion("uiMesSueldoIndirecto", "-1", " -- Sin Meses -- ");
@@ -2124,7 +2218,8 @@ function intelligenceSearch() {
                 radio: true,
                 paginar: true,
                 eventoradio: "Entidades",
-                slug: "codigoEntidad"
+                slug: "codigoEntidad",
+                autoWidth: false
             }
             pintarEntidades(objConfigEntidadesGenericas, listaEntidadesGenericas);
 

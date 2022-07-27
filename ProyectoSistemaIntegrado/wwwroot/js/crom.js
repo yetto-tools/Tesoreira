@@ -461,8 +461,8 @@ function EditarNombresClientesEspeciales2(obj) {
 }
 
 function RegistrarEspeciales2(obj) {
-    let semanaOperacion = parseInt(document.getElementById("uiNumeroSemanaActualSistema").value);
-    let anioOperacion = parseInt(document.getElementById("uiAnioSemanaActualSistema").value);
+    //let semanaOperacion = parseInt(document.getElementById("uiNumeroSemanaActualSistema").value);
+    //let anioOperacion = parseInt(document.getElementById("uiAnioSemanaActualSistema").value);
     let table = $('#tabla').DataTable();
     $('#tabla tbody').on('click', '.option-registrar', function () {
         let rowIdx = table.row(this).index();
@@ -471,8 +471,8 @@ function RegistrarEspeciales2(obj) {
         let frm = new FormData();
         frm.set("CodigoTraslado", codigoTraslado);
         frm.set("FechaOperacionStr", fechaOperacion);
-        frm.set("SemanaOperacion", semanaOperacion.toString());
-        frm.set("AnioOperacion", anioOperacion.toString());
+        //frm.set("SemanaOperacion", semanaOperacion.toString());
+        //frm.set("AnioOperacion", anioOperacion.toString());
         fetchPost("TrasladosEspeciales2/RegistrarEspeciales2", "text", frm, function (data) {
             if (data == "OK") {
                 let frm1 = new FormData();

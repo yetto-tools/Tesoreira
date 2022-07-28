@@ -11,6 +11,66 @@ namespace CapaDatos.Planilla
 {
     public class PagoDescuentoDAL: CadenaConexion
     {
+        //public List<SaldoPrestamoCLS> GetEmpleadosCuentasPorCobrarPlanilla()
+        //{
+        //    List<SaldoPrestamoCLS> lista = null;
+        //    using (SqlConnection conexion = new SqlConnection(cadenaContabilidad))
+        //    {
+        //        try
+        //        {
+        //            conexion.Open();
+        //            using (SqlCommand cmd = new SqlCommand("db_contabilidad.uspGetCuentasPorCobrarPlanilla", conexion))
+        //            {
+        //                // CommandType, Gets or sets a value indicating how the CommandText property is to be interpreted.
+        //                // The Text CommandType.Text is used when the command is raw SQL
+        //                cmd.CommandType = CommandType.StoredProcedure;
+        //                SqlDataReader dr = cmd.ExecuteReader();
+        //                if (dr != null)
+        //                {
+        //                    SaldoPrestamoCLS objSaldoPrestamoCLS;
+        //                    lista = new List<SaldoPrestamoCLS>();
+        //                    int postCodigoEmpresa = dr.GetOrdinal("codigo_empresa");
+        //                    int postNombreEmpresa = dr.GetOrdinal("nombre_empresa");
+        //                    int postCodigoEmpleado = dr.GetOrdinal("codigo_empleado");
+        //                    int postNombreCompleto = dr.GetOrdinal("nombre_completo");
+        //                    int postCodigoOperacion = dr.GetOrdinal("codigo_operacion");
+        //                    int postCodigoOperacionDescuento = dr.GetOrdinal("codigo_operacion_descuento");
+        //                    int postOperacion = dr.GetOrdinal("operacion");
+        //                    int postCodigoFrecuenciaPago = dr.GetOrdinal("codigo_frecuencia_pago");
+        //                    int postFrecuenciaPago = dr.GetOrdinal("frecuencia_pago");
+        //                    int postSaldoPendiente = dr.GetOrdinal("saldo_pendiente");
+        //                    int postMontoDescuento = dr.GetOrdinal("monto_descuento_prestamo");
+        //                    while (dr.Read())
+        //                    {
+        //                        objSaldoPrestamoCLS = new SaldoPrestamoCLS();
+        //                        objSaldoPrestamoCLS.CodigoEmpresa = (short)dr.GetInt32(postCodigoEmpresa);
+        //                        objSaldoPrestamoCLS.NombreEmpresa = dr.GetString(postNombreEmpresa);
+        //                        objSaldoPrestamoCLS.CodigoEmpleado = dr.GetString(postCodigoEmpleado);
+        //                        objSaldoPrestamoCLS.NombreCompleto = dr.GetString(postNombreCompleto);
+        //                        objSaldoPrestamoCLS.CodigoOperacion = (short)dr.GetInt32(postCodigoOperacion);
+        //                        objSaldoPrestamoCLS.CodigoOperacionDescuento = (short)dr.GetInt32(postCodigoOperacionDescuento);
+        //                        objSaldoPrestamoCLS.Operacion = dr.GetString(postOperacion);
+        //                        objSaldoPrestamoCLS.CodigoFrecuenciaPago = dr.GetByte(postCodigoFrecuenciaPago);
+        //                        objSaldoPrestamoCLS.FrecuenciaPago = dr.GetString(postFrecuenciaPago);
+        //                        objSaldoPrestamoCLS.SaldoPendiente = dr.GetDecimal(postSaldoPendiente);
+        //                        objSaldoPrestamoCLS.MontoDescuento = dr.GetDecimal(postMontoDescuento);
+        //                        lista.Add(objSaldoPrestamoCLS);
+        //                    }//fin while
+        //                }// fin if
+        //            }// fin using
+        //            conexion.Close();
+        //        }
+        //        catch (Exception)
+        //        {
+        //            conexion.Close();
+        //            lista = null;
+
+        //        }
+        //        return lista;
+        //    }
+        //}
+
+
         public List<SaldoPrestamoCLS> GetEmpleadosCuentasPorCobrarPlanilla()
         {
             List<SaldoPrestamoCLS> lista = null;
@@ -36,8 +96,8 @@ namespace CapaDatos.Planilla
                             int postCodigoOperacion = dr.GetOrdinal("codigo_operacion");
                             int postCodigoOperacionDescuento = dr.GetOrdinal("codigo_operacion_descuento");
                             int postOperacion = dr.GetOrdinal("operacion");
-                            int postCodigoFrecuenciaPago = dr.GetOrdinal("codigo_frecuencia_pago");
-                            int postFrecuenciaPago = dr.GetOrdinal("frecuencia_pago");
+                            int postCodigoCategoria = dr.GetOrdinal("codigo_categoria");
+                            int postNombreCategoria = dr.GetOrdinal("nombre_categoria");
                             int postSaldoPendiente = dr.GetOrdinal("saldo_pendiente");
                             int postMontoDescuento = dr.GetOrdinal("monto_descuento_prestamo");
                             while (dr.Read())
@@ -50,8 +110,8 @@ namespace CapaDatos.Planilla
                                 objSaldoPrestamoCLS.CodigoOperacion = (short)dr.GetInt32(postCodigoOperacion);
                                 objSaldoPrestamoCLS.CodigoOperacionDescuento = (short)dr.GetInt32(postCodigoOperacionDescuento);
                                 objSaldoPrestamoCLS.Operacion = dr.GetString(postOperacion);
-                                objSaldoPrestamoCLS.CodigoFrecuenciaPago = dr.GetByte(postCodigoFrecuenciaPago);
-                                objSaldoPrestamoCLS.FrecuenciaPago = dr.GetString(postFrecuenciaPago);
+                                objSaldoPrestamoCLS.CodigoCategoria = dr.GetInt16(postCodigoCategoria);
+                                objSaldoPrestamoCLS.NombreCategoria = dr.GetString(postNombreCategoria);
                                 objSaldoPrestamoCLS.SaldoPendiente = dr.GetDecimal(postSaldoPendiente);
                                 objSaldoPrestamoCLS.MontoDescuento = dr.GetDecimal(postMontoDescuento);
                                 lista.Add(objSaldoPrestamoCLS);

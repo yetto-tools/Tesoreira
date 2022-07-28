@@ -171,8 +171,10 @@ namespace ProyectoSistemaIntegrado.Controllers.Ventas
 
             char[] array = t.ToCharArray();
             byte[] byData = enc.GetBytes(array);
+
             clientSock.Send(byData);
             clientSock.Send(paperCut);
+
             //clientSock.DuplicateAndClose(2);
             clientSock.Close();
             return Ok(200);

@@ -684,7 +684,7 @@ function ImprimirConstanciaTrasladoMontoVentas(codigoTraslado, obj) {
             montoTotalDia = table.cell(rowIdx, 13).data();
         }
         fetchGet("TrasladoVentasContado/PrintConstanciaTrasladoVentasAlContado/?codigoTraslado=" + codigoTraslado + "&fechaOperacionStr=" + fechaOperacionStr + "&fechaGeneracionStr=" + fechaGeneracionStr + "&montoEfectivo=" + montoEfectivo + "&montoCheques=" + montoCheques + "&montoTransferencia=" + montoTransferencia + "&montoTotal=" + montoTotal + "&montoTotalDia=" + montoTotalDia, "text", function (data) {
-
+            MostrarTrasladoMontoVentasEnProceso();
         })
     });
 }

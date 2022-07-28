@@ -295,7 +295,7 @@ function Imprimir(codigoTraslado, obj) {
         fetchGet("Especiales2/GetDetalleTrasladosEspeciales2/?codigoTraslado=" + codigoTraslado, "json", function (rpta) {
             let jsonData = JSON.stringify(rpta);
             fetchPostJson("Especiales2/PrintAPI/?codigoTraslado=" + codigoTraslado + "&fechaOperacionStr=" + fechaOperacionStr + "&fechaGeneracionStr=" + fechaGeneracionStr + "&montoTotalDia=" + montoTotalDia, "text", jsonData, function (data) {
-
+                Redireccionar("Especiales2", "GeneracionTraslados");
             })
         });
     });

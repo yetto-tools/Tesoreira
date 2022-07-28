@@ -283,6 +283,8 @@ function clearDataFormulario() {
     FillComboUnicaOpcion("uiCategoriaEntidadGastos", "-1", "-- No existe categoria gasto -- ");
 
     // Observaciones
+    let elementObservaciones = document.getElementById("uiObservaciones");
+    elementObservaciones.classList.remove('obligatorio');
 
 }
 

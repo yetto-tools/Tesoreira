@@ -469,8 +469,8 @@ function MostrarCuentasPorCobrarEnTesoreriaConsulta(anio, numeroMes, codigoEmpre
 function MostrarCuentasPorCobrarPlanilla() {
     objConfiguracion = {
         url: "PlanillaTemporal/GetEmpleadosCuentasPorCobrarPlanilla",
-        cabeceras: ["Código Empresa", "Empresa", "Código Empleado", "Nombre Empleado","Código Frecuencia Pago","Frecuencia de Pago","CodigoOperacionDescuento", "Operación", "Saldo Pendiente"],
-        propiedades: ["codigoEmpresa", "nombreEmpresa", "codigoEmpleado", "nombreCompleto","codigoFrecuenciaPago","frecuenciaPago", "codigoOperacionDescuento", "operacion", "saldoPendiente"],
+        cabeceras: ["Código Empresa", "Empresa", "Código Entidad", "Nombre Entidad","codigoCategoria","Categoría","CodigoOperacionDescuento", "Operación", "Saldo Pendiente"],
+        propiedades: ["codigoEmpresa", "nombreEmpresa", "codigoEmpleado", "nombreCompleto","codigoCategoria","nombreCategoria", "codigoOperacionDescuento", "operacion", "saldoPendiente"],
         divContenedorTabla: "divContenedorTabla",
         displaydecimals: ["saldoPendiente"],
         divPintado: "divTabla",

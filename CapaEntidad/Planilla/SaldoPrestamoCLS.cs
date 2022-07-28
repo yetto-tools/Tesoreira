@@ -14,6 +14,8 @@ namespace CapaEntidad.Planilla
         public string NombreCompleto { get; set; }
         public short CodigoOperacion { get; set; }
         public string Operacion { get; set; }
+        public short CodigoCategoria { get; set; }
+        public string NombreCategoria { get; set; }
         public short CodigoOperacionDescuento { get; set; }
         public byte CodigoFrecuenciaPago { get; set; }
         public string FrecuenciaPago { get; set; }

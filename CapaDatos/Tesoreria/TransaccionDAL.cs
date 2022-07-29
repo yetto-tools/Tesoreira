@@ -2503,7 +2503,12 @@ namespace CapaDatos.Tesoreria
                             x.monto_saldo_anterior_cxc,
                             x.monto_saldo_actual_cxc,
                             x.numero_cuenta,
-                            x.nombre_proveedor
+                            x.nombre_proveedor,
+                            x.codigo_bono_extra,
+                            f.nombre AS tipo_bono_extra,
+                            x.observaciones,
+                            db_admon.GetPeriodoSemana(x.anio_comision,x.semana_comision) AS periodo_comision,
+                            1 AS permiso_imprimir
 
                     FROM db_tesoreria.transaccion x
                     INNER JOIN db_tesoreria.operacion w
@@ -2518,6 +2523,8 @@ namespace CapaDatos.Tesoreria
                     ON x.codigo_categoria_entidad = d.codigo_categoria_entidad
                     INNER JOIN db_tesoreria.tipo_operacion e
                     ON w.codigo_tipo_operacion = e.codigo_tipo_operacion
+                    INNER JOIN db_tesoreria.bono_extra f
+                    ON x.codigo_bono_extra = f.codigo_bono_extra
                     WHERE x.codigo_estado <> 0
                     " + filterAnioOperacion + @"    
                     " + filterSemanaOperacion + @"    
@@ -2585,6 +2592,13 @@ namespace CapaDatos.Tesoreria
                             int postNumeroCuenta = dr.GetOrdinal("numero_cuenta");
                             int postNombreProveedor = dr.GetOrdinal("nombre_proveedor");
 
+                            int postCodigoBonoExtra = dr.GetOrdinal("codigo_bono_extra");
+                            int postTipoBonoExtra = dr.GetOrdinal("tipo_bono_extra");
+                            int postObservaciones = dr.GetOrdinal("observaciones");
+                            int postPeriodoComision = dr.GetOrdinal("periodo_comision");
+
+                            int postPermisoImprimir = dr.GetOrdinal("permiso_imprimir");
+
                             while (dr.Read())
                             {
                                 objTransaccion = new TransaccionCLS();
@@ -2635,6 +2649,9 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.MontoSaldoActualCxC = dr.GetDecimal(postMontoSaldoActualCxC);
                                 objTransaccion.NumeroCuenta = dr.IsDBNull(postNumeroCuenta) ? "" : dr.GetString(postNumeroCuenta);
                                 objTransaccion.NombreProveedor = dr.IsDBNull(postNombreProveedor) ? "" : dr.GetString(postNombreProveedor);
+                                objTransaccion.Observaciones = dr.IsDBNull(postObservaciones) ? "" : dr.GetString(postObservaciones);
+                                objTransaccion.PeriodoComision = dr.IsDBNull(postPeriodoComision) ? "" : dr.GetString(postPeriodoComision);
+                                objTransaccion.PermisoImprimir = (byte)dr.GetInt32(postPermisoImprimir);
 
                                 lista.Add(objTransaccion);
                             }
@@ -2642,7 +2659,7 @@ namespace CapaDatos.Tesoreria
                     }
                     conexion.Close();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     conexion.Close();
                     lista = null;

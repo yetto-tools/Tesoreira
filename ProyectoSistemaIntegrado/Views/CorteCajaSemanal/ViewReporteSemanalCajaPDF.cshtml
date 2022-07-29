@@ -67,6 +67,9 @@
         @{decimal totalEfectivoDomingo = 0;}
         @{decimal totalEfectivoDevoluciones = 0;}
 
+        @{decimal montoDiferenciaCero = 0.01m;}
+        @{string montoDiferenciaCeroStr = "0.00";}
+
         @foreach (var dr in reporte.listaVendedores)
         {
             codigoConcepto = dr.CodigoConcepto;
@@ -1789,13 +1792,20 @@
                 codigoConcepto = dr.CodigoConcepto;
                 sumaSaldoAnterior = sumaSaldoAnterior + dr.SaldoAnterior;
                 totalSemana = totalSemana + dr.TotalSemana;
-                totalLunes = totalLunes + dr.MontoLunes;
-                totalMartes = totalMartes + dr.MontoMartes;
-                totalMiercoles = totalMiercoles + dr.MontoMiercoles;
-                totalJueves = totalJueves + dr.MontoJueves;
-                totalViernes = totalViernes + dr.MontoViernes;
-                totalSabado = totalSabado + dr.MontoSabado;
-                totalDomingo = totalDomingo + dr.MontoDomingo;
+                if (dr.MontoLunes != montoDiferenciaCero)
+                    totalLunes = totalLunes + dr.MontoLunes;
+                if (dr.MontoMartes != montoDiferenciaCero)
+                    totalMartes = totalMartes + dr.MontoMartes;
+                if (dr.MontoMiercoles != montoDiferenciaCero)
+                    totalMiercoles = totalMiercoles + dr.MontoMiercoles;
+                if (dr.MontoJueves != montoDiferenciaCero)
+                    totalJueves = totalJueves + dr.MontoJueves;
+                if (dr.MontoViernes != montoDiferenciaCero)
+                    totalViernes = totalViernes + dr.MontoViernes;
+                if (dr.MontoSabado != montoDiferenciaCero)
+                    totalSabado = totalSabado + dr.MontoSabado;
+                if (dr.MontoDomingo != montoDiferenciaCero)
+                    totalDomingo = totalDomingo + dr.MontoDomingo;
                 totalDevoluciones = totalDevoluciones + dr.Devoluciones;
             }
             totalGastoSemana = totalGastoSemana + totalSemana;
@@ -1837,43 +1847,106 @@
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
                         <div style="text-align: right;">
                             @if (dr.MontoLunes != 0)
-                            {@dr.MontoLunes.ToString("N2")}
+                            {
+                                if (dr.MontoLunes == montoDiferenciaCero)
+                                {
+                                    @montoDiferenciaCeroStr
+                                }
+                                else
+                                {
+                                    @dr.MontoLunes.ToString("N2");
+                                }
+                            }
                         </div>
                     </td>
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
                         <div style="text-align: right;">
                             @if (dr.MontoMartes != 0)
-                            {@dr.MontoMartes.ToString("N2")}
+                            {
+                                if (dr.MontoMartes == montoDiferenciaCero)
+                                {
+                                    @montoDiferenciaCeroStr
+                                }
+                                else
+                                {
+                                    @dr.MontoMartes.ToString("N2");
+                                }
+                            }
                         </div>
                     </td>
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
                         <div style="text-align: right;">
                             @if (dr.MontoMiercoles != 0)
-                            {@dr.MontoMiercoles.ToString("N2")}
+                            {
+                                if (dr.MontoMiercoles == montoDiferenciaCero)
+                                {
+                                    @montoDiferenciaCeroStr
+                                }
+                                else
+                                {
+                                    @dr.MontoMiercoles.ToString("N2");
+                                }
+                            }
                         </div>
                     </td>
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
                         <div style="text-align: right;">
                             @if (dr.MontoJueves != 0)
-                            {@dr.MontoJueves.ToString("N2")}
+                            {
+                                if (dr.MontoJueves == montoDiferenciaCero)
+                                {
+                                    @montoDiferenciaCeroStr
+                                }
+                                else
+                                {
+                                    @dr.MontoJueves.ToString("N2");
+                                }
+                            }
                         </div>
                     </td>
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
                         <div style="text-align: right;">
                             @if (dr.MontoViernes != 0)
-                            {@dr.MontoViernes.ToString("N2")}
+                            {
+                                if (dr.MontoViernes == montoDiferenciaCero)
+                                {
+                                    @montoDiferenciaCeroStr
+                                }
+                                else
+                                {
+                                    @dr.MontoViernes.ToString("N2");
+                                }
+                            }
                         </div>
                     </td>
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
                         <div style="text-align: right;">
                             @if (dr.MontoSabado != 0)
-                            {@dr.MontoSabado.ToString("N2")}
+                            {
+                                if (dr.MontoSabado == montoDiferenciaCero)
+                                {
+                                    @montoDiferenciaCeroStr
+                                }
+                                else
+                                {
+                                    @dr.MontoSabado.ToString("N2");
+                                }
+                            }
                         </div>
                     </td>
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
                         <div style="text-align: right;">
                             @if (dr.MontoDomingo != 0)
-                            {@dr.MontoDomingo.ToString("N2")}
+                            {
+                                if (dr.MontoDomingo == montoDiferenciaCero)
+                                {
+                                    @montoDiferenciaCeroStr
+                                }
+                                else
+                                {
+                                    @dr.MontoDomingo.ToString("N2");
+                                }
+                            }
                         </div>
                     </td>
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
@@ -1909,6 +1982,7 @@
         @{totalSabado = 0; }
         @{totalDomingo = 0; }
         @{totalDevoluciones = 0; }
+
         @if (reporte.listaAnticipos.Count > 0)
         { // ANTICIPOS
             foreach (var dr in reporte.listaAnticipos)
@@ -1916,13 +1990,20 @@
                 codigoConcepto = dr.CodigoConcepto;
                 sumaSaldoAnterior = sumaSaldoAnterior + dr.SaldoAnterior;
                 totalSemana = totalSemana + dr.TotalSemana;
-                totalLunes = totalLunes + dr.MontoLunes;
-                totalMartes = totalMartes + dr.MontoMartes;
-                totalMiercoles = totalMiercoles + dr.MontoMiercoles;
-                totalJueves = totalJueves + dr.MontoJueves;
-                totalViernes = totalViernes + dr.MontoViernes;
-                totalSabado = totalSabado + dr.MontoSabado;
-                totalDomingo = totalDomingo + dr.MontoDomingo;
+                if (dr.MontoLunes != montoDiferenciaCero)
+                    totalLunes = totalLunes + dr.MontoLunes;
+                if (dr.MontoMartes != montoDiferenciaCero)
+                    totalMartes = totalMartes + dr.MontoMartes;
+                if (dr.MontoMiercoles != montoDiferenciaCero)
+                    totalMiercoles = totalMiercoles + dr.MontoMiercoles;
+                if (dr.MontoJueves != montoDiferenciaCero)
+                    totalJueves = totalJueves + dr.MontoJueves;
+                if (dr.MontoViernes != montoDiferenciaCero)
+                    totalViernes = totalViernes + dr.MontoViernes;
+                if (dr.MontoSabado != montoDiferenciaCero)
+                    totalSabado = totalSabado + dr.MontoSabado;
+                if (dr.MontoDomingo != montoDiferenciaCero)
+                    totalDomingo = totalDomingo + dr.MontoDomingo;
                 totalDevoluciones = totalDevoluciones + dr.Devoluciones;
             }
             totalGastoSemana = totalGastoSemana + totalSemana;
@@ -1964,43 +2045,106 @@
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
                         <div style="text-align: right;">
                             @if (dr.MontoLunes != 0)
-                            {@dr.MontoLunes.ToString("N2")}
+                            {
+                                if (dr.MontoLunes == montoDiferenciaCero)
+                                {
+                                    @montoDiferenciaCeroStr
+                                }
+                                else
+                                {
+                                    @dr.MontoLunes.ToString("N2");
+                                }
+                            }
                         </div>
                     </td>
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
                         <div style="text-align: right;">
                             @if (dr.MontoMartes != 0)
-                            {@dr.MontoMartes.ToString("N2")}
+                            {
+                                if (dr.MontoMartes == montoDiferenciaCero)
+                                {
+                                    @montoDiferenciaCeroStr
+                                }
+                                else
+                                {
+                                    @dr.MontoMartes.ToString("N2");
+                                }
+                            }
                         </div>
                     </td>
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
                         <div style="text-align: right;">
                             @if (dr.MontoMiercoles != 0)
-                            {@dr.MontoMiercoles.ToString("N2")}
+                            {
+                                if (dr.MontoMiercoles == montoDiferenciaCero)
+                                {
+                                    @montoDiferenciaCeroStr
+                                }
+                                else
+                                {
+                                    @dr.MontoMiercoles.ToString("N2");
+                                }
+                            }
                         </div>
                     </td>
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
                         <div style="text-align: right;">
                             @if (dr.MontoJueves != 0)
-                            {@dr.MontoJueves.ToString("N2")}
+                            {
+                                if (dr.MontoJueves == montoDiferenciaCero)
+                                {
+                                    @montoDiferenciaCeroStr
+                                }
+                                else
+                                {
+                                    @dr.MontoJueves.ToString("N2")
+                                }
+                            }
                         </div>
                     </td>
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
                         <div style="text-align: right;">
                             @if (dr.MontoViernes != 0)
-                            {@dr.MontoViernes.ToString("N2")}
+                            {
+                                if (dr.MontoViernes == montoDiferenciaCero)
+                                {
+                                    @montoDiferenciaCeroStr
+                                }
+                                else
+                                {
+                                    @dr.MontoViernes.ToString("N2");
+                                }
+                            }
                         </div>
                     </td>
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
                         <div style="text-align: right;">
                             @if (dr.MontoSabado != 0)
-                            {@dr.MontoSabado.ToString("N2")}
+                            {
+                                if (dr.MontoSabado == montoDiferenciaCero)
+                                {
+                                    @montoDiferenciaCeroStr
+                                }
+                                else
+                                {
+                                    @dr.MontoSabado.ToString("N2");
+                                }
+                            }
                         </div>
                     </td>
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
                         <div style="text-align: right;">
                             @if (dr.MontoDomingo != 0)
-                            {@dr.MontoDomingo.ToString("N2")}
+                            {
+                                if (dr.MontoDomingo == montoDiferenciaCero)
+                                {
+                                    @montoDiferenciaCeroStr
+                                }
+                                else
+                                {
+                                    @dr.MontoDomingo.ToString("N2");
+                                }
+                            }
                         </div>
                     </td>
                     <td style="padding: 4px; font-size: 12px; width: 90px;">

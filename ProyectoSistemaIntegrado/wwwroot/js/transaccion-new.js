@@ -3425,7 +3425,7 @@ function emptyComboTipoCuentaPorCobrar() {
 function fillComboTipoCuentaPorCobrar() {
     let elementTipoCuentaPorCobrar = document.getElementById("uiTipoCuentaPorCobrar");
     elementTipoCuentaPorCobrar.classList.add('obligatorio');
-        document.getElementById('div-tipo-cuenta-por-cobrar').style.display = 'block';
+    document.getElementById('div-tipo-cuenta-por-cobrar').style.display = 'block';
     fetchGet("CuentasPorCobrar/GetListTiposCuentasPorCobrar", "json", function (rpta) {
         FillCombo(rpta, "uiTipoCuentaPorCobrar", "codigoTipoCuentaPorCobrar", "nombre", "- seleccione -", "-1");
     });

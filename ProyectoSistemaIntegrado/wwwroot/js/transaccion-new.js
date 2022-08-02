@@ -240,6 +240,7 @@ function clearDataFormulario() {
     tableEspeciales2.search('').draw();
 
     // Back To Back
+    set("uiCodigoCuentaPorCobrarBTB", "0");
     document.getElementById('divTablaBackToBack').style.display = 'none';
     let tableBackToBack = $('#tablaBackToBack').DataTable();
     tableBackToBack.$("input[type=radio]").prop("checked", false);
@@ -2302,8 +2303,8 @@ function intelligenceSearch() {
             pintarEntidades(objConfigEspeciales2, listaEntidadesEspeciales2);
 
             let objConfigBackToBack = {
-                cabeceras: ["codigo", "nombre entidad", "codigo categoria", "categoria", "codigo operacion", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta", "Mes", "Año","Monto a Devolver"],
-                propiedades: ["codigoEntidad", "nombreEntidad", "codigoCategoriaEntidad", "nombreCategoria", "codigoOperacionCaja", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta", "mesPlanillaBTB", "anioPlanillaBTB", "montoDevolucionBTB"],
+                cabeceras: ["codigo", "nombre entidad", "codigo categoria", "categoria", "codigo operacion", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta", "Mes", "Año","Monto a Devolver","codigoCxCBTB"],
+                propiedades: ["codigoEntidad", "nombreEntidad", "codigoCategoriaEntidad", "nombreCategoria", "codigoOperacionCaja", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta", "mesPlanillaBTB", "anioPlanillaBTB", "montoDevolucionBTB", "codigoCxCBTB"],
                 divContenedorTabla: "divContenedorTablaBackToBack",
                 divPintado: "divTablaBackToBack",
                 idtabla: "tablaBackToBack",
@@ -2821,6 +2822,7 @@ function getDataRowRadioEntidadesBackToBack(obj) {
         set("uiCodigoArea", table.cell(rowIdx, 6).data());
         set("uiCodigoCanalVenta", table.cell(rowIdx, 8).data());
         set("uiMontoTransaccion", table.cell(rowIdx, 11).data());
+        set("uiCodigoCuentaPorCobrarBTB", table.cell(rowIdx, 12).data());
         //document.getElementById('div-ventas-en-ruta').style.display = 'none';
     });
 }

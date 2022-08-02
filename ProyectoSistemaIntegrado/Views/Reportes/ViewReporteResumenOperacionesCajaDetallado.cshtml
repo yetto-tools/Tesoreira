@@ -114,15 +114,29 @@
                 {
                     if (drRow.IdTipoOperacion == @dr.IdTipoOperacion)
                     {
-                        montoIngresoLunes = drRow.MontoLunes;
-                        montoIngresoMartes = drRow.MontoMartes;
-                        montoIngresoMiercoles = drRow.MontoMiercoles;
-                        montoIngresoJueves = drRow.MontoJueves;
-                        montoIngresoViernes = drRow.MontoViernes;
-                        montoIngresoSabado = drRow.MontoSabado;
-                        montoIngresoDomingo = drRow.MontoDomingo;
-                        montoIngresoSemana = drRow.MontoSemana;
-                        break;
+                        if (drRow.IdTipoOperacion == "J")
+                        {
+                            montoIngresoLunes = drRow.MontoLunes;
+                            montoIngresoMartes = drRow.MontoMartes;
+                            montoIngresoMiercoles = drRow.MontoMiercoles;
+                            montoIngresoJueves = drRow.MontoJueves;
+                            montoIngresoViernes = drRow.MontoViernes;
+                            montoIngresoSabado = drRow.MontoSabado;
+                            montoIngresoDomingo = drRow.MontoDomingo;
+                            montoIngresoSemana = drRow.MontoSemana;
+                            break;
+                        }
+                        else {
+                            montoIngresoLunes = drRow.MontoLunes;
+                            montoIngresoMartes = drRow.MontoMartes;
+                            montoIngresoMiercoles = drRow.MontoMiercoles;
+                            montoIngresoJueves = drRow.MontoJueves;
+                            montoIngresoViernes = drRow.MontoViernes;
+                            montoIngresoSabado = drRow.MontoSabado;
+                            montoIngresoDomingo = drRow.MontoDomingo;
+                            montoIngresoSemana = drRow.MontoSemana;
+                            break;
+                        }
                     }
                 }
                 <tr>
@@ -130,49 +144,49 @@
                     <td style="padding: 4px; font-size: 12px; width: 200px;">@dr.TipoOperacion</td>
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
                         <div style="text-align: right; font-weight: bold;">
-                            @if (dr.MontoLunes != 0)
+                            @if (@montoIngresoLunes != 0)
                             {@montoIngresoLunes.ToString("N2")}
                         </div>
                     </td>
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
                         <div style="text-align: right; font-weight: bold;">
-                            @if (dr.MontoMartes != 0)
+                            @if (@montoIngresoMartes != 0)
                             {@montoIngresoMartes.ToString("N2")}
                         </div>
                     </td>
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
                         <div style="text-align: right; font-weight: bold;">
-                            @if (dr.MontoMiercoles != 0)
+                            @if (@montoIngresoMiercoles != 0)
                             {@montoIngresoMiercoles.ToString("N2")}
                         </div>
                     </td>
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
                         <div style="text-align: right; font-weight: bold;">
-                            @if (dr.MontoJueves != 0)
+                            @if (@montoIngresoJueves != 0)
                             {@montoIngresoJueves.ToString("N2")}
                         </div>
                     </td>
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
                         <div style="text-align: right; font-weight: bold;">
-                            @if (dr.MontoViernes != 0)
+                            @if (@montoIngresoViernes != 0)
                             {@montoIngresoViernes.ToString("N2")}
                         </div>
                     </td>
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
                         <div style="text-align: right; font-weight: bold;">
-                            @if (dr.MontoSabado != 0)
+                            @if (@montoIngresoSabado != 0)
                             {@montoIngresoSabado.ToString("N2")}
                         </div>
                     </td>
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
                         <div style="text-align: right; font-weight: bold;">
-                            @if (dr.MontoDomingo != 0)
+                            @if (@montoIngresoDomingo != 0)
                             {@montoIngresoDomingo.ToString("N2")}
                         </div>
                     </td>
                     <td style="padding: 4px; font-size: 12px; width: 90px;">
                         <div style="text-align: right; font-weight: bold;">
-                            @if (dr.MontoSemana != 0)
+                            @if (@montoIngresoSemana != 0)
                             {@montoIngresoSemana.ToString("N2")}
                         </div>
                     </td>

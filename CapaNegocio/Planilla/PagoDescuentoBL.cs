@@ -17,10 +17,10 @@ namespace CapaNegocio.Planilla
             return obj.GetEmpleadosCuentasPorCobrarPlanilla();
         }
 
-        public string GuardarDescuentoDevolucion(int codigoEmpresa, string codigoEmpleado, int codigoOperacion, decimal monto, string usuarioIng)
+        public string GuardarDescuentoDevolucion(int codigoEmpresa, int codigoCategoria, string codigoEmpleado, int codigoOperacion, decimal monto, string usuarioIng)
         {
             PagoDescuentoDAL obj = new PagoDescuentoDAL();
-            return obj.GuardarDescuentoDevolucion(codigoEmpresa, codigoEmpleado, codigoOperacion, monto, usuarioIng);
+            return obj.GuardarDescuentoDevolucion(codigoEmpresa, codigoCategoria, codigoEmpleado, codigoOperacion, monto, usuarioIng);
         }
 
         public List<PagoDescuentoCLS> GetPagosDescuentos()

@@ -34,12 +34,12 @@ namespace CapaDatos
             {
                 case "Development":
                     // Ambiente de Produccion
-                    //builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
-                    //puerto = "6000";
+                    builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
+                    puerto = "6000";
 
                     // Ambiente de Desarrollo
-                    builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.Development.json"));
-                    puerto = "5000";
+                    //builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.Development.json"));
+                    //puerto = "5000";
 
                     break;
                 case "Production":

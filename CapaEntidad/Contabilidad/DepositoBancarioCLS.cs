@@ -17,6 +17,13 @@ namespace CapaEntidad.Contabilidad
         public string NombreDiaOperacion { get; set; }
         public byte CodigoOrigenDeposito { get; set; }
         public string OrigenDeposito { get; set; }
+        public short AnioOperacion { get; set; }
+        public byte SemanaOperacion { get; set; }
+
+        public string Periodo { get; set; }
+
+        public DateTime FechaOperacion { get; set; }
+
     }
 
 }

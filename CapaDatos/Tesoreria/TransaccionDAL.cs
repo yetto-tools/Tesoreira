@@ -152,7 +152,8 @@ namespace CapaDatos.Tesoreria
                                                           numero_recibo_referencia,
                                                           monto_saldo_anterior_cxc,
                                                           monto_saldo_actual_cxc,
-                                                          codigo_tipo_sueldo_indirecto)
+                                                          codigo_tipo_sueldo_indirecto,
+                                                          codigo_cxc_btb)
                     VALUES(@CodigoTransaccion,
                            @CodigoSeguridad,
                            @CodigoEmpresa,
@@ -224,7 +225,8 @@ namespace CapaDatos.Tesoreria
                            @NumeroReciboReferencia,
                            @MontoSaldoAnteriorCuentaPorCobrar,
                            @MontoSaldoActualCuentaPorCobrar,
-                           @CodigoTipoSueldoIndirecto)";
+                           @CodigoTipoSueldoIndirecto,
+                           @CodigoCuentaPorCobrarBTB)";
 
                     cmd.CommandText = sentenciaSQL;
                     cmd.Parameters.AddWithValue("@CodigoTransaccion", codigoTransaccion);
@@ -299,7 +301,7 @@ namespace CapaDatos.Tesoreria
                     cmd.Parameters.AddWithValue("@MontoSaldoAnteriorCuentaPorCobrar", objTransaccion.MontoSaldoAnteriorCxC);
                     cmd.Parameters.AddWithValue("@MontoSaldoActualCuentaPorCobrar", objTransaccion.MontoSaldoActualCxC);
                     cmd.Parameters.AddWithValue("@CodigoTipoSueldoIndirecto", objTransaccion.CodigoTipoSueldoIndirecto == -1 ? 0 : objTransaccion.CodigoTipoSueldoIndirecto);
-
+                    cmd.Parameters.AddWithValue("@CodigoCuentaPorCobrarBTB", objTransaccion.CodigoCuentaPorCobrarBTB == 0 ? DBNull.Value : objTransaccion.CodigoCuentaPorCobrarBTB);
 
                     cmd.ExecuteNonQuery();
 
@@ -398,6 +400,21 @@ namespace CapaDatos.Tesoreria
                         cmd.Parameters.AddWithValue("@CodigoTrans", codigoTransaccion);
                         cmd.Parameters.AddWithValue("@CodigoCxC", codigoCuentaPorCobrar);
                         cmd.ExecuteNonQuery();
+
+                        if (objTransaccion.CodigoCuentaPorCobrarBTB > 0)
+                        {
+                            sentenciaSQL = @"
+                            UPDATE db_contabilidad.cuenta_por_cobrar 
+                            SET codigo_estado_pago_btb = 1
+                            WHERE codigo_cxc = @CodigoCxCBTB";
+
+                            cmd.Parameters.AddWithValue("@CodigoCxCBTB", objTransaccion.CodigoCuentaPorCobrarBTB);
+                            // Se debe de agregar otro campo en la tabla db_contabilidad.cuenta_por_cobrar, porque si
+                            // se anula la transaccion, se busca por codigo_transaccion en la tabla db_contabilidad.cuenta_por_cobrar
+                            // por lo que se estaria anulando el pago que debe devolver el empleado BTB
+                            //cmd.Parameters["@CodigoTransaccion"].Value = codigoTransaccion;
+                            cmd.ExecuteNonQuery();
+                        }
 
                     }// fin if
 

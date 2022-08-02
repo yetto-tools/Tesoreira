@@ -87,6 +87,9 @@
         @*Codigo del canal de venta*@
         <label class="col-sm-2 col-form-label" style="display:none;">Código Canal de Venta:</label>
         <input type="hidden" name="CodigoCanalVenta" class="form-control" id="uiCodigoCanalVenta" />
+        @*Codigo de Cuenta por Cobrar BTB*@
+        <label class="col-sm-2 col-form-label" style="display:none;">Código Cuenta por Cobrar BTB:</label>
+        <input type="hidden" name="CodigoCuentaPorCobrarBTB" class="form-control" id="uiCodigoCuentaPorCobrarBTB" />
 
         <div class="mb-3 row">
             <label class="col-sm-2 col-form-label">Dia de Operacion:</label>
@@ -410,7 +413,7 @@
                 <label class="col-sm-2 col-form-label"> </label>
                 <div class="col-sm-3">
                     <label class="col-form-label">Banco</label>
-                    <select class="form-control" id="uiBanco" name="CodigoBancoDeposito" onchange="fillCuentasBancarias(this)" >
+                    <select class="form-control" id="uiBanco" name="CodigoBancoDeposito" onchange="fillCuentasBancarias(this)">
                         <option value="-1">-- Seleccione --</option>
                         <option value="2">Banco Industrial, S.A</option>
                     </select>
@@ -473,15 +476,15 @@
 
         @if (setSemanaAnterior == 1)
         {
-        <div style="display:block;" id="div-captura-recibo">
-            <div class="mb-3 row">
-                <label class="col-sm-2 col-form-label">Referencia:</label>
-                <div class="col-sm-3">
-                    <input type="text" name="NumeroReciboReferencia" class="form-control solonumeros obligatorio text-center" id="uiNumeroReciboReferencia"
-                           placeholder="Número de Recibo" />
+            <div style="display:block;" id="div-captura-recibo">
+                <div class="mb-3 row">
+                    <label class="col-sm-2 col-form-label">Referencia:</label>
+                    <div class="col-sm-3">
+                        <input type="text" name="NumeroReciboReferencia" class="form-control solonumeros obligatorio text-center" id="uiNumeroReciboReferencia"
+                               placeholder="Número de Recibo" />
+                    </div>
                 </div>
             </div>
-        </div>
         }
 
         <div class="mb-3 row">

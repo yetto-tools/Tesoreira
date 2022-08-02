@@ -516,7 +516,9 @@ function clickGuardarDescuentoDevolucion() {
         let nombreEmpresa = table.cell(rowIdx, 1).data()
         let codigoEmpleado = table.cell(rowIdx, 2).data()
         let nombreEmpleado = table.cell(rowIdx, 3).data()
+        let codigoCategoria = table.cell(rowIdx, 4).data()
         let codigoOperacion = table.cell(rowIdx, 6).data()
+
         let monto = table.cell(rowIdx, 9).nodes().to$().find('input').val()
         setI("uiTitlePopupAbonoPrestamo", "Abono a Préstamo");
         document.getElementById("ShowPopupAbonoPrestamo").click();
@@ -525,6 +527,7 @@ function clickGuardarDescuentoDevolucion() {
         set("uiCodigoEmpleado", codigoEmpleado);
         set("uiNombreEmpleado", nombreEmpleado);
         set("uiCodigoOperacion", codigoOperacion);
+        set("uiCodigoCategoria", codigoCategoria);
         //set("uiAnioOperacion", anioOperacion.toString());
         //set("uiSemanaOperacion", semanaOperacion.toString());
         set("uiMonto", monto);

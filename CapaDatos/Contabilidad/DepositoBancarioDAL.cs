@@ -36,16 +36,21 @@ namespace CapaDatos.Contabilidad
 		                     ELSE 'NO DEFINIDO'
 	                       END AS dia,
 	                       m.codigo_origen,
-	                       m.origen
+	                       m.origen,
+                           m.semana_operacion,
+                           m.anio_operacion,
+                           db_admon.GetPeriodoSemana(m.anio_operacion,m.semana_operacion) AS periodo,
+                           db_tesoreria.GetFechaOperacion(m.anio_operacion,m.semana_operacion,m.dia_operacion) AS fecha_operacion
                     FROM ( SELECT y.codigo_banco_deposito,
 			                      y.numero_cuenta,
                                   y.numero_boleta,
 			                      y.monto,
 			                      y.dia_operacion,			
 			                      1 AS codigo_origen,
-			                      'TESORERIA' AS origen
-
-	                       FROM db_tesoreria.transaccion y
+			                      'TESORERIA' AS origen,
+                                  y.semana_operacion,
+                                  y.anio_operacion
+                           FROM db_tesoreria.transaccion y
 	                       WHERE y.anio_operacion = @AnioReporte
 		                     AND y.semana_operacion = @SemanaReporte
 		                     AND y.codigo_reporte = @CodigoReporte
@@ -60,7 +65,9 @@ namespace CapaDatos.Contabilidad
 	                              y.monto,
 	                              y.dia_operacion,			
 	                              2 AS codigo_origen,
-	                              'OTROS' AS origen
+	                              'OTROS' AS origen,
+                                  y.semana_operacion,
+                                  y.anio_operacion  
                            FROM db_contabilidad.deposito_btb y
                            WHERE y.estado = 1
                              AND y.anio_operacion = @AnioReporte
@@ -95,6 +102,10 @@ namespace CapaDatos.Contabilidad
                             int postDia = dr.GetOrdinal("dia");
                             int postCodigoOrigen = dr.GetOrdinal("codigo_origen");
                             int postOrigen = dr.GetOrdinal("origen");
+                            int postAnioOperacion = dr.GetOrdinal("anio_operacion");
+                            int postSemanaOperacion = dr.GetOrdinal("semana_operacion");
+                            int postPeriodo = dr.GetOrdinal("periodo");
+                            int postFechaOperacion = dr.GetOrdinal("fecha_operacion");
                             while (dr.Read())
                             {
                                 objDepositosBancarioCLS = new DepositoBancarioCLS();
@@ -107,13 +118,19 @@ namespace CapaDatos.Contabilidad
                                 objDepositosBancarioCLS.NombreDiaOperacion = dr.GetString(postDia);
                                 objDepositosBancarioCLS.CodigoOrigenDeposito = (byte)dr.GetInt32(postCodigoOrigen);
                                 objDepositosBancarioCLS.OrigenDeposito = dr.GetString(postOrigen);
+                                objDepositosBancarioCLS.AnioOperacion = dr.GetInt16(postAnioOperacion);
+                                objDepositosBancarioCLS.SemanaOperacion = dr.GetByte(postSemanaOperacion);
+                                objDepositosBancarioCLS.Periodo = dr.GetString(postPeriodo);
+                                objDepositosBancarioCLS.FechaOperacion = dr.GetDateTime(postFechaOperacion);
+
+
                                 lista.Add(objDepositosBancarioCLS);
                             }//fin while
                         }// fin if
                     }// fin using
                     conexion.Close();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     conexion.Close();
                     lista = null;

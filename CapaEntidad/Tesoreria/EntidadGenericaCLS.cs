@@ -34,5 +34,8 @@ namespace CapaEntidad.Tesoreria
         public short AnioPlanillaBTB { get; set; }
         public decimal MontoDevolucionBTB { get; set; }
         public byte ConcedeIva { get; set; }
+
+        public long CodigoCxCBTB { get; set; }
+        public int CodigoPagoBTB { get; set; }
     }
 }

@@ -130,7 +130,7 @@ namespace CapaDatos.Planilla
             }
         }
 
-        public string GuardarDescuentoDevolucion(int codigoEmpresa, string codigoEmpleado, int codigoOperacion, decimal monto, string usuarioIng)
+        public string GuardarDescuentoDevolucion(int codigoEmpresa, int codigoCategoria, string codigoEmpleado, int codigoOperacion, decimal monto, string usuarioIng)
         {
             string resultado = "";
             using (SqlConnection conexion = new SqlConnection(cadenaContabilidad))
@@ -183,7 +183,10 @@ namespace CapaDatos.Planilla
 		                   @CodigoCategoriaEntidad AS codigo_categoria_entidad,
 		                   @CodigoCategoriaEntidad AS codigo_categoria,
 		                   x.codigo_empleado AS codigo_entidad,
-		                   db_rrhh.GetNombreCompletoEmpleado(y.cui) AS nombre_entidad,
+                           CASE
+                             WHEN y.cui IS NOT NULL THEN db_rrhh.GetNombreCompletoEmpleado(y.cui)
+		                     ELSE db_tesoreria.GetNombreEntidadCompleto(@CodigoCategoriaEntidad, x.codigo_empleado)
+                           END AS nombre_entidad,
 		                   @FechaPrestamo AS fecha_prestamo,
  		                   @FechaInicioPago AS fecha_inicio_pago,
 		                   0 AS anio_operacion,
@@ -202,14 +205,14 @@ namespace CapaDatos.Planilla
                            x.codigo_pago,
                            0 AS codigo_reporte 
                     FROM db_contabilidad.pagos_y_descuentos x
-                    INNER JOIN db_rrhh.empleado y
+                    LEFT JOIN db_rrhh.empleado y
                     ON x.codigo_empresa = y.codigo_empresa AND x.codigo_empleado = y.codigo_empleado
                     WHERE x.codigo_pago = @CodigoPago";
 
                     cmd.CommandText = sentenciaInsertCxC;
                     cmd.Parameters["@CodigoPago"].Value = codigoPagoDescuento;
                     cmd.Parameters.AddWithValue("@CodigoTipoCuentaPorCobrar", Constantes.CuentaPorCobrar.Tipo.NO_APLICA);
-                    cmd.Parameters.AddWithValue("@CodigoCategoriaEntidad", Constantes.CuentaPorCobrar.Categoria.EMPLEADO);
+                    cmd.Parameters.AddWithValue("@CodigoCategoriaEntidad", codigoCategoria);
                     cmd.Parameters.AddWithValue("@FechaPrestamo", DBNull.Value);
                     cmd.Parameters.AddWithValue("@FechaInicioPago", DBNull.Value);
                     cmd.Parameters.AddWithValue("@CodigoTransaccion", DBNull.Value);

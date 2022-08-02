@@ -235,8 +235,8 @@ namespace ProyectoSistemaIntegrado.Controllers.Reportes
                     List<DepositoBancarioCLS> listaDepositos = null;
                     DepositoBancarioBL objDepositos = new DepositoBancarioBL();
                     listaDepositos = objDepositos.GetDepositos(anioReporte, semanaReporte, codigoReporte);
-                    cabeceras = new string[6] { "Banco", "Cuenta", "Boleta", "Monto", "Día", "Origen"};
-                    nombrePropiedades = new string[6] { "NombreBanco","NumeroCuenta", "NumeroBoleta", "Monto", "NombreDiaOperacion", "OrigenDeposito"};
+                    cabeceras = new string[10] { "Banco", "Cuenta", "Boleta", "Monto", "Año","Semana","Periodo","Fecha Operación","Día", "Origen"};
+                    nombrePropiedades = new string[10] { "NombreBanco","NumeroCuenta", "NumeroBoleta", "Monto","AnioOperacion","SemanaOperacion","Periodo","FechaOperacion", "NombreDiaOperacion", "OrigenDeposito"};
                     buffer = ExportarExcelDatos(cabeceras, nombrePropiedades, listaDepositos);
                     break;
                 default:

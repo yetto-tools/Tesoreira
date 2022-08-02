@@ -58,13 +58,13 @@ namespace ProyectoSistemaIntegrado.Controllers.Planilla
             return obj.GetEmpleadosCuentasPorCobrarPlanilla();
         }
 
-        public string GuardarDescuentoDevolucion(int codigoEmpresa, string codigoEmpleado, int codigoOperacion, decimal monto)
+        public string GuardarDescuentoDevolucion(int codigoEmpresa, int codigoCategoria, string codigoEmpleado, int codigoOperacion, decimal monto)
         {
             ViewBag.Message = HttpContext.Session.GetString("usuario");
             UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);
 
             PagoDescuentoBL obj = new PagoDescuentoBL();
-            return obj.GuardarDescuentoDevolucion(codigoEmpresa, codigoEmpleado, codigoOperacion, monto, objUsuario.IdUsuario);
+            return obj.GuardarDescuentoDevolucion(codigoEmpresa, codigoCategoria, codigoEmpleado, codigoOperacion, monto, objUsuario.IdUsuario);
         }
 
         public string GuardarDevolucionesBTB([FromBody] List<PagoDescuentoCLS> objPagoDescuento)

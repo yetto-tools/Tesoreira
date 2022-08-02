@@ -50,6 +50,7 @@
             public const short SOCIO = 32;
             public const short EMPLEADO = 36;
             public const short VENDEDORES = 37;
+            public const short EMPLEADO_INDIRECTO = 41;
         }
 
     }

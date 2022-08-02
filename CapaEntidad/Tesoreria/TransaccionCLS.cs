@@ -176,6 +176,8 @@ namespace CapaEntidad.Tesoreria
 
         public int EsSueldoIndirecto { get; set; }
         public short CodigoTipoSueldoIndirecto { get; set; }
+
+        public long? CodigoCuentaPorCobrarBTB { get; set; }
     }
 
 

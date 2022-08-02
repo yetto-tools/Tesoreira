@@ -51,8 +51,10 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
             obj.SemanaOperacion = semanaOperacion;
             obj.CodigoTipoReporte = codigoTipoReporte;
             var demoViewPortrait = new ViewAsPdf("ViewReporteSemanalCajaPDF", String.Empty, obj);
-            demoViewPortrait.PageMargins = new Margins { Bottom = 5, Left = 5, Right = 5, Top = 5 };
+            demoViewPortrait.PageMargins = new Margins { Bottom = 15, Left = 5, Right = 5, Top = 5 };
             demoViewPortrait.PageSize = Size.Letter;
+            demoViewPortrait.CustomSwitches = "--footer-center Página:[page]/[toPage] --footer-font-size 10 --footer-spacing 2";
+
             return demoViewPortrait;
         }
 

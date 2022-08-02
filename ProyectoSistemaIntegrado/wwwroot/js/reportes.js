@@ -271,8 +271,8 @@ function VerDetalleReporte(obj) {
 function ListarReportes(codigoTipoReporte) {
     let objConfiguracion = {
         url: "Reportes/GetReportes/?codigoTipoReporte=" + codigoTipoReporte.toString(),
-        cabeceras: ["codigoTipoReporte", "Arqueo", "Código Reporte", "Año", "Semana", "Nombre Reporte", "Estado", "Fecha Generación", "Nombre Controlador", "Nombre Accion", "PDF", "EXCEL", "WEB", "Tipo","deshabilitarCheck"],
-        propiedades: ["codigoTipoReporte", "arqueo", "codigoReporte", "anio", "numeroSemana", "nombreReporte", "estado", "fechaIngStr", "nombreControlador", "nombreAccion", "pdf", "excel", "web", "tipo","deshabilitarCheck"],
+        cabeceras: ["codigoTipoReporte", "Arqueo", "Código Reporte", "Año", "Semana", "Periodo", "Nombre Reporte", "Estado", "Fecha Generación", "Nombre Controlador", "Nombre Accion", "PDF", "EXCEL", "WEB", "Tipo","deshabilitarCheck"],
+        propiedades: ["codigoTipoReporte", "arqueo", "codigoReporte", "anio", "numeroSemana", "semana", "nombreReporte", "estado", "fechaIngStr", "nombreControlador", "nombreAccion", "pdf", "excel", "web", "tipo","deshabilitarCheck"],
         divContenedorTabla: "divContenedorTabla",
         divPintado: "divTabla",
         reporte: true,
@@ -310,9 +310,6 @@ function ListarReportes(codigoTipoReporte) {
                 "className": "dt-body-center",
                 "visible": true
             }, {
-                "targets": [8],
-                "visible": false
-            }, {
                 "targets": [9],
                 "visible": false
             }, {
@@ -326,13 +323,16 @@ function ListarReportes(codigoTipoReporte) {
                 "visible": false
             }, {
                 "targets": [13],
+                "visible": false
+            }, {
+                "targets": [14],
                 "className": "dt-body-center",
                 "visible": true
             }, {
-                "targets": [14],
+                "targets": [15],
                 "visible": false
             }, {
-                "targets": [15],
+                "targets": [16],
                 "className": "dt-body-center",
                 "visible": true
             }],
@@ -351,9 +351,10 @@ function GenerarPdfReporte(obj) {
         let codigoReporte = table.cell(rowIdx, 2).data();
         let anioOperacion = table.cell(rowIdx, 3).data();
         let semanaOperacion = table.cell(rowIdx, 4).data();
-        let nombreControlador = table.cell(rowIdx, 8).data();
-        let nombreAccion = table.cell(rowIdx, 9).data();
-        let excluirCeros = table.cell(rowIdx, 15).nodes().to$().find('input:checkbox').prop('checked') == true ? "1" : "0";
+
+        let nombreControlador = table.cell(rowIdx, 9).data();
+        let nombreAccion = table.cell(rowIdx, 10).data();
+        let excluirCeros = table.cell(rowIdx, 16).nodes().to$().find('input:checkbox').prop('checked') == true ? "1" : "0";
         fetchGet(nombreControlador + "/" + nombreAccion + "/?anioOperacion=" + anioOperacion + "&semanaOperacion=" + semanaOperacion + "&codigoReporte=" + codigoReporte + "&arqueo=" + arqueo + "&excluirCeros=" + excluirCeros, "pdf", function (data) {
             var file = new Blob([data], { type: 'application/pdf' });
             var fileURL = URL.createObjectURL(file);
@@ -371,7 +372,7 @@ function GenerarExcelReporte(obj) {
         let codigoReporte = table.cell(rowIdx, 2).data();
         let anioReporte = table.cell(rowIdx, 3).data();
         let semanaReporte = table.cell(rowIdx, 4).data();
-        let excluirCeros = table.cell(rowIdx, 15).nodes().to$().find('input:checkbox').prop('checked') == true ? "1" : "0";
+        let excluirCeros = table.cell(rowIdx, 16).nodes().to$().find('input:checkbox').prop('checked') == true ? "1" : "0";
 
         document.getElementById("uiExportarExcel").href = "/Reportes/ExportarExcel/?codigoTipoReporte=" + codigoTipoReporte + "&anioReporte=" + anioReporte + "&semanaReporte=" + semanaReporte + "&codigoReporte=" + codigoReporte + "&arqueo=" + arqueo + "&excluirCeros=" + excluirCeros;
         document.getElementById("uiExportarExcel").click();

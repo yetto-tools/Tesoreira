@@ -406,7 +406,7 @@ namespace CapaDatos.Tesoreria
                     INNER JOIN db_contabilidad.tipo_planilla a
                     ON y.codigo_tipo_planilla = a.codigo_tipo_planilla
                     WHERE y.codigo_operacion = 65
-                      AND x.codigo_estado_pago_btb = 0
+                      AND (x.codigo_estado_pago_btb = 0 OR db_tesoreria.GetEstadoTransaccionBTB(x.codigo_transaccion_pago_btb) = 0)
                       AND x.codigo_estado <> 0
 
                     UNION

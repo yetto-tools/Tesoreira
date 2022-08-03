@@ -405,9 +405,11 @@ namespace CapaDatos.Tesoreria
                         {
                             sentenciaSQL = @"
                             UPDATE db_contabilidad.cuenta_por_cobrar 
-                            SET codigo_estado_pago_btb = 1
+                            SET codigo_estado_pago_btb = 1,
+                                codigo_transaccion_pago_btb = @CodigoTrans
                             WHERE codigo_cxc = @CodigoCxCBTB";
 
+                            cmd.CommandText = sentenciaSQL;
                             cmd.Parameters.AddWithValue("@CodigoCxCBTB", objTransaccion.CodigoCuentaPorCobrarBTB);
                             // Se debe de agregar otro campo en la tabla db_contabilidad.cuenta_por_cobrar, porque si
                             // se anula la transaccion, se busca por codigo_transaccion en la tabla db_contabilidad.cuenta_por_cobrar
@@ -481,31 +483,6 @@ namespace CapaDatos.Tesoreria
 
                     string sentenciaUpdateTransaccion = string.Empty;
                     string sentenciaUpdateRecibo = string.Empty;
-
-                    //long correlativoRecibo = objTransaccion.NumeroRecibo;
-                    //long correlativoReciboReferencia = objTransaccion.NumeroReciboReferencia;
-
-                    /*long correlativoRecibo = 0;
-                    if (objTransaccion.NumeroRecibo == -1)
-                    {
-                        sqlSequence = "SELECT sig_valor FROM db_admon.secuencia_detalle WHERE codigo_secuencia = @CodigoSecuenciaRecibo AND anio = @AnioRecibo";
-                        cmd.CommandText = sqlSequence;
-                        if (objTransaccion.CodigoTipoOperacion == 1)
-                        { // Ingreso
-                            cmd.Parameters.AddWithValue("@CodigoSecuenciaRecibo", Constantes.Secuencia.SIT_SEQ_RECIBO_INGRESO);
-                        }
-                        else
-                        { // Egreso
-                            cmd.Parameters.AddWithValue("@CodigoSecuenciaRecibo", Constantes.Secuencia.SIT_SEQ_RECIBO_EGRESO);
-                        }
-                        cmd.Parameters.AddWithValue("@AnioRecibo", anio);
-                        correlativoRecibo = (long)cmd.ExecuteScalar();
-                        sentenciaUpdateRecibo = "UPDATE db_admon.secuencia_detalle SET sig_valor = @siguienteValorRecibo WHERE codigo_secuencia = @CodigoSecuenciaRecibo  AND anio = @AnioRecibo";
-                    }
-                    else
-                    {
-                        correlativoRecibo = objTransaccion.NumeroRecibo;
-                    }*/
 
                     sentenciaUpdateTransaccion = "UPDATE db_admon.secuencia_detalle SET sig_valor = @siguienteValor WHERE codigo_secuencia = @CodigoSecuencia  AND anio = @AnioTransaccion";
                     long codigoTransaccion = long.Parse(anio.ToString() + correlativoTransaccion.ToString("D6"));
@@ -583,7 +560,8 @@ namespace CapaDatos.Tesoreria
                                                           numero_recibo_referencia,
                                                           monto_saldo_anterior_cxc,
                                                           monto_saldo_actual_cxc,
-                                                          codigo_tipo_sueldo_indirecto)
+                                                          codigo_tipo_sueldo_indirecto,
+                                                          codigo_cxc_btb)
                     VALUES(@CodigoTransaccion,
                            @CodigoSeguridad,
                            @CodigoEmpresa,
@@ -656,7 +634,8 @@ namespace CapaDatos.Tesoreria
                            @NumeroReciboReferencia,
                            @MontoSaldoAnteriorCxC,
                            @MontoSaldoActualCxC,
-                           @CodigoTipoSueldoIndirecto)";
+                           @CodigoTipoSueldoIndirecto,
+                           @CodigoCuentaPorCobrarBTB)";
 
                     cmd.CommandText = sentenciaSQL;
                     cmd.Parameters.AddWithValue("@CodigoTransaccion", codigoTransaccion);
@@ -732,6 +711,7 @@ namespace CapaDatos.Tesoreria
                     cmd.Parameters.AddWithValue("@MontoSaldoAnteriorCxC", objTransaccion.MontoSaldoAnteriorCxC);
                     cmd.Parameters.AddWithValue("@MontoSaldoActualCxC", objTransaccion.MontoSaldoActualCxC);
                     cmd.Parameters.AddWithValue("@CodigoTipoSueldoIndirecto", objTransaccion.CodigoTipoSueldoIndirecto == -1 ? 0 : objTransaccion.CodigoTipoSueldoIndirecto);
+                    cmd.Parameters.AddWithValue("@CodigoCuentaPorCobrarBTB", objTransaccion.CodigoCuentaPorCobrarBTB == 0 ? DBNull.Value : objTransaccion.CodigoCuentaPorCobrarBTB);
 
                     cmd.ExecuteNonQuery();
 
@@ -831,6 +811,25 @@ namespace CapaDatos.Tesoreria
                         cmd.Parameters.AddWithValue("@CodigoTrans", codigoTransaccion);
                         cmd.Parameters.AddWithValue("@CodigoCxC", codigoCuentaPorCobrar);
                         cmd.ExecuteNonQuery();
+
+
+                        if (objTransaccion.CodigoCuentaPorCobrarBTB > 0)
+                        {
+                            sentenciaSQL = @"
+                            UPDATE db_contabilidad.cuenta_por_cobrar 
+                            SET codigo_estado_pago_btb = 1,
+                                codigo_transaccion_pago_btb = @CodigoTrans
+                            WHERE codigo_cxc = @CodigoCxCBTB";
+
+                            cmd.CommandText = sentenciaSQL;
+                            cmd.Parameters.AddWithValue("@CodigoCxCBTB", objTransaccion.CodigoCuentaPorCobrarBTB);
+                            // Se debe de agregar otro campo en la tabla db_contabilidad.cuenta_por_cobrar, porque si
+                            // se anula la transaccion, se busca por codigo_transaccion en la tabla db_contabilidad.cuenta_por_cobrar
+                            // por lo que se estaria anulando el pago que debe devolver el empleado BTB
+                            //cmd.Parameters["@CodigoTransaccion"].Value = codigoTransaccion;
+                            cmd.ExecuteNonQuery();
+                        }
+
                     }// fin if
 
                     // Cambiando el estado de la transacción que se está editando
@@ -862,6 +861,9 @@ namespace CapaDatos.Tesoreria
                     cmd.Parameters["@UsuarioAct"].Value = usuarioAct;
                     cmd.Parameters["@FechaAct"].Value = DateTime.Now;
                     cmd.ExecuteNonQuery();
+
+
+
 
                     #endregion
 
@@ -4631,8 +4633,8 @@ namespace CapaDatos.Tesoreria
                             END AS es_sueldo_indirecto,
                             x.anio_sueldo_indirecto,
                             x.mes_sueldo_indirecto,
-                            x.codigo_tipo_sueldo_indirecto
-                            
+                            x.codigo_tipo_sueldo_indirecto,
+                            CAST(COALESCE(x.codigo_cxc_btb,0) AS BigInt) AS codigo_cxc_btb
                     FROM db_tesoreria.transaccion x
                     INNER JOIN db_tesoreria.operacion w
                     ON x.codigo_operacion = w.codigo_operacion
@@ -4731,6 +4733,7 @@ namespace CapaDatos.Tesoreria
                             int postAnioSueldoIndirecto = dr.GetOrdinal("anio_sueldo_indirecto");
                             int postMesSueldoIndirecto = dr.GetOrdinal("mes_sueldo_indirecto");
                             int postCodigoTipoSueldoIndirecto = dr.GetOrdinal("codigo_tipo_sueldo_indirecto");
+                            int postCodigoCxCBTB = dr.GetOrdinal("codigo_cxc_btb");
                             while (dr.Read())
                             {
                                 objTransaccion.CodigoTransaccion = dr.GetInt64(postCodigoTransaccion);
@@ -4805,6 +4808,7 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.AnioSueldoIndirecto = dr.GetInt16(postAnioSueldoIndirecto);
                                 objTransaccion.MesSueldoIndirecto = dr.GetByte(postMesSueldoIndirecto);
                                 objTransaccion.CodigoTipoSueldoIndirecto = dr.GetInt16(postCodigoTipoSueldoIndirecto);
+                                objTransaccion.CodigoCuentaPorCobrarBTB = dr.GetInt64(postCodigoCxCBTB);
                             }
                         }
                     }

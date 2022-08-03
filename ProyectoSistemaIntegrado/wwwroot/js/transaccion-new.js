@@ -464,6 +464,7 @@ function fillCombosEdit(codigoTransaccion) {
                 set("uiFechaReciboStr", data.fechaReciboStr);
                 set("uiNombreProveedor", data.nombreProveedor);
                 set("uiEsSueldosIndirectos", data.esSueldoIndirecto.toString());
+                set("uiCodigoCuentaPorCobrarBTB", data.codigoCuentaPorCobrarBTB.toString());
                 setDataControls(codigoOperacion, data);
             })
         }
@@ -2342,6 +2343,9 @@ function intelligenceSearch() {
                         "targets": [11],
                         "className": "dt-body-right",
                         "visible": true
+                    }, {
+                        "targets": [12],
+                        "visible": false
                     }],
                 radio: true,
                 paginar: true,

@@ -48,15 +48,20 @@
                 <label class="col-form-label">Transacción</label>
                 <input type="text" readonly name="CodigoTransaccion" id="uiCodigoTransaccion" class="form-control obligatorio text-center" />
             </div>
-            <div class="col-md-3">
-                <label class="col-form-label">Año Operación</label>
+            <div class="col-md-2">
+                <label class="col-form-label">Año</label>
                 <input type="text" readonly name="AnioOperacion" id="uiAnioOperacion" class="form-control obligatorio text-center" />
             </div>
-            <div class="col-md-3">
-                <label class="col-form-label">Semana Operación</label>
+            <div class="col-md-2">
+                <label class="col-form-label">Semana</label>
                 <input type="text" readonly name="SemanaOperacion" id="uiNumeroSemanaActual" class="form-control obligatorio text-center" />
             </div>
-
+            <div class="col-md-3">
+                <div class="col-sm-10">
+                    <input class="form-check-input" type="checkbox" value="" id="uiCheckSemanaAnterior" onClick="fillComboSemana(this)">
+                    <label class="form-check-label" for="uiCheckSemanaAnterior">Semana Anterior</label>
+                </div>
+            </div>
         </div>
 
         @*Código de reporte*@
@@ -94,7 +99,7 @@
         <input type="hidden" name="FechaReciboStr" class="form-control" id="uiFechaReciboStr" />
         @*Codigo de Cuenta por Cobrar BTB*@
         <label class="col-sm-2 col-form-label" style="display:none;">Código Cuenta por Cobrar BTB:</label>
-        <input type="text" name="CodigoCuentaPorCobrarBTB" class="form-control" id="uiCodigoCuentaPorCobrarBTB" />
+        <input type="hidden" name="CodigoCuentaPorCobrarBTB" class="form-control" id="uiCodigoCuentaPorCobrarBTB" />
 
         <div class="mb-3 row">
             <label class="col-sm-2 col-form-label">Dia de Operacion:</label>

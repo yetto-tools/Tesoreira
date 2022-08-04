@@ -409,6 +409,10 @@ function fillCombosNew() {
 }
 
 function fillCombosEdit(codigoTransaccion) {
+    let semanaOperacionSistema = parseInt(document.getElementById("uiNumeroSemanaActualSistema").value);
+    //let anioOperacionSistema = parseInt(document.getElementById("uiAnioSemanaActualSistema").value);
+    let checkSemanaAnterior = document.getElementById("uiCheckSemanaAnterior")
+
     fetchGet("Transaccion/GetDataTransaccion/?codigoTransaccion=" + codigoTransaccion, "json", function (data) {
         if (data == null || data == undefined || data.length == 0) {
             MensajeError("Error en la búsqueda de la transacción " + codigoTransaccion);
@@ -430,6 +434,13 @@ function fillCombosEdit(codigoTransaccion) {
                 clearDataFormulario();
                 set("uiCodigoTransaccion", data.codigoTransaccion.toString());
                 set("uiNumeroSemanaActual", semanaOperacion.toString());
+
+                if (semanaOperacion == semanaOperacionSistema) {
+                    checkSemanaAnterior.disabled = false;
+                } else {
+                    checkSemanaAnterior.disabled = true;
+                }
+
                 set("uiAnioOperacion", anioOperacion.toString());
                 setCheckedValueOfRadioButtonGroup('CodigoTipoOperacion', codigoTipoOperacion.toString());
                 setCheckedValueOfRadioButtonGroup('CodigoTipoTransaccion', data.codigoTipoTransaccion);

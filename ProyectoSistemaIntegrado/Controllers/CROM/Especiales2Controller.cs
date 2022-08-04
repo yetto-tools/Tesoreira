@@ -569,7 +569,7 @@ namespace ProyectoSistemaIntegrado.Controllers.CROM
                             list.Add(row);
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         list = null;
                     }

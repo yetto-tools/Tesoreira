@@ -37,5 +37,7 @@ namespace CapaEntidad.Tesoreria
 
         public long CodigoCxCBTB { get; set; }
         public int CodigoPagoBTB { get; set; }
+
+        public string Observaciones { get; set; }
     }
 }

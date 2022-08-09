@@ -2157,43 +2157,7 @@ function GuardarDatos(nombreImpresora, numeroCopias) {
 }
 
 
-/* Temporalmente obsoleto */
-//function intelligenceSearch10() {
-//    // Incluir el radioButton al inicio, por eso se comienza por la columna 1
-//    let objGlobalConfigTransaccion = {
-//        url: "Transaccion/ListarEntidadesGenericas",
-//        cabeceras: ["codigo", "nombre entidad", "codigo categoria", "categoria", "codigo operacion", "codigoArea","codigoOperacionEntidad","codigoCanalVenta"],
-//        propiedades: ["codigoEntidad", "nombreEntidad", "codigoCategoriaEntidad", "nombreCategoria","codigoOperacionCaja","codigoArea","codigoOperacionEntidad","codigoCanalVenta"],
-//        divContenedorTabla: "divContenedorTabla",
-//        ocultarColumnas: true,
-//        hideColumns: [
-//            {   "targets": [3], 
-//                "visible": false
-//            }, {
-//                "targets": [5],
-//                "visible": false
-//            }, {
-//                "targets": [6],
-//                "visible": false
-//            }, {
-//                "targets": [7],
-//                "visible": false
-//            }, {
-//                "targets": [8],
-//                "visible": false
-//            }],
-//        divPintado: "divTabla",
-//        radio: true,
-//        paginar: true,
-//        eventoradio: "Entidades",
-//        slug: "codigoEntidad"
 
-//    }
-//    pintar(objGlobalConfigTransaccion);
-//}
-
-
-//"className": "dt-body-right"
 function intelligenceSearch() {
     fetchGet("Entidad/GetAllEntidadesGenericas", "json", function (rpta) {
         if (rpta != null) {
@@ -2315,8 +2279,8 @@ function intelligenceSearch() {
             pintarEntidades(objConfigEspeciales2, listaEntidadesEspeciales2);
 
             let objConfigBackToBack = {
-                cabeceras: ["codigo", "nombre entidad", "codigo categoria", "categoria", "codigo operacion", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta", "Mes", "Año","Monto a Devolver","codigoCxCBTB"],
-                propiedades: ["codigoEntidad", "nombreEntidad", "codigoCategoriaEntidad", "nombreCategoria", "codigoOperacionCaja", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta", "mesPlanillaBTB", "anioPlanillaBTB", "montoDevolucionBTB", "codigoCxCBTB"],
+                cabeceras: ["codigo", "nombre entidad", "codigo categoria", "categoria", "codigo operacion", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta", "Mes", "Año","Monto a Devolver","codigoCxCBTB","Observaciones"],
+                propiedades: ["codigoEntidad", "nombreEntidad", "codigoCategoriaEntidad", "nombreCategoria", "codigoOperacionCaja", "codigoArea", "codigoOperacionEntidad", "codigoCanalVenta", "mesPlanillaBTB", "anioPlanillaBTB", "montoDevolucionBTB", "codigoCxCBTB","observaciones"],
                 divContenedorTabla: "divContenedorTablaBackToBack",
                 divPintado: "divTablaBackToBack",
                 idtabla: "tablaBackToBack",
@@ -2356,6 +2320,9 @@ function intelligenceSearch() {
                         "visible": true
                     }, {
                         "targets": [12],
+                        "visible": false
+                    }, {
+                        "targets": [13],
                         "visible": false
                     }],
                 radio: true,
@@ -2738,40 +2705,6 @@ function getDataRowRadioEntidades(obj) {
                     set("uiCodigoOperacionCaja", table.cell(rowIdx, 5).data());
                     set("uiCodigoArea", table.cell(rowIdx, 6).data());
                     setSueldosIndirectosDonPepe(false.false);
-
-                    /*if (codigoOperacionEntidad != 0) {
-                        if (codigoOperacionEntidad != codigoOperacion) {
-                            table.$("input[type=radio]").prop("checked", false);
-                            MensajeError("Operación incorrecta para la entidad seleccionada");
-                        } else {
-                            set("uiCodigoEntidad", table.cell(rowIdx, 1).data());
-                            set("uiNombreEntidad", table.cell(rowIdx, 2).data());
-                            set("uiCodigoCategoriaEntidad", table.cell(rowIdx, 3).data());
-                            set("uiCategoriaEntidad", table.cell(rowIdx, 4).data());
-                            set("uiCodigoOperacionCaja", table.cell(rowIdx, 5).data());
-                            set("uiCodigoArea", table.cell(rowIdx, 6).data());
-                            setSueldosIndirectosDonPepe(false.false);
-    
-                            if (codigoCategoriaEntidad == PROVEEDOR_MATERIA_PRIMA ||
-                                codigoCategoriaEntidad == PROVEEDOR_MATERIAL_DE_EMPAQUE ||
-                                codigoCategoriaEntidad == PROVEEDOR_SERVICIOS_DE_FABRICACION ||
-                                codigoCategoriaEntidad == PROVEEDOR_INSUMOS_DE_FABRICACION ||
-                                codigoCategoriaEntidad == PROVEEDOR_SERVICIOS_VARIOS ||
-                                codigoCategoriaEntidad == PROVEEDOR_INSUMOS_VARIOS) {
-                                document.getElementById('div-captura-proveedor').style.display = 'block';
-                                elementNombreProveedor.classList.add('obligatorio');
-                            }
-                        }// fin if
-    
-                    } else {
-                        set("uiCodigoEntidad", table.cell(rowIdx, 1).data());
-                        set("uiNombreEntidad", table.cell(rowIdx, 2).data());
-                        set("uiCodigoCategoriaEntidad", table.cell(rowIdx, 3).data());
-                        set("uiCategoriaEntidad", table.cell(rowIdx, 4).data());
-                        set("uiCodigoOperacionCaja", table.cell(rowIdx, 5).data());
-                        set("uiCodigoArea", table.cell(rowIdx, 6).data());
-                        setSueldosIndirectosDonPepe(false.false);
-                    }*/
                     break;
             } // fin switch
         }// fin else
@@ -2838,7 +2771,7 @@ function getDataRowRadioEntidadesBackToBack(obj) {
         set("uiCodigoCanalVenta", table.cell(rowIdx, 8).data());
         set("uiMontoTransaccion", table.cell(rowIdx, 11).data());
         set("uiCodigoCuentaPorCobrarBTB", table.cell(rowIdx, 12).data());
-        //document.getElementById('div-ventas-en-ruta').style.display = 'none';
+        set("uiObservaciones", table.cell(rowIdx, 13).data());
     });
 }
 

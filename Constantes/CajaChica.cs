@@ -27,6 +27,12 @@ namespace Constantes
             public const int REGISTRADO = 3;
         }
 
+        public static class OrigenRecepcion
+        {
+            public const int TESORERIA = 1;
+            public const int CONTABILIDAD = 2;
+        }
+
 
     }
 

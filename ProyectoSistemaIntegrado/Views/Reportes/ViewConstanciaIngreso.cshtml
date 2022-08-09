@@ -22,6 +22,10 @@
         <p style="text-align: center; align-content: center; font-weight: bold;">@objTransaccion.CodigoSeguridad</p>
         <p style="text-align: center; align-content: center;">ING</p>
         <p style="text-align: center; align-content: center;">@objTransaccion.CodigoTransaccion</p>
+        @if (@objTransaccion.CodigoTransaccionAnt != 0)
+        {
+            <p style="text-align: center; align-content: center; font-weight: bold;">MODIFICA (@objTransaccion.CodigoTransaccionAnt.ToString())</p>
+        }
         <table style="border-top: 1px solid black; border-collapse: collapse;">
             <tr style="border-collapse: collapse;">
                 <td style="border-collapse: collapse;"><div style="text-align:left;">Recibo:</div></td>

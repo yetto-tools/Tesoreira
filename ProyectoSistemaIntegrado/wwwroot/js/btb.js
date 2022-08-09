@@ -316,8 +316,6 @@ function CalcularMontosDepositosBTB() {
     MostrarEmpleadosBackToBackDepositos(codigoTipoPlanilla, anioPlanilla, mesPlanilla);
 }
 
-//sumarcolumna: true,
-//columnasumalist: [14, 17]
 function MostrarEmpleadosBackToBackDepositos(codigoTipoPlanilla, anioPlanilla, mesPlanilla) {
     objConfiguracion = {
         url: "PlanillaTemporal/GetEmpleadosBackToBackBoletaDeposito/?codigoTipoPlanilla=" + codigoTipoPlanilla.toString() + "&anioPlanilla=" + anioPlanilla.toString() + "&mesPlanilla=" + mesPlanilla.toString(),

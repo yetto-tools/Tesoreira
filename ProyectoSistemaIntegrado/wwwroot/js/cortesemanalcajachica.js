@@ -37,11 +37,52 @@
             case "RecepcionReembolso":
                 ListarReembolsosDeCajaChica();
                 break;
+            case "RecepcionReembolsoContabilidad":
+                fillAnioRecepcionReembolso();
+                ListarReembolsosDeCajaChicaContabilidad();
+                break;
             default:
                 
                 break;
         }// fin switch
     }// fin if
+}
+
+function fillAnioRecepcionReembolso() {
+    let arrayDate = getFechaSistema();
+    let numeroMes = arrayDate[0]["mes"];
+    let anioActual = arrayDate[0]["anio"];
+    let anioAnterior = anioActual - 1;
+    let select = document.getElementById("uiFiltroAnioOperacion");
+    if (numeroMes == 1) {
+    let data = [{ "value": anioActual.toString(), "text": anioActual.toString() }, { "value": anioAnterior.toString(), "text": anioAnterior.toString() }]
+        FillCombo(data, "uiFiltroAnioOperacion", "value", "text", "- seleccione -", "-1");
+        select.selectedIndex = 1;
+        fillSemanasRecepcionReembolo(anioActual);
+
+    } else {
+        let data = [{ "value": anioActual.toString(), "text": anioActual.toString() }]
+        FillCombo(data, "uiFiltroAnioOperacion", "value", "text", "- seleccione -", "-1");
+        select.selectedIndex = 0;
+        fillSemanasRecepcionReembolo(anioActual);
+    }
+}
+
+function fillSemanasRecepcionReembolo(obj) {
+    let arrayDate = getFechaSistema();
+    let anioActual = arrayDate[0]["anio"];
+    let numeroSemanaActual = parseInt(document.getElementById("uiNumeroSemanaActualSistema").value);
+    let anioReporte = parseInt(obj);
+    if (anioReporte != anioActual) {
+        numeroSemanaActual = 53;
+    }
+    fetchGet("ProgramacionSemanal/GetSemanasAnteriores/?anio=" + anioReporte.toString() + "&numeroSemanaActual=" + numeroSemanaActual.toString() + "&numeroSemanas=3&incluirSemanaActual=1", "json", function (rpta) {
+        if (rpta != undefined && rpta != null && rpta.length != 0) {
+            FillCombo(rpta, "uiFiltroSemana", "numeroSemana", "periodo", "- seleccione -", "-1");
+        } else {
+            FillComboUnicaOpcion("uiFiltroSemana", "-1", "-- No Existen Fechas -- ");
+        }
+    })
 }
 
 function fillComboCajaChica() {
@@ -795,12 +836,138 @@ function AceptarRecepcionDeTransaccion() {
     }
     let frmGuardar = document.getElementById("frmConfirmacionRecepcion");
     let frm = new FormData(frmGuardar);
+
     fetchPost("CajaChica/RecepcionarTransaccion", "text", frm, function (data) {
         document.getElementById("uiClosePopupConfirmacionReembolso").click();
         if (data != "0") {
             MensajeError(rpta);
         } else {
             ListarReembolsosDeCajaChica();
+        }
+    })
+}
+
+
+/* Recepcion de reembolso desde contabilidad */
+function ListarReembolsosDeCajaChicaContabilidad() {
+    let objConfiguracion = {
+        url: "CajaChica/GetTransaccionesPorRecepcionarEnTesoreria",
+        cabeceras: ["Código Transacción", "codigoReporte", "codigoCajaChica", "Caja Chica", "Año", "Semana", "codigoOperacion", "Operación", "Monto", "Creado por", "Fecha Creación", "codigoEstadoRecepcion", "Estado", "Observaciones"],
+        propiedades: ["codigoTransaccion", "codigoReporte", "codigoCajaChica", "nombreCajaChica", "anioOperacion", "semanaOperacion", "codigoOperacion", "operacion", "monto", "usuarioIng", "fechaIngStr", "codigoEstadoRecepcion", "estadoRecepcion", "observaciones"],
+        divContenedorTabla: "divContenedorTabla",
+        divPintado: "divTabla",
+        paginar: true,
+        displaydecimals: ["monto"],
+        ocultarColumnas: true,
+        hideColumns: [
+            {
+                "targets": [1],
+                "visible": false
+            }, {
+                "targets": [2],
+                "visible": false
+            }, {
+                "targets": [6],
+                "visible": false
+            }, {
+                "targets": [8],
+                "className": "dt-body-right"
+            }, {
+                "targets": [11],
+                "visible": false
+            }, {
+                "targets": [13],
+                "visible": false
+            }],
+        slug: "codigoTransaccion",
+        aceptar: true,
+        funcionaceptar: "RecepcionarReembolsoConta"
+    }
+    pintar(objConfiguracion);
+}
+
+
+function FillComboDiasOperacion() {
+    let anio = parseInt(document.getElementById("uiFiltroAnioOperacion").value);
+    let numeroSemana = parseInt(document.getElementById("uiFiltroSemana").value);
+    fetchGet("ProgramacionSemanal/GetDiasOperacion/?anio=" + anio.toString() + "&numeroSemana=" + numeroSemana.toString(), "json", function (rpta) {
+        if (rpta == null || rpta == undefined || rpta.length == 0) {
+            FillComboUnicaOpcion("uiFiltroDiaOperacion", "-1", "-- No existe días -- ");
+        } else {
+            FillCombo(rpta, "uiFiltroDiaOperacion", "fechaStr", "dia", "- seleccione -", "-1");
+        }
+    });
+}
+
+function clickRecepcionarReembolsoConta(obj) {
+    let table = $('#tabla').DataTable();
+    $('#tabla tbody').on('click', '.option-aceptar', function () {
+        let rowIdx = table.row(this).index();
+        let codigoTransaccion = table.cell(rowIdx, 0).data();
+        let codigoReporte = table.cell(rowIdx, 1).data();
+        let codigoCajaChica = table.cell(rowIdx, 2).data();
+        let nombreCajaChica = table.cell(rowIdx, 3).data();
+        let codigoOperacion = parseInt(table.cell(rowIdx, 6).data());
+        let nombreOperacion = table.cell(rowIdx, 7).data();
+        let monto = table.cell(rowIdx, 8).data();
+        let observaciones = table.cell(rowIdx, 13).data();
+
+        let elementAnioOperacion = document.getElementById("uiFiltroAnioOperacion");
+        let elementSemanaOperacion = document.getElementById("uiFiltroSemana");
+        let elementCodigoBanco = document.getElementById("uiCodigoBanco");
+        let elementNumeroCheque = document.getElementById("uiNumeroCheque");
+        let elementFechaCheque = document.getElementById("uiFechaCheque");
+
+        elementAnioOperacion.classList.add('obligatorio');
+        elementSemanaOperacion.classList.add('obligatorio');
+
+        if (codigoOperacion == REINTEGRO_CAJA_CHICA || codigoOperacion == ABONO_CAJA_CHICA) {
+            fillComboBanco("uiCodigoBanco");
+            elementCodigoBanco.classList.add('obligatorio');
+            elementNumeroCheque.classList.add('obligatorio');
+            elementFechaCheque.classList.add('obligatorio');
+            document.getElementById('div-reembolso-abono-caja-chica').style.display = 'block';
+        }
+        else {
+            FillComboUnicaOpcion("uiCodigoBanco", "-1", "-- No Aplica -- ");
+            elementCodigoBanco.classList.remove('obligatorio');
+            elementNumeroCheque.classList.remove('obligatorio');
+            elementFechaCheque.classList.remove('obligatorio');
+            document.getElementById('div-reembolso-abono-caja-chica').style.display = 'none';
+        }
+
+        setI("uiTitlePopupConfirmacionReembolso", "Recepción de " + nombreOperacion);
+        set("uiCodigoReporte", codigoReporte);
+        set("uiCodigoTransaccion", codigoTransaccion);
+        set("uiCodigoCajaChica", codigoCajaChica);
+        set("uiNombreCajaChica", nombreCajaChica);
+        set("uiCodigoOperacion", codigoOperacion.toString());
+        set("uiNombreOperacion", nombreOperacion);
+        set("uiObservaciones", observaciones);
+        set("uiMonto", monto);
+        set("uiObservacionesRecepcion", "");
+        set("uiNumeroCheque", "");
+        set("uiFechaCheque", "");
+
+        document.getElementById("ShowPopupConfirmacionReembolso").click();
+    });
+}
+
+
+function AceptarRecepcionDeTransaccionConta() {
+    let errores = ValidarDatos("frmConfirmacionRecepcion")
+    if (errores != "") {
+        MensajeError(errores);
+        return;
+    }
+    let frmGuardar = document.getElementById("frmConfirmacionRecepcion");
+    let frm = new FormData(frmGuardar);
+    fetchPost("CajaChica/RecepcionarTransaccion", "text", frm, function (data) {
+        document.getElementById("uiClosePopupConfirmacionReembolso").click();
+        if (data != "0") {
+            MensajeError(rpta);
+        } else {
+            ListarReembolsosDeCajaChicaContabilidad();
         }
     })
 }

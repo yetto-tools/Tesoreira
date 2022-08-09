@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Http;
 @{
-    Context.Session.SetString("tituloPrincipal", "Recepción Reembolsos Caja Chica (Tesorería)");
+    Context.Session.SetString("tituloPrincipal", "Recepción Reembolsos Caja Chica (Conta)");
 }
 
 <button type="button" id="ShowPopupConfirmacionReembolso" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropConfirmacionReembolso" style="display:none">
@@ -23,12 +23,29 @@
             <div class="modal-body">
                 <form method="post" id="frmConfirmacionRecepcion">
                     <input type="hidden" name="CodigoReporte" class="form-control obligatorio" id="uiCodigoReporte" readonly />
-                    <input type="hidden" name="AnioOperacion" class="form-control obligatorio" id="uiAnioOperacion" readonly />
-                    <input type="hidden" name="SemanaOperacion" class="form-control obligatorio" id="uiSemanaOperacion" readonly />
                     <input type="hidden" name="CodigoTransaccion" class="form-control obligatorio" id="uiCodigoTransaccion" readonly />
                     <input type="hidden" name="CodigoCajaChica" class="form-control obligatorio" id="uiCodigoCajaChica" readonly />
                     <input type="hidden" name="CodigoOperacion" class="form-control obligatorio" id="uiCodigoOperacion" readonly />
-                    <input type="hidden" name="OrigenRecepcion" class="form-control obligatorio" value="1" readonly />
+                    <input type="hidden" name="OrigenRecepcion" class="form-control obligatorio" value="2" readonly />
+
+                    <div class="mb-3 row">
+                            <label class="col-sm-2 col-form-label"> </label>
+                            <div class="col-md-2">
+                                <label class="col-form-label">Año</label>
+                                <select class="form-control obligatorio" id="uiFiltroAnioOperacion" name="AnioOperacion" onclick="fillSemanasRecepcionReembolo(this.value)">
+                            </select>        
+                            </div>
+                            <div class="col-md-5">
+                                <label class="col-form-label">Semana</label>
+                                <select class="form-control obligatorio" id="uiFiltroSemana" name="SemanaOperacion" onchange="FillComboDiasOperacion()">
+                                </select>    
+                            </div>
+                            <div class="col-md-3">
+                                <label class="col-form-label">Día</label>
+                                <select class="form-control obligatorio" id="uiFiltroDiaOperacion" name="FechaOperacionStr"></select>
+                        </div>
+                    </div>
+
                     <div class="mb-3 row">
                         <label class="col-sm-2">Caja Chica:</label>
                         <div class="col-sm-10">
@@ -83,7 +100,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="AceptarRecepcionDeTransaccion()">Aceptar</button>
+                <button type="button" class="btn btn-primary" onclick="AceptarRecepcionDeTransaccionConta()">Aceptar</button>
             </div>
         </div>
     </div>

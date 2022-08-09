@@ -301,7 +301,7 @@ namespace CapaDatos.Tesoreria
                     cmd.Parameters.AddWithValue("@MontoSaldoAnteriorCuentaPorCobrar", objTransaccion.MontoSaldoAnteriorCxC);
                     cmd.Parameters.AddWithValue("@MontoSaldoActualCuentaPorCobrar", objTransaccion.MontoSaldoActualCxC);
                     cmd.Parameters.AddWithValue("@CodigoTipoSueldoIndirecto", objTransaccion.CodigoTipoSueldoIndirecto == -1 ? 0 : objTransaccion.CodigoTipoSueldoIndirecto);
-                    cmd.Parameters.AddWithValue("@CodigoCuentaPorCobrarBTB", objTransaccion.CodigoCuentaPorCobrarBTB == 0 ? DBNull.Value : objTransaccion.CodigoCuentaPorCobrarBTB);
+                    cmd.Parameters.AddWithValue("@CodigoCuentaPorCobrarBTB", (objTransaccion.CodigoCuentaPorCobrarBTB == 0 || objTransaccion.CodigoCuentaPorCobrarBTB == null) ? DBNull.Value : objTransaccion.CodigoCuentaPorCobrarBTB);
 
                     cmd.ExecuteNonQuery();
 
@@ -4641,7 +4641,9 @@ namespace CapaDatos.Tesoreria
                             x.anio_sueldo_indirecto,
                             x.mes_sueldo_indirecto,
                             x.codigo_tipo_sueldo_indirecto,
-                            CAST(COALESCE(x.codigo_cxc_btb,0) AS BigInt) AS codigo_cxc_btb
+                            CAST(COALESCE(x.codigo_cxc_btb,0) AS BigInt) AS codigo_cxc_btb,
+                            CAST(COALESCE(x.codigo_transaccion_ant,0)  AS BigInt) AS codigo_transaccion_ant
+
                     FROM db_tesoreria.transaccion x
                     INNER JOIN db_tesoreria.operacion w
                     ON x.codigo_operacion = w.codigo_operacion
@@ -4741,6 +4743,8 @@ namespace CapaDatos.Tesoreria
                             int postMesSueldoIndirecto = dr.GetOrdinal("mes_sueldo_indirecto");
                             int postCodigoTipoSueldoIndirecto = dr.GetOrdinal("codigo_tipo_sueldo_indirecto");
                             int postCodigoCxCBTB = dr.GetOrdinal("codigo_cxc_btb");
+                            int postCodigoTransaccionAnt = dr.GetOrdinal("codigo_transaccion_ant");
+
                             while (dr.Read())
                             {
                                 objTransaccion.CodigoTransaccion = dr.GetInt64(postCodigoTransaccion);
@@ -4816,6 +4820,8 @@ namespace CapaDatos.Tesoreria
                                 objTransaccion.MesSueldoIndirecto = dr.GetByte(postMesSueldoIndirecto);
                                 objTransaccion.CodigoTipoSueldoIndirecto = dr.GetInt16(postCodigoTipoSueldoIndirecto);
                                 objTransaccion.CodigoCuentaPorCobrarBTB = dr.GetInt64(postCodigoCxCBTB);
+                                objTransaccion.CodigoTransaccionAnt = dr.GetInt64(postCodigoTransaccionAnt);
+
                             }
                         }
                     }

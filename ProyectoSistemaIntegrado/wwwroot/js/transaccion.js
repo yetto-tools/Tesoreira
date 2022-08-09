@@ -324,7 +324,9 @@ function Imprimir(obj) {
     let table = $('#tabla').DataTable();
     $('#tabla tbody').on('click', '.option-imprimir', function () {
         let rowIdx = table.row(this).index();
-        let codigoTransaccion = table.cell(rowIdx,0).data();
+        let codigoTransaccion = table.cell(rowIdx, 0).data();
+        let codigoTransaccionAnt = table.cell(rowIdx, 1).data();
+
         let codigoOperacion = parseInt(table.cell(rowIdx, 3).data());
         let nombreOperacion = table.cell(rowIdx, 4).data();
 
@@ -358,9 +360,9 @@ function Imprimir(obj) {
         }
 
         if (signo == 1) { // Ingreso
-            ImprimirConstanciaIngresos(codigoTransaccion, codigoOperacion, numeroReciboStr, fechaOperacionStr, codigoEntidad, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, observaciones);
+            ImprimirConstanciaIngresos(codigoTransaccion, codigoOperacion, numeroReciboStr, fechaOperacionStr, codigoEntidad, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, observaciones, codigoTransaccionAnt);
         } else { // Egreso
-            ImprimirConstanciaEgresos(codigoTransaccion, codigoOperacion, codigoOperacionCaja, numeroReciboStr, fechaOperacionStr, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, numeroCuenta, observaciones, periodoComisiones);
+            ImprimirConstanciaEgresos(codigoTransaccion, codigoOperacion, codigoOperacionCaja, numeroReciboStr, fechaOperacionStr, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, numeroCuenta, observaciones, periodoComisiones, codigoTransaccionAnt);
         }
     });
 }
@@ -1066,16 +1068,16 @@ function mostrarConsultaCorrecciones(anioOperacion, semanaOperacion, codigoRepor
 
 
 
-function ImprimirConstanciaIngresos(codigoTransaccion, codigoOperacion, numeroRecibo, fechaRecibo, codigoEntidad, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, observaciones) {
-    let html = getHtmlConstanciaIngreso(codigoTransaccion, codigoOperacion, numeroRecibo, fechaRecibo, codigoEntidad, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, observaciones);
+function ImprimirConstanciaIngresos(codigoTransaccion, codigoOperacion, numeroRecibo, fechaRecibo, codigoEntidad, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, observaciones, codigoTransaccionAnt) {
+    let html = getHtmlConstanciaIngreso(codigoTransaccion, codigoOperacion, numeroRecibo, fechaRecibo, codigoEntidad, nombreEntidad, nombreOperacion, monto, recursos, usuarioCreacion, ruta, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, observaciones, codigoTransaccionAnt);
     var ventana = window.open();
     ventana.document.write(html);
     ventana.print();
     ventana.close();
 }
 
-function ImprimirConstanciaEgresos(codigoTransaccion, codigoOperacion, codigoOperacionCaja, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, numeroCuenta, observaciones, periodoComisiones) {
-    let html = getHtmlConstanciaEgreso(codigoTransaccion, codigoOperacion, codigoOperacionCaja, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, numeroCuenta, observaciones, periodoComisiones);
+function ImprimirConstanciaEgresos(codigoTransaccion, codigoOperacion, codigoOperacionCaja, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, numeroCuenta, observaciones, periodoComisiones, codigoTransaccionAnt) {
+    let html = getHtmlConstanciaEgreso(codigoTransaccion, codigoOperacion, codigoOperacionCaja, numeroRecibo, fechaRecibo, nombreEntidad, nombreOperacion, monto, usuarioCreacion, fechaImpresion, codigoSeguridad, montoSaldoAnteriorCxC, montoSaldoActualCxC, numeroCuenta, observaciones, periodoComisiones, codigoTransaccionAnt);
     var ventana = window.open();
     ventana.document.write(html);
     ventana.print();

@@ -60,6 +60,11 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
             return View();
         }
 
+        public IActionResult RecepcionReembolsoContabilidad()
+        {
+            return View();
+        }
+
         public IActionResult ViewReporteReintegroCajaChica(int codigoReporte, int anioOperacion, int semanaOperacion, int codigoCajaChica)
         {
             ReportContabilidadViewModel obj = new ReportContabilidadViewModel();

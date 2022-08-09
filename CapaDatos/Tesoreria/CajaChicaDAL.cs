@@ -2471,7 +2471,7 @@ namespace CapaDatos.Tesoreria
         /// Recepción de operaciones de reembolos, disminución o Abono a Caja chica
         /// </summary>
         /// <returns></returns>
-        public string RecepcionarTransaccion(TransaccionCajaChicaCLS objTransaccion, string usuarioAct)
+        public string RecepcionarTransaccion(TransaccionCajaChicaCLS objTransaccion, string usuarioAct, int diaOperacion, DateTime fechaOperacion)
         {
             string resultado = "";
             using (SqlConnection conexion = new SqlConnection(cadenaTesoreria))
@@ -2497,7 +2497,10 @@ namespace CapaDatos.Tesoreria
                         cmd.Parameters.AddWithValue("@CodigoOperacion", objTransaccion.CodigoOperacion);
                         cmd.Parameters.AddWithValue("@AnioOperacion", objTransaccion.AnioOperacion);
                         cmd.Parameters.AddWithValue("@SemanaOperacion", objTransaccion.SemanaOperacion);
-                        cmd.Parameters.AddWithValue("@DiaOperacion", Util.Conversion.DayOfWeek(DateTime.Now));
+
+                        cmd.Parameters.AddWithValue("@DiaOperacion", diaOperacion);
+                        cmd.Parameters.AddWithValue("@FechaOperacion", fechaOperacion);
+
                         cmd.Parameters.AddWithValue("@CodigoBanco", objTransaccion.CodigoBanco);
                         cmd.Parameters.AddWithValue("@NumeroCheque", objTransaccion.NumeroCheque == null ? "" : objTransaccion.NumeroCheque);
                         cmd.Parameters.AddWithValue("@FechaCheque", objTransaccion.FechaCheque);

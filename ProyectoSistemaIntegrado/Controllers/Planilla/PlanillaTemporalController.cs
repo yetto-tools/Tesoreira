@@ -97,6 +97,9 @@ namespace ProyectoSistemaIntegrado.Controllers.Planilla
             return obj.GetPagosDescuentosConsulta(anio, mes, codigoEmpresa);
         }
 
+
+
+
     }
 
 }

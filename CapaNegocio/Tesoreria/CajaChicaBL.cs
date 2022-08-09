@@ -184,7 +184,17 @@ namespace CapaNegocio.Tesoreria
         public string RecepcionarTransaccion(TransaccionCajaChicaCLS objTransaccion, string usuarioAct)
         {
             CajaChicaDAL obj = new CajaChicaDAL();
-            return obj.RecepcionarTransaccion(objTransaccion, usuarioAct);
+
+            if (objTransaccion.OrigenRecepcion == Constantes.CajaChica.OrigenRecepcion.TESORERIA)
+            {
+                return obj.RecepcionarTransaccion(objTransaccion, usuarioAct, Util.Conversion.DayOfWeek(DateTime.Now), DateTime.Now);
+            }
+            else
+            {
+                DateTime fechaOperacion = Util.Conversion.ConvertDateSpanishToEnglish(objTransaccion.FechaOperacionStr);
+                return obj.RecepcionarTransaccion(objTransaccion, usuarioAct, Util.Conversion.DayOfWeek(fechaOperacion), fechaOperacion);
+            }
+            
         }
 
 

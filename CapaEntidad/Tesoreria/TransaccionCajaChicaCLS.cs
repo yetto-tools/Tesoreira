@@ -37,5 +37,12 @@ namespace CapaEntidad.Tesoreria
         public string FechaIngStr { get; set; }
 
         public string ObservacionesRecepcion { get; set; }
+
+        public byte OrigenRecepcion { get; set; }
+
+        public byte DiaOperacion { get; set; }
+
+        public string FechaOperacionStr { get; set; }
+
     }
 }

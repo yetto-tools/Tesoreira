@@ -304,7 +304,7 @@ namespace ProyectoSistemaIntegrado.Controllers.Tesoreria
 
         }
 
-        public string RecepcionarTransaccion(TransaccionCajaChicaCLS objTransaccion, string observaciones)
+        public string RecepcionarTransaccion(TransaccionCajaChicaCLS objTransaccion)
         {
             ViewBag.Message = HttpContext.Session.GetString("usuario");
             UsuarioCLS objUsuario = JsonConvert.DeserializeObject<UsuarioCLS>(ViewBag.Message);

@@ -49,6 +49,11 @@ namespace ProyectoSistemaIntegrado.Controllers.Reportes
             return View();
         }
 
+        public IActionResult MostrarReporteDepositosBancarios()
+        {
+            return View();
+        }
+
         public List<TipoReporteCLS> GetTiposDeReportesAsignados()
         {
             ViewBag.Message = HttpContext.Session.GetString("usuario");

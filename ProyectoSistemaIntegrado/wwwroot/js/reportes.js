@@ -259,6 +259,9 @@ function VerDetalleReporte(obj) {
             case REPORTE_VALES_SALIDA:
                 Redireccionar("Reportes", "MostrarReporteValesSalida");
                 break;
+            case REPORTE_DEPOSITOS_BANCARIOS_Y_BTB_MULTIPLES_SEMANAS:
+                Redireccionar("Reportes", "MostrarReporteDepositosBancarios");
+                break;
             default:
                 Redireccionar("Reportes", "MostrarReporte/?codigoTipoReporte=" + codigoTipoReporte.toString());
                 break;

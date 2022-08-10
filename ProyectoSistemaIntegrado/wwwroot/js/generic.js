@@ -308,6 +308,8 @@ function pintar(objConfiguracion) {
         objConfiguracionGlobal.registrar = false;
     if (objConfiguracionGlobal.arqueo == undefined)
         objConfiguracionGlobal.arqueo = false;
+    if (objConfiguracionGlobal.recepcion == undefined)
+        objConfiguracionGlobal.recepcion = false;
     if (objConfiguracionGlobal.revision == undefined)
         objConfiguracionGlobal.revision = false;
     if (objConfiguracionGlobal.funcionrevision == undefined)
@@ -443,122 +445,108 @@ function generarTabla(res, objConfiguracionGlobal) {
             contenido += "<td>" + cabeceras[i] + "</td>";
             countColumns++;
         }
-        /*if (objConfiguracionGlobal.editar == true ||
-            objConfiguracionGlobal.eliminar == true ||
-            objConfiguracionGlobal.autorizar == true ||
-            objConfiguracionGlobal.imprimir == true ||
-            objConfiguracionGlobal.reporte == true ||
-            objConfiguracionGlobal.pdf == true ||
-            objConfiguracionGlobal.generar == true ||
-            objConfiguracionGlobal.arqueo == true ||
-            objConfiguracionGlobal.revision == true ||
-            objConfiguracionGlobal.excluir == true ||
-            objConfiguracionGlobal.aceptar == true ||
-            objConfiguracionGlobal.actualizar == true ||
-            objConfiguracionGlobal.verdetalle == true ||
-            objConfiguracionGlobal.addTextBox == true ||
-            objConfiguracionGlobal.alerta == true ||
-            objConfiguracionGlobal.excel == true ||
-            objConfiguracionGlobal.web == true ||
-            objConfiguracionGlobal.check == true) {*/
 
-            if (objConfiguracionGlobal.addTextBox == true) {
-                objConfiguracionGlobal.propertiesColumnTextBox.map(({ header }) => {
-                    contenido += `<td>${header}</td>`
-                    countColumns++;
-                })
-            }
-            if (objConfiguracionGlobal.alerta == true) {
-                contenido += "<td>Alerta</td>"
+        if (objConfiguracionGlobal.addTextBox == true) {
+            objConfiguracionGlobal.propertiesColumnTextBox.map(({ header }) => {
+                contenido += `<td>${header}</td>`
                 countColumns++;
-            }
-            if (objConfiguracionGlobal.check == true) {
-                contenido += "<td>" + objConfiguracionGlobal.checkheader + "</td>";
-                countColumns++;
-            }
-            if (objConfiguracionGlobal.excluir == true) {
-                contenido += `<td style='text-align: center;'>Excluir<input type="checkbox" id="uiExcluirCheck" disabled value="0" onclick="selectAllCheckBox('${objConfiguracionGlobal.idtabla}',this)"></td>`
-                countColumns++;
-            }
-            if (objConfiguracionGlobal.editar == true) {
-                contenido += "<td></td>"
-                countColumns++;
-            }
-            if (objConfiguracionGlobal.eliminar == true) {
-                contenido += "<td></td>"
-                countColumns++;
-            }
-            if (objConfiguracionGlobal.autorizar == true) {
-                contenido += "<td></td>"
-                countColumns++;
-            }
-            if (objConfiguracionGlobal.imprimir == true) {
-                contenido += "<td></td>"
-                countColumns++;
-            }
-            if (objConfiguracionGlobal.reporte == true) {
-                contenido += "<td></td>"
-                countColumns++;
-            }
-            if (objConfiguracionGlobal.pdf == true) {
-                contenido += "<td></td>"
-                countColumns++;
-            }
+            })
+        }
+        if (objConfiguracionGlobal.alerta == true) {
+            contenido += "<td>Alerta</td>"
+            countColumns++;
+        }
+        if (objConfiguracionGlobal.check == true) {
+            contenido += "<td>" + objConfiguracionGlobal.checkheader + "</td>";
+            countColumns++;
+        }
+        if (objConfiguracionGlobal.excluir == true) {
+            contenido += `<td style='text-align: center;'>Excluir<input type="checkbox" id="uiExcluirCheck" disabled value="0" onclick="selectAllCheckBox('${objConfiguracionGlobal.idtabla}',this)"></td>`
+            countColumns++;
+        }
+        if (objConfiguracionGlobal.editar == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
+        if (objConfiguracionGlobal.eliminar == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
+        if (objConfiguracionGlobal.autorizar == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
+        if (objConfiguracionGlobal.imprimir == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
 
-            if (objConfiguracionGlobal.viewreporte == true) {
-                contenido += "<td></td>"
-                countColumns++;
-            }
-            if (objConfiguracionGlobal.generar == true) {
-                contenido += "<td></td>"
-                countColumns++;
-            }
-            if (objConfiguracionGlobal.import == true) {
-                contenido += "<td></td>"
-                countColumns++;
-            }
-            if (objConfiguracionGlobal.depurar == true) {
-                contenido += "<td></td>"
-                countColumns++;
-            }
-            if (objConfiguracionGlobal.registrar == true) {
-                contenido += "<td></td>"
-                countColumns++;
-            }
-            if (objConfiguracionGlobal.arqueo == true) {
-                contenido += "<td>Arqueo</td>"
-                countColumns++;
-            }
-            if (objConfiguracionGlobal.revision == true) {
-                contenido += "<td></td>"
-                countColumns++;
-            }
-            if (objConfiguracionGlobal.aceptar == true) {
-                contenido += "<td></td>"
-                countColumns++;
-            }
-            if (objConfiguracionGlobal.aceptartraslado == true) {
-                contenido += "<td></td>"
-                countColumns++;
-            }
-            if (objConfiguracionGlobal.actualizar == true) {
-                contenido += "<td></td>"
-                countColumns++;
-            }
-            if (objConfiguracionGlobal.verdetalle == true) {
-                contenido += "<td></td>"
-                countColumns++;
-            }
-            if (objConfiguracionGlobal.excel == true) {
-                contenido += "<td>EXCEL</td>"
-                countColumns++;
-            }
-            if (objConfiguracionGlobal.web == true) {
-                contenido += "<td></td>"
-                countColumns++;
-            }
-        //}
+        if (objConfiguracionGlobal.recepcion == true) {
+            contenido += "<td>Recepción</td>"
+            countColumns++;
+        }
 
+        if (objConfiguracionGlobal.reporte == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
+        if (objConfiguracionGlobal.pdf == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
+
+        if (objConfiguracionGlobal.viewreporte == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
+        if (objConfiguracionGlobal.generar == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
+        if (objConfiguracionGlobal.import == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
+        if (objConfiguracionGlobal.depurar == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
+        if (objConfiguracionGlobal.registrar == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
+        if (objConfiguracionGlobal.arqueo == true) {
+            contenido += "<td>Arqueo</td>"
+            countColumns++;
+        }
+        if (objConfiguracionGlobal.revision == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
+        if (objConfiguracionGlobal.aceptar == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
+        if (objConfiguracionGlobal.aceptartraslado == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
+        if (objConfiguracionGlobal.actualizar == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
+        if (objConfiguracionGlobal.verdetalle == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
+        if (objConfiguracionGlobal.excel == true) {
+            contenido += "<td>EXCEL</td>"
+            countColumns++;
+        }
+        if (objConfiguracionGlobal.web == true) {
+            contenido += "<td></td>"
+            countColumns++;
+        }
 
         contenido += "</tr>";
         contenido += "</thead>";
@@ -635,6 +623,7 @@ function generarTabla(res, objConfiguracionGlobal) {
                 objConfiguracionGlobal.depurar == true ||
                 objConfiguracionGlobal.registrar == true ||
                 objConfiguracionGlobal.arqueo == true ||
+                objConfiguracionGlobal.recepcion == true ||
                 objConfiguracionGlobal.revision == true ||
                 objConfiguracionGlobal.excluir == true ||
                 objConfiguracionGlobal.aceptar == true ||
@@ -831,6 +820,16 @@ function generarTabla(res, objConfiguracionGlobal) {
                         contenido += `</button>`;
                     }
 
+                    contenido += "</td>";
+                }
+
+                if (objConfiguracionGlobal.recepcion == true) {
+                    contenido += "<td style='padding: 2px;' class='option-recepcion'>";
+                    if (obj["permisoRecepcion"] == 1) {
+                        contenido += `<button type="button" class="btn btn-success" onclick="${objConfiguracionGlobal.funcionrecepcion}(${obj[slug]})">${objConfiguracionGlobal.nombrecolumnarecepcion}</button>`;
+                    } else {
+                        contenido += `<button type="button" class="btn btn-secondary">${objConfiguracionGlobal.nombrecolumnarecepcion}</button>`;
+                    }
                     contenido += "</td>";
                 }
                 

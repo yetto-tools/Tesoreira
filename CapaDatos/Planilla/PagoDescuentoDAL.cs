@@ -203,7 +203,9 @@ namespace CapaDatos.Planilla
                            NULL AS fecha_act,
                            @CargaInicial AS carga_inicial,
                            x.codigo_pago,
-                           0 AS codigo_reporte 
+                           0 AS codigo_reporte,
+                           0 AS codigo_estado_pago_btb,
+                           NULL AS codigo_transaccion_pago_btb 
                     FROM db_contabilidad.pagos_y_descuentos x
                     LEFT JOIN db_rrhh.empleado y
                     ON x.codigo_empresa = y.codigo_empresa AND x.codigo_empleado = y.codigo_empleado

@@ -260,13 +260,10 @@ function ListarReportesSemanalCajaChicaRevision() {
             }],
         slug: "codigoReporte",
 
-        recepcion: true,
-        funcionrecepcion: "RecepcionReembolso",
-        nombrecolumnarecepcion: "Reembolso",
-
         revision: true,
         funcionrevision: "RevisarReporte",
         nombrecolumnarevision: "Revisar",
+
         aceptar: true,
         funcionaceptar: "FinalizarRevision",
         reporte: true

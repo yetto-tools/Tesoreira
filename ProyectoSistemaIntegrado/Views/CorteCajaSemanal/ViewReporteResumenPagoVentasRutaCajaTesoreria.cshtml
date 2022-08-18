@@ -24,22 +24,22 @@
                 <th style="font-size: 8px; margin: auto; border: 1px solid black;"><div style="text-align: center;"></div></th>
                 @foreach (var dr in reporte.listaEncabezadoFechas)
                 {
-                    <th style="font-size: 8px; margin: auto; border: 1px solid black;"><div style="text-align: center;">@dr.FechaStr</div></th>
+                    <th style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">@dr.FechaStr</div></th>
                 }
-                <th style="font-size: 8px; margin: auto; border: 1px solid black;"><div style="text-align: center;"></div></th>
+                <th style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;"></div></th>
             </tr>
             <tr style="border-bottom: 1px solid black;">
-                <th style="font-size: 8px; margin: auto; border: 1px solid black; width:400px;"><div style="text-align: center;">CONCEPTO</div></th>
-                <th style="font-size: 8px; margin: auto; border: 1px solid black;"><div style="text-align: center;">TOTAL ACUMULADO</div></th>
-                <th style="font-size: 8px; margin: auto; border: 1px solid black;"><div style="text-align: center;">TOTAL SEMANA</div></th>
-                <th style="font-size: 8px; margin: auto; border: 1px solid black;"><div style="text-align: center;">LUNES</div></th>
-                <th style="font-size: 8px; margin: auto; border: 1px solid black;"><div style="text-align: center;">MARTES</div></th>
-                <th style="font-size: 8px; margin: auto; border: 1px solid black;"><div style="text-align: center;">MIERCOLES</div></th>
-                <th style="font-size: 8px; margin: auto; border: 1px solid black;"><div style="text-align: center;">JUEVES</div></th>
-                <th style="font-size: 8px; margin: auto; border: 1px solid black;"><div style="text-align: center;">VIERNES</div></th>
-                <th style="font-size: 8px; margin: auto; border: 1px solid black;"><div style="text-align: center;">SABADO</div></th>
-                <th style="font-size: 8px; margin: auto; border: 1px solid black;"><div style="text-align: center;">DOMINGO</div></th>
-                <th style="font-size: 8px; margin: auto; border: 1px solid black;"><div style="text-align: center;">DEVOLUCIONES</div></th>
+                <th style="font-size: 10px; margin: auto; border: 1px solid black; width:400px;"><div style="text-align: center;">CONCEPTO</div></th>
+                <th style="font-size: 10px; margin: auto; border: 1px solid black;"><div style="text-align: center;">TOTAL ACUMULADO</div></th>
+                <th style="font-size: 10px; margin: auto; border: 1px solid black;"><div style="text-align: center;">TOTAL SEMANA</div></th>
+                <th style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">LUNES</div></th>
+                <th style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">MARTES</div></th>
+                <th style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">MIERCOLES</div></th>
+                <th style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">JUEVES</div></th>
+                <th style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">VIERNES</div></th>
+                <th style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">SABADO</div></th>
+                <th style="font-size: 12px; margin: auto; border: 1px solid black;"><div style="text-align: center;">DOMINGO</div></th>
+                <th style="font-size: 10px; margin: auto; border: 1px solid black;"><div style="text-align: center;">DEVOLUCIONES</div></th>
             </tr>
         <thead />
         @{var codigoConcepto = 0; }
@@ -83,7 +83,7 @@
             {
                 codigoConceptoAnterior = codigoConcepto;
                 <tr>
-                    <td style="padding: 4px; font-size: 8px;"><div style="text-align: center; font-weight: bold; font-family: Arial, Helvetica, Verdana;">@dr.Concepto</div></td>
+                    <td style="padding: 4px; font-size: 12px;"><div style="text-align: center; font-weight: bold; font-family: Arial, Helvetica, Verdana;">@dr.Concepto</div></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -97,7 +97,7 @@
                 </tr>
             }
             <tr>
-                <td style="padding: 4px; font-size: 8px">
+                <td style="padding: 4px; font-size: 14px">
                     @dr.NombreEntidad @if (dr.Observaciones != null)
                     {@dr.Observaciones}
                 </td>
@@ -190,7 +190,7 @@
         @if (reporte.listaEspecial1.Count > 0)
         {
             <tr>
-                <td style="padding: 4px; font-size: 8px;"><div style="text-align: center; font-weight: bold; font-family: Arial, Helvetica, Verdana;">ESPECIALES "1"</div></td>
+                <td style="padding: 4px; font-size: 12px;"><div style="text-align: center; font-weight: bold; font-family: Arial, Helvetica, Verdana;">ESPECIALES "1"</div></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -240,7 +240,7 @@
         @if (reporte.listaEspecial1.Count > 0)
         {
             <tr style="border-bottom: 1pt solid black; border-top: 1pt solid black;">
-                <td style="padding: 4px; font-size: 10px;"><div style="text-align: left; font-weight: bold; font-family: Arial, Helvetica, Verdana;">TOTAL ESPECIALES</div></td>
+                <td style="padding: 4px; font-size: 12px;"><div style="text-align: left; font-weight: bold; font-family: Arial, Helvetica, Verdana;">TOTAL ESPECIALES</div></td>
                 <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@sumaSaldoAnterior.ToString("N2")</div></td>
                 <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalSemana.ToString("N2")</div></td>
                 <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalLunes.ToString("N2")</div></td>
@@ -259,7 +259,7 @@
         @if (reporte.listaEspecial2.Count > 0)
         {
             <tr>
-                <td style="padding: 4px; font-size: 8px;"><div style="text-align: center; font-weight: bold; font-family: Arial, Helvetica, Verdana;">ESPECIALES "2"</div></td>
+                <td style="padding: 4px; font-size: 12px;"><div style="text-align: center; font-weight: bold; font-family: Arial, Helvetica, Verdana;">ESPECIALES "2"</div></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -308,7 +308,7 @@
         @if (reporte.listaEspecial2.Count > 0)
         {
             <tr style="border-bottom: 1pt solid black; border-top: 1pt solid black;">
-                <td style="padding: 4px; font-size: 10px;"><div style="text-align: left; font-weight: bold; font-family: Arial, Helvetica, Verdana;">TOTAL ESPECIALES</div></td>
+                <td style="padding: 4px; font-size: 12px;"><div style="text-align: left; font-weight: bold; font-family: Arial, Helvetica, Verdana;">TOTAL ESPECIALES</div></td>
                 <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@sumaSaldoAnterior.ToString("N2")</div></td>
                 <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalSemana.ToString("N2")</div></td>
                 <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalLunes.ToString("N2")</div></td>
@@ -326,7 +326,7 @@
         @if (reporte.listaCajas.Count > 0)
         {
             <tr>
-                <td style="padding: 4px; font-size: 8px;"><div style="text-align: center; font-weight: bold; font-family: Arial, Helvetica, Verdana;">CAJAS</div></td>
+                <td style="padding: 4px; font-size: 12px;"><div style="text-align: center; font-weight: bold; font-family: Arial, Helvetica, Verdana;">CAJAS</div></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -364,7 +364,7 @@
             totalDomingo = totalDomingo + dr.MontoDomingo;
             totalDevoluciones = totalDevoluciones + dr.Devoluciones;
             <tr>
-                <td style="padding: 4px; font-size: 8px"></td>
+                <td style="padding: 4px; font-size: 12px"></td>
                 <td style="padding: 4px; font-size: 12px; width: 90px;">
                     <div style="text-align: right;">
                         @if (dr.SaldoAnterior != 0)
@@ -434,7 +434,7 @@
         @if (reporte.listaCajas.Count > 0)
         {
             <tr style="border-bottom: 1pt solid black; border-top: 1pt solid black;">
-                <td style="padding: 4px; font-size: 8px;"><div style="text-align: left; font-weight: bold; font-family: Arial, Helvetica, Verdana;">TOTAL CAJAS DEL DIA</div></td>
+                <td style="padding: 4px; font-size: 12px;"><div style="text-align: left; font-weight: bold; font-family: Arial, Helvetica, Verdana;">TOTAL CAJAS DEL DIA</div></td>
                 <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@sumaSaldoAnterior.ToString("N2")</div></td>
                 <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalSemana.ToString("N2")</div></td>
                 <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@totalLunes.ToString("N2")</div></td>

@@ -1907,7 +1907,7 @@ function fillMesesSueldosIndirectosDonPepe(obj, mes) {
                     }
                     break;
                 case 3: // MARZO
-                    data = [{ "text": "FEBRERO", "value": "2" }, { "text": "ENERO", "value": "1" }]
+                    data = [{ "text": "MARZO", "value": "3" }, { "text": "FEBRERO", "value": "2" }, { "text": "ENERO", "value": "1" }]
                     FillCombo(data, "uiMesSueldoIndirecto", "value", "text", "- seleccione -", "-1");
                     select.selectedIndex = 0;
                     if (mes > 0) {
@@ -1915,7 +1915,7 @@ function fillMesesSueldosIndirectosDonPepe(obj, mes) {
                     }
                     break;
                 case 4: // ABRIL
-                    data = [{ "text": "ABRIL", "value": "4" }, { "text": "MARZO", "value": "3" }]
+                    data = [{ "text": "ABRIL", "value": "4" }, { "text": "MARZO", "value": "3" }, { "text": "FEBRERO", "value": "2" }, { "text": "ENERO", "value": "1" }]
                     FillCombo(data, "uiMesSueldoIndirecto", "value", "text", "- seleccione -", "-1");
                     select.selectedIndex = 0;
                     if (mes > 0) {
@@ -1923,7 +1923,7 @@ function fillMesesSueldosIndirectosDonPepe(obj, mes) {
                     }
                     break;
                 case 5: // MAYO
-                    data = [{ "text": "MAYO", "value": "5" }, { "text": "ABRIL", "value": "4" }]
+                    data = [{ "text": "MAYO", "value": "5" }, { "text": "ABRIL", "value": "4" }, { "text": "MARZO", "value": "3" }, { "text": "FEBRERO", "value": "2" }]
                     FillCombo(data, "uiMesSueldoIndirecto", "value", "text", "- seleccione -", "-1");
                     select.selectedIndex = 0;
                     if (mes > 0) {
@@ -1931,7 +1931,7 @@ function fillMesesSueldosIndirectosDonPepe(obj, mes) {
                     }
                     break;
                 case 6: // JUNIO
-                    data = [{ "text": "JUNIO", "value": "6" }, { "text": "MAYO", "value": "5" }]
+                    data = [{ "text": "JUNIO", "value": "6" }, { "text": "MAYO", "value": "5" }, { "text": "ABRIL", "value": "4" }, { "text": "MARZO", "value": "3" }]
                     FillCombo(data, "uiMesSueldoIndirecto", "value", "text", "- seleccione -", "-1");
                     select.selectedIndex = 0;
                     if (mes > 0) {
@@ -1939,7 +1939,7 @@ function fillMesesSueldosIndirectosDonPepe(obj, mes) {
                     }
                     break;
                 case 7: // JULIO
-                    data = [{ "text": "JULIO", "value": "7" }, { "text": "JUNIO", "value": "6" }]
+                    data = [{ "text": "JULIO", "value": "7" }, { "text": "JUNIO", "value": "6" }, { "text": "MAYO", "value": "5" }, { "text": "ABRIL", "value": "4" }]
                     FillCombo(data, "uiMesSueldoIndirecto", "value", "text", "- seleccione -", "-1");
                     select.selectedIndex = 0;
                     if (mes > 0) {
@@ -1947,7 +1947,7 @@ function fillMesesSueldosIndirectosDonPepe(obj, mes) {
                     }
                     break;
                 case 8: // AGOSTO
-                    data = [{ "text": "AGOSTO", "value": "8" }, { "text": "JULIO", "value": "7" }]
+                    data = [{ "text": "AGOSTO", "value": "8" }, { "text": "JULIO", "value": "7" }, { "text": "JUNIO", "value": "6" }, { "text": "MAYO", "value": "5" }]
                     FillCombo(data, "uiMesSueldoIndirecto", "value", "text", "- seleccione -", "-1");
                     select.selectedIndex = 0;
                     if (mes > 0) {
@@ -1955,31 +1955,31 @@ function fillMesesSueldosIndirectosDonPepe(obj, mes) {
                     }
                     break;
                 case 9: // SEPTIEMBRE
-                    data = [{ "text": "SEPTIEMBRE", "value": "9" }, { "text": "AGOSTO", "value": "8" }]
+                    data = [{ "text": "SEPTIEMBRE", "value": "9" }, { "text": "AGOSTO", "value": "8" }, { "text": "JULIO", "value": "7" }, { "text": "JUNIO", "value": "6" }]
                     FillCombo(data, "uiMesSueldoIndirecto", "value", "text", "- seleccione -", "-1");
                     select.selectedIndex = 0;
                     if (mes > 0) {
                         select.value = mes.toString();
                     }
                     break;
-                case 10: // NOVIEMBRE
-                    data = [{ "text": "OCTUBRE", "value": "10" }, { "text": "SEPTIEMBRE", "value": "9" }]
+                case 10: // OCTUBRE
+                    data = [{ "text": "OCTUBRE", "value": "10" }, { "text": "SEPTIEMBRE", "value": "9" }, { "text": "AGOSTO", "value": "8" }, { "text": "JULIO", "value": "7" }]
                     FillCombo(data, "uiMesSueldoIndirecto", "value", "text", "- seleccione -", "-1");
                     select.selectedIndex = 0;
                     if (mes > 0) {
                         select.value = mes.toString();
                     }
                     break;
-                case 11:
-                    data = [{ "text": "NOVIEMBRE", "value": "11" }, { "text": "OCTUBRE", "value": "10" }]
+                case 11: // NOVIEMBRE
+                    data = [{ "text": "NOVIEMBRE", "value": "11" }, { "text": "OCTUBRE", "value": "10" }, { "text": "SEPTIEMBRE", "value": "9" }, { "text": "AGOSTO", "value": "8" }]
                     FillCombo(data, "uiMesSueldoIndirecto", "value", "text", "- seleccione -", "-1");
                     select.selectedIndex = 0;
                     if (mes > 0) {
                         select.value = mes.toString();
                     }
                     break;
-                case 12:
-                    data = [{ "text": "DICIEMBRE", "value": "12" }, { "text": "NOVIEMBRE", "value": "11" }]
+                case 12: // DICIEMBRE
+                    data = [{ "text": "DICIEMBRE", "value": "12" }, { "text": "NOVIEMBRE", "value": "11" }, { "text": "OCTUBRE", "value": "10" }, { "text": "SEPTIEMBRE", "value": "9" }]
                     FillCombo(data, "uiMesSueldoIndirecto", "value", "text", "- seleccione -", "-1");
                     select.selectedIndex = 0;
                     if (mes > 0) {

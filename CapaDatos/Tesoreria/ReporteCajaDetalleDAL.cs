@@ -821,6 +821,7 @@ namespace CapaDatos.Tesoreria
             int postMontoDomingo = 0;
             int postDevoluciones = 0;
             int postObservaciones = 0;
+            int postSaldoAnteriorAcumulado = 0;
             ReporteCajaDetalleListCLS objReporteCaja = new ReporteCajaDetalleListCLS();
             using (SqlConnection conexion = new SqlConnection(cadenaTesoreria))
             {
@@ -1023,10 +1024,20 @@ namespace CapaDatos.Tesoreria
                             objReporteCaja.listaDepositosBancarios = listaDepositosBancarios;
                         }
 
+                        if (dr.NextResult())
+                        {// Monto Saldo Anterior
+                            postSaldoAnteriorAcumulado = dr.GetOrdinal("saldo_anterior");
+                            while (dr.Read())
+                            {
+                                objReporteCaja.SaldoAnteriorAcumulado = dr.GetDecimal(postSaldoAnteriorAcumulado);
+                            }// fin while
+                        }
+
                     }
+
                     conexion.Close();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     conexion.Close();
                     objReporteCaja = null;

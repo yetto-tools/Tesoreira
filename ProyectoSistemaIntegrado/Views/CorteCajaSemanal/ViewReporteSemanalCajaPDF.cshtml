@@ -69,6 +69,7 @@
 
         @{decimal montoDiferenciaCero = 0.01m;}
         @{string montoDiferenciaCeroStr = "0.00";}
+        @{decimal montoSaldoAnteriorAcumulado = reporte.SaldoAnteriorAcumulado;}
 
         @foreach (var dr in reporte.listaVendedores)
         {
@@ -2791,7 +2792,7 @@
             <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;"></div></td>
             <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;"></div></td>
         </tr>
-        @{decimal sumaTotalBalanceAcumulado = 0; }
+        @{decimal sumaTotalBalanceAcumulado = montoSaldoAnteriorAcumulado; }
         @{decimal totalBalanceSemana = totalEfectivoSemana - totalGastoSemana - totalDepositoSemana; }
         @{decimal totalBalanceLunes = totalEfectivoLunes - totalGastoLunes - totalDepositoLunes; }
         @{decimal totalBalanceMartes = totalEfectivoMartes - totalGastoMartes - totalDepositoMartes; }
@@ -2800,7 +2801,8 @@
         @{decimal totalBalanceViernes = totalEfectivoViernes - totalGastoViernes - totalDepositoViernes; }
         @{decimal totalBalanceSabado = totalEfectivoSabado - totalGastoSabado - totalDepositoSabado; }
         @{decimal totalBalanceDomingo = totalEfectivoDomingo - totalGastoDomingo - totalDepositoDomingo; }
-        @{decimal sumaBalanceAcumulado = sumaTotalBalanceAcumulado + totalBalanceLunes + totalBalanceMartes + totalBalanceMiercoles + totalBalanceJueves + totalBalanceViernes + totalBalanceSabado + totalBalanceDomingo; }
+        @{decimal sumaBalanceAcumulado = totalBalanceLunes + totalBalanceMartes + totalBalanceMiercoles + totalBalanceJueves + totalBalanceViernes + totalBalanceSabado + totalBalanceDomingo; }
+
         <tr>
             <td style="padding: 4px; font-size: 12px;"><div style="text-align: left; font-weight: bold; font-family: Arial, Helvetica, Verdana;">BALANCE</div></td>
             <td td style="padding: 4px; font-size: 12px; width: 90px;"><div style="text-align: right;">@sumaTotalBalanceAcumulado.ToString("N2")</div></td>

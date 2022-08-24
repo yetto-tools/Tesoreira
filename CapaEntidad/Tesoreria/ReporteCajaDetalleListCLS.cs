@@ -30,5 +30,6 @@ namespace CapaEntidad.Tesoreria
         public List<ReporteCajaDetalleCLS> listaGastosAdministrativos { get; set; }
         public List<ReporteCajaDetalleCLS> listaMantenimientoVehiculos { get; set; }
         public List<ReporteCajaDetalleCLS> listaDepositosBancarios { get; set; }
+        public decimal SaldoAnteriorAcumulado { get; set; }
     }
 }

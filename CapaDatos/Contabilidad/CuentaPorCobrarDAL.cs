@@ -265,13 +265,13 @@ namespace CapaDatos.Contabilidad
                     SET codigo_estado = @CodigoEstadoRegistrado,
                         usuario_act = @UsuarioAct,
                         fecha_act = @FechaAct
-                    WHERE codigo_estado = @CodigoEstadoTemporal AND
-                          carga_inicial = 0";
+                    WHERE codigo_estado = @CodigoEstadoTemporal 
+                      AND carga_inicial = 0";
                     using (SqlCommand cmd = new SqlCommand(sqlUpdate, conexion))
                     {
                         cmd.CommandType = CommandType.Text;
                         cmd.CommandText = sqlUpdate;
-                        cmd.Parameters.AddWithValue("@CodigoEstadoRegistrado", Constantes.CuentaPorCobrar.Estado.REGISTRADO);
+                        cmd.Parameters.AddWithValue("@CodigoEstadoRegistrado", Constantes.CuentaPorCobrar.Estado.PARA_INCLUIR_EN_REPORTE);
                         cmd.Parameters.AddWithValue("@CodigoEstadoTemporal", Constantes.CuentaPorCobrar.Estado.TEMPORAL);
                         cmd.Parameters.AddWithValue("@UsuarioAct", usuarioAct);
                         cmd.Parameters.AddWithValue("@FechaAct", DateTime.Now);
